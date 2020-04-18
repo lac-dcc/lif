@@ -1,0 +1,13 @@
+begin:
+    x = 4;
+    y = 3;
+    p = x < y;
+    br p end sum;
+
+sum: 
+    s = x + y;
+    jmp end;
+
+end:
+    z = phi (x, begin) (s, sum);
+    print z;
