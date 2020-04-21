@@ -1,13 +1,1 @@
-begin:
-    x = 4;
-    y = 3;
-    p = x < y;
-    br p end sum;
-
-sum: 
-    s = x + y;
-    jmp end;
-
-end:
-    z = phi (x, begin) (s, sum);
-    print z;
+begin: mov(w, 1) br(w < 2, w_true, w_false) w_true: mov(x, w + 1) jmp(end) w_false: mov(y, w - 1) jmp(end) end: phi(z, x: w_true, y: w_false) out(z)

@@ -4,14 +4,14 @@ import           Control.Monad.Except
 import           Lang
 import           Text.ParserCombinators.Parsec
 
-data Error = UndefId Id
-           | Immutable Id
+data Error = UndefVar Var
+           | Immutable Var
            | UndefLabel [Label]
            | Parser ParseError
 
 instance Show Error where
-    show (UndefId    id      ) = "Use of variable before definition: " ++ id
-    show (Immutable id) = "Trying to redefine an existing variable: " ++ id
+    show (UndefVar   x       ) = "Use of variable before definition: " ++ x
+    show (Immutable x) = "Trying to redefine an existing variable: " ++ x
     show (UndefLabel l       ) = "Use of nonexistent label: " ++ show l
     show (Parser     parseErr) = "Parse error at: " ++ show parseErr
 

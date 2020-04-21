@@ -13,19 +13,18 @@ import           Parser
 
 run :: String -> IO ()
 run source = do
-    parsed <- parseProg source
+    parsed <- readProg source
     case parsed of
         Left  err  -> putStr (show err ++ "\n") $> ()
-        Right stms -> interp (withLabel stms) $> ()
+        Right prog -> putStr (interp prog) $> ()
 
-interp :: Prog -> IO ()
-interp prog@((first, _) : _) = single prog (initState first) $> ()
+interp :: Prog -> String
+interp prog = single prog initState
   where
-    single :: Prog -> State -> IO State
-    single [] s                 = pure s
-    single _  s@(_, _, Nothing) = pure s
-    single prog s@(_, _, Just l) =
-        case evalInst (fromJust $ lookup l prog) prog s of
-            Left  err               -> putStr (show err ++ "\n") $> s
-            Right (Nothing    , s') -> single prog s'
-            Right (Just output, s') -> putStr output *> single prog s'
+    single :: Prog -> State -> String
+    single [] (_, _, _, out) = out
+    single prog s@(_, _, pc, out)
+        | pc >= length prog = out
+        | otherwise = case eval prog s of
+            Left  err -> show err ++ "\n"
+            Right s'  -> single prog s'

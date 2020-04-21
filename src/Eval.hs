@@ -6,103 +6,88 @@ import           Control.Monad.Except
 import           Data.Bits
 import           Data.Bool
 import           Data.Either
+import           Data.List
 import           Data.Functor
 import           Data.Maybe
 
 import           Error
 import           Lang
 
-type Prog = [(Label, Inst)]
-type Store = [(Id, Integer)]
+type Reg = [(Var, Integer)]
+type PC = Int
 
--- Store, curr block, curr inst
-type State = (Store, Maybe Label, Maybe Label)
+-- Reg, previous PC, current PC and output buffer
+type State = (Reg, PC, PC, String)
 
-withLabel :: [(Maybe Label, Inst)] -> Prog
-withLabel stms = label stms 0
-  where
-    label :: [(Maybe Label, Inst)] -> Int -> Prog
-    label []                    _ = []
-    label ((Nothing, i) : stms) n = (show n, i) : label stms (n + 1)
-    label ((Just l , i) : stms) n = (l, i) : label stms n
+-- Walk backwards searching for the block label
+findLabel :: Prog -> PC -> Label
+findLabel prog pc =
+    fromJust . fst . head . dropWhile (isNothing . fst) . reverse $ take
+        (pc + 1)
+        prog
 
-initState :: Label -> State
-initState first = ([], Just first, Just first)
+initState :: State
+initState = ([], -1, 0, "")
 
-nextInst :: Prog -> Label -> Maybe Label
-nextInst prog l | null rest = Nothing
-                | otherwise = Just . fst $ head rest
-    where rest = drop 1 $ dropWhile ((/= l) . fst) prog
+labels :: Prog -> [Maybe Label]
+labels = map fst
 
-evalInst :: Inst -> Prog -> State -> Throws (Maybe String, State)
-evalInst (Ass id expr) prog (sto, b, Just l) =
-    let newState = (Nothing, ) . (, b, nextInst prog l) . (: sto) . (id, )
-        success  = either throwError (pure . newState) $ evalExpr expr sto
-    in  maybe success (const . throwError $ Immutable id) $ lookup id sto
-evalInst (Phi id phis) prog (sto, Just b, Just l) =
-    let labelExists = isJust . flip lookup prog
-        labels = map snd phis
-        checkLabels = map labelExists
-        err = throwError . UndefLabel $ filter (not . labelExists) labels
-        newState = (Nothing, ) . (, Just l, nextInst prog l) . (: sto) . (id, )
-        success =
-                either throwError (pure . newState)
-                    $ flip evalValue sto
-                    $ fst
-                    . head
-                    $ filter ((==) b . snd) phis
-    in  bool err success $ and $ checkLabels labels
-evalInst (Jmp l1) prog (sto, _, l0) =
-    let success = const $ pure . (Nothing, ) $ (sto, l0, Just l1)
-    in  maybe (throwError $ UndefLabel [l1]) success $ lookup l1 prog
-evalInst (Br p l0 l1) prog (sto, _, _) =
-    let labelExists = isJust . flip lookup prog
-        checkLabels = map labelExists
-        err = throwError . UndefLabel $ filter (not . labelExists) [l0, l1]
-        newState v = (Nothing, ) (sto, next, next)
-                where next = Just $ if v == 1 then l0 else l1
-        success = either throwError (pure . newState) $ evalValue p sto
-    in  bool err success $ all labelExists [l0, l1]
-evalInst (Print v0) prog (sto, b, Just l) =
-    let success = (, (sto, b, nextInst prog l)) . Just . (++ "\n") . show
-    in  either throwError (pure . success) $ evalValue v0 sto
+findPC :: Prog -> Maybe Label -> PC
+findPC prog = fromJust . flip elemIndex (labels prog)
+--
+eval :: Prog -> State -> Throws State
+eval prog s@(reg, pc', pc, buffer) = case snd (prog !! pc) of
+    (Mov x e) -> either throwError (pure . push) $ evalExpr e reg
+        where push = (, pc, pc + 1, buffer) . (: reg) . (x, )
+    (Phi x phi) ->
+        bool (either throwError (pure . push) $ evalValue v reg)
+             (throwError $ UndefLabel undef)
+            $ null undef
+      where
+        undef = catMaybes $ map (Just . fst) phi `intersect` labels prog
+        v     = fromJust $ lookup (findLabel prog pc') phi
+        push  = (, pc, pc + 1, buffer) . (: reg) . (x, )
 
-evalExpr :: Expr -> Store -> Throws Integer
-evalExpr (Value v) sto = evalValue v sto
-evalExpr (Neg   v) sto = negate <$> evalValue v sto
-evalExpr (Not   v) sto = case evalValue v sto of
-    err@Left{} -> err
-    Right r    -> pure $ if r == 0 then 1 else 0
-evalExpr (v0 :+:  v1) sto = evalAExpr (+) v0 v1 sto
-evalExpr (v0 :-:  v1) sto = evalAExpr (-) v0 v1 sto
-evalExpr (v0 :*:  v1) sto = evalAExpr (*) v0 v1 sto
-evalExpr (v0 :|:  v1) sto = evalAExpr (.|.) v0 v1 sto
-evalExpr (v0 :&:  v1) sto = evalAExpr (.&.) v0 v1 sto
-evalExpr (v0 :==: v1) sto = evalBExpr (==) v0 v1 sto
-evalExpr (v0 :!=: v1) sto = evalBExpr (/=) v0 v1 sto
-evalExpr (v0 :<:  v1) sto = evalBExpr (<) v0 v1 sto
-evalExpr (v0 :>:  v1) sto = evalBExpr (>) v0 v1 sto
-evalExpr (v0 :<=: v1) sto = evalBExpr (<=) v0 v1 sto
-evalExpr (v0 :>=: v1) sto = evalBExpr (>=) v0 v1 sto
+    (Jmp l) ->
+        maybe (throwError $ UndefLabel [l]) (pure . s')
+            $ find ((==) $ Just l)
+            $ labels prog
+        where s' = (reg, pc, , buffer) . findPC prog
+    (Br e l1 l2) ->
+        bool (either throwError (pure . s') $ evalExpr e reg)
+             (throwError $ UndefLabel undef)
+            $ null undef
+      where
+        undef = catMaybes $ [Just l1, Just l2] `intersect` labels prog
+        s'    = (reg, pc, , buffer) . findPC prog . Just . bool l1 l2 . (== 0)
+    (Out e) -> either throwError (pure . s') $ evalExpr e reg
+        where s' = (reg, pc, pc + 1, ) . (++ "\n") . show
 
-evalAExpr
-    :: (Integer -> Integer -> Integer)
-    -> Value
-    -> Value
-    -> Store
-    -> Throws Integer
-evalAExpr op v0 v1 sto = case evalValue v0 sto of
-    err@Left{} -> err
-    Right r    -> op r <$> evalValue v1 sto
+evalExpr :: Expr -> Reg -> Throws Integer
+evalExpr (Value v) reg = evalValue v reg
+evalExpr (Neg   v) reg = negate <$> evalValue v reg
+evalExpr (Not v) reg =
+    either throwError (pure . bool 0 1 . (== 0)) $ evalValue v reg
+evalExpr (v1 :+: v2) reg = (+) <$> evalValue v1 reg <*> evalValue v2 reg
+evalExpr (v1 :-: v2) reg = (-) <$> evalValue v1 reg <*> evalValue v2 reg
+evalExpr (v1 :*: v2) reg = (*) <$> evalValue v1 reg <*> evalValue v2 reg
+evalExpr (v1 :|: v2) reg = (.|.) <$> evalValue v1 reg <*> evalValue v2 reg
+evalExpr (v1 :&: v2) reg = (.&.) <$> evalValue v1 reg <*> evalValue v2 reg
+evalExpr (v1 :=: v2) reg =
+    toInteger . fromEnum <$> ((==) <$> evalValue v1 reg <*> evalValue v2 reg)
+evalExpr (v1 :!=: v2) reg =
+    toInteger . fromEnum <$> ((/=) <$> evalValue v1 reg <*> evalValue v2 reg)
+evalExpr (v1 :<: v2) reg =
+    toInteger . fromEnum <$> ((<) <$> evalValue v1 reg <*> evalValue v2 reg)
+evalExpr (v1 :>: v2) reg =
+    toInteger . fromEnum <$> ((>) <$> evalValue v1 reg <*> evalValue v2 reg)
+evalExpr (v1 :<=: v2) reg =
+    toInteger . fromEnum <$> ((<=) <$> evalValue v1 reg <*> evalValue v2 reg)
+evalExpr (v1 :>=: v2) reg =
+    toInteger . fromEnum <$> ((>=) <$> evalValue v1 reg <*> evalValue v2 reg)
 
-evalBExpr
-    :: (Integer -> Integer -> Bool) -> Value -> Value -> Store -> Throws Integer
-evalBExpr op v0 v1 sto = case evalValue v0 sto of
-    err@Left{} -> err
-    Right v2   -> toInteger . fromEnum . op v2 <$> evalValue v1 sto
-
-evalValue :: Value -> Store -> Throws Integer
-evalValue (Const c ) _   = pure c
-evalValue (Id    id) sto = case lookup id sto of
+evalValue :: Value -> Reg -> Throws Integer
+evalValue (Const n) _   = pure n
+evalValue (Var   x) reg = case lookup x reg of
     Just v  -> pure v
-    Nothing -> throwError $ UndefId id
+    Nothing -> throwError $ UndefVar x

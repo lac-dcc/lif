@@ -1,14 +1,13 @@
 module Lang where
 
 type Const = Integer
-type Id = String
 type Label = String
+type Var = String
 
-data Value = Const Const | Id Id
-
+data Value = Const Const | Var Var
 instance Show Value where
-    show (Const c ) = show c
-    show (Id    id) = id
+    show (Const n) = show n
+    show (Var   x) = x
 
 data Expr = Value Value
           | Neg Value
@@ -18,7 +17,7 @@ data Expr = Value Value
           | Value :*: Value
           | Value :|: Value
           | Value :&: Value
-          | Value :==: Value
+          | Value :=: Value
           | Value :!=: Value
           | Value :<: Value
           | Value :>: Value
@@ -29,35 +28,42 @@ instance Show Expr where
     show (Value v   ) = show v
     show (Neg   v   ) = "-" ++ show v
     show (Not   v   ) = "!" ++ show v
-    show (v0 :+:  v1) = show v0 ++ " + " ++ show v1
-    show (v0 :-:  v1) = show v0 ++ " - " ++ show v1
-    show (v0 :*:  v1) = show v0 ++ " * " ++ show v1
-    show (v0 :|:  v1) = show v0 ++ " | " ++ show v1
-    show (v0 :&:  v1) = show v0 ++ " & " ++ show v1
-    show (v0 :==: v1) = show v0 ++ " == " ++ show v1
-    show (v0 :!=: v1) = show v0 ++ " != " ++ show v1
-    show (v0 :<:  v1) = show v0 ++ " < " ++ show v1
-    show (v0 :>:  v1) = show v0 ++ " > " ++ show v1
-    show (v0 :<=: v1) = show v0 ++ " <= " ++ show v1
-    show (v0 :>=: v1) = show v0 ++ " >= " ++ show v1
+    show (v1 :+:  v2) = show v1 ++ " + " ++ show v2
+    show (v1 :-:  v2) = show v1 ++ " - " ++ show v2
+    show (v1 :*:  v2) = show v1 ++ " * " ++ show v2
+    show (v1 :|:  v2) = show v1 ++ " | " ++ show v2
+    show (v1 :&:  v2) = show v1 ++ " & " ++ show v2
+    show (v1 :=:  v2) = show v1 ++ " = " ++ show v2
+    show (v1 :!=: v2) = show v1 ++ " != " ++ show v2
+    show (v1 :<:  v2) = show v1 ++ " < " ++ show v2
+    show (v1 :>:  v2) = show v1 ++ " > " ++ show v2
+    show (v1 :<=: v2) = show v1 ++ " <= " ++ show v2
+    show (v1 :>=: v2) = show v1 ++ " >= " ++ show v2
 
-data Inst = Ass Id Expr
-          | Phi  Id [(Value, Label)]
-          | Load Id Id Value
-          | Store Value Id Value
+data Inst = Mov Var Expr
+          | Load Var Expr
+          | Store Expr Expr
+          | Phi  Var [(Label, Value)]
           | Jmp  Label
-          | Br  Value Label Label
-          | Ret  Value
-          | Print Value
+          | Br  Expr Label Label
+          | Out Expr
 
 instance Show Inst where
-    show (Ass x e   ) = x ++ " = " ++ show e
-    show (Phi x phis) = x ++ " = " ++ "phi " ++ unwords
-        [ "(" ++ show v ++ ", " ++ show l ++ ")" | (v, l) <- phis ]
-    show (Load x mem idx) = x ++ " = " ++ mem ++ "[" ++ show idx ++ "]"
-    show (Store x mem idx) =
-        "store " ++ show x ++ " " ++ mem ++ "[" ++ show idx ++ "]"
-    show (Jmp l     ) = "br " ++ show l
-    show (Br p l0 l1) = "jmp " ++ show p ++ " " ++ show l0 ++ " " ++ show l1
-    show (Ret   v   ) = "ret " ++ show v
-    show (Print v   ) = "print " ++ show v
+    show (Mov   x  e  ) = "mov(" ++ x ++ ", " ++ show e ++ ")"
+    show (Load  x  e  ) = "load(" ++ x ++ ", " ++ show e ++ ")"
+    show (Store e1 e2 ) = "store(" ++ show e1 ++ ", " ++ show e1 ++ ")"
+    show (Phi   x  phi) = "phi(" ++ x ++ ", " ++ selectors phi ++ ")"
+      where
+        selectors :: [(Label, Value)] -> String
+        selectors [(l, v)      ] = show v ++ ": " ++ l
+        selectors ((l, v) : phi) = show v ++ ": " ++ l ++ ", " ++ selectors phi
+    show (Jmp l     ) = "jmp(" ++ l ++ ")"
+    show (Br e l1 l2) = "br(" ++ show e ++ ", " ++ l1 ++ ", " ++ l2 ++ ")"
+    show (Out e     ) = "out(" ++ show e ++ ")"
+
+type Prog = [(Maybe Label, Inst)]
+
+showProg :: Prog -> String
+showProg []                    = ""
+showProg ((Nothing, i) : rest) = show i ++ "\n" ++ showProg rest
+showProg ((Just l , i) : rest) = l ++ ":\n" ++ show i ++ "\n" ++ showProg rest
