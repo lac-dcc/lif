@@ -40,7 +40,8 @@ instance Show Expr where
     show (v1 :<=: v2) = show v1 ++ " <= " ++ show v2
     show (v1 :>=: v2) = show v1 ++ " >= " ++ show v2
 
-data Inst = Mov Var Expr
+data Inst = Alloc Var Expr
+          | Mov Var Expr
           | Load Var Expr
           | Store Expr Expr
           | Phi  Var [(Label, Value)]
@@ -49,9 +50,10 @@ data Inst = Mov Var Expr
           | Out Expr
 
 instance Show Inst where
+    show (Alloc x  e  ) = "alloc(" ++ x ++ ", " ++ show e ++ ")"
     show (Mov   x  e  ) = "mov(" ++ x ++ ", " ++ show e ++ ")"
     show (Load  x  e  ) = "load(" ++ x ++ ", " ++ show e ++ ")"
-    show (Store e1 e2 ) = "store(" ++ show e1 ++ ", " ++ show e1 ++ ")"
+    show (Store e1 e2 ) = "store(" ++ show e1 ++ ", " ++ show e2 ++ ")"
     show (Phi   x  phi) = "phi(" ++ x ++ ", " ++ selectors phi ++ ")"
       where
         selectors :: [(Label, Value)] -> String

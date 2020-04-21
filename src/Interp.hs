@@ -22,8 +22,8 @@ interp :: Prog -> String
 interp prog = single prog initState
   where
     single :: Prog -> State -> String
-    single [] (_, _, _, out) = out
-    single prog s@(_, _, pc, out)
+    single [] (_, _, _, _, out) = out
+    single prog s@(_, _, _, pc, out)
         | pc >= length prog = out
         | otherwise = case eval prog s of
             Left  err -> show err ++ "\n"

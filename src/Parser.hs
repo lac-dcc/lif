@@ -56,7 +56,8 @@ parseProg = do
 
 parseInst :: Parser Inst
 parseInst =
-    parseMov
+    parseAlloc
+        <|> parseMov
         <|> parseLoad
         <|> parseStore
         <|> parsePhi
@@ -66,6 +67,9 @@ parseInst =
 
 inst :: String -> Parser Inst -> Parser Inst
 inst name parser = reserved name *> parens parser
+
+parseAlloc :: Parser Inst
+parseAlloc = inst "alloc" $ Alloc <$> (identifier <* comma) <*> parseExpr
 
 parseMov :: Parser Inst
 parseMov = inst "mov" $ Mov <$> (identifier <* comma) <*> parseExpr

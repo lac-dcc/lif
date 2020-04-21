@@ -1,1 +1,17 @@
-begin: mov(w, 1) br(w < 2, w_true, w_false) w_true: mov(x, w + 1) jmp(end) w_false: mov(y, w - 1) jmp(end) end: phi(z, x: w_true, y: w_false) out(z)
+begin:
+    alloc(w, 2)
+    store(1, w)
+    store(2, w + 1)
+    load(x, w)
+    br(x = 1, w.true, w.false)
+    
+w.true:
+    load(y0, w)
+    jmp(end)
+
+w.false:
+    load(y1, w + 1)
+
+end:
+    phi(y, y0: w.true, y1: w.false)
+    out(y)

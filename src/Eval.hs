@@ -9,15 +9,18 @@ import           Data.Either
 import           Data.List
 import           Data.Functor
 import           Data.Maybe
+import qualified Data.Map                      as Map
+import qualified Data.Sequence                 as Seq
 
 import           Error
 import           Lang
 
-type Reg = [(Var, Integer)]
+type Reg = Map.Map Var Integer
+type Mem = Seq.Seq Integer
 type PC = Int
 
--- Reg, previous PC, current PC and output buffer
-type State = (Reg, PC, PC, String)
+-- Reg, Mem, previous PC, current PC and output buffer
+type State = (Reg, Mem, PC, PC, String)
 
 -- Walk backwards searching for the block label
 findLabel :: Prog -> PC -> Label
@@ -27,41 +30,64 @@ findLabel prog pc =
         prog
 
 initState :: State
-initState = ([], -1, 0, "")
-
-labels :: Prog -> [Maybe Label]
-labels = map fst
+initState = (Map.empty, Seq.empty, -1, 0, "")
 
 findPC :: Prog -> Maybe Label -> PC
-findPC prog = fromJust . flip elemIndex (labels prog)
---
-eval :: Prog -> State -> Throws State
-eval prog s@(reg, pc', pc, buffer) = case snd (prog !! pc) of
-    (Mov x e) -> either throwError (pure . push) $ evalExpr e reg
-        where push = (, pc, pc + 1, buffer) . (: reg) . (x, )
-    (Phi x phi) ->
-        bool (either throwError (pure . push) $ evalValue v reg)
-             (throwError $ UndefLabel undef)
-            $ null undef
-      where
-        undef = catMaybes $ map (Just . fst) phi `intersect` labels prog
-        v     = fromJust $ lookup (findLabel prog pc') phi
-        push  = (, pc, pc + 1, buffer) . (: reg) . (x, )
+findPC prog = fromJust . flip elemIndex (map fst prog)
 
-    (Jmp l) ->
-        maybe (throwError $ UndefLabel [l]) (pure . s')
-            $ find ((==) $ Just l)
-            $ labels prog
-        where s' = (reg, pc, , buffer) . findPC prog
-    (Br e l1 l2) ->
-        bool (either throwError (pure . s') $ evalExpr e reg)
-             (throwError $ UndefLabel undef)
+eval :: Prog -> State -> Throws State
+eval prog s@(reg, mem, pc', pc, buffer) = case snd (prog !! pc) of
+    (Alloc x e) -> either throwError (pure . nextState) $ evalExpr e reg
+      where
+        nextState =
+            (Map.insert x (toInteger $ length mem) reg, , pc, pc + 1, buffer)
+                . (mem Seq.><)
+                . flip Seq.replicate 0
+                . fromInteger
+    (Mov x e) -> either throwError (pure . nextState) $ evalExpr e reg
+        where nextState v = (Map.insert x v reg, mem, pc, pc + 1, buffer)
+    (Load x e) -> either throwError (pure . nextState) $ evalExpr e reg
+      where
+        nextState v =
+            ( Map.insert x (Seq.index mem $ fromInteger v) reg
+            , mem
+            , pc
+            , pc + 1
+            , buffer
+            )
+    (Store e1 e2) ->
+        either
+                throwError
+                (\v -> either throwError (pure . nextState v) $ evalExpr e2 reg)
+            $ evalExpr e1 reg
+      where
+        nextState v idx =
+            (reg, , pc, pc + 1, buffer) $ Seq.update (fromInteger idx) v mem
+    (Phi x phi) ->
+        bool (throwError $ UndefLabel undef)
+             (either throwError (pure . nextState) $ evalValue v reg)
             $ null undef
       where
-        undef = catMaybes $ [Just l1, Just l2] `intersect` labels prog
-        s'    = (reg, pc, , buffer) . findPC prog . Just . bool l1 l2 . (== 0)
-    (Out e) -> either throwError (pure . s') $ evalExpr e reg
-        where s' = (reg, pc, pc + 1, ) . (++ "\n") . show
+        undef = map fst phi
+            \\ catMaybes (map (Just . fst) phi `intersect` map fst prog)
+        v = fromJust $ lookup (findLabel prog pc') phi
+        nextState v = (Map.insert x v reg, mem, pc, pc + 1, buffer)
+    (Jmp l) ->
+        maybe (throwError $ UndefLabel [l]) (pure . nextState)
+            $ find ((==) $ Just l)
+            $ map fst prog
+        where nextState = (reg, mem, pc, , buffer) . findPC prog
+    (Br e l1 l2) ->
+        bool (throwError $ UndefLabel undef)
+             (either throwError (pure . nextState) $ evalExpr e reg)
+            $ null undef
+      where
+        undef =
+            [l1, l2] \\ catMaybes ([Just l1, Just l2] `intersect` map fst prog)
+        nextState =
+            (reg, mem, pc, , buffer) . findPC prog . Just . bool l1 l2 . (== 0)
+    (Out e) -> either throwError (pure . nextState) $ evalExpr e reg
+        where nextState = (reg, mem, pc, pc + 1, ) . (++ "\n") . show
 
 evalExpr :: Expr -> Reg -> Throws Integer
 evalExpr (Value v) reg = evalValue v reg
@@ -88,6 +114,6 @@ evalExpr (v1 :>=: v2) reg =
 
 evalValue :: Value -> Reg -> Throws Integer
 evalValue (Const n) _   = pure n
-evalValue (Var   x) reg = case lookup x reg of
+evalValue (Var   x) reg = case Map.lookup x reg of
     Just v  -> pure v
     Nothing -> throwError $ UndefVar x
