@@ -19,12 +19,12 @@ run source = do
         Right prog -> putStr (interp prog) $> ()
 
 interp :: Prog -> String
-interp prog = single prog initState
+interp prog = go prog initState
   where
-    single :: Prog -> State -> String
-    single [] (_, _, _, _, out) = out
-    single prog s@(_, _, _, pc, out)
+    go :: Prog -> State -> String
+    go [] (_, _, _, _, out) = out
+    go prog s@(_, _, _, pc, out)
         | pc >= length prog = out
         | otherwise = case eval prog s of
             Left  err -> show err ++ "\n"
-            Right s'  -> single prog s'
+            Right s'  -> go prog s'

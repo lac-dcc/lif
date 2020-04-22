@@ -17,12 +17,13 @@ import           Lang
 
 type Reg = Map.Map Var Integer
 type Mem = Seq.Seq Integer
+type Buffer = String
 type PC = Int
 
 -- Reg, Mem, previous PC, current PC and output buffer
-type State = (Reg, Mem, PC, PC, String)
+type State = (Reg, Mem, PC, PC, Buffer)
 
--- Walk backwards searching for the block label
+-- Walk backwards searching for a label
 findLabel :: Prog -> PC -> Label
 findLabel prog pc =
     fromJust . fst . head . dropWhile (isNothing . fst) . reverse $ take
