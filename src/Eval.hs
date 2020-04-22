@@ -20,65 +20,62 @@ type Mem = Seq.Seq Integer
 type Buffer = String
 type PC = Int
 
--- Reg, Mem, previous PC, current PC and output buffer
-type State = (Reg, Mem, PC, PC, Buffer)
-
--- Walk backwards searching for a label
-findLabel :: Prog -> PC -> Label
-findLabel prog pc =
-    fromJust . fst . head . dropWhile (isNothing . fst) . reverse $ take
-        (pc + 1)
-        prog
+-- Reg, Mem, last seen label l' (predecessor block), 
+-- current PC and output buffer
+type State = (Reg, Mem, Label, PC, Buffer)
 
 initState :: State
-initState = (Map.empty, Seq.empty, -1, 0, "")
+initState = (Map.empty, Seq.empty, "", 0, "")
 
 findPC :: Prog -> Maybe Label -> PC
 findPC prog = fromJust . flip elemIndex (map fst prog)
 
 eval :: Prog -> State -> Throws State
-eval prog s@(reg, mem, pc', pc, buffer) = case snd (prog !! pc) of
-    (Alloc x e) -> either throwError (pure . nextState) $ evalExpr e reg
+eval prog s@(reg, mem, l', pc, buffer) = case prog !! pc of
+    (l, Alloc x e) -> either throwError (pure . nextState) $ evalExpr e reg
       where
-        nextState =
-            (Map.insert x (toInteger $ length mem) reg, , pc, pc + 1, buffer)
-                . (mem Seq.><)
-                . flip Seq.replicate 0
-                . fromInteger
-    (Mov x e) -> either throwError (pure . nextState) $ evalExpr e reg
-        where nextState v = (Map.insert x v reg, mem, pc, pc + 1, buffer)
-    (Load x e) -> either throwError (pure . nextState) $ evalExpr e reg
+        nextState v =
+            ( Map.insert x (toInteger $ length mem) reg
+            , mem Seq.>< Seq.replicate (fromInteger v) 0
+            , fromMaybe l' l
+            , pc + 1
+            , buffer
+            )
+    (l, Mov x e) -> either throwError (pure . nextState) $ evalExpr e reg
+      where
+        nextState v = (Map.insert x v reg, mem, fromMaybe l' l, pc + 1, buffer)
+    (l, Load x e) -> either throwError (pure . nextState) $ evalExpr e reg
       where
         nextState v =
             ( Map.insert x (Seq.index mem $ fromInteger v) reg
             , mem
-            , pc
+            , fromMaybe l' l
             , pc + 1
             , buffer
             )
-    (Store e1 e2) ->
+    (l, Store e1 e2) ->
         either
                 throwError
                 (\v -> either throwError (pure . nextState v) $ evalExpr e2 reg)
             $ evalExpr e1 reg
       where
-        nextState v idx =
-            (reg, , pc, pc + 1, buffer) $ Seq.update (fromInteger idx) v mem
-    (Phi x phi) ->
+        nextState v idx = (reg, , fromMaybe l' l, pc + 1, buffer)
+            $ Seq.update (fromInteger idx) v mem
+    (l, Phi x phi) ->
         bool (throwError $ UndefLabel undef)
              (either throwError (pure . nextState) $ evalValue v reg)
             $ null undef
       where
         undef = map fst phi
             \\ catMaybes (map (Just . fst) phi `intersect` map fst prog)
-        v = fromJust $ lookup (findLabel prog pc') phi
-        nextState v = (Map.insert x v reg, mem, pc, pc + 1, buffer)
-    (Jmp l) ->
-        maybe (throwError $ UndefLabel [l]) (pure . nextState)
-            $ find ((==) $ Just l)
+        v = fromJust $ lookup l' phi
+        nextState v = (Map.insert x v reg, mem, fromMaybe l' l, pc + 1, buffer)
+    (l, Jmp l1) ->
+        maybe (throwError $ UndefLabel [l1]) (pure . nextState)
+            $ find ((==) $ Just l1)
             $ map fst prog
-        where nextState = (reg, mem, pc, , buffer) . findPC prog
-    (Br e l1 l2) ->
+        where nextState = (reg, mem, fromMaybe l' l, , buffer) . findPC prog
+    (l, Br e l1 l2) ->
         bool (throwError $ UndefLabel undef)
              (either throwError (pure . nextState) $ evalExpr e reg)
             $ null undef
@@ -86,9 +83,14 @@ eval prog s@(reg, mem, pc', pc, buffer) = case snd (prog !! pc) of
         undef =
             [l1, l2] \\ catMaybes ([Just l1, Just l2] `intersect` map fst prog)
         nextState =
-            (reg, mem, pc, , buffer) . findPC prog . Just . bool l1 l2 . (== 0)
-    (Out e) -> either throwError (pure . nextState) $ evalExpr e reg
-        where nextState = (reg, mem, pc, pc + 1, ) . (++ "\n") . show
+            (reg, mem, fromMaybe l' l, , buffer)
+                . findPC prog
+                . Just
+                . bool l1 l2
+                . (== 0)
+    (l, Out e) -> either throwError (pure . nextState) $ evalExpr e reg
+      where
+        nextState = (reg, mem, fromMaybe l' l, pc + 1, ) . (++ "\n") . show
 
 evalExpr :: Expr -> Reg -> Throws Integer
 evalExpr (Value v) reg = evalValue v reg

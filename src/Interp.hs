@@ -22,7 +22,6 @@ interp :: Prog -> String
 interp prog = go prog initState
   where
     go :: Prog -> State -> String
-    go [] (_, _, _, _, out) = out
     go prog s@(_, _, _, pc, out)
         | pc >= length prog = out
         | otherwise = case eval prog s of
