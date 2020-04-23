@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 531f81f95a361d969557586c4bbe7c0aff5bccff6586ad62e8f5f7740d84a7a5
+-- hash: 079e3d0b45dd3e8428ac15ed863c624ed106a1ba3b798eee742122d1d8104763
 
 name:           lif
 version:        0.1.0.0
@@ -28,8 +28,10 @@ source-repository head
 library
   exposed-modules:
       Block
+      Cfg
       Error
       Eval
+      Internal.Graph
       Interp
       Lang
       Parser
