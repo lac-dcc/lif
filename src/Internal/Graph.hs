@@ -10,11 +10,12 @@ module Internal.Graph
     , Decomp
     , mkGraph
     , match
+    , dfs
     )
 where
 
-import           Data.Maybe
-import           Data.List
+import           Data.Maybe                     ( fromMaybe )
+import           Data.List                      ( foldl' )
 
 type Node a = a
 type Edge a = (Node a, Node a)
@@ -22,55 +23,73 @@ type Edge a = (Node a, Node a)
 -- | Links to or from a node
 type Adj a = [Node a]
 
--- | Links to the node (predecessors), the node itself and
---   links from the node (successors)
+-- | Links to the node (predecessors), the node itself and links
+--   from the node (successors)
 data Context a = Context { preds :: Adj a, node :: Node a, succs :: Adj a } deriving (Show)
 type MContext a = Maybe (Context a)
 
--- | Inductive graph
 data Graph a = Empty | Context a :& Graph a deriving (Show)
 
--- | Graph decomposition - the context remove from a graph, 
---   plus the remaining graph
+-- | Graph decomposition - the context extracted from a graph, plus
+--   the remaining graph
 type Decomp a = (MContext a, Graph a)
 
+-- | Takes a list of nodes and edges connecting them, and returns
+--   a graph with both predecessors and successors of each node set
 mkGraph :: (Eq a, Show a) => [Node a] -> [Edge a] -> Graph a
-mkGraph vs es = insEdges es $ insNodes vs Empty
+mkGraph vs es = insEdgesRev es $ insEdges es $ insNodes vs Empty
 
--- | 'match' decompose a graph into a MContext - Nothing if
---   the node 'u' wasn't found; otherwise, Just 'u' - and the
---   remaining graph
+-- | Decomposes a graph into a MContext - Nothing if the node 'u'
+--   wasn't found; otherwise, Just (ctx of 'u') - and the remaining
+--   graph
 match :: forall a . Eq a => Node a -> Graph a -> Decomp a
 match u = go []
   where
-    go :: Eq a => [Context a] -> Graph a -> Decomp a
+    go :: [Context a] -> Graph a -> Decomp a
     go _ Empty = (Nothing, Empty)
     go accum (ctx@(Context _ v _) :& g)
         | u /= v    = go (ctx : accum) g
         | otherwise = (Just ctx, fromCtx $ reverse accum ++ toCtx g)
 
+-- | Takes a function to be applied to each context found, a initial
+--   node and a graph, and return a list of values obtained after
+--   applying the given funtion
+dfs :: forall a b . Eq a => (Context a -> b) -> Node a -> Graph a -> [b]
+dfs f start g = case match start g of
+    (Nothing , Empty) -> []
+    (Just ctx, g'   ) -> go [start] $ ctx :& g'      where
+        go :: [Node a] -> Graph a -> [b]
+        go []       _          = []
+        go (v : vs) (ctx :& g) = f ctx : go (succs ctx ++ vs) g
+        go (v : vs) g          = go vs g
+
 insNode :: Node a -> Graph a -> Graph a
 insNode v = (:&) Context { preds = [], node = v, succs = [] }
 
 insEdge :: (Eq a, Show a) => Edge a -> Graph a -> Graph a
-insEdge (u, v) g =
-    ctxU { succs = v : succsU } :& (ctxV { preds = u : predsV } :& g'')
+insEdge (u, v) g = ctx { succs = v : succs ctx } :& g'
   where
-    (mCtxU, g')                    = match u g
-    ctxU@(Context predsU _ succsU) = fromMaybe
+    (mCtx, g') = match u g
+    ctx        = fromMaybe
         (error $ "cannot add edge from nonexistent node " ++ show u)
-        mCtxU
+        mCtx
 
-    (mCtxV, g'')                   = match v g'
-    ctxV@(Context predsV _ succsV) = fromMaybe
+insEdgeRev :: (Eq a, Show a) => Edge a -> Graph a -> Graph a
+insEdgeRev (u, v) g = ctx { preds = u : preds ctx } :& g'
+  where
+    (mCtx, g') = match v g
+    ctx        = fromMaybe
         (error $ "cannot add edge from nonexistent node " ++ show v)
-        mCtxV
+        mCtx
 
 insNodes :: [Node a] -> Graph a -> Graph a
 insNodes vs g = foldl' (flip insNode) g vs
 
 insEdges :: (Eq a, Show a) => [Edge a] -> Graph a -> Graph a
 insEdges es g = foldl' (flip insEdge) g es
+
+insEdgesRev :: (Eq a, Show a) => [Edge a] -> Graph a -> Graph a
+insEdgesRev es g = foldl' (flip insEdgeRev) g es
 
 fromCtx :: [Context a] -> Graph a
 fromCtx = foldr (:&) Empty

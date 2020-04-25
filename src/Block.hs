@@ -1,20 +1,39 @@
-module Block where
+{-# LANGUAGE TupleSections #-}
 
-import           Data.List
-import           Data.Maybe
+module Block
+    ( Block
+    , findBlock
+    , findLeader
+    , fromProg
+    )
+where
 
+import           Data.Maybe                     ( maybe )
+import           Data.List                      ( find )
 import           Lang
 
-type Block = [Stm]
+-- | A basic block represented by a label
+--   and the block itself
+type Block = (Int, [Stm])
+
+findBlock :: Stm -> [Block] -> Maybe Block
+findBlock leader = find ((== leader) . head . snd)
+
+findLeader :: Label -> [Block] -> Maybe Stm
+findLeader l = fmap (Just l, ) . lookup (Just l) . toProg
 
 fromProg :: Prog -> [Block]
 fromProg []                  = []
-fromProg prog@(first : rest) = go rest [first] []
+fromProg prog@(first : rest) = go rest 0 [first] []
   where
-    go :: Prog -> Block -> [Block] -> [Block]
-    go [] b bs = reverse $ reverse b : bs
-    go (stm : stms) b bs | isLeader prog stm = go stms [stm] $ reverse b : bs
-                         | otherwise         = go stms (stm : b) bs
+    go :: Prog -> Int -> [Stm] -> [Block] -> [Block]
+    go [] n b bs = reverse $ (n, reverse b) : bs
+    go (stm : stms) n b bs
+        | isLeader prog stm = go stms (n + 1) [stm] $ (n, reverse b) : bs
+        | otherwise         = go stms n (stm : b) bs
+
+toProg :: [Block] -> Prog
+toProg = concatMap snd
 
 isLeader :: Prog -> Stm -> Bool
 isLeader prog stm@(l, i)
@@ -31,4 +50,3 @@ isLeader prog stm@(l, i)
       otherwise
     = let isLabUsed l = elem l . labelFrom $ map snd prog
       in  maybe False isLabUsed l
-

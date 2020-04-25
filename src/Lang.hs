@@ -1,7 +1,21 @@
-module Lang where
+module Lang
+    ( Label
+    , Const
+    , Var
+    , Value(..)
+    , Expr(..)
+    , Inst(..)
+    , Stm
+    , Prog
+    , isControl
+    , labelFrom
+    , showStm
+    , showProg
+    )
+where
 
-type Const = Integer
 type Label = String
+type Const = Integer
 type Var = String
 
 data Value = Const Const | Var Var deriving (Eq, Ord)
@@ -65,6 +79,9 @@ instance Show Inst where
     show (Br e l1 l2) = "br(" ++ show e ++ ", " ++ l1 ++ ", " ++ l2 ++ ")"
     show (Out e     ) = "out(" ++ show e ++ ")"
 
+type Stm = (Maybe Label, Inst)
+type Prog = [Stm]
+
 isControl :: Inst -> Bool
 isControl i@Jmp{} = True
 isControl i@Br{}  = True
@@ -76,10 +93,9 @@ labelFrom ((Jmp l     ) : is) = l : labelFrom is
 labelFrom ((Br _ l1 l2) : is) = l1 : l2 : labelFrom is
 labelFrom (_            : is) = labelFrom is
 
-type Stm = (Maybe Label, Inst)
-type Prog = [Stm]
+showStm :: Stm -> String
+showStm (Nothing, i) = show i ++ "\n"
+showStm (Just l , i) = l ++ ": " ++ show i ++ "\n"
 
 showProg :: Prog -> String
-showProg []                    = ""
-showProg ((Nothing, i) : rest) = show i ++ "\n" ++ showProg rest
-showProg ((Just l , i) : rest) = l ++ ": " ++ show i ++ "\n" ++ showProg rest
+showProg = concatMap show

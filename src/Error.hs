@@ -1,8 +1,11 @@
-module Error where
+module Error
+    ( Error(..)
+    , Throws
+    )
+where
 
-import           Control.Monad.Except
+import           Text.ParserCombinators.Parsec  ( ParseError )
 import           Lang
-import           Text.ParserCombinators.Parsec
 
 data Error = UndefVar Var
            | UndefLabel [Label]

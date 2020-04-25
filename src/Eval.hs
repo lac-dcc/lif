@@ -1,17 +1,29 @@
 {-# LANGUAGE TupleSections #-}
 
-module Eval where
+module Eval
+    ( State
+    , initState
+    , eval
+    )
+where
 
-import           Control.Monad.Except
-import           Data.Bits
-import           Data.Bool
-import           Data.Either
-import           Data.List
-import           Data.Functor
-import           Data.Maybe
 import qualified Data.Map                      as Map
 import qualified Data.Sequence                 as Seq
-
+import           Control.Monad.Except           ( throwError )
+import           Data.Bits                      ( (.|.)
+                                                , (.&.)
+                                                )
+import           Data.Bool                      ( bool )
+import           Data.Functor                   ( ($>) )
+import           Data.List                      ( elemIndex
+                                                , find
+                                                , intersect
+                                                , (\\)
+                                                )
+import           Data.Maybe                     ( catMaybes
+                                                , fromJust
+                                                , fromMaybe
+                                                )
 import           Error
 import           Lang
 
@@ -20,15 +32,12 @@ type Mem = Seq.Seq Integer
 type Buffer = String
 type PC = Int
 
--- Reg, Mem, last seen label l' (predecessor block), 
--- current PC and output buffer
+-- | Reg, Mem, last seen label l' (predecessor block), current PC
+--   and output buffer
 type State = (Reg, Mem, Label, PC, Buffer)
 
 initState :: State
 initState = (Map.empty, Seq.empty, "", 0, "")
-
-findPC :: Prog -> Maybe Label -> PC
-findPC prog = fromJust . flip elemIndex (map fst prog)
 
 eval :: Prog -> State -> Throws State
 eval prog s@(reg, mem, l', pc, buffer) = case prog !! pc of
@@ -120,3 +129,6 @@ evalValue (Const n) _   = pure n
 evalValue (Var   x) reg = case Map.lookup x reg of
     Just v  -> pure v
     Nothing -> throwError $ UndefVar x
+
+findPC :: Prog -> Maybe Label -> PC
+findPC prog = fromJust . flip elemIndex (map fst prog)

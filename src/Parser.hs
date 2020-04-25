@@ -1,20 +1,35 @@
 {-# LANGUAGE LambdaCase #-}
 
-module Parser where
+module Parser
+    ( readProg
+    )
+where
 
-import           Control.Applicative            ( (<**>) )
-import           Control.Monad.Except
-import           Data.Either
-import           Data.Functor
-import           Data.IORef
-import           Text.ParserCombinators.Parsec
-import           Text.ParserCombinators.Parsec.Expr
-import           Text.ParserCombinators.Parsec.Language
 import qualified Text.ParserCombinators.Parsec.Token
                                                as Token
-
+import           Control.Applicative            ( (<**>) )
+import           Control.Monad.Except           ( throwError )
+import           Data.Functor                   ( ($>) )
+import           Text.ParserCombinators.Parsec  ( Parser
+                                                , alphaNum
+                                                , choice
+                                                , many
+                                                , oneOf
+                                                , option
+                                                , sepBy1
+                                                , parseFromFile
+                                                , (<|>)
+                                                )
+import           Text.ParserCombinators.Parsec.Language
+                                                ( emptyDef )
 import           Lang
 import           Error
+
+
+readProg :: String -> IO (Throws Prog)
+readProg source = parseFromFile parseProg source >>= \case
+    Left  err  -> pure . throwError $ Parser err
+    Right prog -> pure $ Right prog
 
 languageDef = emptyDef
     { Token.reservedNames = [ "alloc"
@@ -39,11 +54,6 @@ parens = Token.parens lexer
 reserved = Token.reserved lexer
 symbol = Token.symbol lexer
 whiteSpace = Token.whiteSpace lexer
-
-readProg :: String -> IO (Throws Prog)
-readProg source = parseFromFile parseProg source >>= \case
-    Left  err  -> pure . throwError $ Parser err
-    Right prog -> pure $ Right prog
 
 parseProg :: Parser Prog
 parseProg = do
