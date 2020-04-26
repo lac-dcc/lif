@@ -10,6 +10,8 @@ module Internal.Graph
     , Decomp
     , mkGraph
     , match
+    , fromCtx
+    , toCtx
     , dfs
     )
 where
@@ -47,9 +49,18 @@ match u = go []
   where
     go :: [Context a] -> Graph a -> Decomp a
     go _ Empty = (Nothing, Empty)
-    go accum (ctx@(Context _ v _) :& g)
+    go accum (ctx@Context { node = v } :& g)
         | u /= v    = go (ctx : accum) g
         | otherwise = (Just ctx, fromCtx $ reverse accum ++ toCtx g)
+
+-- | Takes a list of contexts and transforms it into a graph
+fromCtx :: [Context a] -> Graph a
+fromCtx = foldr (:&) Empty
+
+-- | Takes a graph and decomposes it into a list of contexts
+toCtx :: Graph a -> [Context a]
+toCtx Empty      = []
+toCtx (ctx :& g) = ctx : toCtx g
 
 -- | Takes a function to be applied to each context found, a initial
 --   node and a graph, and return a list of values obtained after
@@ -57,11 +68,14 @@ match u = go []
 dfs :: forall a b . Eq a => (Context a -> b) -> Node a -> Graph a -> [b]
 dfs f start g = case match start g of
     (Nothing , Empty) -> []
-    (Just ctx, g'   ) -> go [start] $ ctx :& g'      where
-        go :: [Node a] -> Graph a -> [b]
-        go []       _          = []
-        go (v : vs) (ctx :& g) = f ctx : go (succs ctx ++ vs) g
-        go (v : vs) g          = go vs g
+    (Just ctx, g'   ) -> dfs' f [start] $ ctx :& g'
+
+-- | Internal implementation of the depth-first search functional algorithm
+dfs' :: Eq a => (Context a -> b) -> [Node a] -> Graph a -> [b]
+dfs' _ []       _ = []
+dfs' f (v : vs) g = case match v g of
+    (Nothing , Empty) -> dfs' f vs g
+    (Just ctx, g'   ) -> f ctx : dfs' f (succs ctx ++ vs) g'
 
 insNode :: Node a -> Graph a -> Graph a
 insNode v = (:&) Context { preds = [], node = v, succs = [] }
@@ -90,10 +104,3 @@ insEdges es g = foldl' (flip insEdge) g es
 
 insEdgesRev :: (Eq a, Show a) => [Edge a] -> Graph a -> Graph a
 insEdgesRev es g = foldl' (flip insEdgeRev) g es
-
-fromCtx :: [Context a] -> Graph a
-fromCtx = foldr (:&) Empty
-
-toCtx :: Graph a -> [Context a]
-toCtx Empty      = []
-toCtx (ctx :& g) = ctx : toCtx g
