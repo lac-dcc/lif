@@ -1,5 +1,6 @@
 module Cfg
-    ( mkCfg
+    ( Cfg
+    , mkCfg
     , dot
     )
 where
@@ -45,9 +46,6 @@ dot entry cfg =
     formatEdges (n, stms) adj = unlines $ map
         ((showBLabel n ++) . (" -> " ++) . (++ ";") . showBLabel . fst)
         adj
-
-    showBLabel :: Int -> String
-    showBLabel = ("B" ++) . show
 
     replaceOr :: String -> String
     replaceOr []          = []

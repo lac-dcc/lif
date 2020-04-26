@@ -5,6 +5,7 @@ module Block
     , findBlock
     , findLeader
     , fromProg
+    , showBLabel
     )
 where
 
@@ -22,6 +23,9 @@ findBlock leader = find ((== leader) . head . snd)
 findLeader :: Label -> [Block] -> Maybe Stm
 findLeader l = fmap (Just l, ) . lookup (Just l) . toProg
 
+toProg :: [Block] -> Prog
+toProg = concatMap snd
+
 fromProg :: Prog -> [Block]
 fromProg []                  = []
 fromProg prog@(first : rest) = go rest 0 [first] []
@@ -31,9 +35,6 @@ fromProg prog@(first : rest) = go rest 0 [first] []
     go (stm : stms) n b bs
         | isLeader prog stm = go stms (n + 1) [stm] $ (n, reverse b) : bs
         | otherwise         = go stms n (stm : b) bs
-
-toProg :: [Block] -> Prog
-toProg = concatMap snd
 
 isLeader :: Prog -> Stm -> Bool
 isLeader prog stm@(l, i)
@@ -50,3 +51,6 @@ isLeader prog stm@(l, i)
       otherwise
     = let isLabUsed l = elem l . labelFrom $ map snd prog
       in  maybe False isLabUsed l
+
+showBLabel :: Int -> String
+showBLabel = ("B" ++) . show

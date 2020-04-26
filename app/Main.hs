@@ -4,7 +4,8 @@ module Main where
 
 import           Data.Functor                   ( ($>) )
 import           System.Environment             ( getArgs )
-import           Cfg
+import qualified Cfg
+import qualified DomTree
 import           Error
 import           Eval
 import           Lang
@@ -21,11 +22,13 @@ parse ["-h"] =
                 , "-h\t\thelp"
                 , "-r <file>\trun <file>"
                 , "--cfg <file>\tgenerate the CFG and print it as DOT format"
+                , "--dtree <file>\tsame as cfg but for the dominance tree"
                 ]
             )
         $> ()
-parse ["-r"   , file] = run file $> ()
-parse ["--cfg", file] = cfg file $> ()
+parse ["-r"     , file] = run file $> ()
+parse ["--cfg"  , file] = cfg file $> ()
+parse ["--dtree", file] = dtree file $> ()
 
 run :: String -> IO ()
 run source = readProg source >>= \case
@@ -48,6 +51,16 @@ cfg :: String -> IO ()
 cfg source = readProg source >>= \case
     Left  err  -> putStr (show err ++ "\n") $> ()
     Right prog -> do
-        let (entry, cfg) = mkCfg prog
-        putStrLn $ dot entry cfg
+        let (entry, cfg) = Cfg.mkCfg prog
+        putStrLn $ Cfg.dot entry cfg
+        pure ()
+
+-- | Takes a file name, parses the code, generates the corresponding
+--   dominance tree and prints it in DOT format
+dtree source = readProg source >>= \case
+    Left  err  -> putStr (show err ++ "\n") $> ()
+    Right prog -> do
+        let (entry, cfg) = Cfg.mkCfg prog
+        let tree         = DomTree.mkDomTree entry cfg
+        putStrLn $ DomTree.dot entry tree
         pure ()
