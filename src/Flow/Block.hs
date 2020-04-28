@@ -1,20 +1,21 @@
 {-# LANGUAGE TupleSections #-}
 
-module Block
+module Flow.Block
     ( Block
     , findBlock
     , findLeader
     , fromProg
-    , showBLabel
+    , showLabel
     )
 where
 
 import           Data.Maybe                     ( maybe )
 import           Data.List                      ( find )
-import           Lang
 
--- | A basic block represented by a label
---   and the block itself
+import qualified Internal.Dot                  as Dot
+import           Core.Lang
+
+-- | A basic block represented by a label and the block itself
 type Block = (Int, [Stm])
 
 findBlock :: Stm -> [Block] -> Maybe Block
@@ -52,5 +53,5 @@ isLeader prog stm@(l, i)
     = let isLabUsed l = elem l . labelFrom $ map snd prog
       in  maybe False isLabUsed l
 
-showBLabel :: Int -> String
-showBLabel = ("B" ++) . show
+showLabel :: Int -> String
+showLabel = ("B" ++) . show

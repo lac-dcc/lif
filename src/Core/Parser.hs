@@ -1,6 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 
-module Parser
+module Core.Parser
     ( readProg
     )
 where
@@ -22,8 +22,9 @@ import           Text.ParserCombinators.Parsec  ( Parser
                                                 )
 import           Text.ParserCombinators.Parsec.Language
                                                 ( emptyDef )
-import           Lang
-import           Error
+
+import           Core.Lang
+import           Core.Error
 
 
 readProg :: String -> IO (Throws Prog)
@@ -62,7 +63,7 @@ parseProg = do
     case prog of
         []                    -> pure prog
         ((Just l , i) : _   ) -> pure prog
-        ((Nothing, i) : rest) -> pure ((Just "@begin", i) : rest)
+        ((Nothing, i) : rest) -> pure ((Just $ prefix ++ "begin", i) : rest)
 
 parseInst :: Parser Inst
 parseInst =

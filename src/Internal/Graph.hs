@@ -12,6 +12,8 @@ module Internal.Graph
     , match
     , fromCtx
     , toCtx
+    , gmap
+    , bfs
     , dfs
     , dom
     , iDom
@@ -29,6 +31,7 @@ import           Data.List                      ( foldl'
                                                 , intersect
                                                 , (\\)
                                                 )
+
 import           Internal.Map
 
 type Node a = a
@@ -39,7 +42,7 @@ type Adj a = [Node a]
 
 -- | Links to the node (predecessors), the node itself and links
 --   from the node (successors)
-data Context a = Context { preds :: Adj a, node :: Node a, succs :: Adj a } deriving (Show)
+data Context a = Context { preds :: Adj a, node :: Node a, succs :: Adj a } deriving (Eq, Ord, Show)
 type MContext a = Maybe (Context a)
 
 data Graph a = Empty | Context a :& Graph a deriving (Show)
@@ -49,7 +52,7 @@ data Graph a = Empty | Context a :& Graph a deriving (Show)
 type Decomp a = (MContext a, Graph a)
 
 -- | A node 'u' plus the set of nodes that dominates 'u' (including 'u' itself).
-type Dom a = (Node a, [Node a])
+type Dom a = (Node a, Adj a)
 
 -- | A node 'u' plus its immediate dominator 'v', with 'v' != 'u'.
 type IDom a = (Node a, Node a)
@@ -97,7 +100,7 @@ match u = go []
     go _ Empty = (Nothing, Empty)
     go accum (ctx@Context { node = v } :& g)
         | u /= v    = go (ctx : accum) g
-        | otherwise = (Just ctx, fromCtx $ reverse accum ++ toCtx g)
+        | otherwise = (Just ctx, fromCtx $ accum ++ toCtx g)
 
 -- | Takes a list of contexts and transforms it into a graph
 fromCtx :: [Context a] -> Graph a
@@ -108,9 +111,30 @@ toCtx :: Graph a -> [Context a]
 toCtx Empty      = []
 toCtx (ctx :& g) = ctx : toCtx g
 
+-- | Takes a function f that maps a context 'a' into a context 'b'
+--   and a graph, and returns a graph obtained after applying f to
+--   all contexts.
+gmap :: (Context a -> Context b) -> Graph a -> Graph b
+gmap f Empty      = Empty
+gmap f (ctx :& g) = f ctx :& gmap f g
+
 -- | Takes a function to be applied to each context found, a initial
 --   node and a graph, and return a list of values obtained after
---   applying the given funtion
+--   applying the given funtion in the breadth-first search order.
+bfs :: forall a b . Eq a => (Context a -> b) -> Node a -> Graph a -> [b]
+bfs f start g = case match start g of
+    (Nothing , Empty) -> []
+    (Just ctx, g'   ) -> go f [start] $ ctx :& g'
+  where
+    go :: Eq a => (Context a -> b) -> [Node a] -> Graph a -> [b]
+    go _ []       _ = []
+    go f (v : vs) g = case match v g of
+        (Nothing , Empty) -> go f vs g
+        (Just ctx, g'   ) -> f ctx : go f (vs ++ succs ctx) g'
+
+-- | Takes a function to be applied to each context found, a initial
+--   node and a graph, and return a list of values obtained after
+--   applying the given funtion in the depth-first search order.
 dfs :: forall a b . Eq a => (Context a -> b) -> Node a -> Graph a -> [b]
 dfs f start g = case match start g of
     (Nothing , Empty) -> []
@@ -136,16 +160,20 @@ dom root g
     = []
     | otherwise
     = let
-          Context { node = v } = fromJust mCtx
-          ctxs                 = toCtx g'
-          vs                   = map node ctxs
+          ctxs = toCtx g'
+          vs   = map node ctxs
 
           -- The initial state is given by the following equations:
           --     Dom(root) = {root}
           --     Dom(v) = S
           -- where S is a set containing all nodes.
           initState =
-              Map.insert v [v] . Map.fromList . zip vs . repeat $ v : vs
+              Map.insert root [root]
+                  . Map.fromList
+                  . zip vs
+                  . repeat
+                  $ root
+                  : vs
       in
           Map.toList $ go [] ctxs initState
   where
@@ -153,19 +181,18 @@ dom root g
     go
         :: [Context a] -- Already evaluated
         -> [Context a] -- In the queue to be evaluated
-        -> Map.Map (Node a) [Node a]
-        -> Map.Map (Node a) [Node a]
+        -> Map.Map (Node a) (Adj a)
+        -> Map.Map (Node a) (Adj a)
     go _ [] dom = dom
-    go evaluated queue@(ctx@Context { preds = pr, node = v } : ctxs) dom
-        | dom Map.! v == dom' Map.! v = go (ctx : evaluated) ctxs dom'
-        | otherwise                   = go [] (queue ++ evaluated) dom'
-        where dom' = Map.insert v ([v] `union` fromPred pr dom) dom
+    go eval queue@(ctx@Context { preds = pr, node = v } : ctxs) dom
+        | dom Map.! v == dom' Map.! v = go (ctx : eval) ctxs dom'
+        | otherwise                   = go [] (queue ++ eval) dom'
+        where dom' = Map.insert v ([v] `union` meet pr dom) dom
 
--- | Takes a list of the preds of a node v, a map Node -> [Node]
---   and returns  the set of nodes that dominates all the preds of v.
-fromPred
-    :: forall a . Ord a => [Node a] -> Map.Map (Node a) [Node a] -> [Node a]
-fromPred preds dom = foldr1 intersect $ fromMap preds dom
+    -- | Takes a list of the preds of a node v, a map Node -> [Node]
+    --   and returns  the set of nodes that dominates all the preds of v.
+    meet :: forall a . Ord a => Adj a -> Map.Map (Node a) (Adj a) -> Adj a
+    meet preds dom = foldr1 intersect $ fromMap preds dom
 
 -- | Takes a Graph plus the initial node, and transforms it into
 --   a list of pairs node 'v' x immediate dominator 'u', where
@@ -177,7 +204,7 @@ iDom root g = go doms $ Map.fromList doms
     -- to get only the nodes that strictly dominates 'u'.
     doms = map (\(u, doms) -> (u, filter (/= u) doms)) $ dom root g
 
-    go :: [Dom a] -> Map.Map (Node a) [Node a] -> [IDom a]
+    go :: [Dom a] -> Map.Map (Node a) (Adj a) -> [IDom a]
     go [] _ = []
     go ((u, domU) : doms) domMap =
         case (domU \\) . concat $ fromMap domU domMap of

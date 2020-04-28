@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9d009cac5470c8a93644881d728220f37f28a1934b1ea65b73e32940296e9282
+-- hash: 9ca841c03506456d07b53829aef31ea2fc98dd45ed9cb89b66a052bb9c7788a2
 
 name:           lif
 version:        0.1.0.0
@@ -27,15 +27,16 @@ source-repository head
 
 library
   exposed-modules:
-      Block
-      Cfg
-      DomTree
-      Error
-      Eval
+      Core.Error
+      Core.Eval
+      Core.Lang
+      Core.Parser
+      Flow.Block
+      Flow.Cfg
+      Flow.DomTree
+      Internal.Dot
       Internal.Graph
       Internal.Map
-      Lang
-      Parser
   other-modules:
       Paths_lif
   hs-source-dirs:

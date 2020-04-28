@@ -4,12 +4,12 @@ module Main where
 
 import           Data.Functor                   ( ($>) )
 import           System.Environment             ( getArgs )
-import qualified Cfg
-import qualified DomTree
-import           Error
-import           Eval
-import           Lang
-import           Parser
+
+import qualified Flow.Cfg                      as Cfg
+import qualified Flow.DomTree                  as DomTree
+import           Core.Eval
+import           Core.Lang
+import           Core.Parser
 
 main :: IO ()
 main = getArgs >>= parse
@@ -51,8 +51,8 @@ cfg :: String -> IO ()
 cfg source = readProg source >>= \case
     Left  err  -> putStr (show err ++ "\n") $> ()
     Right prog -> do
-        let (entry, cfg) = Cfg.mkCfg prog
-        putStrLn $ Cfg.dot entry cfg
+        let (root, cfg) = Cfg.mkCfg prog
+        putStrLn $ Cfg.dot root cfg
         pure ()
 
 -- | Takes a file name, parses the code, generates the corresponding
@@ -60,7 +60,7 @@ cfg source = readProg source >>= \case
 dtree source = readProg source >>= \case
     Left  err  -> putStr (show err ++ "\n") $> ()
     Right prog -> do
-        let (entry, cfg) = Cfg.mkCfg prog
-        let tree         = DomTree.mkDomTree entry cfg
-        putStrLn $ DomTree.dot entry tree
+        let (root, cfg) = Cfg.mkCfg prog
+        let tree        = DomTree.mkDomTree root cfg
+        putStrLn $ DomTree.dot (DomTree.Node root) tree
         pure ()

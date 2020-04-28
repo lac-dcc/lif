@@ -1,6 +1,6 @@
 {-# LANGUAGE TupleSections #-}
 
-module Eval
+module Core.Eval
     ( State
     , initState
     , eval
@@ -24,8 +24,9 @@ import           Data.Maybe                     ( catMaybes
                                                 , fromJust
                                                 , fromMaybe
                                                 )
-import           Error
-import           Lang
+
+import           Core.Error
+import           Core.Lang
 
 type Reg = Map.Map Var Integer
 type Mem = Seq.Seq Integer

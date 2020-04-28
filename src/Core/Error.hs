@@ -1,11 +1,12 @@
-module Error
+module Core.Error
     ( Error(..)
     , Throws
     )
 where
 
 import           Text.ParserCombinators.Parsec  ( ParseError )
-import           Lang
+
+import           Core.Lang
 
 data Error = UndefVar Var
            | UndefLabel [Label]
