@@ -62,5 +62,5 @@ dtree source = readProg source >>= \case
     Right prog -> do
         let (root, cfg) = Cfg.mkCfg prog
         let tree        = DomTree.mkDomTree root cfg
-        putStrLn $ DomTree.dot (DomTree.Node root) tree
+        putStrLn $ DomTree.dot (DomTree.Node $ Cfg.node root) tree
         pure ()

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9ca841c03506456d07b53829aef31ea2fc98dd45ed9cb89b66a052bb9c7788a2
+-- hash: d3c15a9ed3b0f7e7bcf26d553d844ac25835b63db2ef347a5aca1cfc4abd13c2
 
 name:           lif
 version:        0.1.0.0
@@ -37,6 +37,7 @@ library
       Internal.Dot
       Internal.Graph
       Internal.Map
+      Pass.Invariant
   other-modules:
       Paths_lif
   hs-source-dirs:

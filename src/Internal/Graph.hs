@@ -12,7 +12,6 @@ module Internal.Graph
     , match
     , fromCtx
     , toCtx
-    , gmap
     , bfs
     , dfs
     , dom
@@ -110,13 +109,6 @@ fromCtx = foldr (:&) Empty
 toCtx :: Graph a -> [Context a]
 toCtx Empty      = []
 toCtx (ctx :& g) = ctx : toCtx g
-
--- | Takes a function f that maps a context 'a' into a context 'b'
---   and a graph, and returns a graph obtained after applying f to
---   all contexts.
-gmap :: (Context a -> Context b) -> Graph a -> Graph b
-gmap f Empty      = Empty
-gmap f (ctx :& g) = f ctx :& gmap f g
 
 -- | Takes a function to be applied to each context found, a initial
 --   node and a graph, and return a list of values obtained after

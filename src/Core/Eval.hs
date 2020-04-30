@@ -85,9 +85,9 @@ eval prog s@(reg, mem, l', pc, buffer) = case prog !! pc of
             $ find ((==) $ Just l1)
             $ map fst prog
         where nextState = (reg, mem, fromMaybe l' l, , buffer) . findPC prog
-    (l, Br e l1 l2) ->
+    (l, Br v l1 l2) ->
         bool (throwError $ UndefLabel undef)
-             (either throwError (pure . nextState) $ evalExpr e reg)
+             (either throwError (pure . nextState) $ evalValue v reg)
             $ null undef
       where
         undef =

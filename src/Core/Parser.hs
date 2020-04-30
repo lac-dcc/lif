@@ -106,7 +106,7 @@ parseBr :: Parser Inst
 parseBr =
     inst "br"
         $   Br
-        <$> (parseExpr <* comma)
+        <$> (parseValue <* comma)
         <*> (identifier <* comma)
         <*> identifier
 

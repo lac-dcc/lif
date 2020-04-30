@@ -1,11 +1,16 @@
 {-# LANGUAGE TupleSections #-}
 
 module Flow.Block
-    ( Block
+    ( Label(..)
+    , Block(..)
+    , isEntry
+    , isExit
+    , isMid
+    , leader
+    , terminator
     , findBlock
     , findLeader
     , fromProg
-    , showLabel
     )
 where
 
@@ -13,31 +18,64 @@ import           Data.Maybe                     ( maybe )
 import           Data.List                      ( find )
 
 import qualified Internal.Dot                  as Dot
-import           Core.Lang
+import qualified Core.Lang                     as Lang
+
+-- | A label to either some intermediate block B, the entry or
+--   the exit block.
+data Label = Entry | Exit | Mid Int deriving (Eq, Ord)
+instance Show Label where
+    show Entry   = "Entry"
+    show Exit    = "Exit"
+    show (Mid n) = "B" ++ show n
+
+isEntry :: Label -> Bool
+isEntry Entry = True
+isEntry _     = False
+
+isExit :: Label -> Bool
+isExit Exit = True
+isExit _    = False
+
+isMid :: Label -> Bool
+isMid l = not (isEntry l) && not (isExit l)
 
 -- | A basic block represented by a label and the block itself
-type Block = (Int, [Stm])
+data Block = Block {label :: Label, block :: [Lang.Stm] } deriving (Eq, Ord, Show)
 
-findBlock :: Stm -> [Block] -> Maybe Block
-findBlock leader = find ((== leader) . head . snd)
+leader :: Block -> Lang.Stm
+leader = head . block
 
-findLeader :: Label -> [Block] -> Maybe Stm
+terminator :: Block -> Lang.Stm
+terminator = last . block
+
+findBlock :: Lang.Stm -> [Block] -> Maybe Block
+findBlock leader = find ((== leader) . head . block)
+
+findLeader :: Lang.Label -> [Block] -> Maybe Lang.Stm
 findLeader l = fmap (Just l, ) . lookup (Just l) . toProg
 
-toProg :: [Block] -> Prog
-toProg = concatMap snd
+toProg :: [Block] -> Lang.Prog
+toProg = concatMap block
 
-fromProg :: Prog -> [Block]
+fromProg :: Lang.Prog -> [Block]
 fromProg []                  = []
-fromProg prog@(first : rest) = go rest 0 [first] []
+fromProg prog@(first : rest) = bs'
   where
-    go :: Prog -> Int -> [Stm] -> [Block] -> [Block]
-    go [] n b bs = reverse $ (n, reverse b) : bs
+    go :: Lang.Prog -> Int -> [Lang.Stm] -> [Block] -> [Block]
+    go [] n b bs = reverse $ Block { label = Mid n, block = reverse b } : bs
     go (stm : stms) n b bs
-        | isLeader prog stm = go stms (n + 1) [stm] $ (n, reverse b) : bs
-        | otherwise         = go stms n (stm : b) bs
+        | isLeader prog stm
+        = go stms (n + 1) [stm]
+            $ Block { label = Mid n, block = reverse b }
+            : bs
+        | otherwise
+        = go stms n (stm : b) bs
 
-isLeader :: Prog -> Stm -> Bool
+    (b : bs) = go rest 0 [first] []
+    b'       = last bs
+    bs'      = b { label = Entry } : init bs ++ [b' { label = Exit }]
+
+isLeader :: Lang.Prog -> Lang.Stm -> Bool
 isLeader prog stm@(l, i)
     |
     -- First statement of the program
@@ -45,13 +83,10 @@ isLeader prog stm@(l, i)
     = True
     |
     -- First instruction following a br/jmp
-      isControl . snd . head $ reverse $ takeWhile (/= stm) prog
+      Lang.isControl . snd . head $ reverse $ takeWhile (/= stm) prog
     = True
     |
     -- There is some br/jmp moving the control to stm
       otherwise
-    = let isLabUsed l = elem l . labelFrom $ map snd prog
+    = let isLabUsed l = elem l . Lang.labelFrom $ map snd prog
       in  maybe False isLabUsed l
-
-showLabel :: Int -> String
-showLabel = ("B" ++) . show
