@@ -25,8 +25,16 @@ import           Data.Maybe                     ( catMaybes
                                                 , fromMaybe
                                                 )
 
-import           Core.Error
-import           Core.Lang
+import           Core.Error                     ( Error(..)
+                                                , Throws
+                                                )
+import           Core.Lang                      ( Label
+                                                , Var
+                                                , Value(..)
+                                                , Expr(..)
+                                                , Inst(..)
+                                                , Prog
+                                                )
 
 type Reg = Map.Map Var Integer
 type Mem = Seq.Seq Integer

@@ -23,8 +23,15 @@ import           Text.ParserCombinators.Parsec  ( Parser
 import           Text.ParserCombinators.Parsec.Language
                                                 ( emptyDef )
 
-import           Core.Lang
-import           Core.Error
+import           Core.Lang                      ( Value(..)
+                                                , Expr(..)
+                                                , Inst(..)
+                                                , Prog
+                                                , prefix
+                                                )
+import           Core.Error                     ( Error(..)
+                                                , Throws
+                                                )
 
 
 readProg :: String -> IO (Throws Prog)

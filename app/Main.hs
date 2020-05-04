@@ -7,9 +7,12 @@ import           System.Environment             ( getArgs )
 
 import qualified Flow.Cfg                      as Cfg
 import qualified Flow.DomTree                  as DomTree
-import           Core.Eval
-import           Core.Lang
-import           Core.Parser
+import           Core.Eval                      ( State
+                                                , eval
+                                                , initState
+                                                )
+import           Core.Lang                      ( Prog )
+import           Core.Parser                    ( readProg )
 
 main :: IO ()
 main = getArgs >>= parse

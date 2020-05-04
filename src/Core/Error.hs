@@ -6,7 +6,9 @@ where
 
 import           Text.ParserCombinators.Parsec  ( ParseError )
 
-import           Core.Lang
+import           Core.Lang                      ( Label
+                                                , Var
+                                                )
 
 data Error = UndefVar Var
            | UndefLabel [Label]

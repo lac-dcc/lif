@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d3c15a9ed3b0f7e7bcf26d553d844ac25835b63db2ef347a5aca1cfc4abd13c2
+-- hash: e162a6f94caf9f8f4b17d87688f147f7d3eb28f8549d9971f4badaf6e9d87d45
 
 name:           lif
 version:        0.1.0.0
@@ -34,6 +34,7 @@ library
       Flow.Block
       Flow.Cfg
       Flow.DomTree
+      Internal.Constraint
       Internal.Dot
       Internal.Graph
       Internal.Map

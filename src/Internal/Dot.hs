@@ -8,7 +8,12 @@ module Internal.Dot
     )
 where
 
-import           Internal.Graph
+import           Internal.Graph                 ( Node
+                                                , Adj
+                                                , Context(..)
+                                                , Graph(..)
+                                                , dfs
+                                                )
 
 class Dot a where
   -- | Takes a node and returns a label representing it.

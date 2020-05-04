@@ -31,7 +31,8 @@ import           Data.List                      ( foldl'
                                                 , (\\)
                                                 )
 
-import           Internal.Map
+import           Internal.Constraint            ( solve )
+import           Internal.Map                   ( fromMap )
 
 type Node a = a
 type Edge a = (Node a, Node a)
@@ -166,25 +167,18 @@ dom root g
                   . repeat
                   $ root
                   : vs
-      in
-          Map.toList $ go [] ctxs initState
-  where
-    (mCtx, g') = match root g
-    go
-        :: [Context a] -- Already evaluated
-        -> [Context a] -- In the queue to be evaluated
-        -> Map.Map (Node a) (Adj a)
-        -> Map.Map (Node a) (Adj a)
-    go _ [] dom = dom
-    go eval queue@(ctx@Context { preds = pr, node = v } : ctxs) dom
-        | dom Map.! v == dom' Map.! v = go (ctx : eval) ctxs dom'
-        | otherwise                   = go [] (queue ++ eval) dom'
-        where dom' = Map.insert v ([v] `union` meet pr dom) dom
 
-    -- | Takes a list of the preds of a node v, a map Node -> [Node]
-    --   and returns  the set of nodes that dominates all the preds of v.
-    meet :: forall a . Ord a => Adj a -> Map.Map (Node a) (Adj a) -> Adj a
-    meet preds dom = foldr1 intersect $ fromMap preds dom
+          f
+              :: Context a
+              -> Map.Map (Node a) (Adj a)
+              -> (Map.Map (Node a) (Adj a), Bool)
+          f Context { preds = pr, node = v } dom =
+              let dom' = Map.insert v ([v] `union` meet) dom
+                  meet = foldr1 intersect $ fromMap pr dom
+              in  (dom', dom Map.! v /= dom' Map.! v)
+      in
+          Map.toList $ solve ctxs f initState
+    where (mCtx, g') = match root g
 
 -- | Takes a Graph plus the initial node, and transforms it into
 --   a list of pairs node 'v' x immediate dominator 'u', where
