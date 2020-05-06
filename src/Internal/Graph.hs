@@ -25,8 +25,7 @@ import           Data.Maybe                     ( fromJust
                                                 , fromMaybe
                                                 , isNothing
                                                 )
-import           Data.List                      ( foldl'
-                                                , union
+import           Data.List                      ( union
                                                 , intersect
                                                 , (\\)
                                                 )
@@ -82,13 +81,13 @@ insEdgeRev (u, v) g = ctx { preds = u : preds ctx } :& g'
         mCtx
 
 insNodes :: [Node a] -> Graph a -> Graph a
-insNodes vs g = foldl' (flip insNode) g vs
+insNodes vs g = foldl (flip insNode) g vs
 
 insEdges :: (Eq a, Show a) => [Edge a] -> Graph a -> Graph a
-insEdges es g = foldl' (flip insEdge) g es
+insEdges es g = foldl (flip insEdge) g es
 
 insEdgesRev :: (Eq a, Show a) => [Edge a] -> Graph a -> Graph a
-insEdgesRev es g = foldl' (flip insEdgeRev) g es
+insEdgesRev es g = foldl (flip insEdgeRev) g es
 
 -- | Decomposes a graph into a MContext - Nothing if the node 'u'
 --   wasn't found; otherwise, Just (ctx of 'u') - and the remaining

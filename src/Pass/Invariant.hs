@@ -1,4 +1,5 @@
 {-# LANGUAGE TupleSections #-}
+
 module Pass.Invariant where
 
 import qualified Data.Map                      as Map
@@ -68,7 +69,7 @@ data Cond = Cond {cond :: [Lang.Expr], from :: Lang.Label} deriving Show
 --   [[ Entry ]] = {}
 --   [[ B ]] = { bind(B, Bp) | Bp in predecessors of B }
 --
---   bind(B, Bp) = { Out(Bp) U 
+--   bind(B, Bp) = { Out(Bp) U
 --                   predicate(label of leader B, terminator Bp) }
 --
 --   predicate(l, br(p, l, _)) = { p }

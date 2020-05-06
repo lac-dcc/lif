@@ -79,14 +79,14 @@ eval prog s@(reg, mem, l', pc, buffer) = case prog !! pc of
       where
         nextState v idx = (reg, , fromMaybe l' l, pc + 1, buffer)
             $ Seq.update (fromInteger idx) v mem
-    (l, Phi x phi) ->
+    (l, Phi x selectors) ->
         bool (throwError $ UndefLabel undef)
              (either throwError (pure . nextState) $ evalValue v reg)
             $ null undef
       where
-        undef = map fst phi
-            \\ catMaybes (map (Just . fst) phi `intersect` map fst prog)
-        v = fromJust $ lookup l' phi
+        undef = map fst selectors \\ catMaybes
+            (map (Just . fst) selectors `intersect` map fst prog)
+        v = fromJust $ lookup l' selectors
         nextState v = (Map.insert x v reg, mem, fromMaybe l' l, pc + 1, buffer)
     (l, Jmp l1) ->
         maybe (throwError $ UndefLabel [l1]) (pure . nextState)

@@ -1,8 +1,0 @@
-begin:   br(1, true.1, end)
-true.1:  br(1, true.2, false.1)
-true.2:  jmp(mid)
-false.1: jmp(mid)
-mid:     phi(x, 1: true.2, 2: false.1)
-         jmp(end)
-end:     phi(y, 0: begin, x: mid)
-         out(y)

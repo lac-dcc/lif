@@ -19,10 +19,16 @@ module Core.Lang
 where
 
 import           Prelude                 hiding ( and )
+import           Data.List                      ( transpose )
 
 type Label = String
 type Const = Integer
 type Var = String
+
+data Value = Const Const | Var Var deriving (Eq, Ord)
+instance Show Value where
+    show (Const n) = show n
+    show (Var   x) = x
 
 data Expr = Value Value
           | Neg Value
@@ -67,15 +73,17 @@ data Inst = Alloc Var Expr
           deriving (Eq, Ord)
 
 instance Show Inst where
-    show (Alloc x  e  ) = "alloc(" ++ x ++ ", " ++ show e ++ ")"
-    show (Mov   x  e  ) = "mov(" ++ x ++ ", " ++ show e ++ ")"
-    show (Load  x  e  ) = "load(" ++ x ++ ", " ++ show e ++ ")"
-    show (Store e1 e2 ) = "store(" ++ show e1 ++ ", " ++ show e2 ++ ")"
-    show (Phi   x  phi) = "phi(" ++ x ++ ", " ++ selectors phi ++ ")"
+    show (Alloc x  e ) = "alloc(" ++ x ++ ", " ++ show e ++ ")"
+    show (Mov   x  e ) = "mov(" ++ x ++ ", " ++ show e ++ ")"
+    show (Load  x  e ) = "load(" ++ x ++ ", " ++ show e ++ ")"
+    show (Store e1 e2) = "store(" ++ show e1 ++ ", " ++ show e2 ++ ")"
+    show (Phi x selectors) =
+        "phi(" ++ x ++ ", " ++ showSelectors selectors ++ ")"
       where
-        selectors :: [(Label, Value)] -> String
-        selectors [(l, v)      ] = show v ++ ": " ++ l
-        selectors ((l, v) : phi) = show v ++ ": " ++ l ++ ", " ++ selectors phi
+        showSelectors :: [(Label, Value)] -> String
+        showSelectors [(l, v)] = show v ++ ": " ++ l
+        showSelectors ((l, v) : selectors) =
+            show v ++ ": " ++ l ++ ", " ++ showSelectors selectors
     show (Jmp l     ) = "jmp(" ++ l ++ ")"
     show (Br e l1 l2) = "br(" ++ show e ++ ", " ++ l1 ++ ", " ++ l2 ++ ")"
     show (Out e     ) = "out(" ++ show e ++ ")"
@@ -87,11 +95,6 @@ type Prog = [Stm]
 newtype IVar = IVar Int deriving Eq
 instance Show IVar where
     show (IVar n) = prefix ++ show n
-
-data Value = Const Const | Var Var deriving (Eq, Ord)
-instance Show Value where
-    show (Const n) = show n
-    show (Var   x) = x
 
 isControl :: Inst -> Bool
 isControl i@Jmp{} = True
@@ -118,6 +121,7 @@ prefix = "%"
 next :: IVar -> IVar
 next (IVar t) = IVar $ t + 1
 
+-- | The set of variables defined by a list of instructions.
 dv :: [Inst] -> [Value]
 dv []                 = []
 dv (Alloc id _  : is) = Var id : dv is

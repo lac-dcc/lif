@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e162a6f94caf9f8f4b17d87688f147f7d3eb28f8549d9971f4badaf6e9d87d45
+-- hash: 17547321e37ba6027dacfdd4c06fa65b8be63b3453651813cef5b512d1bf8cd3
 
 name:           lif
 version:        0.1.0.0
