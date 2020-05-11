@@ -14,7 +14,7 @@ module Core.Lang
     , showProg
     , prefix
     , next
-    , dv
+    , defs
     )
 where
 
@@ -64,8 +64,8 @@ instance Show Expr where
 
 data Inst = Alloc Var Expr
           | Mov Var Expr
-          | Load Var Expr
-          | Store Expr Expr
+          | Load Var Var Value
+          | Store Value Var Value
           | Phi  Var [(Label, Value)]
           | Jmp  Label
           | Br  Value Label Label
@@ -73,10 +73,11 @@ data Inst = Alloc Var Expr
           deriving (Eq, Ord)
 
 instance Show Inst where
-    show (Alloc x  e ) = "alloc(" ++ x ++ ", " ++ show e ++ ")"
-    show (Mov   x  e ) = "mov(" ++ x ++ ", " ++ show e ++ ")"
-    show (Load  x  e ) = "load(" ++ x ++ ", " ++ show e ++ ")"
-    show (Store e1 e2) = "store(" ++ show e1 ++ ", " ++ show e2 ++ ")"
+    show (Alloc x e   ) = "alloc(" ++ x ++ ", " ++ show e ++ ")"
+    show (Mov   x e   ) = "mov(" ++ x ++ ", " ++ show e ++ ")"
+    show (Load x m idx) = "load(" ++ x ++ ", " ++ m ++ ", " ++ show idx ++ ")"
+    show (Store v m idx) =
+        "store(" ++ show v ++ ", " ++ m ++ ", " ++ show idx ++ ")"
     show (Phi x selectors) =
         "phi(" ++ x ++ ", " ++ showSelectors selectors ++ ")"
       where
@@ -122,10 +123,10 @@ next :: IVar -> IVar
 next (IVar t) = IVar $ t + 1
 
 -- | The set of variables defined by a list of instructions.
-dv :: [Inst] -> [Value]
-dv []                 = []
-dv (Alloc id _  : is) = Var id : dv is
-dv (Mov   id _  : is) = Var id : dv is
-dv (Load  id __ : is) = Var id : dv is
-dv (Phi   id _  : is) = Var id : dv is
-dv (_           : is) = dv is
+defs :: [Inst] -> [Value]
+defs []                 = []
+defs (Alloc id _  : is) = Var id : defs is
+defs (Mov   id _  : is) = Var id : defs is
+defs (Load id _ _ : is) = Var id : defs is
+defs (Phi id _    : is) = Var id : defs is
+defs (_           : is) = defs is

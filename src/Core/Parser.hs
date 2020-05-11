@@ -1,9 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 
-module Core.Parser
-    ( readProg
-    )
-where
+module Core.Parser where
 
 import qualified Text.ParserCombinators.Parsec.Token
                                                as Token
@@ -93,18 +90,30 @@ parseMov :: Parser Inst
 parseMov = inst "mov" $ Mov <$> (identifier <* comma) <*> parseExpr
 
 parseLoad :: Parser Inst
-parseLoad = inst "load" $ Load <$> (identifier <* comma) <*> parseExpr
+parseLoad =
+    inst "load"
+        $   Load
+        <$> (identifier <* comma)
+        <*> (identifier <* comma)
+        <*> parseValue
 
 parseStore :: Parser Inst
-parseStore = inst "store" $ Store <$> (parseExpr <* comma) <*> parseExpr
+parseStore =
+    inst "store"
+        $   Store
+        <$> (parseValue <* comma)
+        <*> (identifier <* comma)
+        <*> parseValue
 
 parsePhi :: Parser Inst
 parsePhi =
     inst "phi"
-        $        Phi
-        <$>      (identifier <* comma)
-        <*>      (flip (,) <$> (parseValue <* colon) <*> identifier)
-        `sepBy1` symbol ","
+        $   Phi
+        <$> (identifier <* comma)
+        <*> ((:) <$> (parseSelector <* comma) <*> parseSelector `sepBy1` symbol
+                ","
+            )
+    where parseSelector = flip (,) <$> (parseValue <* colon) <*> identifier
 
 parseJmp :: Parser Inst
 parseJmp = inst "jmp" $ Jmp <$> identifier

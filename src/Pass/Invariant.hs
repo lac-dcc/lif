@@ -18,6 +18,46 @@ import qualified Flow.DomTree                  as DomTree
 import qualified Internal.Graph                as Graph
 import           Internal.Constraint            ( solve )
 
+-- | Takes a list of values and the next free variable, and
+--   generates a set of instructions of the following form:
+--
+--       mov(t0, -v0)
+--       mov(t1, -v1)
+--       ...
+--       mov(tn, -vn)
+neg :: [Lang.Value] -> Lang.IVar -> ([Lang.Inst], Lang.IVar)
+neg []  var = ([], var)
+neg [v] var = ([Lang.Mov t $ Lang.Neg v], Lang.next var) where t = show var
+neg (v : vs) var0 =
+    let ([i], var1) = neg [v] var0
+        (is , var2) = neg vs var1
+    in  (i : is, var2)
+
+-- | Takes a binary operator, a list of values and the next free
+--   variable, and generates a set of instructions of the following
+--   form:
+--
+--       mov(t0, v0 op v1)
+--       mov(t1, t0 op v2)
+--       mov(t2, t1 op v3)
+--       ...
+--       mov(tn, tn-1 op vn+1)
+fold
+    :: (Lang.Value -> Lang.Value -> Lang.Expr)
+    -> [Lang.Value]
+    -> Lang.IVar
+    -> ([Lang.Inst], Lang.IVar)
+fold _ []  var = ([], var)
+fold _ [v] var = ([Lang.Mov t $ Lang.Value v], Lang.next var)
+    where t = show var
+fold op [v0, v1] var = ([Lang.Mov t $ v0 `op` v1], Lang.next var)
+    where t = show var
+fold op (v0 : v1 : vs) var0 =
+    let t           = show var0
+        ([i], var1) = fold op [v0, v1] var0
+        (is , var2) = fold op (Lang.Var t : vs) var1
+    in  (i : is, var2)
+
 -- | A condition from path B1 to Bk is a set of expressions such as
 --   {p1, ..., pk} where pk is either a 'Value' (id/const) or 'Not
 --   Value'. These sets will be later on transformed into a set of
@@ -56,8 +96,8 @@ import           Internal.Constraint            ( solve )
 --   to worry about the correct order related to phi selectors.
 data Cond = Cond {cond :: [Lang.Expr], from :: Lang.Label} deriving Show
 
--- | Takes the root node, the CFG and a fresh variable, and returns
---   a list of pairs (Block, C) plus the next fresh variable, where
+-- | Takes the root node, the CFG and a var variable, and returns
+--   a list of pairs (Block, C) plus the next var variable, where
 --   C is a set of pairs (Var, Label) with Var representing one of
 --   the incoming conditions of a block.
 --
@@ -76,8 +116,8 @@ data Cond = Cond {cond :: [Lang.Expr], from :: Lang.Label} deriving Show
 --   predicate(l, br(p, _, l)) = { !p }
 --   predicate(_, _) = {}
 --
---   Then, we use the result of the solving the constraint system
---   to generate the proper instructions for those conditions, adding
+--   Then, we use the result of solving the constraint system to
+--   generate the proper instructions for those conditions, adding
 --   them to their respective block. This step is accomplished by
 --   calling fillBlocks with the result of withCond as a list.
 bindCond
@@ -150,7 +190,7 @@ bindCond root cfg t = fillBlocks
         -- Transform expressions of the form !v to some value v' with
         -- mov(v', !)
         (is, vs, ti) = foldl foldValue ([], [], t0) $ cond c
-        (is', tj)    = reduce (Lang.:&:) vs ti
+        (is', tj)    = fold (Lang.:&:) vs ti
         x            = case is' of
             [] -> head vs
             _  -> (\(Lang.Mov x _) -> Lang.Var x) $ last is'
@@ -159,7 +199,7 @@ bindCond root cfg t = fillBlocks
 
     genOutgoing :: Block.Block -> [Lang.Value] -> [Lang.Inst]
     genOutgoing b [v] = [Lang.Mov (show $ out Map.! b) $ Lang.Value v]
-    genOutgoing b vs  = fst . reduce (Lang.:|:) vs $ out Map.! b
+    genOutgoing b vs  = fst . fold (Lang.:|:) vs $ out Map.! b
 
     toValue :: Lang.Expr -> Lang.IVar -> ([Lang.Inst], Lang.Value, Lang.IVar)
     toValue e@(Lang.Not v) t = ([Lang.Mov id e], Lang.Var id, Lang.next t)
@@ -198,65 +238,85 @@ bindCond root cfg t = fillBlocks
         Just $ bool (Lang.Not p) (Lang.Value p) $ l == lt
     predicate _ _ = Nothing
 
--- | Takes a list of values and the next free variable, and
---   generates a set of instructions of the following form:
---
---       mov(t0, -v0)
---       mov(t1, -v1)
---       ...
---       mov(tn, -vn)
-neg :: [Lang.Value] -> Lang.IVar -> ([Lang.Inst], Lang.IVar)
-neg []  t = ([], t)
-neg [v] t = ([Lang.Mov (show t) $ Lang.Neg v], Lang.next t)
-neg (v : vs) t0 =
-    let ([i], t1) = neg [v] t0
-        (is , ti) = neg vs t1
-    in  (i : is, ti)
-
--- | Takes a binary operator, a list of values and the next free
---   variable, and generates a set of instructions of the following
---   form:
---
---       mov(t0, v0 op v1)
---       mov(t1, t0 op v2)
---       mov(t2, t1 op v3)
---       ...
---       mov(tn, tn-1 op vn+1)
-reduce
-    :: (Lang.Value -> Lang.Value -> Lang.Expr)
+transform
+    :: Lang.Inst
     -> [Lang.Value]
+    -> Map.Map Lang.Var Lang.Value
     -> Lang.IVar
-    -> ([Lang.Inst], Lang.IVar)
-reduce _  []       t = ([], t)
-reduce _  [v]      t = ([], t)
-reduce op [v0, v1] t = ([Lang.Mov (show t) $ v0 `op` v1], Lang.next t)
-reduce op (v0 : v1 : vs) t0 =
-    let ([i], t1) = reduce op [v0, v1] t0
-        (is , ti) = reduce op (Lang.Var (show t0) : vs) t1
-    in  (i : is, ti)
-
--- | Takes a list of pairs Set of Instructions x Var, merges the set
---   of instructions and returns a single pair.
-merge :: [([Lang.Inst], Lang.IVar)] -> ([Lang.Inst], Lang.IVar)
-merge [(is, t)      ] = (is, t)
-merge ((is, _) : iss) = let (iss', t) = merge iss in (is ++ iss', t)
-
-transform :: Lang.Inst -> [Lang.Value] -> Lang.IVar -> ([Lang.Inst], Lang.IVar)
-transform (Lang.Phi x selectors) cs t0 =
+    -> ([Lang.Inst], Map.Map Lang.Var Lang.Value, Lang.IVar)
+transform i [] lastIdx var = ([i], lastIdx, var)
+transform (Lang.Phi x selectors) cs lastIdx var0 =
     let
         chainAnd
-            :: Lang.IVar
-            -> [(Lang.Value, Lang.Value)]
-            -> [([Lang.Inst], Lang.IVar)]
-        chainAnd _ [] = []
-        chainAnd t0 ((u, v) : vs) =
-            let (is, t1) = reduce (Lang.:&:) [u, v] t0
-            in  (is, t1) : chainAnd t1 vs
+            :: [(Lang.Value, Lang.Value)]
+            -> Lang.IVar
+            -> ([Lang.Inst], Lang.IVar)
+        chainAnd [] var = ([], var)
+        chainAnd ((u, v) : vs) var0 =
+            let (is , var1) = fold (Lang.:&:) [u, v] var0
+                (is', var2) = chainAnd vs var1
+            in  (is ++ is', var2)
 
-        (isNeg, ti) = neg cs t0
-        (isAnd, tm) =
-            merge . chainAnd ti . zip (Lang.dv isNeg) $ map snd selectors
-        (isOr, tn)       = reduce (Lang.:|:) (Lang.dv isAnd) tm
-        (Lang.Mov tn' _) = last isOr
+        (isNeg, var1) = neg cs var0
+        (isAnd, var2) =
+            chainAnd (zip (map snd selectors) $ Lang.defs isNeg) var1
+        (isOr, var3)    = fold (Lang.:|:) (Lang.defs isAnd) var2
+        (Lang.Mov tn _) = last isOr
     in
-        (isNeg ++ isAnd ++ isOr ++ [Lang.Mov x . Lang.Value $ Lang.Var tn'], tn)
+        ( isNeg ++ isAnd ++ isOr ++ [Lang.Mov x . Lang.Value $ Lang.Var tn]
+        , lastIdx
+        , var3
+        )
+transform (Lang.Load x m idx) cs lastIdx var0 =
+    let (isAnd, var1)   = fold (Lang.:&:) cs var0
+        (Lang.Mov xk _) = last isAnd
+        t0              = show var1
+        i0              = Lang.Mov t0 . Lang.Not $ Lang.Var xk
+        (isNeg@[Lang.Mov y0 _, Lang.Mov y1 _], var2) =
+                neg [Lang.Var xk, Lang.Var t0] $ Lang.next var1
+        idx'  = Map.findWithDefault (Lang.Const 0) m lastIdx
+        t1    = show var2
+        i1    = Lang.Mov t1 $ Lang.Var y0 Lang.:&: idx
+        var3  = Lang.next var2
+        t2    = show var3
+        i2    = Lang.Mov t2 $ Lang.Var y1 Lang.:&: idx'
+        var4  = Lang.next var3
+        t3    = show var4
+        i3    = Lang.Mov t3 $ Lang.Var t2 Lang.:|: Lang.Var t1
+        isIdx = [i1, i2, i3]
+    in  ( isAnd ++ [i0] ++ isNeg ++ isIdx ++ [Lang.Load x m $ Lang.Var t3]
+        , Map.insert m (Lang.Var t3) lastIdx
+        , Lang.next var4
+        )
+transform (Lang.Store v m idx) cs lastIdx var0 =
+    let t0 = show var0
+
+        -- Call to transform(load(...), C) returns a set of
+        -- instructions I of the following form:
+        -- Iand U { mov(...) } U Ineg U Iidx U { load(...) }
+        --
+        -- |reduce [v], [v0, v1]| = 1, else |cs|-1, so
+        -- |I| = |Iand| + 1 + |Ineg| + |Iidx| + 1, where
+        --   |Iand| = 1 if |cs| <= 2, |cs|-1 otherwise
+        --   |Iidx| = 3
+        --   |Ineg| = 2
+        --
+        -- Hence, Ineg = I[|Iand| + 1 .. |Iand| + 2]
+        (isLoad, lastIdx', var1) =
+                transform (Lang.Load t0 m idx) cs lastIdx $ Lang.next var0
+        n = if length cs <= 2 then 1 else length cs - 1
+        [Lang.Mov x0 _, Lang.Mov x1 _] = take 2 $ drop (n + 1) isLoad
+        t1                             = show var1
+        i0                             = Lang.Mov t1 $ Lang.Var x0 Lang.:&: v
+        var2                           = Lang.next var1
+        t2                             = show var2
+        i1 = Lang.Mov t2 $ Lang.Var x1 Lang.:&: Lang.Var t0
+        var3                           = Lang.next var2
+        t3                             = show var3
+        i2 = Lang.Mov t3 $ Lang.Var t1 Lang.:|: Lang.Var t2
+        isValue                        = [i0, i1, i2]
+        idx'                           = lastIdx' Map.! m
+    in  ( isLoad ++ isValue ++ [Lang.Store (Lang.Var t3) m idx']
+        , lastIdx'
+        , Lang.next var3
+        )

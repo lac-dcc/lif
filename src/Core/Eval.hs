@@ -62,23 +62,38 @@ eval prog s@(reg, mem, l', pc, buffer) = case prog !! pc of
     (l, Mov x e) -> either throwError (pure . nextState) $ evalExpr e reg
       where
         nextState v = (Map.insert x v reg, mem, fromMaybe l' l, pc + 1, buffer)
-    (l, Load x e) -> either throwError (pure . nextState) $ evalExpr e reg
+    (l, Load x m idx) -> either throwError nextState $ evalValue (Var m) reg
       where
-        nextState v =
-            ( Map.insert x (Seq.index mem $ fromInteger v) reg
-            , mem
-            , fromMaybe l' l
-            , pc + 1
-            , buffer
-            )
-    (l, Store e1 e2) ->
+        load :: Integer -> Integer -> Reg
+        load base offset =
+            Map.insert x (Seq.index mem . fromInteger $ base + offset) reg
+
+        nextState :: Integer -> Throws State
+        nextState base =
+            either
+                    throwError
+                    (pure . (, mem, fromMaybe l' l, pc + 1, buffer) . load base)
+                $ evalValue idx reg
+    (l, Store v m idx) ->
         either
                 throwError
-                (\v -> either throwError (pure . nextState v) $ evalExpr e2 reg)
-            $ evalExpr e1 reg
+                (\base -> either throwError (nextState base) $ evalValue idx reg
+                )
+            $ evalValue (Var m) reg
       where
-        nextState v idx = (reg, , fromMaybe l' l, pc + 1, buffer)
-            $ Seq.update (fromInteger idx) v mem
+        store :: Integer -> Integer -> Integer -> Mem
+        store base offset val =
+            Seq.update (fromInteger $ base + offset) val mem
+
+        nextState :: Integer -> Integer -> Throws State
+        nextState base offset =
+            either
+                    throwError
+                    ( pure
+                    . (reg, , fromMaybe l' l, pc + 1, buffer)
+                    . store base offset
+                    )
+                $ evalValue v reg
     (l, Phi x selectors) ->
         bool (throwError $ UndefLabel undef)
              (either throwError (pure . nextState) $ evalValue v reg)
