@@ -16,6 +16,7 @@ module Internal.Graph
     , dfs
     , dom
     , iDom
+    , topsort
     )
 where
 
@@ -116,31 +117,32 @@ toCtx (ctx :& g) = ctx : toCtx g
 bfs :: forall a b . Eq a => (Context a -> b) -> Node a -> Graph a -> [b]
 bfs f start g = case match start g of
     (Nothing , Empty) -> []
-    (Just ctx, g'   ) -> go f [start] $ ctx :& g'
+    (Just ctx, g'   ) -> go [start] $ ctx :& g'
   where
-    go :: Eq a => (Context a -> b) -> [Node a] -> Graph a -> [b]
-    go _ []       _ = []
-    go f (v : vs) g = case match v g of
-        (Nothing , Empty) -> go f vs g
-        (Just ctx, g'   ) -> f ctx : go f (vs ++ succs ctx) g'
+    go :: [Node a] -> Graph a -> [b]
+    go []       _ = []
+    go (v : vs) g = case match v g of
+        (Nothing , Empty) -> go vs g
+        (Just ctx, g'   ) -> f ctx : go (vs ++ succs ctx) g'
 
--- | Takes a function to be applied to each context found, a initial
---   node and a graph, and return a list of values obtained after
---   applying the given funtion in the depth-first search order.
+-- | Takes a function to be applied to each context found, a
+--   initial node and a graph, and return a list of values
+--   (obtained after applying the given funtion) in depth-first
+--   search order.
 dfs :: forall a b . Eq a => (Context a -> b) -> Node a -> Graph a -> [b]
 dfs f start g = case match start g of
     (Nothing , Empty) -> []
-    (Just ctx, g'   ) -> go f [start] $ ctx :& g'
+    (Just ctx, g'   ) -> go [start] $ ctx :& g'
   where
-    go :: Eq a => (Context a -> b) -> [Node a] -> Graph a -> [b]
-    go _ []       _ = []
-    go f (v : vs) g = case match v g of
-        (Nothing , Empty) -> go f vs g
-        (Just ctx, g'   ) -> f ctx : go f (succs ctx ++ vs) g'
+    go :: [Node a] -> Graph a -> [b]
+    go []       _ = []
+    go (v : vs) g = case match v g of
+        (Nothing , Empty) -> go vs g
+        (Just ctx, g'   ) -> f ctx : go (succs ctx ++ vs) g'
 
 -- | Takes a Graph plus the initial node, and transforms it into
---   a list of contexts so we have a initial worklist. Then, solves
---   the following equations:
+--   a list of contexts so we have a initial worklist. Then,
+--   solves the following equations:
 --
 --           Dom(root) = {root}
 --           Dom(v) = {v} U (intersection Dom(p), p in preds of v)
@@ -195,3 +197,32 @@ iDom root g = go doms $ Map.fromList doms
         case (domU \\) . concat $ fromMap domU domMap of
             []  -> go doms domMap
             [v] -> (u, v) : go doms domMap
+
+-- | A tree is defined as the current node + its subtrees
+data Tree a = Tree a [Tree a]
+
+-- | Takes a function to be applie to each context found, a
+--   initial node and a graph, and return a list of values
+--   (obtained after applying the given funtion) in reverse
+--   post-order.
+--
+--   We first build a spanning forest for a given graph, and next
+--   sort the nodes of each tree in postorder. The reverse 
+--   post-order is, then, the reverse of the list computed by
+--   'postorder'.
+topsort :: forall a b . Eq a => (Context a -> b) -> Node a -> Graph a -> [b]
+topsort f start = reverse . concatMap postorder . fst . spanning [start]
+  where
+    spanning :: [Node a] -> Graph a -> ([Tree b], Graph a)
+    spanning []       g = ([], g)
+    spanning (v : vs) g = case match v g of
+        (Nothing , Empty) -> spanning vs g
+        (Just ctx, g'   ) -> (Tree (f ctx) ts : ts', g2)
+          where
+            -- Compute a forest ts for all successors of node v
+            (ts , g1) = spanning (succs ctx) g'
+            -- Compute a forest for the remaining nodes vs
+            (ts', g2) = spanning vs g1
+
+    postorder :: Tree b -> [b]
+    postorder (Tree v ts) = concatMap postorder ts ++ [v]
