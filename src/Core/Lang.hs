@@ -49,7 +49,7 @@ data Expr = Value Value
 instance Show Expr where
     show (Value v   ) = show v
     show (Neg   v   ) = "-" ++ show v
-    show (Not   v   ) = "!" ++ show v
+    show (Not   v   ) = "~" ++ show v
     show (v1 :+:  v2) = show v1 ++ " + " ++ show v2
     show (v1 :-:  v2) = show v1 ++ " - " ++ show v2
     show (v1 :*:  v2) = show v1 ++ " * " ++ show v2

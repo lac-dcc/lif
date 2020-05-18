@@ -131,7 +131,7 @@ parseOut = inst "out" $ Out <$> parseExpr
 
 parseExpr :: Parser Expr
 parseExpr =
-    (symbol "-" $> Neg <|> symbol "!" $> Not)
+    (symbol "-" $> Neg <|> symbol "~" $> Not)
         <*>  parseValue
         <|>  parseValue
         <**> (flip <$> parseBinOp <*> parseValue <|> pure Value)

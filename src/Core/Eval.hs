@@ -12,6 +12,7 @@ import qualified Data.Sequence                 as Seq
 import           Control.Monad.Except           ( throwError )
 import           Data.Bits                      ( (.|.)
                                                 , (.&.)
+                                                , complement
                                                 )
 import           Data.Bool                      ( bool )
 import           Data.Functor                   ( ($>) )
@@ -123,13 +124,13 @@ eval prog s@(reg, mem, l', pc, buffer) = case prog !! pc of
                 . (== 0)
     (l, Out e) -> either throwError (pure . nextState) $ evalExpr e reg
       where
-        nextState = (reg, mem, fromMaybe l' l, pc + 1, ) . (++ "\n") . show
+        nextState v =
+            (reg, mem, fromMaybe l' l, pc + 1, buffer ++ show v ++ "\n")
 
 evalExpr :: Expr -> Reg -> Throws Integer
-evalExpr (Value v) reg = evalValue v reg
-evalExpr (Neg   v) reg = negate <$> evalValue v reg
-evalExpr (Not v) reg =
-    either throwError (pure . bool 0 1 . (== 0)) $ evalValue v reg
+evalExpr (Value v  ) reg = evalValue v reg
+evalExpr (Neg   v  ) reg = negate <$> evalValue v reg
+evalExpr (Not   v  ) reg = complement <$> evalValue v reg
 evalExpr (v1 :+: v2) reg = (+) <$> evalValue v1 reg <*> evalValue v2 reg
 evalExpr (v1 :-: v2) reg = (-) <$> evalValue v1 reg <*> evalValue v2 reg
 evalExpr (v1 :*: v2) reg = (*) <$> evalValue v1 reg <*> evalValue v2 reg
