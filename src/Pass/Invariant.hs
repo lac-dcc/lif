@@ -4,8 +4,9 @@ module Pass.Invariant where
 
 import qualified Data.Map                      as Map
 import           Data.Bool                      ( bool )
-import           Data.List                      ( union
+import           Data.List                      ( sort
                                                 , iterate
+                                                , union
                                                 )
 import           Data.Maybe                     ( fromJust
                                                 , maybeToList
@@ -37,9 +38,9 @@ fold _ [v] var = ([Lang.Mov z $ Lang.Value v], Lang.next var)
     where z = show var
 fold op [v0, v1] var = ([Lang.Mov z $ v0 `op` v1], Lang.next var)
     where z = show var
-fold op (v0 : v1 : vs) var0 =
-    let z           = show var0
-        ([i], var1) = fold op [v0, v1] var0
+fold op (v0 : v1 : vs) var =
+    let z           = show var
+        ([i], var1) = fold op [v0, v1] var
         (is , var2) = fold op (Lang.Var z : vs) var1
     in  (i : is, var2)
 
@@ -109,7 +110,7 @@ bindCond
     :: Cfg.Node
     -> Cfg.Cfg
     -> Lang.IVar
-    -> ([(Block.Block, [(Lang.Value, Lang.Label)])], Lang.IVar)
+    -> ([(Block.Block, [(Lang.Label, Lang.Value)])], Lang.IVar)
 bindCond root cfg t = fillBlocks
     (Map.toList . withCond ctxs $ Map.singleton (Cfg.node root) [])
     t'
@@ -131,37 +132,49 @@ bindCond root cfg t = fillBlocks
     fillBlocks
         :: [(Block.Block, [Cond])]
         -> Lang.IVar
-        -> ([(Block.Block, [(Lang.Value, Lang.Label)])], Lang.IVar)
-    fillBlocks [] t = ([], t)
-    fillBlocks ((b, cs) : bs) t0
+        -> ([(Block.Block, [(Lang.Label, Lang.Value)])], Lang.IVar)
+    fillBlocks [] var = ([], var)
+    fillBlocks ((b, cs) : bs) var
         | Block.isEntry $ Block.label b
-        = let (bs', tj) = fillBlocks bs t0 in ((b, []) : bs', tj)
+        = let (bs', var1) = fillBlocks bs var in ((b, []) : bs', var1)
         | Block.isExit $ Block.label b
-        = let
-            -- Generate the instructions for the incoming conditions
-              (is, cs', ti) = genIncoming b cs t0
-              b' = b { Block.block = map (Nothing, ) is ++ Block.block b }
-              (bs', tj) = fillBlocks bs ti
-          in  ((b', cs') : bs', tj)
-        | otherwise
-        = let
+        = let is               = map snd $ Block.block b
+              l                = fst $ Block.leader b
+
               -- Generate the instructions for the incoming conditions
-              (is, cs', ti) = genIncoming b cs t0
+              (is', cs', var1) = genIncoming b cs var
+
+              -- Move label to the first instruction
+              (leader : rest)  = map (Nothing, ) $ is' ++ is
+              b'               = (l, snd leader) : rest
+
+              -- Fill the remaining blocks
+              (bs', var2)      = fillBlocks bs var1
+          in  ((b { Block.block = b' }, cs') : bs', var2)
+        | otherwise
+        = let is               = map snd $ Block.block b
+              l                = fst $ Block.leader b
+
+              -- Generate the instructions for the incoming conditions
+              (is', cs', var1) = genIncoming b cs var
+
               -- Generate the instructions for the outgoing condition
-              is'           = genOutgoing b $ map fst cs'
-              -- Fill the block with both incoming and outgoing instructions
-              b'            = b
-                  { Block.block = map (Nothing, ) (is ++ is') ++ Block.block b
-                  }
-              (bs', tj) = fillBlocks bs ti
-          in
-              ((b', cs') : bs', tj)
+              is''             = genOutgoing b $ map snd cs'
+
+              -- Fill the block with both incoming and outgoing instructions.
+              -- Move label to the first instruction
+              (leader : rest)  = map (Nothing, ) $ is' ++ is'' ++ is
+              b'               = (l, snd leader) : rest
+
+              -- Fill the remaining blocks
+              (bs', var2)      = fillBlocks bs var1
+          in  ((b { Block.block = b' }, cs') : bs', var2)
 
     genIncoming
         :: Block.Block
         -> [Cond]
         -> Lang.IVar
-        -> ([Lang.Inst], [(Lang.Value, Lang.Label)], Lang.IVar)
+        -> ([Lang.Inst], [(Lang.Label, Lang.Value)], Lang.IVar)
     genIncoming _ []       t  = ([], [], t)
     genIncoming b (c : cs) t0 = (is ++ is' ++ is'', c' : cs', tk)
       where
@@ -179,7 +192,7 @@ bindCond root cfg t = fillBlocks
         x            = case is' of
             [] -> head vs
             _  -> (\(Lang.Mov x _) -> Lang.Var x) $ last is'
-        c'              = (x, from c)
+        c'              = (from c, x)
         (is'', cs', tk) = genIncoming b cs tj
 
     genOutgoing :: Block.Block -> [Lang.Value] -> [Lang.Inst]
@@ -225,19 +238,19 @@ bindCond root cfg t = fillBlocks
 
 transform
     :: Lang.Inst
-    -> [Lang.Value]
+    -> [(Lang.Label, Lang.Value)]
     -> Map.Map Lang.Var Lang.Value
     -> Lang.IVar
     -> ([Lang.Inst], Map.Map Lang.Var Lang.Value, Lang.IVar)
 transform i [] lastIdx var = ([i], lastIdx, var)
-transform (Lang.Phi x selectors) cs lastIdx var0 =
+transform (Lang.Phi x selectors) cs lastIdx var =
     let
         neg :: [Lang.Value] -> Lang.IVar -> ([Lang.Inst], Lang.IVar)
         neg []  var = ([], var)
         neg [v] var = ([Lang.Mov t $ Lang.Neg v], Lang.next var)
             where t = show var
-        neg (v : vs) var0 =
-            let ([i], var1) = neg [v] var0
+        neg (v : vs) var =
+            let ([i], var1) = neg [v] var
                 (is , var2) = neg vs var1
             in  (i : is, var2)
 
@@ -246,20 +259,23 @@ transform (Lang.Phi x selectors) cs lastIdx var0 =
             -> Lang.IVar
             -> ([Lang.Inst], Lang.IVar)
         chainAnd [] var = ([], var)
-        chainAnd ((u, v) : vs) var0 =
-            let (is , var1) = fold (Lang.:&:) [u, v] var0
+        chainAnd ((u, v) : vs) var =
+            let (is , var1) = fold (Lang.:&:) [u, v] var
                 (is', var2) = chainAnd vs var1
             in  (is ++ is', var2)
 
+        -- Sort cond and selectors according to labels
+        values            = map snd $ sort selectors
+        cs'               = map snd $ sort cs
+
         -- { mov(zi, -ci) | 0 <= i <= k } = Ineg
-        (isNeg, var1) = neg cs var0
+        (isNeg, var1)     = neg cs' var
 
         -- { mov(zi', vi & zi) | 0 <= i <= k } = Iand
-        (isAnd, var2) =
-            chainAnd (zip (map snd selectors) $ Lang.defs isNeg) var1
+        (isAnd, var2)     = chainAnd (zip values $ Lang.defs isNeg) var1
 
         -- fold(|, defs(Iand)) => Ivalue
-        (isOr, var3)      = fold (Lang.:|:) (Lang.defs isAnd) var2
+        (isOr , var3)     = fold (Lang.:|:) (Lang.defs isAnd) var2
 
         -- defs(Ivalue) => { z0'', ..., zn'' }
         (Lang.Mov zn'' _) = last isOr
@@ -268,9 +284,10 @@ transform (Lang.Phi x selectors) cs lastIdx var0 =
         , lastIdx
         , var3
         )
-transform (Lang.Load x m idx) cs lastIdx var0 =
-    let -- fold(&, C) => Iand
-        (isAnd, var1)   = fold (Lang.:&:) cs var0
+transform (Lang.Load x m idx) cs lastIdx var =
+    let cs'             = map snd cs
+        -- fold(&, C) => Iand
+        (isAnd, var1)   = fold (Lang.:&:) cs' var
 
         -- defs(Iand) => { z0, ..., zk }
         (Lang.Mov zk _) = last isAnd
@@ -284,7 +301,7 @@ transform (Lang.Load x m idx) cs lastIdx var0 =
         z1'             = show var2
         isCond =
                 [ Lang.Mov z0' $ Lang.Var zk Lang.:-: Lang.Const 1
-                , Lang.Mov z1' . Lang.Not $ Lang.Var z0'
+                , Lang.Mov z1' . Lang.BitNot $ Lang.Var z0'
                 ]
 
         -- { mov(z2', z0' & idx'), mov(z3', z1' & idx), mov(z4', z2' | z3') } = Iidx
@@ -303,12 +320,12 @@ transform (Lang.Load x m idx) cs lastIdx var0 =
         , Map.insert m (Lang.Var z4') lastIdx
         , Lang.next var5
         )
-transform (Lang.Store v m idx) cs lastIdx var0 =
-    let z0 = show var0
+transform (Lang.Store v m idx) cs lastIdx var =
+    let z0 = show var
 
         -- <load(z0, m, idx), C, L> -->t (I U Icond U I', L')
         (isLoad, lastIdx', var1) =
-                transform (Lang.Load z0 m idx) cs lastIdx $ Lang.next var0
+                transform (Lang.Load z0 m idx) cs lastIdx $ Lang.next var
 
         -- defs(Icond) => { z1, z2 }
         --
@@ -339,3 +356,40 @@ transform (Lang.Store v m idx) cs lastIdx var0 =
         , lastIdx'
         , Lang.next var3
         )
+transform i _ lastIdx var = ([i], lastIdx, var)
+
+transformBlock
+    :: [Lang.Stm]
+    -> [(Lang.Label, Lang.Value)]
+    -> Map.Map Lang.Var Lang.Value
+    -> Lang.IVar
+    -> ([Lang.Stm], Map.Map Lang.Var Lang.Value, Lang.IVar)
+transformBlock [] _ lastIdx var = ([], lastIdx, var)
+transformBlock ((l, i) : is) cs lastIdx var =
+    let ((i' : is1), lastIdx1, var1) = transform i cs lastIdx var
+        (is2       , lastIdx2, var2) = transformBlock is cs lastIdx1 var1
+    in  ((l, i') : map (Nothing, ) is1 ++ is2, lastIdx2, var2)
+
+transformProg :: Cfg.Node -> Cfg.Cfg -> Lang.IVar -> ([Block.Block], Lang.IVar)
+transformProg root cfg var =
+    let go
+            :: [Block.Block]
+            -> Map.Map Lang.Var Lang.Value
+            -> Lang.IVar
+            -> ([Block.Block], Map.Map Lang.Var Lang.Value, Lang.IVar)
+        go [] lastIdx var = ([], lastIdx, var)
+        go (b : bs) lastIdx var =
+                let (b', lastIdx1, var1) = transformBlock
+                        (filter (not . Lang.isControl . snd) $ Block.block b)
+                        (condMap Map.! b)
+                        lastIdx
+                        var
+                    (bs', lastIdx2, var2) = go bs lastIdx1 var1
+                in  (b { Block.block = b' } : bs', lastIdx2, var2)
+
+        (conds, var1)  = bindCond root cfg var
+        (root', cfg')  = Cfg.fromBlocks $ map fst conds
+        bs             = Graph.topsort Cfg.block root' cfg'
+        condMap        = Map.fromList conds
+        (bs', _, var2) = go bs Map.empty var1
+    in  (bs', var2)

@@ -1,4 +1,5 @@
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE TupleSections #-}
 
 module Core.Parser where
 
@@ -10,17 +11,21 @@ import           Data.Functor                   ( ($>) )
 import           Text.ParserCombinators.Parsec  ( Parser
                                                 , alphaNum
                                                 , choice
+                                                , eof
                                                 , many
+                                                , many1
                                                 , oneOf
                                                 , option
                                                 , sepBy1
+                                                , try
                                                 , parseFromFile
                                                 , (<|>)
                                                 )
 import           Text.ParserCombinators.Parsec.Language
                                                 ( emptyDef )
 
-import           Core.Lang                      ( Value(..)
+import           Core.Lang                      ( Label
+                                                , Value(..)
                                                 , Expr(..)
                                                 , Inst(..)
                                                 , Prog
@@ -58,16 +63,29 @@ integer = Token.integer lexer
 parens = Token.parens lexer
 reserved = Token.reserved lexer
 symbol = Token.symbol lexer
-whiteSpace = Token.whiteSpace lexer
 
 parseProg :: Parser Prog
 parseProg = do
-    prog <- many
-        ((,) <$> option Nothing (Just <$> identifier <* colon) <*> parseInst)
+    prog <- (++) . concat <$> many (try parseBlock) <*> parseExit
     case prog of
         []                    -> pure prog
         ((Just l , i) : _   ) -> pure prog
         ((Nothing, i) : rest) -> pure ((Just $ prefix ++ "begin", i) : rest)
+
+parseLabeled :: Parser (Inst -> (Maybe Label, Inst))
+parseLabeled = (,) <$> option Nothing (Just <$> identifier <* colon)
+
+parseExit :: Parser Prog
+parseExit = many $ parseLabeled <*> parseInst
+
+parseBlock :: Parser Prog
+parseBlock =
+    (++)
+        <$> many (try $ parseLabeled <*> parseInst)
+        <*> ((: []) <$> (parseLabeled <*> parseTerminator))
+
+parseTerminator :: Parser Inst
+parseTerminator = parseJmp <|> parseBr
 
 parseInst :: Parser Inst
 parseInst =
@@ -76,8 +94,6 @@ parseInst =
         <|> parseLoad
         <|> parseStore
         <|> parsePhi
-        <|> parseJmp
-        <|> parseBr
         <|> parseOut
 
 inst :: String -> Parser Inst -> Parser Inst
@@ -131,7 +147,7 @@ parseOut = inst "out" $ Out <$> parseExpr
 
 parseExpr :: Parser Expr
 parseExpr =
-    (symbol "-" $> Neg <|> symbol "~" $> Not)
+    (symbol "-" $> Neg <|> symbol "!" $> Not <|> symbol "~" $> BitNot)
         <*>  parseValue
         <|>  parseValue
         <**> (flip <$> parseBinOp <*> parseValue <|> pure Value)

@@ -33,6 +33,7 @@ instance Show Value where
 data Expr = Value Value
           | Neg Value
           | Not Value
+          | BitNot Value
           | Value :+: Value
           | Value :-: Value
           | Value :*: Value
@@ -47,9 +48,10 @@ data Expr = Value Value
           deriving (Eq, Ord)
 
 instance Show Expr where
-    show (Value v   ) = show v
-    show (Neg   v   ) = "-" ++ show v
-    show (Not   v   ) = "~" ++ show v
+    show (Value  v  ) = show v
+    show (Neg    v  ) = "-" ++ show v
+    show (Not    v  ) = "!" ++ show v
+    show (BitNot v  ) = "~" ++ show v
     show (v1 :+:  v2) = show v1 ++ " + " ++ show v2
     show (v1 :-:  v2) = show v1 ++ " - " ++ show v2
     show (v1 :*:  v2) = show v1 ++ " * " ++ show v2

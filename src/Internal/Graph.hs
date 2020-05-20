@@ -8,9 +8,11 @@ module Internal.Graph
     , MContext
     , Graph(..)
     , Decomp
+    , (>:)
+    , gmap
+    , gfoldr
     , mkGraph
     , match
-    , fromCtx
     , toCtx
     , bfs
     , dfs
@@ -57,54 +59,56 @@ type Dom a = (Node a, Adj a)
 -- | A node 'u' plus its immediate dominator 'v', with 'v' != 'u'.
 type IDom a = (Node a, Node a)
 
+-- | Traverses a graph applying a function to each context.
+gmap :: (Context a -> Context a) -> Graph a -> Graph a
+gmap _ Empty      = Empty
+gmap f (ctx :& g) = f ctx :& gmap f g
+
+-- | Takes a graph g plus a initial list of contexts and
+--   constructrs another graph g' merging g with the list.
+gfoldr :: Graph a -> [Context a] -> Graph a
+gfoldr = foldr (:&)
+
+
+-- | Merges a context of a node u with a graph by adding u
+--   as the predecessor of every node v in successors of u.
+(>:) :: Eq a => Context a -> Graph a -> Graph a
+(>:) ctx@Context { node = u, succs = su } = (:&) ctx . gmap
+    (\ctx@Context { preds = pv, node = v } ->
+        bool ctx ctx { preds = pv ++ [u] } $ v `elem` su && u `notElem` pv
+    )
 -- | Takes a list of nodes and edges connecting them, and returns
---   a graph with both predecessors and successors of each node set
+--   a graph with both predecessors and successors of each node
+--   set.
 mkGraph :: (Eq a, Show a) => [Node a] -> [Edge a] -> Graph a
-mkGraph vs es = insEdgesRev es $ insEdges es $ insNodes vs Empty
-
-insNode :: Node a -> Graph a -> Graph a
-insNode v = (:&) Context { preds = [], node = v, succs = [] }
-
-insEdge :: (Eq a, Show a) => Edge a -> Graph a -> Graph a
-insEdge (u, v) g = ctx { succs = v : succs ctx } :& g'
-  where
-    (mCtx, g') = match u g
-    ctx        = fromMaybe
-        (error $ "cannot add edge from nonexistent node " ++ show u)
-        mCtx
-
-insEdgeRev :: (Eq a, Show a) => Edge a -> Graph a -> Graph a
-insEdgeRev (u, v) g = ctx { preds = u : preds ctx } :& g'
-  where
-    (mCtx, g') = match v g
-    ctx        = fromMaybe
-        (error $ "cannot add edge from nonexistent node " ++ show v)
-        mCtx
+mkGraph vs es = insEdges es $ insNodes vs Empty
 
 insNodes :: [Node a] -> Graph a -> Graph a
-insNodes vs g = foldl (flip insNode) g vs
+insNodes =
+    flip gfoldr . map (\v -> Context { preds = [], node = v, succs = [] })
 
-insEdges :: (Eq a, Show a) => [Edge a] -> Graph a -> Graph a
-insEdges es g = foldl (flip insEdge) g es
-
-insEdgesRev :: (Eq a, Show a) => [Edge a] -> Graph a -> Graph a
-insEdgesRev es g = foldl (flip insEdgeRev) g es
+insEdges :: forall a . (Eq a, Show a) => [Edge a] -> Graph a -> Graph a
+insEdges es g = foldl insert g es
+  where
+    insert :: Graph a -> Edge a -> Graph a
+    insert g (u, v) =
+        let (mCtx, g') = match u g
+            ctx        = fromMaybe
+                (error $ "cannot add edge from nonexistent node " ++ show u)
+                mCtx
+        in  ctx { succs = succs ctx ++ [v] } >: g'
 
 -- | Decomposes a graph into a MContext - Nothing if the node 'u'
 --   wasn't found; otherwise, Just (ctx of 'u') - and the remaining
 --   graph
 match :: forall a . Eq a => Node a -> Graph a -> Decomp a
-match u = go []
+match u g = go [] g
   where
     go :: [Context a] -> Graph a -> Decomp a
-    go _ Empty = (Nothing, Empty)
-    go accum (ctx@Context { node = v } :& g)
-        | u /= v    = go (ctx : accum) g
-        | otherwise = (Just ctx, fromCtx $ accum ++ toCtx g)
-
--- | Takes a list of contexts and transforms it into a graph
-fromCtx :: [Context a] -> Graph a
-fromCtx = foldr (:&) Empty
+    go _ Empty = (Nothing, g)
+    go ctxs (ctx@Context { node = v } :& g)
+        | u /= v    = go (ctx : ctxs) g
+        | otherwise = (Just ctx, gfoldr g ctxs)
 
 -- | Takes a graph and decomposes it into a list of contexts
 toCtx :: Graph a -> [Context a]
@@ -115,30 +119,28 @@ toCtx (ctx :& g) = ctx : toCtx g
 --   node and a graph, and return a list of values obtained after
 --   applying the given funtion in the breadth-first search order.
 bfs :: forall a b . Eq a => (Context a -> b) -> Node a -> Graph a -> [b]
-bfs f start g = case match start g of
-    (Nothing , Empty) -> []
-    (Just ctx, g'   ) -> go [start] $ ctx :& g'
+bfs f start = go [start]
   where
     go :: [Node a] -> Graph a -> [b]
-    go []       _ = []
-    go (v : vs) g = case match v g of
-        (Nothing , Empty) -> go vs g
-        (Just ctx, g'   ) -> f ctx : go (vs ++ succs ctx) g'
+    go []       _     = []
+    go _        Empty = []
+    go (v : vs) g     = case match v g of
+        (Nothing , g') -> go vs g'
+        (Just ctx, g') -> f ctx : go (vs ++ succs ctx ++ preds ctx) g'
 
 -- | Takes a function to be applied to each context found, a
 --   initial node and a graph, and return a list of values
 --   (obtained after applying the given funtion) in depth-first
 --   search order.
 dfs :: forall a b . Eq a => (Context a -> b) -> Node a -> Graph a -> [b]
-dfs f start g = case match start g of
-    (Nothing , Empty) -> []
-    (Just ctx, g'   ) -> go [start] $ ctx :& g'
+dfs f start = go [start]
   where
     go :: [Node a] -> Graph a -> [b]
-    go []       _ = []
-    go (v : vs) g = case match v g of
-        (Nothing , Empty) -> go vs g
-        (Just ctx, g'   ) -> f ctx : go (succs ctx ++ vs) g'
+    go []       _     = []
+    go _        Empty = []
+    go (v : vs) g     = case match v g of
+        (Nothing , g') -> go vs g'
+        (Just ctx, g') -> f ctx : go (succs ctx ++ vs ++ preds ctx) g'
 
 -- | Takes a Graph plus the initial node, and transforms it into
 --   a list of contexts so we have a initial worklist. Then,
@@ -201,13 +203,13 @@ iDom root g = go doms $ Map.fromList doms
 -- | A tree is defined as the current node + its subtrees
 data Tree a = Tree a [Tree a]
 
--- | Takes a function to be applie to each context found, a
+-- | Takes a function to be applied to each context found, a
 --   initial node and a graph, and return a list of values
 --   (obtained after applying the given funtion) in reverse
 --   post-order.
 --
 --   We first build a spanning forest for a given graph, and next
---   sort the nodes of each tree in postorder. The reverse 
+--   sort the nodes of each tree in postorder. The reverse
 --   post-order is, then, the reverse of the list computed by
 --   'postorder'.
 topsort :: forall a b . Eq a => (Context a -> b) -> Node a -> Graph a -> [b]
@@ -216,8 +218,8 @@ topsort f start = reverse . concatMap postorder . fst . spanning [start]
     spanning :: [Node a] -> Graph a -> ([Tree b], Graph a)
     spanning []       g = ([], g)
     spanning (v : vs) g = case match v g of
-        (Nothing , Empty) -> spanning vs g
-        (Just ctx, g'   ) -> (Tree (f ctx) ts : ts', g2)
+        (Nothing , g') -> spanning vs g'
+        (Just ctx, g') -> (Tree (f ctx) ts : ts', g2)
           where
             -- Compute a forest ts for all successors of node v
             (ts , g1) = spanning (succs ctx) g'

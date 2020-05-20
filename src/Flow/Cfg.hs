@@ -5,7 +5,9 @@ module Flow.Cfg
     , Edge
     , Cfg
     , block
+    , edges
     , mkCfg
+    , fromBlocks
     , dot
     )
 where
@@ -34,9 +36,11 @@ block :: Context -> Block.Block
 block = node . Graph.node
 
 mkCfg :: Prog -> (Node, Cfg)
-mkCfg prog = (root, cfg)
+mkCfg = fromBlocks . Block.fromProg
+
+fromBlocks :: [Block.Block] -> (Node, Cfg)
+fromBlocks bs = (root, cfg)
   where
-    bs            = Block.fromProg prog
     vs@(root : _) = map Node bs
     es            = concatMap (edges vs) vs
     cfg           = Graph.mkGraph vs es
@@ -66,8 +70,6 @@ edges vs v@(Node b) = case snd $ Block.terminator b of
         $ map (Node . fromJust . flip Block.findBlock bs) leaders
         where leaders = map (fromJust . flip Block.findLeader bs) [l1, l2]
 
-    -- If the last instruction of b' is followed by some other instruction, then one edge
-    _ -> case tail $ dropWhile (/= v) vs of
-        []       -> []
-        (v' : _) -> [(v, v')]
+    -- No terminator => exit block
+    _ -> []
     where bs = map node vs
