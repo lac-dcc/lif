@@ -1,6 +1,5 @@
 {-# LANGUAGE LambdaCase #-}
-
-module Main where
+{-# LANGUAGE ViewPatterns #-}
 
 import           Data.Functor                   ( ($>) )
 import           System.Environment             ( getArgs )
@@ -8,7 +7,7 @@ import           System.Environment             ( getArgs )
 import qualified Flow.Cfg                      as Cfg
 import qualified Flow.DomTree                  as DomTree
 import           Core.Eval                      ( State
-                                                , eval
+                                                , evalProg
                                                 , initState
                                                 )
 import           Core.Lang                      ( Prog )
@@ -36,17 +35,11 @@ parse ["--dtree", file] = dtree file $> ()
 run :: String -> IO ()
 run source = readProg source >>= \case
     Left  err  -> putStr (show err ++ "\n") $> ()
-    Right prog -> putStr (interp prog) $> ()
-
-interp :: Prog -> String
-interp prog = go prog initState
-  where
-    go :: Prog -> State -> String
-    go prog s@(_, _, _, pc, out)
-        | pc >= length prog = out
-        | otherwise = case eval prog s of
-            Left  err -> show err ++ "\n"
-            Right s'  -> go prog s'
+    Right prog -> putStr (interp initState) $> ()
+      where
+        interp :: State -> String
+        interp (evalProg prog -> Left err               ) = show err ++ "\n"
+        interp (evalProg prog -> Right (_, _, _, _, out)) = out
 
 -- | Takes a file name, parses the code, generates the corresponding
 --   cfg and prints it in DOT format

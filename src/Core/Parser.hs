@@ -1,5 +1,4 @@
 {-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE TupleSections #-}
 
 module Core.Parser where
 
@@ -66,7 +65,7 @@ symbol = Token.symbol lexer
 
 parseProg :: Parser Prog
 parseProg = do
-    prog <- (++) . concat <$> many (try parseBlock) <*> parseExit
+    prog <- (++) . concat <$> many (try parseBlock) <*> (parseExit <* eof)
     case prog of
         []                    -> pure prog
         ((Just l , i) : _   ) -> pure prog
@@ -159,8 +158,10 @@ parseBinOp = choice binOps
         [ parseOp "+"  (:+:)
         , parseOp "-"  (:-:)
         , parseOp "*"  (:*:)
-        , parseOp "|"  (:|:)
         , parseOp "&"  (:&:)
+        , parseOp "|"  (:|:)
+        , parseOp ">>" (:>>:)
+        , parseOp "<<" (:<<:)
         , parseOp "="  (:=:)
         , parseOp "!=" (:!=:)
         , parseOp "<"  (:<:)

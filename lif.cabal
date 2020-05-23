@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 17547321e37ba6027dacfdd4c06fa65b8be63b3453651813cef5b512d1bf8cd3
+-- hash: dedf1c8b6229650cebd3d9663c3dd213eac6c452e4bc3a938210299787b318ee
 
 name:           lif
 version:        0.1.0.0
@@ -44,11 +44,13 @@ library
   hs-source-dirs:
       src
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
+    , bytestring
     , containers
+    , hspec
     , mtl
     , parsec
-    , split
   default-language: Haskell2010
 
 executable lif-exe
@@ -59,12 +61,14 @@ executable lif-exe
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
+    , bytestring
     , containers
+    , hspec
     , lif
     , mtl
     , parsec
-    , split
   default-language: Haskell2010
 
 test-suite lif-test
@@ -76,10 +80,12 @@ test-suite lif-test
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
+    , bytestring
     , containers
+    , hspec
     , lif
     , mtl
     , parsec
-    , split
   default-language: Haskell2010

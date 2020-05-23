@@ -37,8 +37,10 @@ data Expr = Value Value
           | Value :+: Value
           | Value :-: Value
           | Value :*: Value
-          | Value :|: Value
           | Value :&: Value
+          | Value :|: Value
+          | Value :>>: Value
+          | Value :<<: Value
           | Value :=: Value
           | Value :!=: Value
           | Value :<: Value
@@ -55,8 +57,10 @@ instance Show Expr where
     show (v1 :+:  v2) = show v1 ++ " + " ++ show v2
     show (v1 :-:  v2) = show v1 ++ " - " ++ show v2
     show (v1 :*:  v2) = show v1 ++ " * " ++ show v2
-    show (v1 :|:  v2) = show v1 ++ " | " ++ show v2
     show (v1 :&:  v2) = show v1 ++ " & " ++ show v2
+    show (v1 :|:  v2) = show v1 ++ " | " ++ show v2
+    show (v1 :>>: v2) = show v1 ++ " >> " ++ show v2
+    show (v1 :<<: v2) = show v1 ++ " << " ++ show v2
     show (v1 :=:  v2) = show v1 ++ " = " ++ show v2
     show (v1 :!=: v2) = show v1 ++ " != " ++ show v2
     show (v1 :<:  v2) = show v1 ++ " < " ++ show v2

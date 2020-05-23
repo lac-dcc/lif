@@ -1,7 +1,13 @@
 {-# LANGUAGE TupleSections #-}
 
-module Pass.Invariant where
+module Pass.Invariant
+    ( transform
+    , transformBlock
+    , transformProg
+    )
+where
 
+import           Debug.Trace
 import qualified Data.Map                      as Map
 import           Data.Bool                      ( bool )
 import           Data.List                      ( sort
@@ -138,11 +144,18 @@ bindCond root cfg t = fillBlocks
         | Block.isEntry $ Block.label b
         = let (bs', var1) = fillBlocks bs var in ((b, []) : bs', var1)
         | Block.isExit $ Block.label b
-        = let is               = map snd $ Block.block b
-              l                = fst $ Block.leader b
+        = let
+              is = map snd $ Block.block b
+              l  = fst $ Block.leader b
 
-              -- Generate the instructions for the incoming conditions
-              (is', cs', var1) = genIncoming b cs var
+              -- Generate the instructions for the incoming
+              -- conditions. If there aren't any conditions
+              -- (i.e. cond c == [] for some c in cs), we
+              -- fill it with c = 1 (true).
+              fillCond c = if null $ cond c
+                  then c { cond = [Lang.Value $ Lang.Const 1] }
+                  else c
+              (is', cs', var1) = genIncoming b (map fillCond cs) var
 
               -- Move label to the first instruction
               (leader : rest)  = map (Nothing, ) $ is' ++ is
@@ -150,25 +163,35 @@ bindCond root cfg t = fillBlocks
 
               -- Fill the remaining blocks
               (bs', var2)      = fillBlocks bs var1
-          in  ((b { Block.block = b' }, cs') : bs', var2)
+          in
+              ((b { Block.block = b' }, cs') : bs', var2)
         | otherwise
-        = let is               = map snd $ Block.block b
-              l                = fst $ Block.leader b
+        = let
+              is = map snd $ Block.block b
+              l  = fst $ Block.leader b
 
-              -- Generate the instructions for the incoming conditions
-              (is', cs', var1) = genIncoming b cs var
+              -- Generate the instructions for the incoming
+              -- conditions. If there aren't any conditions
+              -- (i.e. cond c == [] for some c in cs), we
+              -- fill it with c = 1 (true).
+              fillCond c = if null $ cond c
+                  then c { cond = [Lang.Value $ Lang.Const 1] }
+                  else c
+              (is', cs', var1) = genIncoming b (map fillCond cs) var
 
-              -- Generate the instructions for the outgoing condition
+              -- Generate the instructions for the outgoing
+              -- condition.
               is''             = genOutgoing b $ map snd cs'
 
-              -- Fill the block with both incoming and outgoing instructions.
-              -- Move label to the first instruction
+              -- Fill the block with both incoming and outgoing
+              -- insts, and move label to the first inst.
               (leader : rest)  = map (Nothing, ) $ is' ++ is'' ++ is
               b'               = (l, snd leader) : rest
 
               -- Fill the remaining blocks
               (bs', var2)      = fillBlocks bs var1
-          in  ((b { Block.block = b' }, cs') : bs', var2)
+          in
+              ((b { Block.block = b' }, cs') : bs', var2)
 
     genIncoming
         :: Block.Block
@@ -286,11 +309,11 @@ transform (Lang.Phi x selectors) cs lastIdx var =
         )
 transform (Lang.Load x m idx) cs lastIdx var =
     let cs'             = map snd cs
-        -- fold(&, C) => Iand
-        (isAnd, var1)   = fold (Lang.:&:) cs' var
+        -- fold(|, C) => Iand
+        (isOr, var1)    = fold (Lang.:|:) cs' var
 
-        -- defs(Iand) => { z0, ..., zk }
-        (Lang.Mov zk _) = last isAnd
+        -- defs(isOr) => { z0, ..., zk }
+        (Lang.Mov zk _) = last isOr
 
         -- L[m] = idx'
         idx'            = Map.findWithDefault (Lang.Const 0) m lastIdx
@@ -316,7 +339,7 @@ transform (Lang.Load x m idx) cs lastIdx var =
                 , Lang.Mov z3' $ Lang.Var z1' Lang.:&: idx
                 , Lang.Mov z4' $ Lang.Var z2' Lang.:|: Lang.Var z3'
                 ]
-    in  ( isAnd ++ isCond ++ isIdx ++ [Lang.Load x m $ Lang.Var z4']
+    in  ( isOr ++ isCond ++ isIdx ++ [Lang.Load x m $ Lang.Var z4']
         , Map.insert m (Lang.Var z4') lastIdx
         , Lang.next var5
         )

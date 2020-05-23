@@ -24,7 +24,9 @@ dependencies:
 - containers
 - parsec
 - mtl
-- split
+- aeson
+- bytestring
+- hspec
 
 library:
   source-dirs: src

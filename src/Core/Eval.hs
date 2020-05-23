@@ -1,9 +1,17 @@
 {-# LANGUAGE TupleSections #-}
+{-# LANGUAGE ViewPatterns #-}
 
 module Core.Eval
     ( State
+    , Reg
+    , Mem
+    , Buffer
+    , PC
     , initState
+    , evalProg
     , eval
+    , evalExpr
+    , evalValue
     )
 where
 
@@ -12,6 +20,8 @@ import qualified Data.Sequence                 as Seq
 import           Control.Monad.Except           ( throwError )
 import           Data.Bits                      ( (.|.)
                                                 , (.&.)
+                                                , shiftL
+                                                , shiftR
                                                 , complement
                                                 )
 import           Data.Bool                      ( bool )
@@ -49,6 +59,12 @@ type State = (Reg, Mem, Label, PC, Buffer)
 initState :: State
 initState = (Map.empty, Seq.empty, "", 0, "")
 
+evalProg :: Prog -> State -> Throws State
+evalProg prog s@(_, _, _, pc, _) | pc >= length prog = pure s
+evalProg prog (eval prog -> err@Left{})              = err
+evalProg prog (eval prog -> Right s'  )              = evalProg prog s'
+
+-- | Evaluate the instruction pointed by PC.
 eval :: Prog -> State -> Throws State
 eval prog s@(reg, mem, l', pc, buffer) = case prog !! pc of
     (l, Alloc x e) -> either throwError (pure . nextState) $ evalExpr e reg
@@ -136,8 +152,12 @@ evalExpr (BitNot v ) reg = complement <$> evalValue v reg
 evalExpr (v1 :+: v2) reg = (+) <$> evalValue v1 reg <*> evalValue v2 reg
 evalExpr (v1 :-: v2) reg = (-) <$> evalValue v1 reg <*> evalValue v2 reg
 evalExpr (v1 :*: v2) reg = (*) <$> evalValue v1 reg <*> evalValue v2 reg
-evalExpr (v1 :|: v2) reg = (.|.) <$> evalValue v1 reg <*> evalValue v2 reg
 evalExpr (v1 :&: v2) reg = (.&.) <$> evalValue v1 reg <*> evalValue v2 reg
+evalExpr (v1 :|: v2) reg = (.|.) <$> evalValue v1 reg <*> evalValue v2 reg
+evalExpr (v1 :>>: v2) reg =
+    shiftR <$> evalValue v1 reg <*> (fromInteger <$> evalValue v2 reg)
+evalExpr (v1 :<<: v2) reg =
+    shiftL <$> evalValue v1 reg <*> (fromInteger <$> evalValue v2 reg)
 evalExpr (v1 :=: v2) reg =
     toInteger . fromEnum <$> ((==) <$> evalValue v1 reg <*> evalValue v2 reg)
 evalExpr (v1 :!=: v2) reg =
@@ -152,10 +172,9 @@ evalExpr (v1 :>=: v2) reg =
     toInteger . fromEnum <$> ((>=) <$> evalValue v1 reg <*> evalValue v2 reg)
 
 evalValue :: Value -> Reg -> Throws Integer
-evalValue (Const n) _   = pure n
-evalValue (Var   x) reg = case Map.lookup x reg of
-    Just v  -> pure v
-    Nothing -> throwError $ UndefVar x
+evalValue (Const n) _                        = pure n
+evalValue (Var   x) (Map.lookup x -> Just v) = pure v
+evalValue (Var   x) _                        = throwError $ UndefVar x
 
 findPC :: Prog -> Maybe Label -> PC
 findPC prog = fromJust . flip elemIndex (map fst prog)

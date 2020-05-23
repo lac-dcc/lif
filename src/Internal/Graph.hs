@@ -1,4 +1,5 @@
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE ViewPatterns #-}
 
 module Internal.Graph
     ( Node
@@ -69,7 +70,6 @@ gmap f (ctx :& g) = f ctx :& gmap f g
 gfoldr :: Graph a -> [Context a] -> Graph a
 gfoldr = foldr (:&)
 
-
 -- | Merges a context of a node u with a graph by adding u
 --   as the predecessor of every node v in successors of u.
 (>:) :: Eq a => Context a -> Graph a -> Graph a
@@ -122,11 +122,11 @@ bfs :: forall a b . Eq a => (Context a -> b) -> Node a -> Graph a -> [b]
 bfs f start = go [start]
   where
     go :: [Node a] -> Graph a -> [b]
-    go []       _     = []
-    go _        Empty = []
-    go (v : vs) g     = case match v g of
-        (Nothing , g') -> go vs g'
-        (Just ctx, g') -> f ctx : go (vs ++ succs ctx ++ preds ctx) g'
+    go [] _     = []
+    go _  Empty = []
+    go (v : vs) (match v -> (Just ctx, g')) =
+        f ctx : go (vs ++ succs ctx ++ preds ctx) g'
+    go (_ : vs) g' = go vs g'
 
 -- | Takes a function to be applied to each context found, a
 --   initial node and a graph, and return a list of values
@@ -136,11 +136,11 @@ dfs :: forall a b . Eq a => (Context a -> b) -> Node a -> Graph a -> [b]
 dfs f start = go [start]
   where
     go :: [Node a] -> Graph a -> [b]
-    go []       _     = []
-    go _        Empty = []
-    go (v : vs) g     = case match v g of
-        (Nothing , g') -> go vs g'
-        (Just ctx, g') -> f ctx : go (succs ctx ++ vs ++ preds ctx) g'
+    go [] _     = []
+    go _  Empty = []
+    go (v : vs) (match v -> (Just ctx, g')) =
+        f ctx : go (succs ctx ++ preds ctx ++ vs) g'
+    go (_ : vs) g' = go vs g'
 
 -- | Takes a Graph plus the initial node, and transforms it into
 --   a list of contexts so we have a initial worklist. Then,
@@ -216,15 +216,13 @@ topsort :: forall a b . Eq a => (Context a -> b) -> Node a -> Graph a -> [b]
 topsort f start = reverse . concatMap postorder . fst . spanning [start]
   where
     spanning :: [Node a] -> Graph a -> ([Tree b], Graph a)
-    spanning []       g = ([], g)
-    spanning (v : vs) g = case match v g of
-        (Nothing , g') -> spanning vs g'
-        (Just ctx, g') -> (Tree (f ctx) ts : ts', g2)
-          where
-            -- Compute a forest ts for all successors of node v
-            (ts , g1) = spanning (succs ctx) g'
-            -- Compute a forest for the remaining nodes vs
-            (ts', g2) = spanning vs g1
+    spanning []       g                           = ([], g)
+    spanning (v : vs) (match v -> (Just ctx, g')) = (Tree (f ctx) ts : ts', g2)
+      where
+        -- Compute a forest ts for all successors of node v
+        (ts , g1) = spanning (succs ctx) g'
+        -- Compute a forest for the remaining nodes vs
+        (ts', g2) = spanning vs g1
+    spanning (_ : vs) g' = spanning vs g'
 
-    postorder :: Tree b -> [b]
     postorder (Tree v ts) = concatMap postorder ts ++ [v]
