@@ -55,7 +55,7 @@ fold op (v0 : v1 : vs) var =
 --   Value'. These sets will be later on transformed into a set of
 --   instructions:
 --
---   { p1, ..., pn } =
+--   { p1, ..., pk } =
 --     mov(t1, p1 & p2)
 --     mov(t2, t1 & p3)
 --     ...
@@ -72,7 +72,7 @@ fold op (v0 : v1 : vs) var =
 --     mov(tk, q1 & q2)
 --     mov(tk+1, tk & q3)
 --     ...
---     mov(tk+n-1, tk+n-2, qn)
+--     mov(tk+n-1, tk+n-2 & qn)
 --
 --   The outgoing condition of a block is a single value represented
 --   by some variable t. Hence, for a set of incoming conditions
