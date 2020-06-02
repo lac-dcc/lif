@@ -9,14 +9,16 @@ using namespace llvm;
 
 PreservedAnalyses Invariant::run(Function &F, FunctionAnalysisManager &AM) {
     // We currently cannot handle functions with loops.
-    const auto &LA = AM.getResult<LoopAnalysis>(F);
+    auto &LA = AM.getResult<LoopAnalysis>(F);
     if (LA.begin() != LA.end()) {
         errs() << "Error: unexpected loop(s) on function \"" << F.getName()
                << "\" (possible fix: run mem2reg and loop-unroll)\n";
         return PreservedAnalyses::all();
     }
 
-    allocOut(F);
+    cond::OutMap Out = cond::allocOut(F);
+    cond::InMap In = cond::bind(F, Out);
+
     return PreservedAnalyses::none();
 }
 

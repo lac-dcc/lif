@@ -3,7 +3,7 @@
 # THE LIST OF PLUGINS AND THE CORRESPONDING SOURCE FILES
 #===============================================================================
 set(LLVM_INVARIANT_PLUGINS Invariant)
-set(Invariant_SOURCES Cond.cpp Invariant.cpp)
+set(Invariant_SOURCES Util.cpp Cond.cpp Invariant.cpp)
 
 #===============================================================================
 # CONFIGURE THE PLUGIN LIBRARIES

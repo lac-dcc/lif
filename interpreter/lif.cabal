@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: dedf1c8b6229650cebd3d9663c3dd213eac6c452e4bc3a938210299787b318ee
+-- hash: a245980dc380974c65aabcaaac5e3affcf76a39ecab5c1e3dbb67fe3d1da3cd1
 
 name:           lif
 version:        0.1.0.0
@@ -15,7 +15,6 @@ author:         Author name here
 maintainer:     example@example.com
 copyright:      2020 Author name here
 license:        BSD3
-license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     README.md
