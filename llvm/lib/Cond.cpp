@@ -1,5 +1,4 @@
 #include "Cond.h"
-#include "Util.h"
 
 #include <cstddef>
 #include <llvm/ADT/DenseMap.h>
@@ -15,6 +14,7 @@
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/Value.h>
 #include <llvm/Support/raw_ostream.h>
+#include <numeric>
 
 using namespace llvm;
 
@@ -83,8 +83,20 @@ InMap bind(Function &F, const OutMap Out) {
             OutV = InVals[0];
         } else {
             // If there are more than one incoming cond, fold them and set the
-            // last instruction as the out value.
-            auto Fold = util::fold(Instruction::Or, InVals);
+            // last instruction as the out value. We proceed as following:
+            //   > Let InVals = {v0, v1, ..., vn}, i.e. the list of values
+            //   > z0 = v0 & v1, the initial value we pass to std::accumulate
+            //   > z1 = z0 & v2
+            //   ...
+            //   > zn-1 = zn-2 & vn
+            auto Z0 = BinaryOperator::CreateOr(InVals[0], InVals[1]);
+            auto Fold = std::accumulate(
+                InVals.begin() + 2, InVals.end(), SmallVector<Value *, 8>({Z0}),
+                [](auto Fold, auto *V) {
+                    Fold.push_back(BinaryOperator::CreateOr(Fold.back(), V));
+                    return Fold;
+                });
+
             for (auto *V : Fold)
                 cast<Instruction>(V)->insertBefore(BB.getTerminator());
 
