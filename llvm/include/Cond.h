@@ -36,7 +36,7 @@ struct Incoming {
 // (https://llvm.org/docs/ProgrammersManual.html#llvm-adt-smallvector-h):
 //   > the number of predecessors/successors of a block is usually less than 8
 using InMap =
-    llvm::DenseMap<llvm::BasicBlock *, llvm::SmallVector<Incoming *, 8>>;
+    llvm::DenseMap<llvm::BasicBlock *, llvm::SmallVector<Incoming, 8>>;
 
 // A map between a basic block and its outgoing condition.
 // We should alloc a variable for the outgoing condition
@@ -54,14 +54,28 @@ using OutMap = llvm::DenseMap<llvm::BasicBlock *, llvm::Instruction *>;
 // variable.
 OutMap allocOut(llvm::Function &F);
 
+// Compute the incoming conditions for a given basic block.
+//
+// Return a list of incoming conditions.
+// Side effect: the size of the basic block grows according to
+// the # of instructions needed to compute the incoming conditions.
+llvm::SmallVector<Incoming, 8> bindIn(llvm::BasicBlock &BB, const OutMap OutM);
+
+// Compute the outgoing condition for a given basic block.
+//
+// Side effect: the size of the basic block grows according to
+// the # of instructions needed to compute the outgoing condition.
+void bindOut(llvm::BasicBlock &BB, llvm::Value *OutPtr,
+             const llvm::SmallVectorImpl<llvm::Value *> &InV);
+
 // Run through the basic blocks of a given function F, binding the
-// proper incoming conditions to them.
+// proper incoming and outgoing conditions to them.
 //
 // Return a map between a basic block and its incoming conditions.
 // Side effect: the size of each basic block in F grows according
 // to the # of instructions needed to compute both their incoming
 // and outgoing conds.
-InMap bind(llvm::Function &F, const OutMap Out);
+InMap bind(llvm::Function &F, const OutMap OutM);
 } // namespace cond
 
 #endif
