@@ -1,3 +1,10 @@
+//===-- Invariant.cpp -----------------------------------------------------===//
+///
+/// \file
+/// This file contains the implementation of the Invariant Pass.
+///
+//===----------------------------------------------------------------------===//
+
 #include "Invariant.h"
 #include "Cond.h"
 
@@ -7,8 +14,9 @@
 
 using namespace llvm;
 
-PreservedAnalyses Invariant::run(Function &F, FunctionAnalysisManager &AM) {
-    // We currently cannot handle functions with loops.
+PreservedAnalyses InvariantPass::run(Function &F, FunctionAnalysisManager &AM) {
+    // We currently cannot handle functions with loops, so we use LoopAnalysis
+    // info to check if there are any loops.
     auto &LA = AM.getResult<LoopAnalysis>(F);
     if (LA.begin() != LA.end()) {
         errs() << "Error: unexpected loop(s) on function \"" << F.getName()
@@ -28,7 +36,7 @@ PassPluginLibraryInfo getInvariantPluginInfo() {
                 PB.registerPipelineParsingCallback(
                     [](StringRef Name, FunctionPassManager &PM, ...) {
                         if (Name == "invar") {
-                            PM.addPass(Invariant());
+                            PM.addPass(InvariantPass());
                             return true;
                         }
 

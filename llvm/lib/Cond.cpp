@@ -1,3 +1,11 @@
+//===-- Cond.h ------------------------------------------------------------===//
+///
+/// \file
+/// This file contains the implementation of the functions related to both
+/// incoming and outgoing conditions of some basic block.
+///
+//===----------------------------------------------------------------------===//
+
 #include "Cond.h"
 
 #include <cstddef>
