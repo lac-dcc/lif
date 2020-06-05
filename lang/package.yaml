@@ -1,14 +1,14 @@
-name:                lif
+name:                lif-lang
 version:             0.1.0.0
-github:              "githubuser/lif"
-license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2020 Author name here"
+github:              "luigidcsoares/lif/tree/master/lang"
+license:             GPL-3
+license-file:        LICENSE.txt
+author:              "Luigi D. C. Soares"
+maintainer:          "luigidcsoares@gmail.com"
+copyright:           "2020 Luigi D. C. Soares"
 
 extra-source-files:
 - README.md
-- ChangeLog.md
 
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
@@ -17,7 +17,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/githubuser/lif#readme>
+description:         Please see the README on GitHub at <https://github.com/luigidcsoares/lif/tree/master/lang#readme>
 
 dependencies:
 - base >= 4.7 && < 5
@@ -40,7 +40,7 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - lif
+    - lif-lang
 
 tests:
   lif-test:
@@ -51,4 +51,4 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - lif
+    - lif-lang

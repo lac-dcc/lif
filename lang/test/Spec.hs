@@ -1,5 +1,17 @@
 {-# LANGUAGE DeriveGeneric #-}
-
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Main
+-- Copyright   :  (c) Luigi D. C. Soares 2020
+-- License     :  GPL-3
+--
+-- Maintainer  :  luigidcsoares@gmail.com
+-- Stability   :  experimental
+-- Portability :  portable
+--
+-- This module contains tests primarily related to the invariant pass.
+----------------------------------------------------------------------------
+module Main where
 import qualified Data.ByteString.Lazy          as BS
 import qualified Data.Map                      as Map
 import           Data.Aeson                     ( FromJSON

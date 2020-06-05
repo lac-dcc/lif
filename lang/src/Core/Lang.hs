@@ -1,3 +1,15 @@
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Core.Lang
+-- Copyright   :  (c) Luigi D. C. Soares 2020
+-- License     :  GPL-3
+--
+-- Maintainer  :  luigidcsoares@gmail.com
+-- Stability   :  experimental
+-- Portability :  portable
+--
+-- This module contains the definition of the language.
+----------------------------------------------------------------------------
 module Core.Lang
     ( Label
     , Const

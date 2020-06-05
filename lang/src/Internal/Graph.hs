@@ -1,6 +1,18 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE ViewPatterns #-}
-
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Internal.Graph
+-- Copyright   :  (c) Luigi D. C. Soares 2020
+-- License     :  GPL-3
+--
+-- Maintainer  :  luigidcsoares@gmail.com
+-- Stability   :  experimental
+-- Portability :  portable
+--
+-- Implementation of an Inductive Graph.
+-- See "Inductive Graphs and Functional Graph Algorithms", Martin Erwig.
+----------------------------------------------------------------------------
 module Internal.Graph
     ( Node
     , Edge

@@ -1,3 +1,13 @@
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Internal.Dot
+-- Copyright   :  (c) Luigi D. C. Soares 2020
+-- License     :  GPL-3
+--
+-- Maintainer  :  luigidcsoares@gmail.com
+-- Stability   :  experimental
+-- Portability :  portable
+----------------------------------------------------------------------------
 module Internal.Dot
     ( Dot(..)
     , formatNode

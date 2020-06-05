@@ -1,5 +1,14 @@
 {-# LANGUAGE TupleSections #-}
-
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Flow.Block
+-- Copyright   :  (c) Luigi D. C. Soares 2020,
+-- License     :  GPL-3
+--
+-- Maintainer  :  luigidcsoares@gmail.com
+-- Stability   :  experimental
+-- Portability :  portable
+----------------------------------------------------------------------------
 module Flow.Block
     ( Label(..)
     , Block(..)

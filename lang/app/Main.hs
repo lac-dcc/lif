@@ -1,5 +1,18 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE ViewPatterns #-}
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Main
+-- Copyright   :  (c) Luigi D. C. Soares 2020
+-- License     :  GPL-3
+--
+-- Maintainer  :  luigidcsoares@gmail.com
+-- Stability   :  experimental
+-- Portability :  portable
+--
+-- Program entry point.
+----------------------------------------------------------------------------
+module Main where
 
 import           Data.Functor                   ( ($>) )
 import           System.Environment             ( getArgs )

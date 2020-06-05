@@ -1,5 +1,14 @@
 {-# LANGUAGE LambdaCase #-}
-
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Core.Parser
+-- Copyright   :  (c) Luigi D. C. Soares 2020
+-- License     :  GPL-3
+--
+-- Maintainer  :  luigidcsoares@gmail.com
+-- Stability   :  experimental
+-- Portability :  portable
+----------------------------------------------------------------------------
 module Core.Parser where
 
 import qualified Text.ParserCombinators.Parsec.Token

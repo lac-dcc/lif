@@ -1,6 +1,15 @@
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE ViewPatterns #-}
-
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Core.Eval
+-- Copyright   :  (c) Luigi D. C. Soares 2020
+-- License     :  GPL-3
+--
+-- Maintainer  :  luigidcsoares@gmail.com
+-- Stability   :  experimental
+-- Portability :  portable
+----------------------------------------------------------------------------
 module Core.Eval
     ( State
     , Reg

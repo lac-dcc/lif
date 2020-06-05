@@ -1,6 +1,15 @@
 {-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Internal.Constraint
+-- Copyright   :  (c) Luigi D. C. Soares 2020
+-- License     :  GPL-3
+--
+-- Maintainer  :  luigidcsoares@gmail.com
+-- Stability   :  experimental
+-- Portability :  portable
+----------------------------------------------------------------------------
 module Internal.Constraint where
 
 import qualified Data.Map                      as Map

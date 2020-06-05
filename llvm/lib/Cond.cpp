@@ -1,4 +1,19 @@
 //===-- Cond.h ------------------------------------------------------------===//
+// Copyright (C) 2020  Luigi D. C. Soares
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//===----------------------------------------------------------------------===//
 ///
 /// \file
 /// This file contains the implementation of the functions related to both
@@ -90,7 +105,7 @@ void bindOut(BasicBlock &BB, Value *OutPtr,
         // If there are more than one incoming cond, fold them and set the
         // last instruction as the out value. We proceed as following:
         //   > Let InV = {v0, v1, ..., vn}, i.e. the list of values
-        //   > z0 = v0 & v1, the initial value we pass to std::accumulate
+        //   > z0 = v0 & v1
         //   > z1 = z0 & v2
         //   ...
         //   > zn-1 = zn-2 & vn

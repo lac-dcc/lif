@@ -1,5 +1,14 @@
 {-# LANGUAGE TupleSections #-}
-
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Pass.Invariant
+-- Copyright   :  (c) Luigi D. C. Soares 2020
+-- License     :  GPL-3
+--
+-- Maintainer  :  luigidcsoares@gmail.com
+-- Stability   :  experimental
+-- Portability :  portable
+----------------------------------------------------------------------------
 module Pass.Invariant
     ( transform
     , transformBlock
