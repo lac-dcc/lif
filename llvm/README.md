@@ -13,7 +13,7 @@ This is an implementation of the Invariant Pass onto the LLVM ecossystem. It rel
 - A generator for CMake (GNU Make, Ninja, etc)
 
 ## Build
-This project is built with CMake. You can choose the generator you prefer. You also need to set the path for the LLVM install directory. It is assumed that the following paths exist: $LT_LLVM_INSTALL_DIR/include/llvm for the LLVM installation and $LT_LLVM_INSTALL_DIR/lib/cmake/llvm/LLVMConfig.cmake for the LLVM config file. However, if you prefer, you can set these paths manually by modifying the CMakeLists.txt file at the root folder. The following commands exemplifies the building process:
+This project is built with CMake. You can choose the generator you prefer. You also need to set the path for the LLVM install directory. It is assumed that the following paths exist: $LT_LLVM_INSTALL_DIR/include/llvm for the LLVM installation and $LT_LLVM_INSTALL_DIR/lib/cmake/llvm/LLVMConfig.cmake for the LLVM config file. However, if you prefer, you can set these paths manually by modifying the CMakeLists.txt file at the root folder. The following commands illustrate the building process:
 
 ```
 $ cd /path/to/lif/llvm
@@ -22,7 +22,7 @@ $ ninja
 ```
 
 ## Usage
-First, you need to generate a LLVM IR representation of some source code. For that, you can proceed as follows:
+First, you need to generate an LLVM IR representation of some source code. For that, you can proceed as follows:
 
 ```
 $ clang -S -emit-llvm -Xclang -disable-O0-optnone example.c -o example.ll

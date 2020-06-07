@@ -1,7 +1,7 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 # Project Líf
-The goal of this project is the development of a technique that transforms a function into a version of it that is invariant. This property ensures that the set of instructions executed will always be the same regardless of the inputs. As a consequence, the execution time of the said function will be constant. Such transformation method could be used, for example, to mitigate possible timing side-channel leaks on cryptography libraries.
+The goal of this project is the development of a technique that transforms a function into a version of it that is time and memory invariant. This property ensures that the set of instructions executed will always be the same regardless of the inputs. As a consequence, the execution time of said function will be constant. Such transformation method eliminates side-channels in implementations of cryptography.
 
 This repository is split into two folders described above:
 
@@ -19,4 +19,4 @@ int comp(int *A, int *B) {
 }
 ```
 
-Let A = [0, 0, 0, 0] and B = [0, 0, 0, 0]. In this case, the loop body will be executed _N_ times. Now, let A' = [1, 0, 0, 0]. When calling `comp` with A' and B, since the first test _A[i] != B[i]_ already fails the loop body will be executed only once and the function will then return. Hence, if _N_ is large, the execution time of this function w.r.t the first input will be much bigger than the execution time for the second input. This large difference can, for example, be used by an external observer to retrieve informations related to those inputs.
+Let A = [0, 0, 0, 0] and B = [0, 0, 0, 0]. In this case, the loop body will be executed _N_ times. Now, let A' = [1, 0, 0, 0]. When calling `comp` with A' and B, since the first test _A[i] != B[i]_ already fails, the loop body will be executed only once and the function will then return. Hence, if _N_ is large, the execution time of this function w.r.t the first input will take longer than the execution time for the second input. This difference can, for example, be used by an external observer to retrieve informations related to those inputs.

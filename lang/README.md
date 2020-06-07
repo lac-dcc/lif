@@ -27,7 +27,7 @@ Prog       ::= { Block } Exit
 </pre>
 
 ## Requirements
-- Stack >= 2.3.1
+- [Stack](https://docs.haskellstack.org/en/stable/README/) >= 2.3.1
 
 ## Usage
 - `stack run -- [opt]`, where opt can be one of the following:
