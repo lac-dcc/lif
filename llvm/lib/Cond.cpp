@@ -45,7 +45,7 @@ namespace cond {
 OutMap allocOut(Function &F) {
     OutMap OutM(F.size());
     auto &Entry = F.front();
-    auto BoolT = IntegerType::get(F.getContext(), 1);
+    auto *BoolT = IntegerType::get(F.getContext(), 1);
 
     for (auto &BB : F) {
         auto *AI = new AllocaInst(BoolT, 0, "out.", Entry.getTerminator());
@@ -55,8 +55,11 @@ OutMap allocOut(Function &F) {
     return OutM;
 }
 
-SmallVector<Incoming, 8> bindIn(BasicBlock &BB, const OutMap OutM) {
-    auto InV = SmallVector<Incoming, 8>();
+std::pair<SmallVector<Incoming, 8>, SmallVector<Value *, 4>>
+bindIn(BasicBlock &BB, const OutMap OutM) {
+    SmallVector<Incoming, 8> InV;
+    SmallVector<Value *, 4> GenV;
+
     for (auto *P : predecessors(&BB)) {
         auto *Terminator = P->getTerminator();
         auto *Br = dyn_cast<BranchInst>(Terminator);
@@ -64,7 +67,9 @@ SmallVector<Incoming, 8> bindIn(BasicBlock &BB, const OutMap OutM) {
         // TODO: Handle switch, etc...
         if (!Br) continue;
 
-        auto *Pos = BB.getFirstNonPHI();
+        // Get the address of the instruction associated with the first
+        // insertion pointer.
+        auto *Pos = &*BB.getFirstInsertionPt();
 
         // Out map must have been constructed already; thus, every
         // basic block should be associated with an out variable.
@@ -72,31 +77,38 @@ SmallVector<Incoming, 8> bindIn(BasicBlock &BB, const OutMap OutM) {
         Instruction *C =
             new LoadInst(OutPtr->getAllocatedType(), OutPtr, "", Pos);
 
+        GenV.push_back(C);
         if (Br->isConditional()) {
             // If we are at an else branch, then we should negate the
             // predicate.
-            auto *Predicate =
-                Br->getSuccessor(1) == &BB
-                    ? BinaryOperator::CreateNot(Br->getCondition(), "not.", Pos)
-                    : Br->getCondition();
+            auto *Pred = Br->getCondition();
+            if (Br->getSuccessor(1) == &BB) {
+                Pred = BinaryOperator::CreateNot(Pred, "", Pos);
+                GenV.push_back(Pred);
+            }
 
-            C = BinaryOperator::CreateAnd(C, Predicate, "in.", Pos);
+            C = BinaryOperator::CreateAnd(C, Pred, "in.", Pos);
+            GenV.push_back(C);
         }
 
-        InV.push_back({C /* Cond */, P /* From */});
+        // Insert to the beginning of the vector to preserve the insertion
+        // order at the basic block.
+        InV.insert(InV.begin(), {C /* Cond */, P /* From */});
     }
 
-    return InV;
+    return {InV, GenV};
 }
 
-void bindOut(BasicBlock &BB, Value *OutPtr,
-             const SmallVectorImpl<Value *> &InV) {
+std::vector<Value *> bindOut(BasicBlock &BB, Value *OutPtr,
+                             const SmallVectorImpl<Value *> &InV) {
+    std::vector<Value *> GenV;
+
     // Compute and store the proper value at OutPtr.
     Value *OutV;
     if (InV.empty()) {
         // There are no incoming conditions, so we set the out value as
         // true.
-        auto BoolT = IntegerType::get(BB.getContext(), 1);
+        auto *BoolT = IntegerType::get(BB.getContext(), 1);
         OutV = ConstantInt::get(BoolT, 1);
     } else if (InV.size() == 1) {
         // Set the out value as the single value from InV.
@@ -111,30 +123,39 @@ void bindOut(BasicBlock &BB, Value *OutPtr,
         //   > zn-1 = zn-2 & vn
         OutV = BinaryOperator::CreateOr(InV[0], InV[1]);
         cast<Instruction>(OutV)->insertBefore(BB.getTerminator());
+        GenV.push_back(OutV);
 
-        for (auto V = InV.begin() + 2; V != InV.end(); ++V) {
-            OutV = BinaryOperator::CreateOr(OutV, *V);
+        for (auto Iter = InV.begin() + 2; Iter != InV.end(); ++Iter) {
+            OutV = BinaryOperator::CreateOr(OutV, *Iter);
             cast<Instruction>(OutV)->insertBefore(BB.getTerminator());
+            GenV.push_back(OutV);
         }
     }
 
-    new StoreInst(OutV, OutPtr, BB.getTerminator());
+    GenV.push_back(new StoreInst(OutV, OutPtr, BB.getTerminator()));
+    return GenV;
 }
 
-InMap bind(Function &F, const OutMap OutM) {
+std::pair<InMap, std::vector<Value *>> bind(Function &F, const OutMap OutM) {
     InMap InM(F.size());
+    std::vector<Value *> GenV;
+
     for (auto &BB : F) {
-        auto InV = bindIn(BB, OutM);
+        auto [InV, GenInV] = bindIn(BB, OutM);
         InM[&BB] = InV;
 
-        bindOut(BB, OutM.lookup(&BB),
-                std::accumulate(InV.begin(), InV.end(),
-                                SmallVector<Value *, 8>(),
-                                [](auto Vals, auto In) {
-                                    Vals.push_back(In.Cond);
-                                    return Vals;
-                                }));
+        auto GenOutV = bindOut(BB, OutM.lookup(&BB),
+                               std::accumulate(InV.begin(), InV.end(),
+                                               SmallVector<Value *, 8>(),
+                                               [](auto Accum, auto In) {
+                                                   Accum.push_back(In.Cond);
+                                                   return Accum;
+                                               }));
+
+        GenV.insert(GenV.end(), GenInV.begin(), GenInV.end());
+        GenV.insert(GenV.end(), GenOutV.begin(), GenOutV.end());
     }
-    return InM;
+
+    return {InM, GenV};
 }
 } // namespace cond

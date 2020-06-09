@@ -71,15 +71,20 @@ OutMap allocOut(llvm::Function &F);
 /// The size of the basic block grows according to the # of instructions needed
 /// to compute the incoming conditions.
 ///
-/// \returns a list of incoming conditions.
-llvm::SmallVector<Incoming, 8> bindIn(llvm::BasicBlock &BB, const OutMap OutM);
+/// \returns a list of incoming conditions plus the set of instructions
+/// generated.
+std::pair<llvm::SmallVector<Incoming, 8>, llvm::SmallVector<llvm::Value *, 4>>
+bindIn(llvm::BasicBlock &BB, const OutMap OutM);
 
 /// Computes the outgoing condition for \p BB.
 ///
 /// The size of the basic block grows according to the # of instructions needed
 /// to compute the outgoing condition.
-void bindOut(llvm::BasicBlock &BB, llvm::Value *OutPtr,
-             const llvm::SmallVectorImpl<llvm::Value *> &InV);
+///
+/// \returns the set of instructions generated.
+std::vector<llvm::Value *>
+bindOut(llvm::BasicBlock &BB, llvm::Value *OutPtr,
+        const llvm::SmallVectorImpl<llvm::Value *> &InV);
 
 /// Traverses the basic blocks of \p F, binding the proper incoming and outgoing
 /// conditions to them.
@@ -87,8 +92,11 @@ void bindOut(llvm::BasicBlock &BB, llvm::Value *OutPtr,
 /// The size of each basic block in \p F grows according to the # of
 /// instructions needed to compute both their incoming and outgoing conds.
 ///
-/// \returns a map between basic blocks and their incoming conditions.
-InMap bind(llvm::Function &F, const OutMap OutM);
+/// \returns a map between basic blocks and their incoming conditions plus the
+/// set of instructions generated (i.e. the set generated from bindIn +
+/// bindOut).
+std::pair<InMap, std::vector<llvm::Value *>> bind(llvm::Function &F,
+                                                  const OutMap OutM);
 } // namespace cond
 
 #endif
