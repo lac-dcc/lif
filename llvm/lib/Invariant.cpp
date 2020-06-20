@@ -48,7 +48,12 @@ using namespace llvm;
 using namespace cond;
 
 namespace invariant {
-PreservedAnalyses InvariantPass::run(Function &F, FunctionAnalysisManager &AM) {
+PreservedAnalyses Pass::run(Module &M, ModuleAnalysisManager &AM) {
+    errs() << "MODULEEEEEEEEEEE\n";
+    return PreservedAnalyses::all();
+}
+
+PreservedAnalyses Pass::run(Function &F, FunctionAnalysisManager &AM) {
     // We currently cannot handle functions with cycles.
     SmallVector<std::pair<const BasicBlock *, const BasicBlock *>, 32> Result;
     FindFunctionBackedges(F, Result);
@@ -60,85 +65,52 @@ PreservedAnalyses InvariantPass::run(Function &F, FunctionAnalysisManager &AM) {
         return PreservedAnalyses::all();
     }
 
-    // TODO: define the set of analyses not preserved.
-    Transform(F, &AM.getResult<TargetLibraryAnalysis>(F)).run();
-    return PreservedAnalyses::none();
-}
-
-Transform::Transform(Function &F, const TargetLibraryInfo *TLI) : F(F) {
-    // Match pointer args with its size.
-    // TODO: get the match from annotations (position of the arg?).
-    // int comp(int *a, const unsigned sa, int *b, const unsigned sb);
-    for (auto Iter = F.arg_begin();
-         Iter != F.arg_end() && Iter + 1 != F.arg_end(); ++Iter)
-        this->SizeM[&*Iter] = &*(Iter + 1);
-
-    // Fill SizeM with the size of all local ptrs as well.
-    auto DL = F.getParent()->getDataLayout();
-    auto Propag = [this](const Value *V, Value *Size) {
-        for (auto *U : V->users()) this->SizeM[U] = Size;
-    };
-
-    for (auto &BB : F) {
-        for (auto &I : BB) {
-            // TODO: Only alloc and call @malloc????
-            if (auto *Alloca = dyn_cast<AllocaInst>(&I)) {
-                auto *Size = Alloca->getArraySize();
-                this->SizeM[Alloca] = Size;
-                Propag(Alloca, Size);
-                continue;
-            }
-
-            auto *Call = dyn_cast<CallInst>(&I);
-            if (Call && isAllocationFn(Call, TLI)) {
-                auto *Size = getMallocArraySize(Call, DL, TLI);
-                this->SizeM[Call] = Size;
-                Propag(Call, Size);
-            }
-        }
-    }
+    // Get the length associated with each pointer (either local or argument).
+    auto LenM = getLen(F, &AM.getResult<TargetLibraryAnalysis>(F));
 
     // Initialize Shadow memory as a pointer to an integer. We use
     // MaxPointerSize to ensure absence of overflow.
-    this->Shadow = new AllocaInst(
-        IntegerType::get(F.getContext(), DL.getMaxPointerSizeInBits()), 0,
-        "shadow", F.getEntryBlock().getTerminator());
+    auto *Shadow = new AllocaInst(
+        IntegerType::get(
+            F.getContext(),
+            F.getParent()->getDataLayout().getMaxPointerSizeInBits()),
+        0, "shadow", F.getEntryBlock().getTerminator());
 
     // Bind the outgoing and incoming conditions to all basic blocks.
     OutMap OutM = allocOut(F);
     auto [InM, GenV] = bind(F, OutM);
-    this->InM = InM;
 
-    // Fill SkipM with the instructions generated after binding the
-    // conditions to each basic block, since we don't need to modify them.
-    for (auto *V : GenV) this->SkipS.insert(V);
-}
+    // Fill SkipS with the instructions generated after binding the conditions
+    // to each basic block, since we don't need to modify them.
+    std::set<Value *> SkipS;
+    for (auto *V : GenV) SkipS.insert(V);
 
-void Transform::run() {
-    for (auto &BB : this->F) {
+    for (auto &BB : F) {
+        auto InV = InM[&BB];
         // We need to collect every phi instruction and store in a separate
         // vector because phi transform. fn removes the phi instruction, so we
         // cannot do this in an iterator loop.
         SmallVector<PHINode *, 8> PhiV;
 
         for (auto &I : BB) {
-            auto Iter = this->SkipS.find(&I);
-            if (Iter != this->SkipS.end()) continue;
+            if (SkipS.find(&I) != SkipS.end()) continue;
 
             if (auto *Phi = dyn_cast<PHINode>(&I))
                 PhiV.push_back(Phi);
             else if (auto *Load = dyn_cast<LoadInst>(&I))
-                this->load(*Load);
+                transformLoad(*Load, Shadow,
+                              LenM.lookup(Load->getPointerOperand()), InV);
             else if (auto *Store = dyn_cast<StoreInst>(&I))
-                this->store(*Store);
+                transformStore(*Store, Shadow,
+                               LenM.lookup(Store->getPointerOperand()), InV);
         }
 
-        for (auto *Phi : PhiV) this->phi(*Phi);
+        for (auto *Phi : PhiV) transformPhi(*Phi, InV);
     }
 
     // Replace each terminator by an uncond. br linked to the next basic block,
     // following the reverse postorder.
-    ReversePostOrderTraversal<Function *> RPOT(&this->F);
+    ReversePostOrderTraversal<Function *> RPOT(&F);
     SmallVector<BasicBlock *, 32> MergeV;
 
     for (auto Iter = RPOT.begin(); Iter + 1 != RPOT.end(); ++Iter) {
@@ -150,20 +122,21 @@ void Transform::run() {
     // Now that every basic block has only one successor, we can merge them
     // without any problems.
     for (auto *BB : MergeV) MergeBlockIntoPredecessor(BB);
+
+    // TODO: define the set of analyses not preserved.
+    return PreservedAnalyses::none();
 }
 
-void Transform::phi(PHINode &Phi) {
-    auto InV = this->InM.lookup(Phi.getParent());
-
+void transformPhi(PHINode &Phi, const SmallVectorImpl<Incoming> &InV) {
     // No incoming condition, so there is nothing to do.
     if (InV.empty()) return;
 
     // Get the negative value of each cond in the list of conditions of
-    // InV.  For each phi-value v in Phi, get the condition associated with it
+    // InV. For each phi-value v in Phi, get the condition associated with it
     // and apply the operator & (and) so the result will either be zero or the
     // phi-value.
     SmallVector<Instruction *, 8> AndV;
-    AndV.reserve(this->InM.size());
+    AndV.reserve(InV.size());
 
     for (auto In : InV) {
         Instruction *Pos = In.Cond->getNextNode();
@@ -197,112 +170,119 @@ void Transform::phi(PHINode &Phi) {
     Phi.eraseFromParent();
 }
 
-void Transform::load(LoadInst &Load) {
-    auto InV = this->InM.lookup(Load.getParent());
+void transformLoad(LoadInst &Load, AllocaInst *Shadow, Value *PtrLen,
+                   const SmallVectorImpl<Incoming> &InV) {
+    // No incoming condition, so there is nothing to do.
+    if (InV.empty()) return;
 
+    // If the pointer operand is a GEP we need to transform it in order to
+    // ensure the safety of the memory access. We fold the incoming conditions
+    // from InV into a single value by applying the operator | (or) to get the
+    // condition.
+    if (auto *GEP = dyn_cast<GetElementPtrInst>(Load.getPointerOperand()))
+        transformGEP(GEP, Shadow, PtrLen, joinCond(InV).back(), &Load);
+}
+
+void transformStore(StoreInst &Store, AllocaInst *Shadow, Value *PtrLen,
+                    const SmallVectorImpl<Incoming> &InV) {
     // No incoming condition, so there is nothing to do.
     if (InV.empty()) return;
 
     // Fold the incoming conditions from InV into a single value by applying the
     // operator | (or).
-    auto OrV = this->joinCond(*Load.getParent());
+    auto OrV = joinCond(InV);
+
+    // Let addr' be either the original addr accessed by Store or the addr
+    // got after transforming a GEP inst (see transformLoad). Let val' be either
+    // val or Load(addr'), according to the incoming conditions. Replace
+    // Store(val, addr) by Store(val', addr').
+    auto *StoreVal = Store.getValueOperand();
+    auto *StorePtr = Store.getPointerOperand();
 
     // If the Ptr operand is a GEP instruction, then we need to work on the
     // indices used by GEP. If not, this load does not need to be transformed.
-    auto *GEP = dyn_cast<GetElementPtrInst>(Load.getPointerOperand());
-    if (!GEP) return;
+    if (auto *GEP = dyn_cast<GetElementPtrInst>(StorePtr))
+        transformGEP(GEP, Shadow, PtrLen, OrV.back(), &Store);
 
-    // Clone GEP inst to ensure that it is right before the Load inst.
-    auto *GEPClone = cast<GetElementPtrInst>(GEP->clone());
-    GEPClone->insertBefore(&Load);
-    Load.setOperand(0, GEPClone);
-    this->gep(GEPClone, OrV.back());
-}
-
-void Transform::store(StoreInst &Store) {
-    auto InV = this->InM.lookup(Store.getParent());
-
-    // No incoming condition, so there is nothing to do.
-    if (InV.empty()) return;
-
-    // Fold the incoming conditions from InV into a single value by applying the
-    // operator | (or).
-    auto OrV = this->joinCond(*Store.getParent());
-
-    // If the Ptr operand is a GEP instruction, then we need to work on the
-    // indices used by GEP.
-    auto *GEP = dyn_cast<GetElementPtrInst>(Store.getPointerOperand());
-    if (GEP) {
-        // Clone GEP inst to ensure that it is right before the Load inst.
-        auto *GEPClone = cast<GetElementPtrInst>(GEP->clone());
-        GEPClone->insertBefore(&Store);
-        Store.setOperand(1, GEPClone);
-        this->gep(GEPClone, OrV.back());
-    }
-
-    // Generate a load to get either the value of the last accessed position or
-    // the value stored at the position that Store is trying to update. For the
-    // first case, we execute a store without changing the value (store the same
-    // value), while for the latter we execute Store as it is.
-    auto *StoreVal = Store.getValueOperand();
-    auto *Load = new LoadInst(StoreVal->getType(), Store.getPointerOperand(),
-                              "", &Store);
-
-    // Replace Store(val, addr) with Store(val', addr) where val' = either val
-    // or Load(addr);
-    auto *SelectVal = this->select(OrV.back(), StoreVal, Load, &Store);
+    auto *Load = new LoadInst(StoreVal->getType(), StorePtr, "", &Store);
+    auto *SelectVal = ctsel(OrV.back(), StoreVal, Load, &Store);
     SelectVal->setName("select.val.");
     Store.setOperand(0, SelectVal);
 }
 
-void Transform::gep(GetElementPtrInst *GEP, Value *Cond) {
-    auto *Ptr = GEP->getPointerOperand();
+void transformGEP(GetElementPtrInst *GEP, AllocaInst *Shadow, Value *PtrLen,
+                  Value *Cond, Instruction *Before) {
     auto *Idx = GEP->getOperand(GEP->getNumIndices());
-    auto *Size = this->SizeM.lookup(Ptr);
-
     auto *IdxTy = Idx->getType();
-    if (Size->getType()->getScalarSizeInBits() < IdxTy->getScalarSizeInBits())
-        Size = new SExtInst(Size, IdxTy, "", GEP);
+
+    if (PtrLen->getType()->getScalarSizeInBits() < IdxTy->getScalarSizeInBits())
+        PtrLen = new SExtInst(PtrLen, IdxTy, "", Before);
 
     auto *IsSafe = ICmpInst::Create(Instruction::ICmp, ICmpInst::ICMP_SLT, Idx,
-                                    Size, "", GEP);
+                                    PtrLen, "", Before);
 
-    // Check if the incoming condition is true AND the access to the original
-    // array at Idx is safe.
-    auto *AccessCond = BinaryOperator::CreateAnd(Cond, IsSafe, "safe.", GEP);
-
-    // If safe, use the original ptr. Else, use shadow memory.
-    auto *PtrTy = Ptr->getType();
-    auto PtrSize =
-        GEP->getModule()->getDataLayout().getPointerTypeSizeInBits(PtrTy);
-    auto *AddrTy = IntegerType::get(GEP->getContext(), PtrSize);
-    auto *PtrAddr = new PtrToIntInst(Ptr, AddrTy, "", GEP);
-    auto *ShadowAddr = new PtrToIntInst(this->Shadow, AddrTy, "", GEP);
-    GEP->setOperand(
-        GEP->getPointerOperandIndex(),
-        new IntToPtrInst(this->select(AccessCond, PtrAddr, ShadowAddr, GEP),
-                         PtrTy, "select.ptr.", GEP));
+    // Check if (i) the incoming condition is true OR (ii) the access to the
+    // original array at Idx is safe. If (i), we execute the original
+    // instruction as it is. If (ii), we also execute the original instruction
+    // as it is because we know the access is inbounds. Otherwise, we access a
+    // shadow memory.
+    auto *NewPtr =
+        ctsel(BinaryOperator::CreateOr(Cond, IsSafe, "safe.", Before), GEP,
+              new BitCastInst(Shadow, GEP->getType(), "", Before), Before);
+    GEP->replaceUsesWithIf(NewPtr,
+                           [NewPtr](Use &U) { return U.getUser() != NewPtr; });
 }
 
-Value *Transform::select(Value *Cond, Value *VTrue, Value *VFalse,
-                         Instruction *Before) {
-    auto *CFalse = BinaryOperator::CreateSub(
-        Cond, ConstantInt::get(Cond->getType(), 1), "", Before);
-    auto *CTrue = BinaryOperator::CreateNot(CFalse, "", Before);
+DenseMap<const Value *, Value *> getLen(Function &F,
+                                        const TargetLibraryInfo *TLI) {
+    DenseMap<const Value *, Value *> LenM;
 
-    // Select(Cond, VTrue, VFalse) = (CTrue & VTrue) | (CFalse & VFalse)
-    return BinaryOperator::CreateOr(
-        BinaryOperator::CreateAnd(
-            new SExtInst(CTrue, VTrue->getType(), "", Before), VTrue, "",
-            Before), // Select VTrue
-        BinaryOperator::CreateAnd(
-            new SExtInst(CFalse, VFalse->getType(), "", Before), VFalse, "",
-            Before), // Select VFalse
-        "", Before);
+    // Fill LenM with the size of all local ptrs as well.
+    auto DL = F.getParent()->getDataLayout();
+    auto Propag = [&LenM](const Value *V, Value *Size) {
+        for (auto *U : V->users()) LenM[U] = Size;
+    };
+
+    for (auto &BB : F) {
+        for (auto &I : BB) {
+            // TODO: Only alloc and call @malloc????
+            if (auto *Alloca = dyn_cast<AllocaInst>(&I)) {
+                auto *Len = Alloca->getArraySize();
+                LenM[Alloca] = Len;
+                Propag(Alloca, Len);
+                continue;
+            }
+
+            auto *Call = dyn_cast<CallInst>(&I);
+            if (Call && isAllocationFn(Call, TLI)) {
+                auto *Len = getMallocArraySize(Call, DL, TLI);
+                LenM[Call] = Len;
+                Propag(Call, Len);
+            }
+        }
+    }
+
+    if (F.arg_begin() == F.arg_end()) return LenM;
+
+    // Match pointer args with its size.
+    // TODO: get the match from annotations (position of the arg?).
+    // int comp(int *a, const unsigned sa, int *b, const unsigned sb);
+    for (auto Iter = F.arg_begin(); Iter + 1 != F.arg_end(); ++Iter) {
+        Value *V = &*Iter;
+        if (!isa<PointerType>(V->getType())) continue;
+
+        auto *Len = &*(Iter + 1);
+        assert(isa<IntegerType>(Len->getType()) &&
+               "pointer argument must be followed by its length!");
+
+        LenM[&*Iter] = Len;
+        Propag(V, Len);
+    }
+
+    return LenM;
 }
 
-SmallVector<Instruction *, 8> Transform::joinCond(BasicBlock &BB) {
-    auto InV = this->InM.lookup(&BB);
+SmallVector<Instruction *, 8> joinCond(const SmallVectorImpl<Incoming> &InV) {
     if (InV.size() == 1) return {InV[0].Cond};
 
     Instruction *Pos = InV.back().Cond->getNextNode();
@@ -318,19 +298,41 @@ SmallVector<Instruction *, 8> Transform::joinCond(BasicBlock &BB) {
             return Accum;
         });
 }
+
+Value *ctsel(Value *Cond, Value *VTrue, Value *VFalse, Instruction *Before) {
+    // auto *CFalse = BinaryOperator::CreateSub(
+    //     Cond, ConstantInt::get(Cond->getType(), 1), "", Before);
+    // auto *CTrue = BinaryOperator::CreateNot(CFalse, "", Before);
+    //
+    // // Select(Cond, VTrue, VFalse) = (CTrue & VTrue) | (CFalse & VFalse)
+    // return BinaryOperator::CreateOr(
+    //     BinaryOperator::CreateAnd(
+    //         new SExtInst(CTrue, VTrue->getType(), "", Before), VTrue, "",
+    //         Before), // Select VTrue
+    //     BinaryOperator::CreateAnd(
+    //         new SExtInst(CFalse, VFalse->getType(), "", Before), VFalse, "",
+    //         Before), // Select VFalse
+    //     "", Before);
+    return SelectInst::Create(Cond, VTrue, VFalse, "", Before);
+}
+
 } // namespace invariant
 
 PassPluginLibraryInfo getInvariantPluginInfo() {
     return {LLVM_PLUGIN_API_VERSION, "Invariant Pass", LLVM_VERSION_STRING,
             [](PassBuilder &PB) {
                 PB.registerPipelineParsingCallback(
-                    [](StringRef Name, FunctionPassManager &PM, ...) {
-                        if (Name == "invar") {
-                            PM.addPass(invariant::InvariantPass());
-                            return true;
-                        }
+                    [](StringRef Name, ModulePassManager &PM, ...) {
+                        bool isPass = Name == "invar";
+                        if (isPass) PM.addPass(invariant::Pass());
+                        return isPass;
+                    });
 
-                        return false;
+                PB.registerPipelineParsingCallback(
+                    [](StringRef Name, FunctionPassManager &PM, ...) {
+                        bool isPass = Name == "invar";
+                        if (isPass) PM.addPass(invariant::Pass());
+                        return isPass;
                     });
             }};
 }
