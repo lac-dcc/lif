@@ -44,14 +44,9 @@ using namespace llvm;
 namespace cond {
 OutMap allocOut(Function &F) {
     OutMap OutM(F.size());
-    auto &Entry = F.front();
-    auto *BoolT = IntegerType::get(F.getContext(), 1);
-
-    for (auto &BB : F) {
-        auto *AI = new AllocaInst(BoolT, 0, "out.", Entry.getTerminator());
-        OutM[&BB] = AI;
-    }
-
+    auto *Pos = F.getEntryBlock().getTerminator();
+    auto *BoolTy = IntegerType::getInt1Ty(F.getContext());
+    for (auto &BB : F) OutM[&BB] = new AllocaInst(BoolTy, 0, "out.", Pos);
     return OutM;
 }
 
@@ -108,8 +103,8 @@ std::vector<Value *> bindOut(BasicBlock &BB, Value *OutPtr,
     if (InV.empty()) {
         // There are no incoming conditions, so we set the out value as
         // true.
-        auto *BoolT = IntegerType::get(BB.getContext(), 1);
-        OutV = ConstantInt::get(BoolT, 1);
+        auto *BoolTy = IntegerType::getInt1Ty(BB.getContext());
+        OutV = ConstantInt::get(BoolTy, 1);
     } else if (InV.size() == 1) {
         // Set the out value as the single value from InV.
         OutV = InV[0];

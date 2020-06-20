@@ -26,7 +26,11 @@
 #include <llvm/ADT/PostOrderIterator.h>
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/Analysis/CFG.h>
+#include <llvm/Analysis/MemoryBuiltins.h>
+#include <llvm/Analysis/TargetLibraryInfo.h>
 #include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Constants.h>
+#include <llvm/IR/DataLayout.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/InstrTypes.h>
 #include <llvm/IR/Instruction.h>
@@ -57,11 +61,50 @@ PreservedAnalyses InvariantPass::run(Function &F, FunctionAnalysisManager &AM) {
     }
 
     // TODO: define the set of analyses not preserved.
-    Transform(F).run();
+    Transform(F, &AM.getResult<TargetLibraryAnalysis>(F)).run();
     return PreservedAnalyses::none();
 }
 
-Transform::Transform(Function &F) : F(F) {
+Transform::Transform(Function &F, const TargetLibraryInfo *TLI) : F(F) {
+    // Match pointer args with its size.
+    // TODO: get the match from annotations (position of the arg?).
+    // int comp(int *a, const unsigned sa, int *b, const unsigned sb);
+    for (auto Iter = F.arg_begin();
+         Iter != F.arg_end() && Iter + 1 != F.arg_end(); ++Iter)
+        this->SizeM[&*Iter] = &*(Iter + 1);
+
+    // Fill SizeM with the size of all local ptrs as well.
+    auto DL = F.getParent()->getDataLayout();
+    auto Propag = [this](const Value *V, Value *Size) {
+        for (auto *U : V->users()) this->SizeM[U] = Size;
+    };
+
+    for (auto &BB : F) {
+        for (auto &I : BB) {
+            // TODO: Only alloc and call @malloc????
+            if (auto *Alloca = dyn_cast<AllocaInst>(&I)) {
+                auto *Size = Alloca->getArraySize();
+                this->SizeM[Alloca] = Size;
+                Propag(Alloca, Size);
+                continue;
+            }
+
+            auto *Call = dyn_cast<CallInst>(&I);
+            if (Call && isAllocationFn(Call, TLI)) {
+                auto *Size = getMallocArraySize(Call, DL, TLI);
+                this->SizeM[Call] = Size;
+                Propag(Call, Size);
+            }
+        }
+    }
+
+    // Initialize Shadow memory as a pointer to an integer. We use
+    // MaxPointerSize to ensure absence of overflow.
+    this->Shadow = new AllocaInst(
+        IntegerType::get(F.getContext(), DL.getMaxPointerSizeInBits()), 0,
+        "shadow", F.getEntryBlock().getTerminator());
+
+    // Bind the outgoing and incoming conditions to all basic blocks.
     OutMap OutM = allocOut(F);
     auto [InM, GenV] = bind(F, OutM);
     this->InM = InM;
@@ -69,21 +112,12 @@ Transform::Transform(Function &F) : F(F) {
     // Fill SkipM with the instructions generated after binding the
     // conditions to each basic block, since we don't need to modify them.
     for (auto *V : GenV) this->SkipS.insert(V);
-
-    // Fill LastM with the constant 0 for each memory-related value.
-    auto *Int64T = IntegerType::get(F.getContext(), 64);
-    auto *Const0 = ConstantInt::get(Int64T, 0);
-
-    for (auto &BB : F)
-        for (auto &I : BB)
-            if (auto *GEP = dyn_cast<GetElementPtrInst>(&I))
-                this->LastM[GEP->getPointerOperand()] = Const0;
 }
 
 void Transform::run() {
     for (auto &BB : this->F) {
-        // We need to collect every phi instruction and store at a separate
-        // vector because phi tranform. fn removes the phi instruction, so we
+        // We need to collect every phi instruction and store in a separate
+        // vector because phi transform. fn removes the phi instruction, so we
         // cannot do this in an iterator loop.
         SmallVector<PHINode *, 8> PhiV;
 
@@ -178,16 +212,11 @@ void Transform::load(LoadInst &Load) {
     auto *GEP = dyn_cast<GetElementPtrInst>(Load.getPointerOperand());
     if (!GEP) return;
 
-    auto *InCond = OrV.back();
-    auto *Const1 = ConstantInt::get(InCond->getType(), 1);
-    auto *LastCond = BinaryOperator::CreateSub(InCond, Const1, "", &Load);
-    auto *NewCond = BinaryOperator::CreateNot(LastCond, "", &Load);
-
     // Clone GEP inst to ensure that it is right before the Load inst.
     auto *GEPClone = cast<GetElementPtrInst>(GEP->clone());
     GEPClone->insertBefore(&Load);
     Load.setOperand(0, GEPClone);
-    this->gep(GEPClone, LastCond, NewCond);
+    this->gep(GEPClone, OrV.back());
 }
 
 void Transform::store(StoreInst &Store) {
@@ -200,11 +229,6 @@ void Transform::store(StoreInst &Store) {
     // operator | (or).
     auto OrV = this->joinCond(*Store.getParent());
 
-    auto *InCond = OrV.back();
-    auto *Const1 = ConstantInt::get(InCond->getType(), 1);
-    auto *LastCond = BinaryOperator::CreateSub(InCond, Const1, "", &Store);
-    auto *NewCond = BinaryOperator::CreateNot(LastCond, "", &Store);
-
     // If the Ptr operand is a GEP instruction, then we need to work on the
     // indices used by GEP.
     auto *GEP = dyn_cast<GetElementPtrInst>(Store.getPointerOperand());
@@ -213,7 +237,7 @@ void Transform::store(StoreInst &Store) {
         auto *GEPClone = cast<GetElementPtrInst>(GEP->clone());
         GEPClone->insertBefore(&Store);
         Store.setOperand(1, GEPClone);
-        this->gep(GEPClone, LastCond, NewCond);
+        this->gep(GEPClone, OrV.back());
     }
 
     // Generate a load to get either the value of the last accessed position or
@@ -221,35 +245,60 @@ void Transform::store(StoreInst &Store) {
     // first case, we execute a store without changing the value (store the same
     // value), while for the latter we execute Store as it is.
     auto *StoreVal = Store.getValueOperand();
-    auto *StoreValT = StoreVal->getType();
-    auto *Load = new LoadInst(StoreValT, Store.getPointerOperand(), "", &Store);
+    auto *Load = new LoadInst(StoreVal->getType(), Store.getPointerOperand(),
+                              "", &Store);
 
     // Replace Store(val, addr) with Store(val', addr) where val' = either val
     // or Load(addr);
-    auto *LastSExt = new SExtInst(LastCond, StoreValT, "", &Store);
-    auto *Last = BinaryOperator::CreateAnd(LastSExt, Load, "", &Store);
-    auto *NewSExt = new SExtInst(NewCond, StoreValT, "", &Store);
-    auto *New = BinaryOperator::CreateAnd(NewSExt, StoreVal, "", &Store);
-
-    auto *Select = BinaryOperator::CreateOr(Last, New, "select.val.", &Store);
-    Store.setOperand(0, Select);
+    auto *SelectVal = this->select(OrV.back(), StoreVal, Load, &Store);
+    SelectVal->setName("select.val.");
+    Store.setOperand(0, SelectVal);
 }
 
-void Transform::gep(GetElementPtrInst *GEP, Value *LastCond, Value *NewCond) {
-    for (unsigned i = 1; i <= GEP->getNumIndices(); i++) {
-        auto *NewIdx = GEP->getOperand(i);
-        // TODO: use last access index?
-        auto *LastIdx = ConstantInt::get(NewIdx->getType(), 0);
+void Transform::gep(GetElementPtrInst *GEP, Value *Cond) {
+    auto *Ptr = GEP->getPointerOperand();
+    auto *Idx = GEP->getOperand(GEP->getNumIndices());
+    auto *Size = this->SizeM.lookup(Ptr);
 
-        auto *LastSExt = new SExtInst(LastCond, NewIdx->getType(), "", GEP);
-        auto *Last = BinaryOperator::CreateAnd(LastSExt, LastIdx, "", GEP);
+    auto *IdxTy = Idx->getType();
+    if (Size->getType()->getScalarSizeInBits() < IdxTy->getScalarSizeInBits())
+        Size = new SExtInst(Size, IdxTy, "", GEP);
 
-        auto *NewSExt = new SExtInst(NewCond, NewIdx->getType(), "", GEP);
-        auto *New = BinaryOperator::CreateAnd(NewSExt, NewIdx, "", GEP);
+    auto *IsSafe = ICmpInst::Create(Instruction::ICmp, ICmpInst::ICMP_SLT, Idx,
+                                    Size, "", GEP);
 
-        auto *Select = BinaryOperator::CreateOr(Last, New, "select.idx.", GEP);
-        GEP->setOperand(i, Select);
-    }
+    // Check if the incoming condition is true AND the access to the original
+    // array at Idx is safe.
+    auto *AccessCond = BinaryOperator::CreateAnd(Cond, IsSafe, "safe.", GEP);
+
+    // If safe, use the original ptr. Else, use shadow memory.
+    auto *PtrTy = Ptr->getType();
+    auto PtrSize =
+        GEP->getModule()->getDataLayout().getPointerTypeSizeInBits(PtrTy);
+    auto *AddrTy = IntegerType::get(GEP->getContext(), PtrSize);
+    auto *PtrAddr = new PtrToIntInst(Ptr, AddrTy, "", GEP);
+    auto *ShadowAddr = new PtrToIntInst(this->Shadow, AddrTy, "", GEP);
+    GEP->setOperand(
+        GEP->getPointerOperandIndex(),
+        new IntToPtrInst(this->select(AccessCond, PtrAddr, ShadowAddr, GEP),
+                         PtrTy, "select.ptr.", GEP));
+}
+
+Value *Transform::select(Value *Cond, Value *VTrue, Value *VFalse,
+                         Instruction *Before) {
+    auto *CFalse = BinaryOperator::CreateSub(
+        Cond, ConstantInt::get(Cond->getType(), 1), "", Before);
+    auto *CTrue = BinaryOperator::CreateNot(CFalse, "", Before);
+
+    // Select(Cond, VTrue, VFalse) = (CTrue & VTrue) | (CFalse & VFalse)
+    return BinaryOperator::CreateOr(
+        BinaryOperator::CreateAnd(
+            new SExtInst(CTrue, VTrue->getType(), "", Before), VTrue, "",
+            Before), // Select VTrue
+        BinaryOperator::CreateAnd(
+            new SExtInst(CFalse, VFalse->getType(), "", Before), VFalse, "",
+            Before), // Select VFalse
+        "", Before);
 }
 
 SmallVector<Instruction *, 8> Transform::joinCond(BasicBlock &BB) {
