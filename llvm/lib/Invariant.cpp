@@ -17,12 +17,19 @@
 ///
 /// \file
 /// This file contains the implementation of the Invariant Pass.
+/// It exposes two distinct passes:
+/// 1) "len-args", a module function that, given a function signature, inserts
+/// an integer argument (the length) for each existing pointer argument.
+/// 2) "invar", a function pass that transforms a function F into a version
+/// that is invariant. This pass expects each pointer argument of F to be
+/// followed by an integer argument representing its length.
 ///
 //===----------------------------------------------------------------------===//
 
 #include "Invariant.h"
 #include "Cond.h"
 
+#include <llvm/ADT/DenseMap.h>
 #include <llvm/ADT/PostOrderIterator.h>
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/Analysis/CFG.h>
@@ -48,12 +55,125 @@ using namespace llvm;
 using namespace cond;
 
 namespace invariant {
-PreservedAnalyses Pass::run(Module &M, ModuleAnalysisManager &AM) {
-    errs() << "MODULEEEEEEEEEEE\n";
-    return PreservedAnalyses::all();
+PreservedAnalyses Pass::run(Module &M, ModuleAnalysisManager &MAM) {
+    std::vector<Function *> Modified;
+    DenseMap<Function *, DenseMap<const llvm::Value *, Value *>> FLenM;
+    DenseMap<Function *, Function *> Replace;
+    FunctionAnalysisManager &FAM =
+        MAM.getResult<FunctionAnalysisManagerModuleProxy>(M).getManager();
+
+    for (auto &F : M) {
+        if (F.isDeclaration()) continue;
+
+        SmallVector<Type *, 16> ArgTypes;
+        SmallVector<Twine, 16> ArgNames;
+
+        // Keep track of the indices of each old argument.
+        DenseMap<Argument *, size_t> ArgIdx;
+        size_t Idx = 0;
+        unsigned NumPtrArgs = 0;
+
+        // Start by collecting the argument types as well as the names.
+        for (auto &Arg : F.args()) {
+            ArgTypes.push_back(Arg.getType());
+            ArgNames.push_back(Arg.getName());
+            ArgIdx[&Arg] = Idx;
+
+            // If Arg is a pointer, we add a new int64 argument.
+            if (isa<PointerType>(Arg.getType())) {
+                ArgTypes.push_back(IntegerType::getInt64Ty(F.getContext()));
+                ArgNames.push_back(Arg.getName() + ".len");
+                Idx++;
+                NumPtrArgs++;
+            }
+
+            Idx++;
+        }
+
+        // If there are any ptr argument we modify F signature by inserting
+        // args carrying the length of each ptr arg. Else, we just move to the
+        // next func.
+        if (NumPtrArgs == 0) {
+            FLenM[&F] = getLen(F, &FAM.getResult<TargetLibraryAnalysis>(F));
+            continue;
+        }
+
+        Modified.push_back(&F);
+        auto *FTy = F.getFunctionType();
+        auto *NewFTy =
+            FunctionType::get(F.getReturnType(), ArgTypes, FTy->isVarArg());
+
+        auto *NewF =
+            Function::Create(NewFTy, F.getLinkage(), F.getAddressSpace());
+        NewF->copyAttributesFrom(&F);
+        NewF->setComdat(F.getComdat());
+        M.getFunctionList().insert(F.getIterator(), NewF);
+        NewF->takeName(&F);
+
+        // Set the new function's argument's names.
+        for (size_t i = 0; i < NewF->arg_size(); i++)
+            (NewF->arg_begin() + i)->setName(ArgNames[i]);
+
+        // Replace all uses of each old arg.
+        for (auto &Arg : F.args())
+            Arg.replaceAllUsesWith(NewF->arg_begin() + ArgIdx[&Arg]);
+
+        // Patch the pointer to LLVM function in debug info descriptor.
+        NewF->setSubprogram(F.getSubprogram());
+        F.setSubprogram(nullptr);
+
+        // Move over the function body to the new function.
+        NewF->getBasicBlockList().splice(NewF->begin(), F.getBasicBlockList());
+
+        Replace[&F] = NewF;
+        FLenM[NewF] =
+            getLen(*NewF, &FAM.getResult<TargetLibraryAnalysis>(*NewF));
+    }
+
+    // Check for calls to the modified functions and replace them by a new call
+    // passing the length of each ptr arg.
+    for (auto *F : Modified) {
+        while (!F->use_empty()) {
+            CallSite CS(F->user_back());
+            assert(CS.getCalledFunction() == F);
+
+            SmallVector<Value *, 16> Args;
+            CallInst *Call = cast<CallInst>(CS.getInstruction());
+
+            auto *NewF = Replace[F];
+            size_t Idx = 0;
+
+            for (auto &Arg : CS.args()) {
+                Args.push_back(Arg);
+                Idx++;
+
+                if (!isa<PointerType>(Arg->getType())) continue;
+
+                auto *Len = FLenM[CS.getCaller()][Arg];
+                auto *LenArgTy = (NewF->arg_begin() + Idx)->getType();
+
+                if (Len->getType()->getScalarSizeInBits() <
+                    LenArgTy->getScalarSizeInBits())
+                    Len = new SExtInst(Len, LenArgTy, "", Call);
+
+                Args.push_back(Len);
+                Idx++;
+            }
+
+            CallInst *NewCall = CallInst::Create(NewF, Args);
+            NewCall->setCallingConv(NewF->getCallingConv());
+
+            if (!Call->use_empty()) Call->replaceAllUsesWith(NewCall);
+
+            ReplaceInstWithInst(Call, NewCall);
+        }
+    }
+
+    // TODO: check for preserved analyses.
+    return PreservedAnalyses::none();
 }
 
-PreservedAnalyses Pass::run(Function &F, FunctionAnalysisManager &AM) {
+PreservedAnalyses Pass::run(Function &F, FunctionAnalysisManager &FAM) {
     // We currently cannot handle functions with cycles.
     SmallVector<std::pair<const BasicBlock *, const BasicBlock *>, 32> Result;
     FindFunctionBackedges(F, Result);
@@ -66,7 +186,7 @@ PreservedAnalyses Pass::run(Function &F, FunctionAnalysisManager &AM) {
     }
 
     // Get the length associated with each pointer (either local or argument).
-    auto LenM = getLen(F, &AM.getResult<TargetLibraryAnalysis>(F));
+    auto LenM = getLen(F, &FAM.getResult<TargetLibraryAnalysis>(F));
 
     // Initialize Shadow memory as a pointer to an integer. We use
     // MaxPointerSize to ensure absence of overflow.
@@ -180,7 +300,9 @@ void transformLoad(LoadInst &Load, AllocaInst *Shadow, Value *PtrLen,
     // from InV into a single value by applying the operator | (or) to get the
     // condition.
     if (auto *GEP = dyn_cast<GetElementPtrInst>(Load.getPointerOperand()))
-        transformGEP(GEP, Shadow, PtrLen, joinCond(InV).back(), &Load);
+        Load.setOperand(
+            Load.getPointerOperandIndex(),
+            transformGEP(GEP, Shadow, PtrLen, joinCond(InV).back(), &Load));
 }
 
 void transformStore(StoreInst &Store, AllocaInst *Shadow, Value *PtrLen,
@@ -199,10 +321,14 @@ void transformStore(StoreInst &Store, AllocaInst *Shadow, Value *PtrLen,
     auto *StoreVal = Store.getValueOperand();
     auto *StorePtr = Store.getPointerOperand();
 
-    // If the Ptr operand is a GEP instruction, then we need to work on the
-    // indices used by GEP. If not, this load does not need to be transformed.
+    // If the Ptr operand is a GEP instruction, then we need to transform it in
+    // in order to ensure the safety of the memory access. If not, this load
+    // does not need to be transformed.  We fold the incoming conditions from
+    // InV into a single value by applying the operator | (or) to get the
+    // condition.
     if (auto *GEP = dyn_cast<GetElementPtrInst>(StorePtr))
-        transformGEP(GEP, Shadow, PtrLen, OrV.back(), &Store);
+        Store.setOperand(Store.getPointerOperandIndex(),
+                         transformGEP(GEP, Shadow, PtrLen, OrV.back(), &Store));
 
     auto *Load = new LoadInst(StoreVal->getType(), StorePtr, "", &Store);
     auto *SelectVal = ctsel(OrV.back(), StoreVal, Load, &Store);
@@ -210,8 +336,8 @@ void transformStore(StoreInst &Store, AllocaInst *Shadow, Value *PtrLen,
     Store.setOperand(0, SelectVal);
 }
 
-void transformGEP(GetElementPtrInst *GEP, AllocaInst *Shadow, Value *PtrLen,
-                  Value *Cond, Instruction *Before) {
+Value *transformGEP(GetElementPtrInst *GEP, AllocaInst *Shadow, Value *PtrLen,
+                    Value *Cond, Instruction *Before) {
     auto *Idx = GEP->getOperand(GEP->getNumIndices());
     auto *IdxTy = Idx->getType();
 
@@ -229,8 +355,8 @@ void transformGEP(GetElementPtrInst *GEP, AllocaInst *Shadow, Value *PtrLen,
     auto *NewPtr =
         ctsel(BinaryOperator::CreateOr(Cond, IsSafe, "safe.", Before), GEP,
               new BitCastInst(Shadow, GEP->getType(), "", Before), Before);
-    GEP->replaceUsesWithIf(NewPtr,
-                           [NewPtr](Use &U) { return U.getUser() != NewPtr; });
+    NewPtr->setName("select.ptr.");
+    return NewPtr;
 }
 
 DenseMap<const Value *, Value *> getLen(Function &F,
@@ -247,7 +373,19 @@ DenseMap<const Value *, Value *> getLen(Function &F,
         for (auto &I : BB) {
             // TODO: Only alloc and call @malloc????
             if (auto *Alloca = dyn_cast<AllocaInst>(&I)) {
-                auto *Len = Alloca->getArraySize();
+                Value *Len;
+                auto *ArrayTy = dyn_cast<ArrayType>(Alloca->getAllocatedType());
+
+                // If AllocTy is an array (e.g. [10 x i32]) but it is not an
+                // array allocation (e.g. C arrays: %x = alloca [10 x i32],
+                // align 16), then we need to get the length from the allocated
+                // type.
+                if (ArrayTy && !Alloca->isArrayAllocation())
+                    Len = ConstantInt::get(ArrayTy->getElementType(),
+                                           ArrayTy->getNumElements());
+                else
+                    Len = Alloca->getArraySize();
+
                 LenM[Alloca] = Len;
                 Propag(Alloca, Len);
                 continue;
@@ -323,7 +461,7 @@ PassPluginLibraryInfo getInvariantPluginInfo() {
             [](PassBuilder &PB) {
                 PB.registerPipelineParsingCallback(
                     [](StringRef Name, ModulePassManager &PM, ...) {
-                        bool isPass = Name == "invar";
+                        bool isPass = Name == "len-args";
                         if (isPass) PM.addPass(invariant::Pass());
                         return isPass;
                     });

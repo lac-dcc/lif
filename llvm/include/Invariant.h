@@ -45,15 +45,20 @@ namespace invariant {
 /// Currently, this pass cannot handle functions contanining loops.
 struct Pass : public llvm::PassInfoMixin<Pass> {
   public:
+    /// Traverses each function from \p M modifying the signature to include
+    /// arguments carrying the length of each pointer arg. Also replace the
+    /// original calls, passing the length args.
+    ///
+    /// \returns the set of analysis preserved after running this pass.
     llvm::PreservedAnalyses run(llvm::Module &M,
-                                llvm::ModuleAnalysisManager &AM);
-    /// Transforms \p F into an invariant version.
+                                llvm::ModuleAnalysisManager &MAM);
+
+    /// Transforms \p F into an invariant version by applying the proper rule
+    /// to each instruction, if necessary.
     ///
     /// \returns the set of analyses preserved after running this pass.
-    /// PreservedAnalyses::all if something went wrong (e.g. trying to
-    /// transform a function with loops); otherwise, PreservedAnalyses::none.
     llvm::PreservedAnalyses run(llvm::Function &F,
-                                llvm::FunctionAnalysisManager &AM);
+                                llvm::FunctionAnalysisManager &FAM);
 };
 
 /// Transforms \p Phi into a set of instructions according to the incoming
@@ -78,9 +83,11 @@ void transformStore(llvm::StoreInst &Store, llvm::AllocaInst *Shadow,
 
 /// Transforms \p GEP into a set of instructions according to \p Cond and
 /// \p Len.
-void transformGEP(llvm::GetElementPtrInst *GEP, llvm::AllocaInst *Shadow,
-                  llvm::Value *PtrLen, llvm::Value *Cond,
-                  llvm::Instruction *Before);
+///
+/// \returns The llvm value representing the select between GEP and Shadow.
+llvm::Value *transformGEP(llvm::GetElementPtrInst *GEP,
+                          llvm::AllocaInst *Shadow, llvm::Value *PtrLen,
+                          llvm::Value *Cond, llvm::Instruction *Before);
 
 /// Traverses the list of arguments of F to match each pointer with its
 /// length. Also infers the length of local pointers.
