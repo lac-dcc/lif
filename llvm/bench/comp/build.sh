@@ -5,13 +5,12 @@ for src in "${sources[@]}"; do
     clang -g -emit-llvm -S -Xclang -disable-O0-optnone "$src".c -o "$src".ll;
 
     # Apply optimizations and completely unroll existing loops.
-    opt -S -mem2reg -indvars -simplifycfg -loops -lcssa --loop-simplify \
-        --loop-rotate --loop-unroll --unroll-count=32 "$src".ll -o "$src".ll;
+    opt -S -mem2reg -simplifycfg -loops -lcssa -loop-simplify -loop-rotate \
+        -indvars -loop-unroll -unroll-count=32 "$src".ll -o "$src".ll;
 
-    # Apply the invariant pass & some optimizations.
-    opt -S -load-pass-plugin ../../lib/libInvariant.so -passes="module(len-args),function(invar)" \
-        "$src".ll -o "$src"_inv.ll;
-    opt -S -mem2reg -constprop -gvn -dce "$src"_inv.ll -o "$src"_inv_opt.ll;
+    # Run the invariant tool without optimizations & with optimizations.
+    ../../bin/lif -len-args -names=comp "$src".ll -o "$src"_inv.ll
+    ../../bin/lif -len-args -opt -names=comp "$src".ll -o "$src"_inv_opt.ll
 
     # Generate object files for: (i) the original file; (ii) the invar. version;
     # and (iii) the invariant & optimized version.

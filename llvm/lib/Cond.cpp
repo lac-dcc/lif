@@ -1,4 +1,4 @@
-//===-- Cond.h ------------------------------------------------------------===//
+//===-- Cond.cpp ----------------------------------------------------------===//
 // Copyright (C) 2020  Luigi D. C. Soares
 //
 // This program is free software: you can redistribute it and/or modify
@@ -153,4 +153,23 @@ std::pair<InMap, std::vector<Value *>> bind(Function &F, const OutMap OutM) {
 
     return {InM, GenV};
 }
+
+Value *fold(const SmallVectorImpl<Incoming> &InV) {
+    if (InV.size() == 1) return InV[0].Cond;
+
+    Instruction *Pos = InV.back().Cond->getNextNode();
+    auto ApplyOr = [&Pos](Value *U, Value *V) {
+        return BinaryOperator::CreateOr(U, V, "", Pos);
+    };
+
+    return std::accumulate(InV.begin() + 2, InV.end(),
+                           SmallVector<Instruction *, 8>(
+                               {ApplyOr(InV[0].Cond, InV[1].Cond)}),
+                           [&ApplyOr](auto Accum, auto In) {
+                               Accum.push_back(ApplyOr(Accum.back(), In.Cond));
+                               return Accum;
+                           })
+        .back();
+}
+
 } // namespace cond

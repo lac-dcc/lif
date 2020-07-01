@@ -27,6 +27,8 @@
 #include "Cond.h"
 
 #include <llvm/ADT/DenseMap.h>
+#include <llvm/ADT/DenseSet.h>
+#include <llvm/ADT/SmallPtrSet.h>
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/Analysis/TargetLibraryInfo.h>
 #include <llvm/IR/Function.h>
@@ -44,15 +46,6 @@ namespace invariant {
 ///
 /// Currently, this pass cannot handle functions contanining loops.
 struct Pass : public llvm::PassInfoMixin<Pass> {
-  public:
-    /// Traverses each function from \p M modifying the signature to include
-    /// arguments carrying the length of each pointer arg. Also replace the
-    /// original calls, passing the length args.
-    ///
-    /// \returns the set of analysis preserved after running this pass.
-    llvm::PreservedAnalyses run(llvm::Module &M,
-                                llvm::ModuleAnalysisManager &MAM);
-
     /// Transforms \p F into an invariant version by applying the proper rule
     /// to each instruction, if necessary.
     ///
@@ -88,32 +81,6 @@ void transformStore(llvm::StoreInst &Store, llvm::AllocaInst *Shadow,
 llvm::Value *transformGEP(llvm::GetElementPtrInst *GEP,
                           llvm::AllocaInst *Shadow, llvm::Value *PtrLen,
                           llvm::Value *Cond, llvm::Instruction *Before);
-
-/// Traverses the list of arguments of F to match each pointer with its
-/// length. Also infers the length of local pointers.
-llvm::DenseMap<const llvm::Value *, llvm::Value *>
-getLen(llvm::Function &F, const llvm::TargetLibraryInfo *TLI);
-
-/// Join a list of incoming conds. \p InV / by applying the | (or) operator.
-///
-/// This method requries #incoming conds > 0.
-/// The size of \p BB grows according to #insts. generated.
-///
-/// \returns a list of generated instructions.
-llvm::SmallVector<llvm::Instruction *, 8>
-joinCond(const llvm::SmallVectorImpl<cond::Incoming> &InV);
-
-/// Given two values, \p VTrue and \p VFalse, and a condition \p Cond,
-/// generate instructions for selecting between \p VTrue and \p VFalse.
-///
-/// We use LLVM select inst. assuming that it is going to be lowered to a
-/// constant-time inst. (e.g. cmov on x86). However, it can be manually
-/// implemented as ctsel(cond, vtrue, vfalse) = { c = cond - 1; c' = ~c; v
-/// = (c & vfalse) | (c' & vtrue) }
-///
-/// \returns a value representing the selected one.
-llvm::Value *ctsel(llvm::Value *Cond, llvm::Value *VTrue, llvm::Value *VFalse,
-                   llvm::Instruction *Before);
 } // namespace invariant
 
 #endif

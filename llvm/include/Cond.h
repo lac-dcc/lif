@@ -97,6 +97,15 @@ bindOut(llvm::BasicBlock &BB, llvm::Value *OutPtr,
 /// bindOut).
 std::pair<InMap, std::vector<llvm::Value *>> bind(llvm::Function &F,
                                                   const OutMap OutM);
+
+/// Fold a list of incoming conds. (\p InV) into a single value / by applying
+/// the | (or) operator.
+///
+/// This method requries #incoming conds > 0.
+/// The size of \p BB grows according to #insts. generated.
+///
+/// \returns a value representing the folded condition.
+llvm::Value *fold(const llvm::SmallVectorImpl<cond::Incoming> &InV);
 } // namespace cond
 
 #endif
