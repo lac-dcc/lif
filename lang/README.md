@@ -1,7 +1,7 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-# Líf - Lang
-Líf lang is intended to be a small and simple language used primarily with the purpose of implementing a first skeleton of compiler optimizations (passes). This repository contains the implementation of a tool that, currently, has the following features: evaluate a given program (`-r`), generate a dot representation of the Control-flow Graph (CFG) (`--cfg`) and generate a dot representation of the Dominance Tree (`--dtree`).
+# Lif - Lang
+This is intended to be a small and simple language used primarily with the purpose of implementing a first skeleton of compiler optimizations (passes). This repository contains the implementation of a tool that, currently, has the following features: evaluate a given program (`-r`), generate a dot representation of the Control-flow Graph (CFG) (`--cfg`) and generate a dot representation of the Dominance Tree (`--dtree`).
 
 ## Grammar
 Below is the grammar of the language. It is written in the BNF notation, extended with the following symbols:

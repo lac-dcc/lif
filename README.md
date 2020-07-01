@@ -1,7 +1,7 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-# Project Líf
-The goal of this project is the development of a technique that transforms a function into a version of it that is time and memory invariant. This property ensures that the set of instructions executed will always be the same regardless of the inputs. As a consequence, the execution time of said function will be constant. Such transformation method eliminates side-channels in implementations of cryptography.
+# Low-level Isochronous Form
+The goal of project Lif is the development of a technique that transforms a function into a version of it that is time and memory invariant. This property ensures that the set of instructions executed will always be the same regardless of the inputs. As a consequence, the execution time of said function will be constant. Such transformation method eliminates side-channels in implementations of cryptography.
 
 This repository is split into two folders described above:
 
