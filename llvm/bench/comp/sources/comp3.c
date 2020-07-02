@@ -9,7 +9,7 @@ int comp(int *a, int *b) {
 }
 
 int main() {
-    int a[N], b[N];
+    int a[4], b[4];
     for (int i = 0; i < 4; i++) a[i] = b[i] = i;
     b[3] = -1;
     int r = comp(a, b);

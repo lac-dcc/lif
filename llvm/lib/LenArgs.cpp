@@ -57,7 +57,7 @@ PreservedAnalyses Pass::run(Module &M, ModuleAnalysisManager &MAM) {
             // If Arg is a pointer, we add a new int64 argument.
             if (isa<PointerType>(Arg.getType())) {
                 ArgTypes.push_back(IntegerType::getInt64Ty(F.getContext()));
-                ArgNames.push_back(Arg.getName() + ".len");
+                ArgNames.push_back("len." + Arg.getName());
                 Idx++;
                 NumPtrArgs++;
             }

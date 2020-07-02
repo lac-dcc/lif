@@ -5,8 +5,8 @@ The goal of project Lif is the development of a technique that transforms a func
 
 This repository is split into two folders described above:
 
-- `lang`: Líf lang is a small and simple language implemented in Haskell. It exists primarily with the purpose of implementing a skeleton of the invariant transformation pass.
-- `llvm`: This folder contains the implementation of the invariant pass onto the LLVM environment.
+- `lang`: A small and simple language implemented in Haskell. It exists primarily with the purpose of implementing a skeleton of the invariant transformation pass.
+- `llvm`: A LLVM implementation of the invariant pass.
 
 ## Overview
 Consider the following function, which takes two lists, _A_ and _B_, and returns 1 if they are equal or 0 otherwise:

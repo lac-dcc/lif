@@ -115,10 +115,7 @@ void runLenArgsPass(Module &M) {
 
     // LenArgsPass requires FunctionAnalysisManagerModuleProxy to work.
     MAM.registerPass([&] { return FunctionAnalysisManagerModuleProxy(FAM); });
-
     ModulePassManager MPM;
-    MPM.addPass(lenargs::Pass());
-    MPM.addPass(DeadArgumentEliminationPass());
 
     if (Unroll) {
         LoopAnalysisManager LAM;
@@ -138,6 +135,7 @@ void runLenArgsPass(Module &M) {
         MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
     }
 
+    MPM.addPass(lenargs::Pass());
     MPM.run(M, MAM);
 }
 

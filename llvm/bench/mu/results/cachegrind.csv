@@ -1,0 +1,7 @@
+Src,Fn,Type,Ir,I1mr,ILmr,Dr,D1mr,DLmr,Dw,D1mw,DLmw
+mu1.c,mu,orig,400,49,49,293,0,0,7,1,1
+mu1.c,mu,invar,1.062,119,119,293,25,19,390,32,32
+mu1.c,mu,invar-opt,837,85,85,293,2,2,196,1,1
+mu2.c,mu,orig,406,53,53,298,0,0,7,1,1
+mu2.c,mu,invar,1.062,119,119,293,25,19,390,32,32
+mu2.c,mu,invar-opt,837,85,85,293,2,2,196,1,1
