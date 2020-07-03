@@ -21,11 +21,18 @@
 //===----------------------------------------------------------------------===//
 
 #include "Util.h"
+#include <llvm/ADT/SmallPtrSet.h>
 #include <llvm/Analysis/MemoryBuiltins.h>
+#include <llvm/IR/DerivedTypes.h>
+#include <llvm/Transforms/Utils/BasicBlockUtils.h>
 
 using namespace llvm;
 
 namespace util {
+Value *ctsel(Value *Cond, Value *VTrue, Value *VFalse, Instruction *Before) {
+    return llvm::SelectInst::Create(Cond, VTrue, VFalse, "", Before);
+}
+
 DenseMap<const Value *, Value *> getLen(Function &F,
                                         const TargetLibraryInfo *TLI) {
     DenseMap<const Value *, Value *> LenM;
@@ -36,8 +43,17 @@ DenseMap<const Value *, Value *> getLen(Function &F,
         for (auto *U : V->users()) LenM[U] = Size;
     };
 
+    // There may be GEPs pointing to other GEPs so we need to propagate the
+    // length from them. This must be the last step.
+    std::vector<GetElementPtrInst *> GEPV;
+
     for (auto &BB : F) {
         for (auto &I : BB) {
+            if (auto *GEP = dyn_cast<GetElementPtrInst>(&I)) {
+                GEPV.push_back(GEP);
+                continue;
+            }
+
             // TODO: Only alloc and call @malloc????
             if (auto *Alloca = dyn_cast<AllocaInst>(&I)) {
                 Value *Len;
@@ -67,40 +83,38 @@ DenseMap<const Value *, Value *> getLen(Function &F,
         }
     }
 
-    if (F.arg_begin() == F.arg_end()) return LenM;
+    // We also need to check the global values, e.g. constant arrays.
+    for (auto &Global : F.getParent()->globals()) {
+        auto *PtrTy = dyn_cast<PointerType>(Global.getType());
+        if (!PtrTy) continue;
 
-    // Match pointer args with its size.
-    // TODO: get the match from annotations (position of the arg?).
-    // int comp(int *a, const unsigned sa, int *b, const unsigned sb);
-    for (auto Iter = F.arg_begin(); Iter + 1 != F.arg_end(); ++Iter) {
-        Value *V = &*Iter;
-        if (!isa<PointerType>(V->getType())) continue;
-
-        auto *Len = &*(Iter + 1);
-        assert(isa<IntegerType>(Len->getType()) &&
-               "pointer argument must be followed by its length!");
-
-        LenM[&*Iter] = Len;
-        Propag(V, Len);
+        auto *ArrayTy = dyn_cast<ArrayType>(PtrTy->getElementType());
+        if (ArrayTy) {
+            auto *Len = ConstantInt::get(ArrayTy->getElementType(),
+                                         ArrayTy->getNumElements());
+            LenM[&Global] = Len;
+            Propag(&Global, Len);
+        }
     }
 
-    return LenM;
-}
+    if (F.arg_begin() != F.arg_end()) {
+        // Match pointer args with its size.
+        // TODO: get the match from annotations (position of the arg?).
+        // int comp(int *a, const unsigned sa, int *b, const unsigned sb);
+        for (auto Iter = F.arg_begin(); Iter + 1 != F.arg_end(); ++Iter) {
+            Value *V = &*Iter;
+            if (!isa<PointerType>(V->getType())) continue;
 
-Value *ctsel(Value *Cond, Value *VTrue, Value *VFalse, Instruction *Before) {
-    // auto *CFalse = BinaryOperator::CreateSub(
-    //     Cond, ConstantInt::get(Cond->getType(), 1), "", Before);
-    // auto *CTrue = BinaryOperator::CreateNot(CFalse, "", Before);
-    //
-    // // Select(Cond, VTrue, VFalse) = (CTrue & VTrue) | (CFalse & VFalse)
-    // return BinaryOperator::CreateOr(
-    //     BinaryOperator::CreateAnd(
-    //         new SExtInst(CTrue, VTrue->getType(), "", Before), VTrue, "",
-    //         Before), // Select VTrue
-    //     BinaryOperator::CreateAnd(
-    //         new SExtInst(CFalse, VFalse->getType(), "", Before), VFalse, "",
-    //         Before), // Select VFalse
-    //     "", Before);
-    return llvm::SelectInst::Create(Cond, VTrue, VFalse, "", Before);
+            auto *Len = &*(Iter + 1);
+            assert(isa<IntegerType>(Len->getType()) &&
+                   "pointer argument must be followed by its length!");
+
+            LenM[&*Iter] = Len;
+            Propag(V, Len);
+        }
+    }
+
+    for (auto *GEP : GEPV) Propag(GEP, LenM[GEP]);
+    return LenM;
 }
 } // namespace util

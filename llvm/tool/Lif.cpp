@@ -30,7 +30,6 @@
 //===----------------------------------------------------------------------===//
 
 #include "Invariant.h"
-#include "LenArgs.h"
 
 #include <llvm/ADT/DenseSet.h>
 #include <llvm/ADT/SmallPtrSet.h>
@@ -40,7 +39,6 @@
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/SourceMgr.h>
 #include <llvm/Support/raw_ostream.h>
-#include <llvm/Transforms/IPO/DeadArgumentElimination.h>
 #include <llvm/Transforms/Scalar/DCE.h>
 #include <llvm/Transforms/Scalar/IndVarSimplify.h>
 #include <llvm/Transforms/Scalar/LoopPassManager.h>
@@ -72,10 +70,10 @@ static cl::opt<std::string>
 
 /// An optional argument that specifies whether the tool should insert
 /// arguments for the length of the original pointer arguments or not.
-static cl::opt<bool> LenArgs("len-args",
-                             cl::desc("Insert an argument for the length of "
-                                      "each pointer passed to a function"),
-                             cl::init(false), cl::cat(LifCategory));
+static cl::opt<bool> InsertLen("insert-len",
+                               cl::desc("Insert an argument for the length of "
+                                        "each pointer passed to a function"),
+                               cl::init(false), cl::cat(LifCategory));
 
 /// An optional argument that specifies whether the tool should try to unroll
 /// existing loops or not.
@@ -86,13 +84,22 @@ static cl::opt<bool>
                     "perform a full unroll)"),
            cl::init(false), cl::cat(LifCategory));
 
-/// An optional argument that specifies whether the tool should optmized the
-/// transformed functions or not.
-static cl::opt<bool>
-    Opt("opt",
-        cl::desc("Optimize the transformed functions by applying the following "
-                 "passes: mem2reg, sccp, newgvn, dce"),
-        cl::init(false), cl::cat(LifCategory));
+enum OptLevel { O0, O1, O2, O3 };
+const std::map<OptLevel, PassBuilder::OptimizationLevel> OptM = {
+    {O0, PassBuilder::OptimizationLevel::O0},
+    {O1, PassBuilder::OptimizationLevel::O1},
+    {O2, PassBuilder::OptimizationLevel::O2},
+    {O3, PassBuilder::OptimizationLevel::O3}};
+
+/// An optional argument that specifies whether the tool should optimize the
+/// original & transformed functions.
+static cl::opt<OptLevel>
+    Opt(cl::desc("Optimization level"),
+        cl::values(clEnumVal(O0, "Optimization level 0 (same as opt -O0)"),
+                   clEnumVal(O1, "Optimization level 1 (same as opt -O1)"),
+                   clEnumVal(O2, "Optimization level 2 (same as opt -O2)"),
+                   clEnumVal(O3, "Optimization level 3 (same as opt -O3)")),
+        cl::init(O0), cl::cat(LifCategory));
 
 /// An optional argument that specifies the name of the functions that should
 /// be transformed.
@@ -101,77 +108,46 @@ static cl::opt<std::string>
           cl::desc("List of functions to be transformed. [empty = all]"),
           cl::value_desc("f1,f2,f3...,fn"), cl::init(""), cl::cat(LifCategory));
 
-/// Applies the LenArgs pass to a Module in order to insert the length
-/// arguments when necessary. We transform the signature of every defined
-/// function, even those not selected by the user, since we rely on the length
-/// of arguments to replace old calls by the new ones (see util::getLen).
-void runLenArgsPass(Module &M) {
+/// Applies the Invariant pass to the selected functions.
+void runInvariantPass(Module &M) {
+    // If no function name was specified, we transform all functions within the
+    // given module.
+    SmallVector<StringRef, 32> FNames;
+    StringRef(Names.getValue()).split(FNames, ",");
+
     PassBuilder PB;
+    LoopAnalysisManager LAM;
     FunctionAnalysisManager FAM;
+    CGSCCAnalysisManager CGAM;
     ModuleAnalysisManager MAM;
 
+    PB.registerLoopAnalyses(LAM);
     PB.registerFunctionAnalyses(FAM);
+    PB.registerCGSCCAnalyses(CGAM);
     PB.registerModuleAnalyses(MAM);
+    PB.crossRegisterProxies(LAM, FAM, CGAM, MAM);
 
-    // LenArgsPass requires FunctionAnalysisManagerModuleProxy to work.
-    MAM.registerPass([&] { return FunctionAnalysisManagerModuleProxy(FAM); });
     ModulePassManager MPM;
+    FunctionPassManager FPM;
 
     if (Unroll) {
-        LoopAnalysisManager LAM;
-        PB.registerLoopAnalyses(LAM);
-
-        FAM.registerPass([&] { return LoopAnalysisManagerFunctionProxy(LAM); });
-        FAM.registerPass(
-            [&] { return ModuleAnalysisManagerFunctionProxy(MAM); });
-
-        FunctionPassManager FPM;
+        LoopPassManager LPM;
+        LPM.addPass(LoopRotatePass());
+        LPM.addPass(IndVarSimplifyPass());
         FPM.addPass(PromotePass());
         FPM.addPass(SimplifyCFGPass());
-        FPM.addPass(createFunctionToLoopPassAdaptor(LoopRotatePass()));
-        FPM.addPass(createFunctionToLoopPassAdaptor(IndVarSimplifyPass()));
+        FPM.addPass(createFunctionToLoopPassAdaptor(std::move(LPM)));
         FPM.addPass(LoopUnrollPass());
-
         MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
     }
 
-    MPM.addPass(lenargs::Pass());
+    std::vector<StringRef> NamesV(FNames.begin(), FNames.end());
+    MPM.addPass(invariant::Pass(NamesV, InsertLen));
+
+    if (Opt != O0)
+        MPM.addPass(PB.buildPerModuleDefaultPipeline(OptM.find(Opt)->second));
+
     MPM.run(M, MAM);
-}
-
-/// Applies the Invariant pass to the selected functions.
-void runInvariantPass(Module &M) {
-    SmallPtrSet<Function *, 32> Skip;
-    // If no function name was specified, we transform all functions within the
-    // given module. Else, we add all functions not listed to a set of
-    // functions that should be skipped.
-    if (Names != "") {
-        SmallVector<StringRef, 32> NameV;
-        SmallDenseSet<StringRef> Transform;
-
-        StringRef(Names.getValue()).split(NameV, ",");
-        Transform.insert(NameV.begin(), NameV.end());
-
-        for (auto &F : M)
-            if (Transform.find(F.getName()) == Transform.end()) Skip.insert(&F);
-    }
-
-    PassBuilder PB;
-    FunctionAnalysisManager FAM;
-
-    PB.registerFunctionAnalyses(FAM);
-    FunctionPassManager FPM;
-    FPM.addPass(invariant::Pass());
-
-    if (Opt) {
-        FPM.addPass(PromotePass());
-        FPM.addPass(SCCPPass());
-        FPM.addPass(NewGVNPass());
-        FPM.addPass(DCEPass());
-    }
-
-    for (auto &F : M)
-        if (Skip.find(&F) == Skip.end()) FPM.run(F, FAM);
 }
 
 int main(int Argc, char **Argv) {
@@ -198,9 +174,6 @@ int main(int Argc, char **Argv) {
         return -1;
     }
 
-    // If LenArgs is true, create a module pass manager to run the pass that
-    // inserts the length arguments.
-    if (LenArgs) runLenArgsPass(*M);
     runInvariantPass(*M);
 
     std::error_code EC;

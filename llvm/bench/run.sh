@@ -5,12 +5,8 @@
 source build.sh
 source collect.sh
 
-# Associative array linking benchmarks to a list of functions to be transformed
-# (comma-separeted strings).
-declare -A benchlist=(
-    [comp]="comp"
-    [mu]="mu"
-)
+# Array of benchmarks to be transformed & analyzed.
+declare -a benchs=("comp" "mu" "dudect-examples/aes32")
 
 while [ $# -gt 0 ]; do
     case $1 in
@@ -28,14 +24,14 @@ while [ $# -gt 0 ]; do
             ;;
         -b|--build)
             shift
-            build::all benchlist
+            build::all benchs
             ;;
         -c|--collect)
-            collect::all benchlist
+            collect::all benchs
             shift
             ;;
         -a|--all)
-            build::all benchlist && collect::all benchlist
+            build::all benchs && collect::all benchs
             shift
             ;;
         *)

@@ -30,6 +30,7 @@
 #include <llvm/ADT/DenseSet.h>
 #include <llvm/ADT/SmallPtrSet.h>
 #include <llvm/ADT/SmallVector.h>
+#include <llvm/ADT/StringRef.h>
 #include <llvm/Analysis/TargetLibraryInfo.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Instructions.h>
@@ -45,14 +46,48 @@ namespace invariant {
 /// side channel leaks on a cryptography library.
 ///
 /// Currently, this pass cannot handle functions contanining loops.
-struct Pass : public llvm::PassInfoMixin<Pass> {
-    /// Transforms \p F into an invariant version by applying the proper rule
-    /// to each instruction, if necessary.
+class Pass : public llvm::PassInfoMixin<Pass> {
+  public:
+    /// A constructor that takes the name of functions to be transformed and a
+    /// boolean indicating if this pass should insert the length of pointer
+    /// arguments.
+    Pass(std::vector<llvm::StringRef> FNames = {}, bool InsertLen = false)
+        : FNames(FNames), InsertLen(InsertLen) {}
+
+    /// Traverses the module \p M transforming functions into invariant
+    /// versions.
+    ///
+    /// If FNames is not empty, then we transform only the functions in
+    /// there and skip the others. If InsertLen is set to true, then given a
+    /// function F we modify its type by inserting the length of each pointer
+    /// argument to its signature.
     ///
     /// \returns the set of analyses preserved after running this pass.
-    llvm::PreservedAnalyses run(llvm::Function &F,
-                                llvm::FunctionAnalysisManager &FAM);
+    llvm::PreservedAnalyses run(llvm::Module &M,
+                                llvm::ModuleAnalysisManager &MAM);
+
+  private:
+    // A vector contanining the names of functions that should be transformed.
+    std::vector<llvm::StringRef> FNames;
+
+    // A boolean value indicating whether we should insert the length of
+    // pointer argument to a function signature.
+    bool InsertLen;
 };
+
+/// For each funtion F in \p M, transforms F's signature by inserting the
+/// an argument for the length of each pointer. Also, replace the original
+/// calls to F, passing the length arguments. The elements of \p FV, the
+/// ones that will be transformed to invariant, are updated to point to the
+/// new functions.
+void insertLen(llvm::SmallVectorImpl<llvm::Function *> &FV, llvm::Module &M,
+               llvm::FunctionAnalysisManager &FAM);
+
+/// Transform \p F into invariant by applying the proper rules to each
+/// instruction.
+///
+/// \returns true if success; false otherwise.
+bool transformFunc(llvm::Function &F, llvm::FunctionAnalysisManager &FAM);
 
 /// Transforms \p Phi into a set of instructions according to the incoming
 /// conditions of the basic block that contains \Phi.
@@ -75,7 +110,7 @@ void transformStore(llvm::StoreInst &Store, llvm::AllocaInst *Shadow,
                     const llvm::SmallVectorImpl<cond::Incoming> &InV);
 
 /// Transforms \p GEP into a set of instructions according to \p Cond and
-/// \p Len.
+/// \p PtrLen.
 ///
 /// \returns The llvm value representing the select between GEP and Shadow.
 llvm::Value *transformGEP(llvm::GetElementPtrInst *GEP,

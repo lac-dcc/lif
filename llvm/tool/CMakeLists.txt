@@ -1,7 +1,6 @@
 add_executable(lif
     Lif.cpp
     ../lib/Invariant.cpp
-    ../lib/LenArgs.cpp
     ../lib/Cond.cpp
     ../lib/Util.cpp)
 

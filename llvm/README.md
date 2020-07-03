@@ -51,12 +51,12 @@ $ clang -S -emit-llvm -Xclang -disable-O0-optnone comp.c -o comp.ll
 The invariant pass requires the length of each pointer argument (e.g. array) in order to ensure the safety of the memory accesses. You can either add those arguments manually by placing them immediately after each pointer, or you can let this tool insert them automatically by passing the command-line option "len-args". It also requires every loop to be unrolled. In this case, you can pass the option "unroll" together with "unroll-count" (an option for the LLVM loop unroll pass) in order to let this tool try to unroll the existing loops. If the loop size is too high, you may need to also set the option "unroll-threshold" (again, see LLVM loop unroll pass).
 
 ```
-$ bin/lif -names=comp -len-args -opt -unroll -unroll-count=4 comp.ll -o comp_inv.ll
+$ bin/lif -names=comp -insert-len -opt -unroll -unroll-count=4 comp.ll -o comp_inv.ll
 ```
 
 ## Options
-- `len-args`: Insert an argument for the length of each pointer passed to a function
+- `insert-len`: Insert an argument for the length of each pointer passed to a function
 - `names=<f1,f2,f3...,fn>`:  List of functions to be transformed. \[empty = all\]
 - `o=<bitcode filename>`: \<Module after the transformations\>
-- `opt`: Optimize the transformed functions by applying the following passes: mem2reg, sccp, newgvn, dce
+- `O<0..3>`: Optimization level (same as opt -O\<0..3\>)
 - `unroll`: Try to unroll existing loops by (set unroll-count and/or unroll-threshold = the max number of loop iterations to perform a full unroll)

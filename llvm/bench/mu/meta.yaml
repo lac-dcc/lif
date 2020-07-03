@@ -1,0 +1,11 @@
+functions:
+  - mu
+sources:
+  - main1.c
+  - main2.c
+libs:
+  - mu.c
+cache:
+  - --I1=128;2;32
+  - --D1=128;2;32
+  - --LL=128;2;32

@@ -55,7 +55,168 @@ using namespace llvm;
 using namespace cond;
 
 namespace invariant {
-PreservedAnalyses Pass::run(Function &F, FunctionAnalysisManager &FAM) {
+PreservedAnalyses Pass::run(Module &M, ModuleAnalysisManager &MAM) {
+    SmallVector<Function *, 16> FV;
+    FunctionAnalysisManager &FAM =
+        MAM.getResult<FunctionAnalysisManagerModuleProxy>(M).getManager();
+
+    // If empty, we try to transform every function from M.
+    if (this->FNames.empty()) {
+        for (auto &F : M) FV.push_back(&F);
+    } else {
+        DenseSet<StringRef> Transform;
+        Transform.insert(this->FNames.begin(), this->FNames.end());
+        auto End = Transform.end();
+        for (auto &F : M)
+            if (Transform.find(F.getName()) != End) FV.push_back(&F);
+    }
+
+    bool PreserveAll = true;
+    if (this->InsertLen) {
+        insertLen(FV, M, FAM);
+        PreserveAll = false;
+    }
+
+    for (auto *F : FV) PreserveAll &= !transformFunc(*F, FAM);
+
+    // TODO: define the set of analyses not preserved.
+    return PreserveAll ? PreservedAnalyses::all() : PreservedAnalyses::none();
+}
+
+void insertLen(SmallVectorImpl<Function *> &FV, Module &M,
+               FunctionAnalysisManager &FAM) {
+    // Map from a pointer to a function to its index on FV.
+    DenseMap<Function *, size_t> TransformIdx;
+
+    size_t Idx = 0;
+    for (auto Iter = FV.begin(); Iter != FV.end(); ++Iter)
+        TransformIdx[*Iter] = Idx++;
+
+    auto GetTLI = [&FAM](Function &F) {
+        return &FAM.getResult<TargetLibraryAnalysis>(F);
+    };
+
+    llvm::SmallVector<Function *, 16> Modified;
+    DenseMap<Function *, DenseMap<const llvm::Value *, Value *>> FLenM;
+    DenseMap<Function *, Function *> Replace;
+
+    // We modify all functions from M, not only the ones that will be
+    // transformed to invariant, because we need the length arguments to
+    // "getLen" work.
+    for (auto &F : M) {
+        if (F.isDeclaration()) continue;
+
+        SmallVector<Type *, 16> ArgTypes;
+        SmallVector<Twine, 16> ArgNames;
+
+        // Keep track of the indices of each old argument.
+        DenseMap<Argument *, size_t> ArgIdx;
+        size_t Idx = 0;
+        unsigned NumPtrArgs = 0;
+
+        // Start by collecting the argument types as well as the names.
+        for (auto &Arg : F.args()) {
+            ArgTypes.push_back(Arg.getType());
+            ArgNames.push_back(Arg.getName());
+            ArgIdx[&Arg] = Idx;
+
+            // If Arg is a pointer, we add a new int64 argument.
+            if (isa<PointerType>(Arg.getType())) {
+                ArgTypes.push_back(IntegerType::getInt64Ty(F.getContext()));
+                ArgNames.push_back("len." + Arg.getName());
+                Idx++;
+                NumPtrArgs++;
+            }
+
+            Idx++;
+        }
+
+        // If there are any ptr argument we modify F signature by inserting
+        // args carrying the length of each ptr arg. Else, we just move to the
+        // next func.
+        if (NumPtrArgs == 0) {
+            FLenM[&F] = util::getLen(F, GetTLI(F));
+            continue;
+        }
+
+        Modified.push_back(&F);
+        auto *FTy = F.getFunctionType();
+        auto *NewFTy =
+            FunctionType::get(F.getReturnType(), ArgTypes, FTy->isVarArg());
+
+        auto *NewF =
+            Function::Create(NewFTy, F.getLinkage(), F.getAddressSpace());
+        M.getFunctionList().insert(F.getIterator(), NewF);
+        NewF->takeName(&F);
+
+        // Set the new function's argument's names.
+        for (size_t i = 0; i < NewF->arg_size(); i++)
+            (NewF->arg_begin() + i)->setName(ArgNames[i]);
+
+        // Replace all uses of each old arg.
+        for (auto &Arg : F.args())
+            Arg.replaceAllUsesWith(NewF->arg_begin() + ArgIdx[&Arg]);
+
+        // Patch the pointer to LLVM function in debug info descriptor.
+        NewF->setSubprogram(F.getSubprogram());
+        F.setSubprogram(nullptr);
+
+        // Move over the function body to the new function.
+        NewF->getBasicBlockList().splice(NewF->begin(), F.getBasicBlockList());
+
+        Replace[&F] = NewF;
+        FLenM[NewF] = util::getLen(*NewF, GetTLI(*NewF));
+
+        // Update the pointer to F from FV to point to the new function we just
+        // create.
+        auto IdxIter = TransformIdx.find(&F);
+        if (IdxIter != TransformIdx.end()) FV[IdxIter->second] = NewF;
+    }
+
+    // Check for calls to the modified functions and replace them by a new call
+    // passing the length of each ptr arg.
+    for (auto *F : Modified) {
+        while (!F->use_empty()) {
+            CallSite CS(F->user_back());
+            assert(CS.getCalledFunction() == F);
+
+            SmallVector<Value *, 16> Args;
+            CallInst *Call = cast<CallInst>(CS.getInstruction());
+
+            auto *NewF = Replace[F];
+            size_t Idx = 0;
+
+            for (auto &Arg : CS.args()) {
+                Args.push_back(Arg);
+                Idx++;
+
+                if (!isa<PointerType>(Arg->getType())) continue;
+
+                auto *Len = FLenM[CS.getCaller()][Arg];
+                auto *LenArgTy = (NewF->arg_begin() + Idx)->getType();
+
+                if (Len->getType()->getScalarSizeInBits() <
+                    LenArgTy->getScalarSizeInBits())
+                    Len = new SExtInst(Len, LenArgTy, "", Call);
+
+                Args.push_back(Len);
+                Idx++;
+            }
+
+            CallInst *NewCall = CallInst::Create(NewF, Args);
+            NewCall->setCallingConv(NewF->getCallingConv());
+
+            if (!Call->use_empty()) Call->replaceAllUsesWith(NewCall);
+
+            ReplaceInstWithInst(Call, NewCall);
+        }
+
+        // Now we safely can remove this function from the current module.
+        F->eraseFromParent();
+    }
+}
+
+bool transformFunc(Function &F, FunctionAnalysisManager &FAM) {
     // We currently cannot handle functions with cycles.
     SmallVector<std::pair<const BasicBlock *, const BasicBlock *>, 32> Result;
     FindFunctionBackedges(F, Result);
@@ -64,10 +225,11 @@ PreservedAnalyses Pass::run(Function &F, FunctionAnalysisManager &FAM) {
         errs() << "Error: unexpected cycle(s) on function \"" << F.getName()
                << "\" (possible fix: run 'opt -mem2reg -loop-rotate "
                   "-loop-unroll -unroll-count=N')\n";
-        return PreservedAnalyses::all();
+        return false;
     }
 
-    // Get the length associated with each pointer (either local or argument).
+    // Get the length associated with each pointer (either local or
+    // argument).
     auto LenM = util::getLen(F, &FAM.getResult<TargetLibraryAnalysis>(F));
 
     // Initialize Shadow memory as a pointer to an integer. We use
@@ -82,16 +244,16 @@ PreservedAnalyses Pass::run(Function &F, FunctionAnalysisManager &FAM) {
     OutMap OutM = allocOut(F);
     auto [InM, GenV] = bind(F, OutM);
 
-    // Fill SkipS with the instructions generated after binding the conditions
-    // to each basic block, since we don't need to modify them.
+    // Fill SkipS with the instructions generated after binding the
+    // conditions to each basic block, since we don't need to modify them.
     std::set<Value *> SkipS;
     for (auto *V : GenV) SkipS.insert(V);
 
     for (auto &BB : F) {
         auto InV = InM[&BB];
         // We need to collect every phi instruction and store in a separate
-        // vector because phi transform. fn removes the phi instruction, so we
-        // cannot do this in an iterator loop.
+        // vector because phi transform. fn removes the phi instruction, so
+        // we cannot do this in an iterator loop.
         SmallVector<PHINode *, 8> PhiV;
 
         for (auto &I : BB) {
@@ -110,8 +272,8 @@ PreservedAnalyses Pass::run(Function &F, FunctionAnalysisManager &FAM) {
         for (auto *Phi : PhiV) transformPhi(*Phi, InV);
     }
 
-    // Replace each terminator by an uncond. br linked to the next basic block,
-    // following the reverse postorder.
+    // Replace each terminator by an uncond. br linked to the next basic
+    // block, following the reverse postorder.
     ReversePostOrderTraversal<Function *> RPOT(&F);
     SmallVector<BasicBlock *, 32> MergeV;
 
@@ -124,51 +286,30 @@ PreservedAnalyses Pass::run(Function &F, FunctionAnalysisManager &FAM) {
     // Now that every basic block has only one successor, we can merge them
     // without any problems.
     for (auto *BB : MergeV) MergeBlockIntoPredecessor(BB);
-
-    // TODO: define the set of analyses not preserved.
-    return PreservedAnalyses::none();
+    return true;
 }
 
 void transformPhi(PHINode &Phi, const SmallVectorImpl<Incoming> &InV) {
     // No incoming condition, so there is nothing to do.
     if (InV.empty()) return;
 
-    // Get the negative value of each cond in the list of conditions of
-    // InV. For each phi-value v in Phi, get the condition associated with it
-    // and apply the operator & (and) so the result will either be zero or the
-    // phi-value.
-    SmallVector<Instruction *, 8> AndV;
-    AndV.reserve(InV.size());
+    auto *V0 = Phi.getIncomingValueForBlock(InV.front().From);
+    auto *Cond0 = InV.front().Cond;
 
-    for (auto In : InV) {
-        Instruction *Pos = In.Cond->getNextNode();
+    if (InV.size() > 1) {
+        auto *Before = InV.back().Cond->getNextNode();
+        auto Iter1 = InV.end() - 1;
 
-        auto *SExt = new SExtInst(In.Cond, Phi.getType(), "", Pos);
-        auto *C = BinaryOperator::CreateNeg(SExt, "", Pos);
-        auto *And = BinaryOperator::CreateAnd(
-            Phi.getIncomingValueForBlock(In.From), C, "", Pos);
+        Value *V1 = Phi.getIncomingValueForBlock(Iter1->From);
+        for (auto Iter2 = Iter1 - 1; Iter2 != InV.begin(); --Iter1, --Iter2)
+            V1 = SelectInst::Create(Iter2->Cond,
+                                    Phi.getIncomingValueForBlock(Iter2->From),
+                                    V1, "", Before);
 
-        AndV.push_back(And);
+        V0 = SelectInst::Create(Cond0, V0, V1, "select.phi.", Before);
     }
 
-    // Fold the list of values generated by applying the operator & (and), so we
-    // can select the correct value
-    Value *Replace;
-    if (AndV.size() == 1) {
-        Replace = AndV[0];
-    } else {
-        Instruction *Pos = AndV.back()->getNextNode();
-        auto ApplyOr = [&Pos](Value *U, Value *V) {
-            return BinaryOperator::CreateOr(U, V, "", Pos);
-        };
-
-        Replace = ApplyOr(AndV[0], AndV[1]);
-        for (auto Iter = AndV.begin() + 2; Iter != AndV.end(); ++Iter)
-            Replace = ApplyOr(Replace, *Iter);
-    }
-
-    Replace->setName("select.phi.");
-    Phi.replaceAllUsesWith(Replace);
+    Phi.replaceAllUsesWith(V0);
     Phi.eraseFromParent();
 }
 
