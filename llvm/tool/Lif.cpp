@@ -17,19 +17,20 @@
 ///
 /// \file
 /// A command-line tool that transforms functions of a LLLVM IR module into a
-/// version that is invariant w.r.t. the set of instructions executed. In other
-/// words, the set of instructions executed by a invariant function is always
-/// the same regardless of its inputs. This tool ensures that no out-of-bounds
-/// access to memory is introduced after the transformation. Finally, it also
-/// guarantees the absence of cache-based timing leaks iff every memory access
-/// is proven to be safe. For that, it requires every function to follow the
-/// contract above: each pointer argument (e.g. array) must be immediately
-/// followed by an argument carrying its length. The user can either manually
-/// add these arguments or let the tool insert it automatically.
+/// version that is isochronous w.r.t. the set of instructions executed. In
+/// other words, the set of instructions executed by a isochronous function is
+/// always the same regardless of its inputs. This tool ensures that no
+/// out-of-bounds access to memory is introduced after the transformation.
+/// Finally, it also guarantees the absence of cache-based timing leaks iff
+/// every memory access is proven to be safe. For that, it requires every
+/// function to follow the contract above: each pointer argument (e.g. array)
+/// must be immediately followed by an argument carrying its length. The user
+/// can either manually add these arguments or let the tool insert it
+/// automatically.
 ///
 //===----------------------------------------------------------------------===//
 
-#include "Invariant.h"
+#include "Isochronous.h"
 
 #include <llvm/ADT/DenseSet.h>
 #include <llvm/ADT/SmallPtrSet.h>
@@ -52,7 +53,7 @@
 using namespace llvm;
 
 /// A category for the options specified for this tool.
-static cl::OptionCategory LifCategory("invariant pass options");
+static cl::OptionCategory LifCategory("isochronous pass options");
 
 /// A required argument that specifies the module that will be transformed.
 static cl::opt<std::string> InputModule(cl::Positional,
@@ -108,12 +109,12 @@ static cl::opt<std::string>
           cl::desc("List of functions to be transformed. [empty = all]"),
           cl::value_desc("f1,f2,f3...,fn"), cl::init(""), cl::cat(LifCategory));
 
-/// Applies the Invariant pass to the selected functions.
-void runInvariantPass(Module &M) {
+/// Applies the Isochronous pass to the selected functions.
+void runIsochronousPass(Module &M) {
     // If no function name was specified, we transform all functions within the
     // given module.
     SmallVector<StringRef, 32> FNames;
-    StringRef(Names.getValue()).split(FNames, ",");
+    StringRef(Names.getValue()).split(FNames, ",", -1, false);
 
     PassBuilder PB;
     LoopAnalysisManager LAM;
@@ -141,8 +142,8 @@ void runInvariantPass(Module &M) {
         MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
     }
 
-    std::vector<StringRef> NamesV(FNames.begin(), FNames.end());
-    MPM.addPass(invariant::Pass(NamesV, InsertLen));
+    std::set<StringRef> Names(FNames.begin(), FNames.end());
+    MPM.addPass(isochronous::Pass(Names, InsertLen));
 
     if (Opt != O0)
         MPM.addPass(PB.buildPerModuleDefaultPipeline(OptM.find(Opt)->second));
@@ -154,10 +155,11 @@ int main(int Argc, char **Argv) {
     // Hide all options apart from the ones specific to this tool.
     cl::HideUnrelatedOptions(LifCategory);
 
-    // Parse the command-line options that should be passed to the invariant
+    // Parse the command-line options that should be passed to the isochronous
     // pass.
     cl::ParseCommandLineOptions(
-        Argc, Argv, "transforms functions into versions that are invariant.\n");
+        Argc, Argv,
+        "transforms functions into versions that are isochronous.\n");
 
     // Makes sure llvm_shutdown() is called (which cleans up LLVM objects)
     //  http://llvm.org/docs/ProgrammersManual.html#ending-execution-with-llvm-shutdown
@@ -174,7 +176,7 @@ int main(int Argc, char **Argv) {
         return -1;
     }
 
-    runInvariantPass(*M);
+    runIsochronousPass(*M);
 
     std::error_code EC;
     raw_fd_ostream OS(OutputModule.getValue(), EC);

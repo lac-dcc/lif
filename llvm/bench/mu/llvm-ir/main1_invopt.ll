@@ -616,6 +616,9 @@ define void @mu(i32* %0, i64 %len.) local_unnamed_addr #3 {
   %492 = load i32, i32* %3, align 4
   %493 = ashr i32 %492, 1
   store i32 %493, i32* %3, align 4
+  %494 = load i32, i32* %5, align 4
+  %495 = ashr i32 %494, 1
+  store i32 %495, i32* %5, align 4
   store i32 %490, i32* %0, align 4
   store i32 %488, i32* %3, align 4
   store i32 %485, i32* %5, align 4

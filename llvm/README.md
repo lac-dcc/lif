@@ -2,7 +2,7 @@
 ![stability-wip](https://img.shields.io/badge/stability-work_in_progress-lightgrey.svg)
 
 # Lif - LLVM
-This is an implementation of the Invariant Pass onto the LLVM ecossystem. It relies on the new LLVM Pass Manager. Unfortunately, so far the official documentation is directed to the legacy Pass Manager, but you can find nice talks about the new Pass Manager on youtube. I recommend the following talk from Andrzej Warzynski:
+This is an implementation of the Isochronous Pass onto the LLVM ecossystem. It relies on the new LLVM Pass Manager. Unfortunately, so far the official documentation is directed to the legacy Pass Manager, but you can find nice talks about the new Pass Manager on youtube. I recommend the following talk from Andrzej Warzynski:
 
 [![New LLVM Pass Manager](https://img.youtube.com/vi/ar7cJl2aBuU/0.jpg)](https://www.youtube.com/watch?v=ar7cJl2aBuU "2019 LLVM Developers’ Meeting: A. Warzynski “Writing an LLVM Pass: 101”")
 
@@ -48,7 +48,7 @@ int main() {
 $ clang -S -emit-llvm -Xclang -disable-O0-optnone comp.c -o comp.ll
 ```
 
-The invariant pass requires the length of each pointer argument (e.g. array) in order to ensure the safety of the memory accesses. You can either add those arguments manually by placing them immediately after each pointer, or you can let this tool insert them automatically by passing the command-line option "len-args". It also requires every loop to be unrolled. In this case, you can pass the option "unroll" together with "unroll-count" (an option for the LLVM loop unroll pass) in order to let this tool try to unroll the existing loops. If the loop size is too high, you may need to also set the option "unroll-threshold" (again, see LLVM loop unroll pass).
+The isochronous pass requires the length of each pointer argument (e.g. array) in order to ensure the safety of the memory accesses. You can either add those arguments manually by placing them immediately after each pointer, or you can let this tool insert them automatically by passing the command-line option "len-args". It also requires every loop to be unrolled. In this case, you can pass the option "unroll" together with "unroll-count" (an option for the LLVM loop unroll pass) in order to let this tool try to unroll the existing loops. If the loop size is too high, you may need to also set the option "unroll-threshold" (again, see LLVM loop unroll pass).
 
 ```
 $ bin/lif -names=comp -insert-len -opt -unroll -unroll-count=4 comp.ll -o comp_inv.ll

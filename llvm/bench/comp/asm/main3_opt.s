@@ -1,19 +1,6 @@
 	.text
 	.file	"llvm-link"
-	.section	.rodata.cst16,"aM",@progbits,16
-	.p2align	4               # -- Begin function main
-.LCPI0_0:
-	.long	0                       # 0x0
-	.long	1                       # 0x1
-	.long	2                       # 0x2
-	.long	3                       # 0x3
-.LCPI0_1:
-	.long	0                       # 0x0
-	.long	1                       # 0x1
-	.long	2                       # 0x2
-	.long	4294967295              # 0xffffffff
-	.text
-	.globl	main
+	.globl	main                    # -- Begin function main
 	.p2align	4, 0x90
 	.type	main,@function
 main:                                   # @main
@@ -27,10 +14,13 @@ main:                                   # @main
 	subq	$48, %rsp
 	movq	%fs:40, %rax
 	movq	%rax, -8(%rbp)
-	movaps	.LCPI0_0(%rip), %xmm0   # xmm0 = [0,1,2,3]
-	movaps	%xmm0, -32(%rbp)
-	movaps	.LCPI0_1(%rip), %xmm0   # xmm0 = [0,1,2,4294967295]
-	movaps	%xmm0, -48(%rbp)
+	movabsq	$4294967296, %rax       # imm = 0x100000000
+	movq	%rax, -48(%rbp)
+	movq	%rax, -32(%rbp)
+	movabsq	$-4294967294, %rax      # imm = 0xFFFFFFFF00000002
+	movq	%rax, -40(%rbp)
+	movabsq	$12884901890, %rax      # imm = 0x300000002
+	movq	%rax, -24(%rbp)
 	leaq	-32(%rbp), %rdi
 	leaq	-48(%rbp), %rsi
 	callq	comp

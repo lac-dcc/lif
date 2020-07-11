@@ -7,14 +7,30 @@ target triple = "x86_64-pc-linux-gnu"
 
 ; Function Attrs: nofree noinline nounwind sspstrong uwtable
 define dso_local i32 @main() local_unnamed_addr #0 {
-  %1 = alloca <4 x i32>, align 16
-  %2 = alloca <4 x i32>, align 16
-  %3 = getelementptr inbounds <4 x i32>, <4 x i32>* %2, i64 0, i64 0
-  %4 = getelementptr inbounds <4 x i32>, <4 x i32>* %1, i64 0, i64 0
-  store <4 x i32> <i32 0, i32 1, i32 2, i32 3>, <4 x i32>* %1, align 16
-  store <4 x i32> <i32 0, i32 1, i32 2, i32 -1>, <4 x i32>* %2, align 16
-  %5 = call i32 @comp(i32* nonnull %4, i32* nonnull %3)
-  %6 = call i32 (i8*, ...) @printf(i8* nonnull dereferenceable(1) getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i64 0, i64 0), i32 %5)
+  %1 = alloca [4 x i32], align 16
+  %2 = alloca [4 x i32], align 16
+  %3 = getelementptr inbounds [4 x i32], [4 x i32]* %2, i64 0, i64 0
+  store i32 0, i32* %3, align 16
+  %4 = getelementptr inbounds [4 x i32], [4 x i32]* %1, i64 0, i64 0
+  store i32 0, i32* %4, align 16
+  %5 = getelementptr inbounds [4 x i32], [4 x i32]* %2, i64 0, i64 1
+  store i32 1, i32* %5, align 4
+  %6 = getelementptr inbounds [4 x i32], [4 x i32]* %1, i64 0, i64 1
+  store i32 1, i32* %6, align 4
+  %7 = getelementptr inbounds [4 x i32], [4 x i32]* %2, i64 0, i64 2
+  store i32 2, i32* %7, align 8
+  %8 = getelementptr inbounds [4 x i32], [4 x i32]* %1, i64 0, i64 2
+  store i32 2, i32* %8, align 8
+  %9 = getelementptr inbounds [4 x i32], [4 x i32]* %2, i64 0, i64 3
+  store i32 3, i32* %9, align 4
+  %10 = getelementptr inbounds [4 x i32], [4 x i32]* %1, i64 0, i64 3
+  store i32 3, i32* %10, align 4
+  %11 = getelementptr inbounds [4 x i32], [4 x i32]* %2, i64 0, i64 3
+  store i32 -1, i32* %11, align 4
+  %12 = getelementptr inbounds [4 x i32], [4 x i32]* %1, i64 0, i64 0
+  %13 = getelementptr inbounds [4 x i32], [4 x i32]* %2, i64 0, i64 0
+  %14 = call i32 @comp(i32* nonnull %12, i32* nonnull %13)
+  %15 = call i32 (i8*, ...) @printf(i8* nonnull dereferenceable(1) getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i64 0, i64 0), i32 %14)
   ret i32 0
 }
 

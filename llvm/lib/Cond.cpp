@@ -44,9 +44,10 @@ using namespace llvm;
 namespace cond {
 OutMap allocOut(Function &F) {
     OutMap OutM(F.size());
-    auto *Pos = F.getEntryBlock().getTerminator();
-    auto *BoolTy = IntegerType::getInt1Ty(F.getContext());
-    for (auto &BB : F) OutM[&BB] = new AllocaInst(BoolTy, 0, "out.", Pos);
+    auto Before = &*F.getEntryBlock().getFirstInsertionPt();
+    auto BoolTy = IntegerType::getInt1Ty(F.getContext());
+    for (BasicBlock &BB : F)
+        OutM[&BB] = new AllocaInst(BoolTy, 0, "out.", Before);
     return OutM;
 }
 
@@ -55,34 +56,34 @@ bindIn(BasicBlock &BB, const OutMap OutM) {
     SmallVector<Incoming, 8> InV;
     SmallVector<Value *, 4> GenV;
 
-    for (auto *P : predecessors(&BB)) {
-        auto *Terminator = P->getTerminator();
-        auto *Br = dyn_cast<BranchInst>(Terminator);
+    for (auto P : predecessors(&BB)) {
+        auto Terminator = P->getTerminator();
+        auto Br = dyn_cast<BranchInst>(Terminator);
 
         // TODO: Handle switch, etc...
         if (!Br) continue;
 
         // Get the address of the instruction associated with the first
         // insertion pointer.
-        auto *Pos = &*BB.getFirstInsertionPt();
+        auto Before = &*BB.getFirstInsertionPt();
 
         // Out map must have been constructed already; thus, every
         // basic block should be associated with an out variable.
-        auto *OutPtr = cast<AllocaInst>(OutM.lookup(P));
+        auto OutPtr = cast<AllocaInst>(OutM.lookup(P));
         Instruction *C =
-            new LoadInst(OutPtr->getAllocatedType(), OutPtr, "", Pos);
+            new LoadInst(OutPtr->getAllocatedType(), OutPtr, "", Before);
 
         GenV.push_back(C);
         if (Br->isConditional()) {
             // If we are at an else branch, then we should negate the
             // predicate.
-            auto *Pred = Br->getCondition();
+            auto Pred = Br->getCondition();
             if (Br->getSuccessor(1) == &BB) {
-                Pred = BinaryOperator::CreateNot(Pred, "", Pos);
+                Pred = BinaryOperator::CreateNot(Pred, "", Before);
                 GenV.push_back(Pred);
             }
 
-            C = BinaryOperator::CreateAnd(C, Pred, "in.", Pos);
+            C = BinaryOperator::CreateAnd(C, Pred, "in.", Before);
             GenV.push_back(C);
         }
 
@@ -95,39 +96,25 @@ bindIn(BasicBlock &BB, const OutMap OutM) {
 }
 
 std::vector<Value *> bindOut(BasicBlock &BB, Value *OutPtr,
-                             const SmallVectorImpl<Value *> &InV) {
+                             const SmallVectorImpl<Incoming> &InV) {
     std::vector<Value *> GenV;
 
     // Compute and store the proper value at OutPtr.
     Value *OutV;
+    Instruction *Before;
+
     if (InV.empty()) {
         // There are no incoming conditions, so we set the out value as
         // true.
-        auto *BoolTy = IntegerType::getInt1Ty(BB.getContext());
+        auto BoolTy = IntegerType::getInt1Ty(BB.getContext());
         OutV = ConstantInt::get(BoolTy, 1);
-    } else if (InV.size() == 1) {
-        // Set the out value as the single value from InV.
-        OutV = InV[0];
+        Before = cast<Instruction>(OutPtr)->getNextNode();
     } else {
-        // If there are more than one incoming cond, fold them and set the
-        // last instruction as the out value. We proceed as following:
-        //   > Let InV = {v0, v1, ..., vn}, i.e. the list of values
-        //   > z0 = v0 & v1
-        //   > z1 = z0 & v2
-        //   ...
-        //   > zn-1 = zn-2 & vn
-        OutV = BinaryOperator::CreateOr(InV[0], InV[1]);
-        cast<Instruction>(OutV)->insertBefore(BB.getTerminator());
-        GenV.push_back(OutV);
-
-        for (auto Iter = InV.begin() + 2; Iter != InV.end(); ++Iter) {
-            OutV = BinaryOperator::CreateOr(OutV, *Iter);
-            cast<Instruction>(OutV)->insertBefore(BB.getTerminator());
-            GenV.push_back(OutV);
-        }
+        OutV = fold(InV);
+        Before = cast<Instruction>(OutV)->getNextNode();
     }
 
-    GenV.push_back(new StoreInst(OutV, OutPtr, BB.getTerminator()));
+    GenV.push_back(new StoreInst(OutV, OutPtr, Before));
     return GenV;
 }
 
@@ -135,19 +122,11 @@ std::pair<InMap, std::vector<Value *>> bind(Function &F, const OutMap OutM) {
     InMap InM(F.size());
     std::vector<Value *> GenV;
 
-    for (auto &BB : F) {
+    for (BasicBlock &BB : F) {
         auto [InV, GenInV] = bindIn(BB, OutM);
         InM[&BB] = InV;
-
-        auto GenOutV = bindOut(BB, OutM.lookup(&BB),
-                               std::accumulate(InV.begin(), InV.end(),
-                                               SmallVector<Value *, 8>(),
-                                               [](auto Accum, auto In) {
-                                                   Accum.push_back(In.Cond);
-                                                   return Accum;
-                                               }));
-
         GenV.insert(GenV.end(), GenInV.begin(), GenInV.end());
+        auto GenOutV = bindOut(BB, OutM.lookup(&BB), InV);
         GenV.insert(GenV.end(), GenOutV.begin(), GenOutV.end());
     }
 
@@ -157,18 +136,18 @@ std::pair<InMap, std::vector<Value *>> bind(Function &F, const OutMap OutM) {
 Value *fold(const SmallVectorImpl<Incoming> &InV) {
     if (InV.size() == 1) return InV[0].Cond;
 
-    Instruction *Pos = InV.back().Cond->getNextNode();
-    auto ApplyOr = [&Pos](Value *U, Value *V) {
-        return BinaryOperator::CreateOr(U, V, "", Pos);
+    Instruction *Before = cast<Instruction>(InV.back().Cond)->getNextNode();
+    auto ApplyOr = [&Before](Value *U, Value *V) {
+        return BinaryOperator::CreateOr(U, V, "", Before);
     };
 
-    return std::accumulate(InV.begin() + 2, InV.end(),
-                           SmallVector<Instruction *, 8>(
-                               {ApplyOr(InV[0].Cond, InV[1].Cond)}),
-                           [&ApplyOr](auto Accum, auto In) {
-                               Accum.push_back(ApplyOr(Accum.back(), In.Cond));
-                               return Accum;
-                           })
+    return std::accumulate(
+               InV.begin() + 2, InV.end(),
+               SmallVector<Value *, 8>({ApplyOr(InV[0].Cond, InV[1].Cond)}),
+               [&ApplyOr](auto Accum, auto In) {
+                   Accum.push_back(ApplyOr(Accum.back(), In.Cond));
+                   return Accum;
+               })
         .back();
 }
 

@@ -11,9 +11,10 @@ main:                                   # @main
 	.cfi_offset %rbp, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register %rbp
-	subq	$32, %rsp
+	subq	$48, %rsp
 	movq	%fs:40, %rax
 	movq	%rax, -8(%rbp)
+	movl	$0, -36(%rbp)
 	callq	init_dut
 	movaps	.L__const.main.input_data(%rip), %xmm0
 	movaps	%xmm0, -32(%rbp)
@@ -30,7 +31,7 @@ main:                                   # @main
 	jne	.LBB0_2
 # %bb.1:                                # %SP_return
 	xorl	%eax, %eax
-	addq	$32, %rsp
+	addq	$48, %rsp
 	popq	%rbp
 	.cfi_def_cfa %rsp, 8
 	retq
@@ -39,43 +40,6 @@ main:                                   # @main
 	callq	__stack_chk_fail
 .Lfunc_end0:
 	.size	main, .Lfunc_end0-main
-	.cfi_endproc
-                                        # -- End function
-	.globl	init_dut                # -- Begin function init_dut
-	.p2align	4, 0x90
-	.type	init_dut,@function
-init_dut:                               # @init_dut
-	.cfi_startproc
-# %bb.0:
-	pushq	%rbp
-	.cfi_def_cfa_offset 16
-	.cfi_offset %rbp, -16
-	movq	%rsp, %rbp
-	.cfi_def_cfa_register %rbp
-	subq	$32, %rsp
-	movq	%fs:40, %rax
-	movq	%rax, -8(%rbp)
-	xorps	%xmm0, %xmm0
-	movaps	%xmm0, -32(%rbp)
-	leaq	-32(%rbp), %rdx
-	movl	$rk, %edi
-	movl	$44, %esi
-	movl	$16, %ecx
-	movl	$128, %r8d
-	callq	rijndaelKeySetupEnc
-	movq	%fs:40, %rax
-	cmpq	-8(%rbp), %rax
-	jne	.LBB1_2
-# %bb.1:                                # %SP_return
-	addq	$32, %rsp
-	popq	%rbp
-	.cfi_def_cfa %rsp, 8
-	retq
-.LBB1_2:                                # %CallStackCheckFailBlk
-	.cfi_def_cfa %rbp, 16
-	callq	__stack_chk_fail
-.Lfunc_end1:
-	.size	init_dut, .Lfunc_end1-init_dut
 	.cfi_endproc
                                         # -- End function
 	.globl	do_one_computation      # -- Begin function do_one_computation
@@ -414,5864 +378,45 @@ do_one_computation:                     # @do_one_computation
 	popq	%r15
 	.cfi_def_cfa_offset 8
 	retq
+.Lfunc_end1:
+	.size	do_one_computation, .Lfunc_end1-do_one_computation
+	.cfi_endproc
+                                        # -- End function
+	.globl	init_dut                # -- Begin function init_dut
+	.p2align	4, 0x90
+	.type	init_dut,@function
+init_dut:                               # @init_dut
+	.cfi_startproc
+# %bb.0:
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset %rbp, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register %rbp
+	subq	$32, %rsp
+	movq	%fs:40, %rax
+	movq	%rax, -8(%rbp)
+	xorps	%xmm0, %xmm0
+	movaps	%xmm0, -32(%rbp)
+	leaq	-32(%rbp), %rdx
+	movl	$rk, %edi
+	movl	$44, %esi
+	movl	$16, %ecx
+	movl	$128, %r8d
+	callq	rijndaelKeySetupEnc
+	movq	%fs:40, %rax
+	cmpq	-8(%rbp), %rax
+	jne	.LBB2_2
+# %bb.1:                                # %SP_return
+	addq	$32, %rsp
+	popq	%rbp
+	.cfi_def_cfa %rsp, 8
+	retq
+.LBB2_2:                                # %CallStackCheckFailBlk
+	.cfi_def_cfa %rbp, 16
+	callq	__stack_chk_fail
 .Lfunc_end2:
-	.size	do_one_computation, .Lfunc_end2-do_one_computation
-	.cfi_endproc
-                                        # -- End function
-	.globl	rijndaelEncrypt         # -- Begin function rijndaelEncrypt
-	.p2align	4, 0x90
-	.type	rijndaelEncrypt,@function
-rijndaelEncrypt:                        # @rijndaelEncrypt
-	.cfi_startproc
-# %bb.0:                                # %.preheader12
-	pushq	%rbp
-	.cfi_def_cfa_offset 16
-	pushq	%r15
-	.cfi_def_cfa_offset 24
-	pushq	%r14
-	.cfi_def_cfa_offset 32
-	pushq	%r13
-	.cfi_def_cfa_offset 40
-	pushq	%r12
-	.cfi_def_cfa_offset 48
-	pushq	%rbx
-	.cfi_def_cfa_offset 56
-	subq	$168, %rsp
-	.cfi_def_cfa_offset 224
-	.cfi_offset %rbx, -56
-	.cfi_offset %r12, -48
-	.cfi_offset %r13, -40
-	.cfi_offset %r14, -32
-	.cfi_offset %r15, -24
-	.cfi_offset %rbp, -16
-	movq	%r9, 160(%rsp)          # 8-byte Spill
-	movl	%edx, 8(%rsp)           # 4-byte Spill
-	movq	%rdi, %r10
-	addq	$168, %rdi
-	leaq	188(%r10), %rax
-	movq	%rsi, 72(%rsp)          # 8-byte Spill
-	cmpq	$47, %rsi
-	leaq	-72(%rsp), %rbp
-	movq	%rbp, %rbx
-	cmovgq	%rax, %rbx
-	cmpl	$10, %edx
-	cmovgq	%rax, %rbx
-	movq	%rbx, (%rsp)            # 8-byte Spill
-	cmpq	$42, %rsi
-	movq	%rbp, %rax
-	cmovgq	%rdi, %rax
-	movq	%rax, %rsi
-	cmpl	$10, %edx
-	movl	(%rcx), %edx
-	movl	4(%rcx), %ebx
-	bswapl	%edx
-	bswapl	%ebx
-	movl	8(%rcx), %eax
-	bswapl	%eax
-	cmovgq	%rdi, %rsi
-	movq	%rsi, -112(%rsp)        # 8-byte Spill
-	xorl	4(%r10), %ebx
-	movl	%ebx, %r9d
-	movzbl	%bl, %esi
-	movq	%rsi, -120(%rsp)        # 8-byte Spill
-	movzbl	%bh, %esi
-	movq	%rsi, %r12
-	movl	12(%rcx), %ecx
-	bswapl	%ecx
-	xorl	(%r10), %edx
-	xorl	8(%r10), %eax
-	xorl	12(%r10), %ecx
-	movl	%edx, %edi
-	shrl	$24, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te0(,%rdi,4), %r11
-	movq	%rbp, %rsi
-	cmovlq	%r11, %rsi
-	testl	%edi, %edi
-	cmovneq	%r11, %rsi
-	movl	(%rsi), %r11d
-	setne	-75(%rsp)
-	cmovel	Te0(%rip), %r11d
-	shrl	$16, %ebx
-	movzbl	%bl, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te1(,%rdi,4), %rbx
-	movq	%rbp, %rsi
-	cmovlq	%rbx, %rsi
-	testl	%edi, %edi
-	cmovneq	%rbx, %rsi
-	movl	(%rsi), %esi
-	setne	-78(%rsp)
-	cmovel	Te1(%rip), %esi
-	movzbl	%ah, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te2(,%rdi,4), %r14
-	movq	%rbp, %rbx
-	cmovlq	%r14, %rbx
-	testl	%edi, %edi
-	cmovneq	%r14, %rbx
-	movl	(%rbx), %ebx
-	setne	-81(%rsp)
-	cmovel	Te2(%rip), %ebx
-	xorl	%esi, %ebx
-	movzbl	%cl, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te3(,%rdi,4), %r14
-	movq	%rbp, %rsi
-	cmovlq	%r14, %rsi
-	testl	%edi, %edi
-	cmovneq	%r14, %rsi
-	movl	%eax, %edi
-	movzbl	%al, %r15d
-	movl	%eax, %r14d
-	movl	(%rsi), %eax
-	setne	-84(%rsp)
-	cmovel	Te3(%rip), %eax
-	xorl	%ebx, %eax
-	xorl	%r11d, %eax
-	shrl	$24, %r9d
-	movzbl	%dl, %esi
-	movzbl	%dh, %ebx
-	shrl	$16, %edx
-	movzbl	%dl, %r13d
-	movl	Te0(,%r9,4), %edx
-	shrl	$16, %r14d
-	movzbl	%r14b, %ebp
-	xorl	Te1(,%rbp,4), %edx
-	movzbl	%ch, %ebp
-	xorl	Te2(,%rbp,4), %edx
-	xorl	Te3(,%rsi,4), %edx
-	movb	$1, -73(%rsp)
-	movb	$1, -74(%rsp)
-	movb	$1, -76(%rsp)
-	movb	$1, -77(%rsp)
-	movb	$1, -79(%rsp)
-	movb	$1, -80(%rsp)
-	movb	$1, -82(%rsp)
-	movb	$1, -83(%rsp)
-	xorl	20(%r10), %edx
-	shrl	$24, %edi
-	movl	%edx, %r11d
-	movzbl	%dl, %esi
-	movq	%rsi, -104(%rsp)        # 8-byte Spill
-	movzbl	%dh, %esi
-	movq	%rsi, %r8
-	movl	%edx, %ebp
-	movl	Te0(,%rdi,4), %edx
-	movl	%ecx, %edi
-	shrl	$16, %edi
-	movzbl	%dil, %edi
-	xorl	Te1(,%rdi,4), %edx
-	xorl	Te2(,%rbx,4), %edx
-	movq	-120(%rsp), %rsi        # 8-byte Reload
-	xorl	Te3(,%rsi,4), %edx
-	shrl	$24, %ecx
-	movl	Te0(,%rcx,4), %ecx
-	xorl	Te1(,%r13,4), %ecx
-	xorl	Te2(,%r12,4), %ecx
-	xorl	16(%r10), %eax
-	xorl	24(%r10), %edx
-	xorl	Te3(,%r15,4), %ecx
-	movl	%eax, %edi
-	shrl	$24, %edi
-	movzbl	%dh, %ebx
-	movl	%edx, %r9d
-	movzbl	%dl, %r15d
-	movl	%edx, %esi
-	movl	Te0(,%rdi,4), %edx
-	shrl	$16, %ebp
-	movzbl	%bpl, %edi
-	xorl	Te1(,%rdi,4), %edx
-	xorl	Te2(,%rbx,4), %edx
-	xorl	28(%r10), %ecx
-	movzbl	%cl, %edi
-	xorl	Te3(,%rdi,4), %edx
-	shrl	$24, %r11d
-	movzbl	%al, %edi
-	movzbl	%ah, %ebx
-	shrl	$16, %eax
-	movzbl	%al, %r13d
-	movl	Te0(,%r11,4), %eax
-	shrl	$16, %esi
-	movzbl	%sil, %esi
-	xorl	Te1(,%rsi,4), %eax
-	movzbl	%ch, %esi
-	xorl	Te2(,%rsi,4), %eax
-	xorl	Te3(,%rdi,4), %eax
-	xorl	36(%r10), %eax
-	shrl	$24, %r9d
-	movl	%eax, %edi
-	movzbl	%al, %esi
-	movq	%rsi, -8(%rsp)          # 8-byte Spill
-	movzbl	%ah, %esi
-	movq	%rsi, %r14
-	movl	%eax, %ebp
-	movl	Te0(,%r9,4), %eax
-	movl	%ecx, %esi
-	shrl	$16, %esi
-	movzbl	%sil, %esi
-	xorl	Te1(,%rsi,4), %eax
-	xorl	Te2(,%rbx,4), %eax
-	movq	-104(%rsp), %rsi        # 8-byte Reload
-	xorl	Te3(,%rsi,4), %eax
-	shrl	$24, %ecx
-	movl	Te0(,%rcx,4), %ecx
-	xorl	Te1(,%r13,4), %ecx
-	xorl	Te2(,%r8,4), %ecx
-	xorl	32(%r10), %edx
-	xorl	40(%r10), %eax
-	xorl	Te3(,%r15,4), %ecx
-	movl	%edx, %ebx
-	shrl	$24, %ebx
-	movzbl	%ah, %esi
-	movl	%eax, %r9d
-	movzbl	%al, %r13d
-	movl	Te0(,%rbx,4), %ebx
-	shrl	$16, %ebp
-	movzbl	%bpl, %ebp
-	xorl	Te1(,%rbp,4), %ebx
-	xorl	Te2(,%rsi,4), %ebx
-	xorl	44(%r10), %ecx
-	movzbl	%cl, %esi
-	xorl	Te3(,%rsi,4), %ebx
-	shrl	$24, %edi
-	movzbl	%dl, %ebp
-	movzbl	%dh, %esi
-	shrl	$16, %edx
-	movzbl	%dl, %r15d
-	movl	Te0(,%rdi,4), %edx
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	xorl	Te1(,%rax,4), %edx
-	movzbl	%ch, %eax
-	xorl	Te2(,%rax,4), %edx
-	xorl	Te3(,%rbp,4), %edx
-	xorl	52(%r10), %edx
-	shrl	$24, %r9d
-	movl	%edx, %r11d
-	movzbl	%dl, %eax
-	movq	%rax, -120(%rsp)        # 8-byte Spill
-	movzbl	%dh, %eax
-	movq	%rax, %r12
-	movl	%edx, %edi
-	movl	Te0(,%r9,4), %edx
-	movl	%ecx, %eax
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	xorl	Te1(,%rax,4), %edx
-	xorl	Te2(,%rsi,4), %edx
-	movq	-8(%rsp), %rax          # 8-byte Reload
-	xorl	Te3(,%rax,4), %edx
-	shrl	$24, %ecx
-	movl	Te0(,%rcx,4), %eax
-	xorl	Te1(,%r15,4), %eax
-	xorl	Te2(,%r14,4), %eax
-	xorl	48(%r10), %ebx
-	xorl	56(%r10), %edx
-	xorl	Te3(,%r13,4), %eax
-	movl	%ebx, %esi
-	shrl	$24, %esi
-	movzbl	%dh, %ecx
-	movl	%edx, %r9d
-	movzbl	%dl, %r13d
-	movl	%edx, %r8d
-	movl	Te0(,%rsi,4), %edx
-	shrl	$16, %edi
-	movzbl	%dil, %esi
-	xorl	Te1(,%rsi,4), %edx
-	xorl	Te2(,%rcx,4), %edx
-	xorl	60(%r10), %eax
-	movzbl	%al, %ecx
-	xorl	Te3(,%rcx,4), %edx
-	shrl	$24, %r11d
-	movzbl	%bl, %ecx
-	movzbl	%bh, %esi
-	shrl	$16, %ebx
-	movzbl	%bl, %r15d
-	movl	Te0(,%r11,4), %ebx
-	shrl	$16, %r8d
-	movzbl	%r8b, %edi
-	xorl	Te1(,%rdi,4), %ebx
-	movzbl	%ah, %edi
-	xorl	Te2(,%rdi,4), %ebx
-	xorl	Te3(,%rcx,4), %ebx
-	xorl	68(%r10), %ebx
-	shrl	$24, %r9d
-	movl	%ebx, %r11d
-	movzbl	%bl, %ecx
-	movq	%rcx, -104(%rsp)        # 8-byte Spill
-	movzbl	%bh, %ecx
-	movq	%rcx, %r8
-	movl	%ebx, %ecx
-	movl	Te0(,%r9,4), %ebx
-	movl	%eax, %ebp
-	shrl	$16, %ebp
-	movzbl	%bpl, %ebp
-	xorl	Te1(,%rbp,4), %ebx
-	xorl	Te2(,%rsi,4), %ebx
-	movq	-120(%rsp), %rsi        # 8-byte Reload
-	xorl	Te3(,%rsi,4), %ebx
-	shrl	$24, %eax
-	movl	Te0(,%rax,4), %eax
-	xorl	Te1(,%r15,4), %eax
-	xorl	Te2(,%r12,4), %eax
-	xorl	64(%r10), %edx
-	xorl	72(%r10), %ebx
-	xorl	Te3(,%r13,4), %eax
-	movl	%edx, %esi
-	shrl	$24, %esi
-	movzbl	%bh, %ebp
-	movl	%ebx, %r9d
-	movzbl	%bl, %r13d
-	movl	%ebx, %edi
-	movl	Te0(,%rsi,4), %ebx
-	shrl	$16, %ecx
-	movzbl	%cl, %ecx
-	xorl	Te1(,%rcx,4), %ebx
-	xorl	Te2(,%rbp,4), %ebx
-	xorl	76(%r10), %eax
-	movzbl	%al, %ecx
-	xorl	Te3(,%rcx,4), %ebx
-	shrl	$24, %r11d
-	movzbl	%dl, %ecx
-	movzbl	%dh, %esi
-	shrl	$16, %edx
-	movzbl	%dl, %r15d
-	movl	Te0(,%r11,4), %edx
-	shrl	$16, %edi
-	movzbl	%dil, %edi
-	xorl	Te1(,%rdi,4), %edx
-	movzbl	%ah, %edi
-	xorl	Te2(,%rdi,4), %edx
-	xorl	Te3(,%rcx,4), %edx
-	xorl	84(%r10), %edx
-	shrl	$24, %r9d
-	movl	%edx, %r11d
-	movzbl	%dl, %r14d
-	movzbl	%dh, %ecx
-	movq	%rcx, %r12
-	movl	%edx, %ebp
-	movl	Te0(,%r9,4), %edx
-	movl	%eax, %ecx
-	shrl	$16, %ecx
-	movzbl	%cl, %ecx
-	xorl	Te1(,%rcx,4), %edx
-	xorl	Te2(,%rsi,4), %edx
-	movq	-104(%rsp), %rcx        # 8-byte Reload
-	xorl	Te3(,%rcx,4), %edx
-	shrl	$24, %eax
-	movl	Te0(,%rax,4), %ecx
-	xorl	Te1(,%r15,4), %ecx
-	xorl	Te2(,%r8,4), %ecx
-	xorl	80(%r10), %ebx
-	xorl	88(%r10), %edx
-	xorl	Te3(,%r13,4), %ecx
-	movl	%ebx, %eax
-	shrl	$24, %eax
-	movzbl	%dh, %esi
-	movl	%edx, %r9d
-	movzbl	%dl, %r8d
-	movl	%edx, %edi
-	movl	Te0(,%rax,4), %edx
-	shrl	$16, %ebp
-	movzbl	%bpl, %eax
-	xorl	Te1(,%rax,4), %edx
-	xorl	Te2(,%rsi,4), %edx
-	xorl	92(%r10), %ecx
-	movzbl	%cl, %eax
-	xorl	Te3(,%rax,4), %edx
-	shrl	$24, %r11d
-	movzbl	%bl, %eax
-	movzbl	%bh, %ebp
-	shrl	$16, %ebx
-	movzbl	%bl, %r13d
-	movl	Te0(,%r11,4), %ebx
-	shrl	$16, %edi
-	movzbl	%dil, %esi
-	xorl	Te1(,%rsi,4), %ebx
-	movzbl	%ch, %esi
-	xorl	Te2(,%rsi,4), %ebx
-	xorl	Te3(,%rax,4), %ebx
-	xorl	100(%r10), %ebx
-	shrl	$24, %r9d
-	movl	%ebx, %edi
-	movzbl	%bl, %eax
-	movq	%rax, -120(%rsp)        # 8-byte Spill
-	movzbl	%bh, %eax
-	movq	%rax, %r15
-	movl	%ebx, %esi
-	movl	Te0(,%r9,4), %eax
-	movl	%ecx, %ebx
-	shrl	$16, %ebx
-	movzbl	%bl, %ebx
-	xorl	Te1(,%rbx,4), %eax
-	xorl	Te2(,%rbp,4), %eax
-	xorl	Te3(,%r14,4), %eax
-	shrl	$24, %ecx
-	movl	Te0(,%rcx,4), %ebx
-	xorl	Te1(,%r13,4), %ebx
-	xorl	Te2(,%r12,4), %ebx
-	xorl	96(%r10), %edx
-	xorl	104(%r10), %eax
-	xorl	Te3(,%r8,4), %ebx
-	movl	%edx, %ecx
-	shrl	$24, %ecx
-	movzbl	%ah, %ebp
-	movl	%eax, %r11d
-	movzbl	%al, %r14d
-	movl	%eax, %r8d
-	movl	Te0(,%rcx,4), %ecx
-	shrl	$16, %esi
-	movzbl	%sil, %eax
-	xorl	Te1(,%rax,4), %ecx
-	xorl	Te2(,%rbp,4), %ecx
-	xorl	108(%r10), %ebx
-	movzbl	%bl, %eax
-	xorl	Te3(,%rax,4), %ecx
-	shrl	$24, %edi
-	movzbl	%dl, %ebp
-	movzbl	%dh, %esi
-	shrl	$16, %edx
-	movzbl	%dl, %r9d
-	movl	Te0(,%rdi,4), %eax
-	shrl	$16, %r8d
-	movzbl	%r8b, %edx
-	xorl	Te1(,%rdx,4), %eax
-	movzbl	%bh, %edx
-	xorl	Te2(,%rdx,4), %eax
-	xorl	Te3(,%rbp,4), %eax
-	xorl	116(%r10), %eax
-	shrl	$24, %r11d
-	movl	%eax, %r13d
-	movzbl	%al, %r8d
-	movzbl	%ah, %edx
-	movq	%rdx, %r12
-	movl	%eax, %ebp
-	movl	Te0(,%r11,4), %eax
-	movl	%ebx, %edx
-	shrl	$16, %edx
-	movzbl	%dl, %edx
-	xorl	Te1(,%rdx,4), %eax
-	xorl	Te2(,%rsi,4), %eax
-	movq	-120(%rsp), %rdx        # 8-byte Reload
-	xorl	Te3(,%rdx,4), %eax
-	shrl	$24, %ebx
-	movl	Te0(,%rbx,4), %edx
-	xorl	Te1(,%r9,4), %edx
-	xorl	Te2(,%r15,4), %edx
-	xorl	112(%r10), %ecx
-	xorl	120(%r10), %eax
-	xorl	Te3(,%r14,4), %edx
-	movl	%ecx, %esi
-	shrl	$24, %esi
-	movzbl	%ah, %edi
-	movl	%eax, %r9d
-	movzbl	%al, %r11d
-	movl	Te0(,%rsi,4), %ebx
-	shrl	$16, %ebp
-	movzbl	%bpl, %esi
-	xorl	Te1(,%rsi,4), %ebx
-	xorl	Te2(,%rdi,4), %ebx
-	xorl	124(%r10), %edx
-	movzbl	%dl, %esi
-	xorl	Te3(,%rsi,4), %ebx
-	shrl	$24, %r13d
-	movzbl	%cl, %edi
-	movzbl	%ch, %esi
-	shrl	$16, %ecx
-	movzbl	%cl, %r15d
-	movl	Te0(,%r13,4), %ecx
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	xorl	Te1(,%rax,4), %ecx
-	movzbl	%dh, %eax
-	xorl	Te2(,%rax,4), %ecx
-	xorl	Te3(,%rdi,4), %ecx
-	xorl	132(%r10), %ecx
-	shrl	$24, %r9d
-	movl	%ecx, %r14d
-	movzbl	%ch, %edi
-	movzbl	%cl, %eax
-	movq	%rax, -104(%rsp)        # 8-byte Spill
-	movl	%ecx, %ebp
-	movl	Te0(,%r9,4), %eax
-	movl	%edx, %ecx
-	shrl	$16, %ecx
-	movzbl	%cl, %ecx
-	xorl	Te1(,%rcx,4), %eax
-	xorl	Te2(,%rsi,4), %eax
-	xorl	Te3(,%r8,4), %eax
-	shrl	$24, %edx
-	movl	Te0(,%rdx,4), %ecx
-	xorl	Te1(,%r15,4), %ecx
-	xorl	Te2(,%r12,4), %ecx
-	xorl	128(%r10), %ebx
-	xorl	136(%r10), %eax
-	xorl	Te3(,%r11,4), %ecx
-	shrl	$24, %ebp
-	movzbl	%bl, %r9d
-	movl	%ebx, %r8d
-	movzbl	%bh, %esi
-                                        # kill: def $ebx killed $ebx def $rbx
-	movl	Te0(,%rbp,4), %edx
-	movl	%eax, %ebp
-	shrl	$16, %ebp
-	movzbl	%bpl, %ebp
-	xorl	Te1(,%rbp,4), %edx
-	xorl	140(%r10), %ecx
-	movzbl	%ch, %ebp
-	xorl	Te2(,%rbp,4), %edx
-	xorl	Te3(,%r9,4), %edx
-	xorl	148(%r10), %edx
-	movl	%edx, -120(%rsp)        # 4-byte Spill
-	movzbl	%dl, %ebp
-	cmpq	$256, %rbp              # imm = 0x100
-	leaq	Te3(,%rbp,4), %rbp
-	leaq	-72(%rsp), %r15
-	movq	%r15, %r9
-	cmovlq	%rbp, %r9
-	movl	8(%rsp), %r13d          # 4-byte Reload
-	cmpl	$10, %r13d
-	cmovgq	%rbp, %r9
-	shrl	$24, %ebx
-	shrl	$16, %r14d
-	movzbl	%r14b, %ebp
-	movl	Te0(,%rbx,4), %edx
-	xorl	Te1(,%rbp,4), %edx
-	movzbl	%ah, %ebx
-	xorl	Te2(,%rbx,4), %edx
-	movzbl	%cl, %ebp
-	xorl	Te3(,%rbp,4), %edx
-	xorl	144(%r10), %edx
-	movzbl	%dh, %ebx
-	movl	%edx, %r14d
-	cmpq	$256, %rbx              # imm = 0x100
-	leaq	Te2(,%rbx,4), %rbp
-	movq	%r15, %rbx
-	cmovlq	%rbp, %rbx
-	cmpl	$10, %r13d
-	cmovgq	%rbp, %rbx
-	movl	%ecx, %ebp
-	shrl	$24, %ebp
-	shrl	$16, %r8d
-	movzbl	%r8b, %r8d
-	movl	Te0(,%rbp,4), %r11d
-	xorl	Te1(,%r8,4), %r11d
-	xorl	Te2(,%rdi,4), %r11d
-	movzbl	%al, %edi
-	xorl	Te3(,%rdi,4), %r11d
-	xorl	156(%r10), %r11d
-	movl	%r11d, %edi
-	shrl	$16, %edi
-	movzbl	%dil, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te1(,%rdi,4), %rdi
-	movq	%r15, %rbp
-	cmovlq	%rdi, %rbp
-	cmpl	$10, %r13d
-	cmovgq	%rdi, %rbp
-	shrl	$16, %ecx
-	movzbl	%cl, %ecx
-	shrl	$24, %eax
-	movl	Te0(,%rax,4), %r12d
-	xorl	Te1(,%rcx,4), %r12d
-	xorl	Te2(,%rsi,4), %r12d
-	movq	-104(%rsp), %rax        # 8-byte Reload
-	xorl	Te3(,%rax,4), %r12d
-	xorl	152(%r10), %r12d
-	movl	%r12d, %eax
-	shrl	$24, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te0(,%rax,4), %rax
-	movq	%r15, %rcx
-	cmovlq	%rax, %rcx
-	cmpl	$10, %r13d
-	cmovgq	%rax, %rcx
-	movb	$1, -121(%rsp)
-	movl	(%rcx), %ecx
-	xorl	(%rbp), %ecx
-	xorl	(%rbx), %ecx
-	xorl	(%r9), %ecx
-	movq	-112(%rsp), %rax        # 8-byte Reload
-	xorl	(%rax), %ecx
-	movl	%ecx, -96(%rsp)         # 4-byte Spill
-	movzbl	%cl, %eax
-	leaq	Te3(,%rax,4), %rdx
-	cmpq	$256, %rax              # imm = 0x100
-	movq	%r15, %r8
-	movq	%r15, %rax
-	cmovlq	%rdx, %rax
-	cmpl	$10, %r13d
-	cmovgq	%rdx, %rax
-	movq	%rax, -16(%rsp)         # 8-byte Spill
-	leaq	164(%r10), %rdx
-	movq	%r10, %r15
-	movq	72(%rsp), %r9           # 8-byte Reload
-	cmpq	$41, %r9
-	movq	%r8, %rax
-	cmovgq	%rdx, %rax
-	cmpl	$10, %r13d
-	movzbl	%r14b, %esi
-	cmovgq	%rdx, %rax
-	leaq	Te3(,%rsi,4), %rdx
-	cmpq	$256, %rsi              # imm = 0x100
-	movq	%r8, %rsi
-	cmovlq	%rdx, %rsi
-	cmpl	$10, %r13d
-	cmovgq	%rdx, %rsi
-	movl	%r11d, %ecx
-	movzbl	%ch, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te2(,%rdx,4), %rdx
-	movq	%r8, %rdi
-	movq	%r8, %r11
-	cmovlq	%rdx, %rdi
-	cmpl	$10, %r13d
-	cmovgq	%rdx, %rdi
-	movl	%r12d, %r8d
-	movl	%r12d, %edx
-	shrl	$16, %edx
-	movzbl	%dl, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te1(,%rdx,4), %rdx
-	movq	%r11, %rbp
-	cmovlq	%rdx, %rbp
-	cmpl	$10, %r13d
-	cmovgq	%rdx, %rbp
-	movl	-120(%rsp), %r10d       # 4-byte Reload
-	movl	%r10d, %edx
-	shrl	$24, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te0(,%rdx,4), %rdx
-	movq	%r11, %rbx
-	cmovlq	%rdx, %rbx
-	cmpl	$10, %r13d
-	cmovgq	%rdx, %rbx
-	movl	(%rbx), %edx
-	xorl	(%rbp), %edx
-	xorl	(%rdi), %edx
-	xorl	(%rsi), %edx
-	xorl	(%rax), %edx
-	movl	%edx, -112(%rsp)        # 4-byte Spill
-	movzbl	%dh, %eax
-	leaq	Te2(,%rax,4), %rdx
-	cmpq	$256, %rax              # imm = 0x100
-	movq	%r11, %r12
-	movq	%r11, %rax
-	cmovlq	%rdx, %rax
-	cmpl	$10, %r13d
-	cmovgq	%rdx, %rax
-	movq	%rax, -24(%rsp)         # 8-byte Spill
-	leaq	160(%r15), %rdx
-	movq	%r15, %r11
-	cmpq	$40, %r9
-	movq	%r12, %rax
-	cmovgq	%rdx, %rax
-	cmpl	$10, %r13d
-	cmovgq	%rdx, %rax
-	movzbl	%cl, %edx
-	movl	%ecx, %r15d
-	movl	%ecx, 56(%rsp)          # 4-byte Spill
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te3(,%rdx,4), %rdx
-	movq	%r12, %rsi
-	cmovlq	%rdx, %rsi
-	cmpl	$10, %r13d
-	cmovgq	%rdx, %rsi
-	movl	%r8d, %ecx
-	movl	%r8d, -8(%rsp)          # 4-byte Spill
-	movzbl	%ch, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te2(,%rdx,4), %rdx
-	movq	%r12, %rdi
-	cmovlq	%rdx, %rdi
-	cmpl	$10, %r13d
-	cmovgq	%rdx, %rdi
-	movl	%r10d, %edx
-	shrl	$16, %edx
-	movzbl	%dl, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te1(,%rdx,4), %rdx
-	movq	%r12, %rbp
-	cmovlq	%rdx, %rbp
-	cmpl	$10, %r13d
-	cmovgq	%rdx, %rbp
-	movl	%r14d, 64(%rsp)         # 4-byte Spill
-	movl	%r14d, %edx
-	shrl	$24, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te0(,%rdx,4), %rdx
-	movq	%r12, %rbx
-	cmovlq	%rdx, %rbx
-	cmpl	$10, %r13d
-	cmovgq	%rdx, %rbx
-	movl	(%rbx), %edx
-	xorl	(%rbp), %edx
-	xorl	(%rdi), %edx
-	xorl	(%rsi), %edx
-	xorl	(%rax), %edx
-	movq	%rdx, -104(%rsp)        # 8-byte Spill
-	movl	%edx, %eax
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te1(,%rax,4), %rax
-	movq	%r12, %rdx
-	cmovlq	%rax, %rdx
-	cmpl	$10, %r13d
-	cmovgq	%rax, %rdx
-	movq	%rdx, -32(%rsp)         # 8-byte Spill
-	cmpq	$43, %r9
-	leaq	172(%r11), %rax
-	movq	%r11, %r8
-	movq	%r12, %rsi
-	cmovgq	%rax, %rsi
-	cmpl	$10, %r13d
-	cmovgq	%rax, %rsi
-	movzbl	%cl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te3(,%rax,4), %rax
-	movq	%r12, %rdi
-	cmovlq	%rax, %rdi
-	cmpl	$10, %r13d
-	cmovgq	%rax, %rdi
-	movl	-120(%rsp), %eax        # 4-byte Reload
-	movzbl	%ah, %eax
-	leaq	Te2(,%rax,4), %rdx
-	cmpq	$256, %rax              # imm = 0x100
-	movq	%r12, %rbp
-	cmovlq	%rdx, %rbp
-	cmpl	$10, %r13d
-	cmovgq	%rdx, %rbp
-	movl	%r14d, %eax
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te1(,%rax,4), %rax
-	movq	%r12, %rdx
-	cmovlq	%rax, %rdx
-	cmpl	$10, %r13d
-	cmovgq	%rax, %rdx
-	movl	%r15d, %eax
-	shrl	$24, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te0(,%rax,4), %rax
-	movq	%r12, %rbx
-	cmovlq	%rax, %rbx
-	cmpl	$10, %r13d
-	cmovgq	%rax, %rbx
-	movl	(%rbx), %eax
-	xorl	(%rdx), %eax
-	xorl	(%rbp), %eax
-	xorl	(%rdi), %eax
-	xorl	(%rsi), %eax
-	movl	%eax, %ebp
-	movzbl	%al, %r15d
-	movzbl	%ah, %ecx
-	movq	%rcx, %r11
-                                        # kill: def $eax killed $eax def $rax
-	movl	-96(%rsp), %ecx         # 4-byte Reload
-	movl	%ecx, %r10d
-	movzbl	%ch, %edx
-	movq	%rdx, -48(%rsp)         # 8-byte Spill
-                                        # kill: def $ecx killed $ecx def $rcx
-	shrl	$24, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te0(,%rax,4), %rax
-	movq	%r12, %rdi
-	movq	%r12, %rdx
-	cmovlq	%rax, %rdx
-	movl	%r13d, %esi
-	cmpl	$10, %r13d
-	cmovgq	%rax, %rdx
-	movq	%rdx, -96(%rsp)         # 8-byte Spill
-	movq	%r9, %r14
-	cmpq	$46, %r9
-	leaq	184(%r8), %rax
-	movq	%r12, %rdx
-	cmovgq	%rax, %rdx
-	cmpl	$10, %r13d
-	cmovgq	%rax, %rdx
-	movq	%rdx, -40(%rsp)         # 8-byte Spill
-	movl	-112(%rsp), %r9d        # 4-byte Reload
-	movzbl	%r9b, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te3(,%rax,4), %rax
-	movq	%r12, %rdx
-	cmovlq	%rax, %rdx
-	cmpl	$10, %r13d
-	cmovgq	%rax, %rdx
-	movq	%rdx, -56(%rsp)         # 8-byte Spill
-	movq	-104(%rsp), %rbx        # 8-byte Reload
-	movzbl	%bh, %eax
-	leaq	Te2(,%rax,4), %rdx
-	cmpq	$256, %rax              # imm = 0x100
-	movq	%r12, %r13
-	cmovlq	%rdx, %r13
-	cmpl	$10, %esi
-	cmovgq	%rdx, %r13
-	shrl	$16, %ebp
-	movzbl	%bpl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te1(,%rax,4), %rax
-	movq	%r12, %rbp
-	cmovlq	%rax, %rbp
-	cmpl	$10, %esi
-	cmovgq	%rax, %rbp
-	shrl	$24, %ecx
-	cmpq	$256, %rcx              # imm = 0x100
-	leaq	Te0(,%rcx,4), %rax
-	cmovlq	%rax, %r12
-	cmpl	$10, %esi
-	cmovgq	%rax, %r12
-	cmpq	$45, %r14
-	movq	%r14, %rdx
-	leaq	180(%r8), %rax
-	movq	%r8, %rcx
-	movq	%r8, 80(%rsp)           # 8-byte Spill
-	movq	%rdi, %r14
-	cmovgq	%rax, %r14
-	cmpl	$10, %esi
-	cmovgq	%rax, %r14
-	movzbl	%bl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te3(,%rax,4), %rax
-	movq	%rdi, %rbx
-	cmovlq	%rax, %rbx
-	cmpl	$10, %esi
-	cmovgq	%rax, %rbx
-	leaq	Te2(,%r11,4), %r8
-	cmpq	$256, %r11              # imm = 0x100
-	movq	%rdi, %r11
-	cmovlq	%r8, %r11
-	cmpl	$10, %esi
-	cmovgq	%r8, %r11
-	shrl	$16, %r10d
-	movzbl	%r10b, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te1(,%rax,4), %rax
-	movq	%rdi, %r10
-	cmovlq	%rax, %r10
-	cmpl	$10, %esi
-	cmovgq	%rax, %r10
-	movl	%r9d, %eax
-	shrl	$24, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te0(,%rax,4), %rax
-	movq	%rdi, %r8
-	cmovlq	%rax, %r8
-	cmpl	$10, %esi
-	cmovgq	%rax, %r8
-	cmpq	$44, %rdx
-	leaq	176(%rcx), %rdx
-	movq	%rdi, %rax
-	cmovgq	%rdx, %rdi
-	cmpl	$10, %esi
-	movl	%esi, %r9d
-	cmovgq	%rdx, %rdi
-	cmpq	$256, %r15              # imm = 0x100
-	leaq	Te3(,%r15,4), %r15
-	movq	%rax, %rsi
-	cmovlq	%r15, %rsi
-	cmpl	$10, %r9d
-	cmovgq	%r15, %rsi
-	movq	-48(%rsp), %rcx         # 8-byte Reload
-	cmpq	$256, %rcx              # imm = 0x100
-	leaq	Te2(,%rcx,4), %r15
-	movq	%rax, %rdx
-	cmovlq	%r15, %rdx
-	cmpl	$10, %r9d
-	cmovgq	%r15, %rdx
-	movl	-112(%rsp), %ecx        # 4-byte Reload
-	shrl	$16, %ecx
-	movzbl	%cl, %r15d
-	cmpq	$256, %r15              # imm = 0x100
-	leaq	Te1(,%r15,4), %r15
-	movq	%rax, %rcx
-	cmovlq	%r15, %rcx
-	cmpl	$10, %r9d
-	cmovgq	%r15, %rcx
-	movq	-104(%rsp), %rax        # 8-byte Reload
-	shrl	$24, %eax
-	leaq	Te0(,%rax,4), %r15
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	-72(%rsp), %rax
-	cmovlq	%r15, %rax
-	cmpl	$10, %r9d
-	cmovgq	%r15, %rax
-	movl	(%rax), %eax
-	xorl	(%rcx), %eax
-	xorl	(%rdx), %eax
-	xorl	(%rsi), %eax
-	xorl	(%rdi), %eax
-	movl	%eax, %esi
-	movl	(%r8), %eax
-	xorl	(%r10), %eax
-	xorl	(%r11), %eax
-	xorl	(%rbx), %eax
-	xorl	(%r14), %eax
-	movl	%eax, %edi
-	movl	(%r12), %eax
-	xorl	(%rbp), %eax
-	xorl	(%r13), %eax
-	movq	-56(%rsp), %rcx         # 8-byte Reload
-	xorl	(%rcx), %eax
-	movq	-40(%rsp), %rcx         # 8-byte Reload
-	xorl	(%rcx), %eax
-	movl	%eax, %r11d
-	movq	-96(%rsp), %rax         # 8-byte Reload
-	movl	(%rax), %ecx
-	movq	-32(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ecx
-	movq	-24(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ecx
-	movq	-16(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ecx
-	movq	(%rsp), %rax            # 8-byte Reload
-	xorl	(%rax), %ecx
-	movl	%ecx, %ebp
-	movl	%ecx, -112(%rsp)        # 4-byte Spill
-	cmpl	$10, %r9d
-	setg	%al
-	setg	-122(%rsp)
-	cmpl	$12, %r9d
-	setg	%r8b
-	andb	%al, %r8b
-	movq	80(%rsp), %r13          # 8-byte Reload
-	leaq	220(%r13), %rax
-	movq	72(%rsp), %rcx          # 8-byte Reload
-	cmpq	$55, %rcx
-	leaq	-72(%rsp), %r15
-	movq	%r15, %rbx
-	cmovgq	%rax, %rbx
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rbx
-	movq	%rbx, (%rsp)            # 8-byte Spill
-	cmpq	$50, %rcx
-	movq	%rcx, %r9
-	leaq	200(%r13), %rax
-	movq	%r15, %rcx
-	cmovgq	%rax, %rcx
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rcx
-	movzbl	%dil, %eax
-	movl	%edi, %r14d
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te3(,%rax,4), %rax
-	movq	%r15, %rdx
-	cmovlq	%rax, %rdx
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rdx
-	movl	%esi, %ebx
-	movzbl	%bh, %eax
-	leaq	Te2(,%rax,4), %rsi
-	cmpq	$256, %rax              # imm = 0x100
-	movq	%r15, %rax
-	cmovlq	%rsi, %rax
-	testb	%r8b, %r8b
-	cmovneq	%rsi, %rax
-	movl	%ebp, %esi
-	shrl	$16, %esi
-	movzbl	%sil, %esi
-	cmpq	$256, %rsi              # imm = 0x100
-	leaq	Te1(,%rsi,4), %rsi
-	movq	%r15, %rdi
-	cmovlq	%rsi, %rdi
-	testb	%r8b, %r8b
-	cmovneq	%rsi, %rdi
-	movl	%r11d, %esi
-	shrl	$24, %esi
-	cmpq	$256, %rsi              # imm = 0x100
-	leaq	Te0(,%rsi,4), %rsi
-	movq	%r15, %rbp
-	cmovlq	%rsi, %rbp
-	testb	%r8b, %r8b
-	cmovneq	%rsi, %rbp
-	movl	(%rbp), %esi
-	xorl	(%rdi), %esi
-	xorl	(%rax), %esi
-	xorl	(%rdx), %esi
-	xorl	(%rcx), %esi
-	movl	%esi, -96(%rsp)         # 4-byte Spill
-	movzbl	%sil, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te3(,%rax,4), %rax
-	movq	%r15, %rcx
-	cmovlq	%rax, %rcx
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rcx
-	movq	%rcx, -16(%rsp)         # 8-byte Spill
-	cmpq	$49, %r9
-	leaq	196(%r13), %rax
-	movq	%r15, %rdx
-	cmovgq	%rax, %rdx
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rdx
-	movzbl	%bl, %eax
-	movl	%ebx, %r12d
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te3(,%rax,4), %rax
-	movq	%r15, %rsi
-	cmovlq	%rax, %rsi
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rsi
-	movl	-112(%rsp), %eax        # 4-byte Reload
-	movzbl	%ah, %eax
-	leaq	Te2(,%rax,4), %rcx
-	cmpq	$256, %rax              # imm = 0x100
-	movq	%r15, %rax
-	cmovlq	%rcx, %rax
-	testb	%r8b, %r8b
-	cmovneq	%rcx, %rax
-	movl	%r11d, %ebx
-	movl	%r11d, %ecx
-	shrl	$16, %ecx
-	movzbl	%cl, %ecx
-	cmpq	$256, %rcx              # imm = 0x100
-	leaq	Te1(,%rcx,4), %rcx
-	movq	%r15, %rdi
-	cmovlq	%rcx, %rdi
-	testb	%r8b, %r8b
-	cmovneq	%rcx, %rdi
-	movl	%r14d, %ecx
-	shrl	$24, %ecx
-	cmpq	$256, %rcx              # imm = 0x100
-	leaq	Te0(,%rcx,4), %rcx
-	movq	%r15, %rbp
-	cmovlq	%rcx, %rbp
-	testb	%r8b, %r8b
-	cmovneq	%rcx, %rbp
-	movl	(%rbp), %ecx
-	xorl	(%rdi), %ecx
-	xorl	(%rax), %ecx
-	xorl	(%rsi), %ecx
-	xorl	(%rdx), %ecx
-	movl	%ecx, 24(%rsp)          # 4-byte Spill
-	movzbl	%ch, %eax
-	leaq	Te2(,%rax,4), %rcx
-	cmpq	$256, %rax              # imm = 0x100
-	movq	%r15, %rax
-	cmovlq	%rcx, %rax
-	testb	%r8b, %r8b
-	cmovneq	%rcx, %rax
-	movq	%rax, -24(%rsp)         # 8-byte Spill
-	cmpq	$48, %r9
-	leaq	192(%r13), %rax
-	movq	%r15, %rsi
-	cmovgq	%rax, %rsi
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rsi
-	movzbl	-112(%rsp), %eax        # 1-byte Folded Reload
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te3(,%rax,4), %rax
-	movq	%r15, %rdi
-	cmovlq	%rax, %rdi
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rdi
-	movzbl	%bh, %eax
-	movl	%r11d, -40(%rsp)        # 4-byte Spill
-	leaq	Te2(,%rax,4), %rcx
-	cmpq	$256, %rax              # imm = 0x100
-	movq	%r15, %rax
-	cmovlq	%rcx, %rax
-	testb	%r8b, %r8b
-	cmovneq	%rcx, %rax
-	movl	%r14d, %ebx
-	movl	%r14d, -48(%rsp)        # 4-byte Spill
-	movl	%r14d, %ecx
-	shrl	$16, %ecx
-	movzbl	%cl, %ecx
-	cmpq	$256, %rcx              # imm = 0x100
-	leaq	Te1(,%rcx,4), %rcx
-	movq	%r15, %rdx
-	cmovlq	%rcx, %rdx
-	testb	%r8b, %r8b
-	cmovneq	%rcx, %rdx
-	movl	%r12d, 48(%rsp)         # 4-byte Spill
-	movl	%r12d, %ecx
-	shrl	$24, %ecx
-	cmpq	$256, %rcx              # imm = 0x100
-	leaq	Te0(,%rcx,4), %rcx
-	movq	%r15, %rbp
-	cmovlq	%rcx, %rbp
-	testb	%r8b, %r8b
-	cmovneq	%rcx, %rbp
-	movl	(%rbp), %ecx
-	xorl	(%rdx), %ecx
-	xorl	(%rax), %ecx
-	xorl	(%rdi), %ecx
-	xorl	(%rsi), %ecx
-	movl	%ecx, %eax
-	movq	%rcx, %r14
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te1(,%rax,4), %rax
-	movq	%r15, %rcx
-	cmovlq	%rax, %rcx
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rcx
-	movq	%rcx, -32(%rsp)         # 8-byte Spill
-	cmpq	$51, %r9
-	leaq	204(%r13), %rax
-	movq	%r15, %rsi
-	cmovgq	%rax, %rsi
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rsi
-	movzbl	%r11b, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te3(,%rax,4), %rax
-	movq	%r15, %rdi
-	cmovlq	%rax, %rdi
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rdi
-	movzbl	%bh, %eax
-	leaq	Te2(,%rax,4), %rcx
-	cmpq	$256, %rax              # imm = 0x100
-	movq	%r15, %rax
-	cmovlq	%rcx, %rax
-	testb	%r8b, %r8b
-	cmovneq	%rcx, %rax
-	movl	%r12d, %ecx
-	shrl	$16, %ecx
-	movzbl	%cl, %ecx
-	cmpq	$256, %rcx              # imm = 0x100
-	leaq	Te1(,%rcx,4), %rcx
-	movq	%r15, %rdx
-	cmovlq	%rcx, %rdx
-	testb	%r8b, %r8b
-	cmovneq	%rcx, %rdx
-	movl	-112(%rsp), %ecx        # 4-byte Reload
-                                        # kill: def $ecx killed $ecx def $rcx
-	shrl	$24, %ecx
-	cmpq	$256, %rcx              # imm = 0x100
-	leaq	Te0(,%rcx,4), %rcx
-	movq	%r15, %rbp
-	cmovlq	%rcx, %rbp
-	testb	%r8b, %r8b
-	cmovneq	%rcx, %rbp
-	movl	(%rbp), %ebx
-	xorl	(%rdx), %ebx
-	xorl	(%rax), %ebx
-	xorl	(%rdi), %ebx
-	xorl	(%rsi), %ebx
-	movl	%ebx, %r11d
-	movzbl	%bl, %eax
-	movq	%rax, -64(%rsp)         # 8-byte Spill
-	movzbl	%bh, %eax
-	movq	%rax, %r10
-	movl	%ebx, %edx
-	movl	-96(%rsp), %ebx         # 4-byte Reload
-	movl	%ebx, %ecx
-	movzbl	%bh, %eax
-	movq	%rax, 32(%rsp)          # 8-byte Spill
-	movl	%ebx, %edi
-	shrl	$24, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te0(,%rdx,4), %rsi
-	movq	%r15, %rbx
-	movq	%r15, %rax
-	cmovlq	%rsi, %rax
-	testb	%r8b, %r8b
-	cmovneq	%rsi, %rax
-	movq	%rax, -96(%rsp)         # 8-byte Spill
-	cmpq	$54, %r9
-	movq	%r13, %r12
-	leaq	216(%r13), %rsi
-	movq	%r15, %rax
-	cmovgq	%rsi, %rax
-	testb	%r8b, %r8b
-	cmovneq	%rsi, %rax
-	movq	%rax, -56(%rsp)         # 8-byte Spill
-	movl	24(%rsp), %r13d         # 4-byte Reload
-	movzbl	%r13b, %esi
-	cmpq	$256, %rsi              # imm = 0x100
-	leaq	Te3(,%rsi,4), %rdx
-	movq	%r15, %rax
-	cmovlq	%rdx, %rax
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %rax
-	movq	%rax, 40(%rsp)          # 8-byte Spill
-	movq	%r14, %rax
-	movq	%r14, 16(%rsp)          # 8-byte Spill
-	movzbl	%ah, %edx
-	leaq	Te2(,%rdx,4), %r15
-	cmpq	$256, %rdx              # imm = 0x100
-	movq	%rbx, %rbp
-	cmovlq	%r15, %rbp
-	testb	%r8b, %r8b
-	cmovneq	%r15, %rbp
-	shrl	$16, %r11d
-	movzbl	%r11b, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te1(,%rdx,4), %rdx
-	movq	%rbx, %r14
-	cmovlq	%rdx, %r14
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %r14
-	shrl	$24, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te0(,%rdi,4), %rdx
-	movq	%rbx, %r15
-	cmovlq	%rdx, %r15
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %r15
-	movq	%r9, %rsi
-	cmpq	$53, %r9
-	movq	%r12, %rdi
-	leaq	212(%r12), %rdx
-	movq	%rbx, %r12
-	movq	%rbx, %r9
-	cmovgq	%rdx, %r12
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %r12
-	movzbl	%al, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te3(,%rdx,4), %rdx
-	cmovlq	%rdx, %rbx
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %rbx
-	leaq	Te2(,%r10,4), %rdx
-	cmpq	$256, %r10              # imm = 0x100
-	movq	%r9, %r11
-	cmovlq	%rdx, %r11
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %r11
-	shrl	$16, %ecx
-	movzbl	%cl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te1(,%rax,4), %rdx
-	movq	%r9, %r10
-	movq	%r9, %rcx
-	cmovlq	%rdx, %r10
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %r10
-	movl	%r13d, %eax
-	movl	%r13d, %edx
-	shrl	$24, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te0(,%rdx,4), %rdx
-	cmovlq	%rdx, %r9
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %r9
-	cmpq	$52, %rsi
-	leaq	208(%rdi), %rdx
-	movq	%rcx, %rdi
-	cmovgq	%rdx, %rdi
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %rdi
-	movq	-64(%rsp), %rdx         # 8-byte Reload
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te3(,%rdx,4), %r13
-	movq	%rcx, %rsi
-	cmovlq	%r13, %rsi
-	testb	%r8b, %r8b
-	cmovneq	%r13, %rsi
-	movq	32(%rsp), %rdx          # 8-byte Reload
-	leaq	Te2(,%rdx,4), %r13
-	cmpq	$256, %rdx              # imm = 0x100
-	movq	%rcx, %rdx
-	cmovlq	%r13, %rdx
-	testb	%r8b, %r8b
-	movb	%r8b, -104(%rsp)        # 1-byte Spill
-	cmovneq	%r13, %rdx
-	shrl	$16, %eax
-	movzbl	%al, %r13d
-	cmpq	$256, %r13              # imm = 0x100
-	leaq	Te1(,%r13,4), %r13
-	leaq	-72(%rsp), %rcx
-	cmovlq	%r13, %rcx
-	testb	%r8b, %r8b
-	cmovneq	%r13, %rcx
-	movq	16(%rsp), %rax          # 8-byte Reload
-	shrl	$24, %eax
-	leaq	Te0(,%rax,4), %r13
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	-72(%rsp), %rax
-	cmovlq	%r13, %rax
-	testb	%r8b, %r8b
-	cmovneq	%r13, %rax
-	movl	8(%rsp), %r8d           # 4-byte Reload
-	cmpl	$11, %r8d
-	setl	-64(%rsp)               # 1-byte Folded Spill
-	cmpl	$13, %r8d
-	setl	%r13b
-	movl	(%rax), %eax
-	xorl	(%rcx), %eax
-	xorl	(%rdx), %eax
-	xorl	(%rsi), %eax
-	xorl	(%rdi), %eax
-	movq	%rax, %rdx
-	movl	(%r9), %eax
-	xorl	(%r10), %eax
-	xorl	(%r11), %eax
-	xorl	(%rbx), %eax
-	xorl	(%r12), %eax
-	movl	%eax, %esi
-	movl	(%r15), %r12d
-	xorl	(%r14), %r12d
-	xorl	(%rbp), %r12d
-	movq	40(%rsp), %rcx          # 8-byte Reload
-	xorl	(%rcx), %r12d
-	movq	-56(%rsp), %rcx         # 8-byte Reload
-	xorl	(%rcx), %r12d
-	movq	-96(%rsp), %rax         # 8-byte Reload
-	movl	(%rax), %eax
-	movq	-32(%rsp), %rcx         # 8-byte Reload
-	xorl	(%rcx), %eax
-	movq	-24(%rsp), %rcx         # 8-byte Reload
-	xorl	(%rcx), %eax
-	movq	-16(%rsp), %rcx         # 8-byte Reload
-	xorl	(%rcx), %eax
-	movq	(%rsp), %rcx            # 8-byte Reload
-	xorl	(%rcx), %eax
-	movb	-64(%rsp), %bl          # 1-byte Reload
-	andb	-121(%rsp), %bl
-	andb	-122(%rsp), %r13b
-	cmovnel	48(%rsp), %edx          # 4-byte Folded Reload
-	cmovnel	-48(%rsp), %esi         # 4-byte Folded Reload
-	cmovnel	-40(%rsp), %r12d        # 4-byte Folded Reload
-	cmovnel	-112(%rsp), %eax        # 4-byte Folded Reload
-	testb	%bl, %bl
-	cmovnel	64(%rsp), %edx          # 4-byte Folded Reload
-	movq	%rdx, -112(%rsp)        # 8-byte Spill
-	cmovnel	-120(%rsp), %esi        # 4-byte Folded Reload
-	movl	%esi, -120(%rsp)        # 4-byte Spill
-	cmovnel	-8(%rsp), %r12d         # 4-byte Folded Reload
-	cmovnel	56(%rsp), %eax          # 4-byte Folded Reload
-	movl	%eax, %r14d
-	movzbl	%ah, %ecx
-	movq	%rcx, 112(%rsp)         # 8-byte Spill
-	movzbl	%al, %ecx
-	movq	%rcx, 96(%rsp)          # 8-byte Spill
-	movl	%eax, %esi
-	movq	224(%rsp), %rcx
-	orb	-104(%rsp), %r13b       # 1-byte Folded Reload
-	orb	%bl, %r13b
-	shll	$2, %r8d
-	testq	%rcx, %rcx
-	setg	%bl
-	orb	%r13b, %bl
-	cmpq	$1, %rcx
-	setg	%dl
-	orb	%r13b, %dl
-	cmpq	$2, %rcx
-	setg	%al
-	orb	%r13b, %al
-	cmpq	$3, %rcx
-	movslq	%r8d, %r10
-	setg	%cl
-	orb	%r13b, %cl
-	movq	72(%rsp), %r8           # 8-byte Reload
-	cmpq	$3, %r8
-	movq	80(%rsp), %r11          # 8-byte Reload
-	leaq	12(%r11,%r10,4), %rbp
-	leaq	-72(%rsp), %r15
-	movq	%r15, %rdi
-	cmovgq	%rbp, %rdi
-	testb	%cl, %cl
-	movq	160(%rsp), %r9          # 8-byte Reload
-	leaq	3(%r9), %rcx
-	cmoveq	%r15, %rcx
-	movq	%rcx, 152(%rsp)         # 8-byte Spill
-	leaq	7(%r9), %rcx
-	cmoveq	%r15, %rcx
-	movq	%rcx, 40(%rsp)          # 8-byte Spill
-	leaq	11(%r9), %rcx
-	cmoveq	%r15, %rcx
-	movq	%rcx, 56(%rsp)          # 8-byte Spill
-	leaq	15(%r9), %rcx
-	cmoveq	%r15, %rcx
-	movq	%rcx, 8(%rsp)           # 8-byte Spill
-	testb	%al, %al
-	leaq	2(%r9), %rax
-	cmoveq	%r15, %rax
-	movq	%rax, 128(%rsp)         # 8-byte Spill
-	leaq	6(%r9), %rax
-	cmoveq	%r15, %rax
-	movq	%rax, -64(%rsp)         # 8-byte Spill
-	leaq	10(%r9), %rax
-	cmoveq	%r15, %rax
-	movq	%rax, -96(%rsp)         # 8-byte Spill
-	leaq	14(%r9), %rax
-	cmoveq	%r15, %rax
-	movq	%rax, (%rsp)            # 8-byte Spill
-	testb	%dl, %dl
-	leaq	1(%r9), %rax
-	cmoveq	%r15, %rax
-	movq	%rax, 120(%rsp)         # 8-byte Spill
-	leaq	5(%r9), %rax
-	cmoveq	%r15, %rax
-	movq	%rax, 32(%rsp)          # 8-byte Spill
-	leaq	9(%r9), %rax
-	cmoveq	%r15, %rax
-	movq	%rax, -40(%rsp)         # 8-byte Spill
-	leaq	13(%r9), %rax
-	cmoveq	%r15, %rax
-	movq	%rax, -8(%rsp)          # 8-byte Spill
-	testb	%bl, %bl
-	movq	%r15, %rax
-	cmovneq	%r9, %rax
-	movq	%rax, 104(%rsp)         # 8-byte Spill
-	leaq	4(%r9), %rax
-	cmoveq	%r15, %rax
-	movq	%rax, 144(%rsp)         # 8-byte Spill
-	leaq	8(%r9), %rax
-	cmoveq	%r15, %rax
-	movq	%rax, -56(%rsp)         # 8-byte Spill
-	leaq	12(%r9), %rax
-	cmoveq	%r15, %rax
-	movq	%rax, 64(%rsp)          # 8-byte Spill
-	testb	%r13b, %r13b
-	cmovneq	%rbp, %rdi
-	movq	%rdi, -16(%rsp)         # 8-byte Spill
-	movl	%r12d, %ebp
-	movzbl	%bpl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r15, %rcx
-	cmovlq	%rax, %rcx
-	testb	%r13b, %r13b
-	cmovneq	%rax, %rcx
-	movq	%rcx, -24(%rsp)         # 8-byte Spill
-	movl	-120(%rsp), %ecx        # 4-byte Reload
-	movzbl	%ch, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r15, %rdx
-	cmovlq	%rax, %rdx
-	testb	%r13b, %r13b
-	cmovneq	%rax, %rdx
-	movq	%rdx, -32(%rsp)         # 8-byte Spill
-	movq	-112(%rsp), %rbx        # 8-byte Reload
-	movl	%ebx, %eax
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r15, %rdx
-	cmovlq	%rax, %rdx
-	testb	%r13b, %r13b
-	cmovneq	%rax, %rdx
-	movq	%rdx, -48(%rsp)         # 8-byte Spill
-	shrl	$24, %esi
-	cmpq	$256, %rsi              # imm = 0x100
-	leaq	Te4(,%rsi,4), %rax
-	movq	%r15, %rdx
-	cmovlq	%rax, %rdx
-	testb	%r13b, %r13b
-	cmovneq	%rax, %rdx
-	movq	%rdx, 48(%rsp)          # 8-byte Spill
-	movq	%r8, %rsi
-	cmpq	$2, %r8
-	leaq	8(%r11,%r10,4), %rax
-	movq	%r15, %rdi
-	cmovgq	%rax, %rdi
-	testb	%r13b, %r13b
-	cmovneq	%rax, %rdi
-	movq	%rdi, 24(%rsp)          # 8-byte Spill
-	movzbl	%cl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r15, %rcx
-	cmovlq	%rax, %rcx
-	testb	%r13b, %r13b
-	cmovneq	%rax, %rcx
-	movq	%rcx, 16(%rsp)          # 8-byte Spill
-	movzbl	%bh, %eax
-	movq	%rbx, %r8
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r15, %rcx
-	cmovlq	%rax, %rcx
-	testb	%r13b, %r13b
-	cmovneq	%rax, %rcx
-	movq	%rcx, 136(%rsp)         # 8-byte Spill
-	shrl	$16, %r14d
-	movzbl	%r14b, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r15, %rcx
-	cmovlq	%rax, %rcx
-	testb	%r13b, %r13b
-	cmovneq	%rax, %rcx
-	movq	%rcx, 88(%rsp)          # 8-byte Spill
-	movl	%r12d, %eax
-	shrl	$24, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r15, %r12
-	cmovlq	%rax, %r12
-	testb	%r13b, %r13b
-	cmovneq	%rax, %r12
-	cmpq	$1, %rsi
-	movq	%rsi, %rcx
-	leaq	4(%r11,%r10,4), %rax
-	movq	%r11, %rdi
-	movq	%r15, %r14
-	cmovgq	%rax, %r14
-	testb	%r13b, %r13b
-	cmovneq	%rax, %r14
-	movzbl	%r8b, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rdx
-	movq	%r15, %rsi
-	cmovlq	%rdx, %rsi
-	testb	%r13b, %r13b
-	cmovneq	%rdx, %rsi
-	movq	112(%rsp), %rax         # 8-byte Reload
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rdx
-	movq	%r15, %r11
-	cmovlq	%rdx, %r11
-	testb	%r13b, %r13b
-	cmovneq	%rdx, %r11
-	movl	%ebp, %edx
-	shrl	$16, %edx
-	movzbl	%dl, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te4(,%rdx,4), %rdx
-	movq	%r15, %r8
-	cmovlq	%rdx, %r8
-	testb	%r13b, %r13b
-	cmovneq	%rdx, %r8
-	leaq	(%rdi,%r10,4), %rdx
-	movl	-120(%rsp), %eax        # 4-byte Reload
-	movl	%eax, %edi
-	shrl	$24, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r15, %r10
-	cmovlq	%rdi, %r10
-	testb	%r13b, %r13b
-	cmovneq	%rdi, %r10
-	testq	%rcx, %rcx
-	movq	%r15, %rdi
-	cmovgq	%rdx, %rdi
-	testb	%r13b, %r13b
-	cmovneq	%rdx, %rdi
-	movq	96(%rsp), %rcx          # 8-byte Reload
-	cmpq	$256, %rcx              # imm = 0x100
-	leaq	Te4(,%rcx,4), %rdx
-	movq	%r15, %rbx
-	cmovlq	%rdx, %rbx
-	testb	%r13b, %r13b
-	cmovneq	%rdx, %rbx
-	movl	%ebp, %ecx
-	movzbl	%ch, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te4(,%rdx,4), %rdx
-	movq	%r15, %rcx
-	cmovlq	%rdx, %rcx
-	testb	%r13b, %r13b
-	cmovneq	%rdx, %rcx
-	shrl	$16, %eax
-	movzbl	%al, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te4(,%rdx,4), %rdx
-	movq	%r15, %rax
-	cmovlq	%rdx, %rax
-	testb	%r13b, %r13b
-	cmovneq	%rdx, %rax
-	movq	-112(%rsp), %rdx        # 8-byte Reload
-	shrl	$24, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te4(,%rdx,4), %rdx
-	cmovlq	%rdx, %r15
-	testb	%r13b, %r13b
-	cmovneq	%rdx, %r15
-	movzbl	3(%r15), %edx
-	shll	$24, %edx
-	movzbl	2(%rax), %eax
-	shll	$16, %eax
-	orl	%edx, %eax
-	movzbl	1(%rcx), %ecx
-	shll	$8, %ecx
-	orl	%eax, %ecx
-	movzbl	(%rbx), %eax
-	orl	%ecx, %eax
-	movb	-104(%rsp), %cl         # 1-byte Reload
-	movb	%cl, -85(%rsp)
-	xorl	(%rdi), %eax
-	movl	%eax, %ecx
-	shrl	$24, %ecx
-	leal	1(%r13), %edi
-	andb	$1, %dil
-	movl	%edi, %edx
-	negb	%dl
-	movb	(%r9), %bl
-	andb	%dl, %bl
-	decb	%dil
-	andb	%dil, %cl
-	orb	%bl, %cl
-	movq	104(%rsp), %rbx         # 8-byte Reload
-	movb	%cl, (%rbx)
-	movl	%eax, %ecx
-	shrl	$16, %ecx
-	movb	1(%r9), %bl
-	andb	%dl, %bl
-	andb	%dil, %cl
-	orb	%bl, %cl
-	movq	120(%rsp), %rbx         # 8-byte Reload
-	movb	%cl, (%rbx)
-	movl	%eax, %ecx
-	shrl	$8, %ecx
-	movb	2(%r9), %bl
-	andb	%dl, %bl
-	andb	%dil, %cl
-	orb	%bl, %cl
-	movq	128(%rsp), %rbx         # 8-byte Reload
-	movb	%cl, (%rbx)
-	movb	3(%r9), %cl
-	andb	%dl, %cl
-	andb	%dil, %al
-	orb	%cl, %al
-	movq	152(%rsp), %rcx         # 8-byte Reload
-	movb	%al, (%rcx)
-	movzbl	3(%r10), %eax
-	shll	$24, %eax
-	movzbl	2(%r8), %ecx
-	shll	$16, %ecx
-	orl	%eax, %ecx
-	movzbl	1(%r11), %eax
-	shll	$8, %eax
-	orl	%ecx, %eax
-	movzbl	(%rsi), %ecx
-	orl	%eax, %ecx
-	xorl	(%r14), %ecx
-	movl	%ecx, %eax
-	shrl	$24, %eax
-	movb	4(%r9), %bl
-	andb	%dl, %bl
-	andb	%dil, %al
-	orb	%bl, %al
-	movq	144(%rsp), %rsi         # 8-byte Reload
-	movb	%al, (%rsi)
-	movl	%ecx, %eax
-	shrl	$16, %eax
-	movb	5(%r9), %bl
-	andb	%dl, %bl
-	andb	%dil, %al
-	orb	%bl, %al
-	movq	32(%rsp), %rsi          # 8-byte Reload
-	movb	%al, (%rsi)
-	movl	%ecx, %eax
-	shrl	$8, %eax
-	movb	6(%r9), %bl
-	andb	%dl, %bl
-	andb	%dil, %al
-	orb	%bl, %al
-	movq	-64(%rsp), %rsi         # 8-byte Reload
-	movb	%al, (%rsi)
-	movb	7(%r9), %al
-	andb	%dl, %al
-	andb	%dil, %cl
-	orb	%al, %cl
-	movq	40(%rsp), %rax          # 8-byte Reload
-	movb	%cl, (%rax)
-	movzbl	3(%r12), %eax
-	shll	$24, %eax
-	movq	88(%rsp), %rcx          # 8-byte Reload
-	movzbl	2(%rcx), %ecx
-	shll	$16, %ecx
-	orl	%eax, %ecx
-	movq	136(%rsp), %rax         # 8-byte Reload
-	movzbl	1(%rax), %esi
-	shll	$8, %esi
-	orl	%ecx, %esi
-	movq	16(%rsp), %rax          # 8-byte Reload
-	movzbl	(%rax), %eax
-	orl	%esi, %eax
-	movq	24(%rsp), %rcx          # 8-byte Reload
-	xorl	(%rcx), %eax
-	movl	%eax, %ecx
-	shrl	$24, %ecx
-	movb	8(%r9), %bl
-	andb	%dl, %bl
-	andb	%dil, %cl
-	orb	%bl, %cl
-	movq	-56(%rsp), %rsi         # 8-byte Reload
-	movb	%cl, (%rsi)
-	movl	%eax, %ecx
-	shrl	$16, %ecx
-	movb	9(%r9), %bl
-	andb	%dl, %bl
-	andb	%dil, %cl
-	orb	%bl, %cl
-	movq	-40(%rsp), %rsi         # 8-byte Reload
-	movb	%cl, (%rsi)
-	movl	%eax, %ecx
-	shrl	$8, %ecx
-	movb	10(%r9), %bl
-	andb	%dl, %bl
-	andb	%dil, %cl
-	orb	%bl, %cl
-	movq	-96(%rsp), %rsi         # 8-byte Reload
-	movb	%cl, (%rsi)
-	movb	11(%r9), %cl
-	andb	%dl, %cl
-	andb	%dil, %al
-	orb	%cl, %al
-	movq	56(%rsp), %rcx          # 8-byte Reload
-	movb	%al, (%rcx)
-	movq	48(%rsp), %rax          # 8-byte Reload
-	movzbl	3(%rax), %eax
-	shll	$24, %eax
-	movq	-48(%rsp), %rcx         # 8-byte Reload
-	movzbl	2(%rcx), %ecx
-	shll	$16, %ecx
-	orl	%eax, %ecx
-	movq	-32(%rsp), %rax         # 8-byte Reload
-	movzbl	1(%rax), %esi
-	shll	$8, %esi
-	orl	%ecx, %esi
-	movq	-24(%rsp), %rax         # 8-byte Reload
-	movzbl	(%rax), %eax
-	orl	%esi, %eax
-	movq	-16(%rsp), %rcx         # 8-byte Reload
-	xorl	(%rcx), %eax
-	movl	%eax, %ecx
-	shrl	$24, %ecx
-	movb	12(%r9), %bl
-	andb	%dl, %bl
-	andb	%dil, %cl
-	orb	%bl, %cl
-	movq	64(%rsp), %rsi          # 8-byte Reload
-	movb	%cl, (%rsi)
-	movl	%eax, %ecx
-	shrl	$16, %ecx
-	movb	13(%r9), %bl
-	andb	%dl, %bl
-	andb	%dil, %cl
-	orb	%bl, %cl
-	movq	-8(%rsp), %rsi          # 8-byte Reload
-	movb	%cl, (%rsi)
-	movl	%eax, %ecx
-	shrl	$8, %ecx
-	movb	14(%r9), %bl
-	andb	%dl, %bl
-	andb	%dil, %cl
-	orb	%bl, %cl
-	movq	(%rsp), %rsi            # 8-byte Reload
-	movb	%cl, (%rsi)
-	andb	15(%r9), %dl
-	andb	%dil, %al
-	orb	%dl, %al
-	movq	8(%rsp), %rcx           # 8-byte Reload
-	movb	%al, (%rcx)
-	movb	%r13b, -86(%rsp)
-	addq	$168, %rsp
-	.cfi_def_cfa_offset 56
-	popq	%rbx
-	.cfi_def_cfa_offset 48
-	popq	%r12
-	.cfi_def_cfa_offset 40
-	popq	%r13
-	.cfi_def_cfa_offset 32
-	popq	%r14
-	.cfi_def_cfa_offset 24
-	popq	%r15
-	.cfi_def_cfa_offset 16
-	popq	%rbp
-	.cfi_def_cfa_offset 8
-	retq
-.Lfunc_end3:
-	.size	rijndaelEncrypt, .Lfunc_end3-rijndaelEncrypt
-	.cfi_endproc
-                                        # -- End function
-	.globl	rijndaelKeySetupEnc     # -- Begin function rijndaelKeySetupEnc
-	.p2align	4, 0x90
-	.type	rijndaelKeySetupEnc,@function
-rijndaelKeySetupEnc:                    # @rijndaelKeySetupEnc
-	.cfi_startproc
-# %bb.0:                                # %.preheader8
-	pushq	%rbp
-	.cfi_def_cfa_offset 16
-	pushq	%r15
-	.cfi_def_cfa_offset 24
-	pushq	%r14
-	.cfi_def_cfa_offset 32
-	pushq	%r13
-	.cfi_def_cfa_offset 40
-	pushq	%r12
-	.cfi_def_cfa_offset 48
-	pushq	%rbx
-	.cfi_def_cfa_offset 56
-	subq	$1528, %rsp             # imm = 0x5F8
-	.cfi_def_cfa_offset 1584
-	.cfi_offset %rbx, -56
-	.cfi_offset %r12, -48
-	.cfi_offset %r13, -40
-	.cfi_offset %r14, -32
-	.cfi_offset %r15, -24
-	.cfi_offset %rbp, -16
-	movl	%r8d, %r10d
-	movl	%r8d, -128(%rsp)        # 4-byte Spill
-	movq	%rcx, %r9
-	leaq	212(%rdi), %rbp
-	movq	%rbp, 536(%rsp)         # 8-byte Spill
-	cmpq	$11, %rsi
-	leaq	1520(%rsp), %rcx
-	movq	%rcx, %rax
-	cmovgq	%rbp, %rax
-	movq	%rax, 1512(%rsp)        # 8-byte Spill
-	leaq	188(%rdi), %rbp
-	movq	%rbp, 144(%rsp)         # 8-byte Spill
-	cmpq	$11, %rsi
-	movq	%rcx, %rax
-	cmovgq	%rbp, %rax
-	movq	%rax, 320(%rsp)         # 8-byte Spill
-	leaq	56(%rdi), %r11
-	leaq	132(%rdi), %rbp
-	movq	%rbp, 80(%rsp)          # 8-byte Spill
-	leaq	156(%rdi), %rbx
-	movq	%rbx, 72(%rsp)          # 8-byte Spill
-	cmpq	$3, %rsi
-	movq	%rcx, %rax
-	cmovgq	%rbp, %rax
-	movq	%rax, 280(%rsp)         # 8-byte Spill
-	movq	%rdx, -120(%rsp)        # 8-byte Spill
-	movl	(%rdx), %eax
-	bswapl	%eax
-	movl	%eax, (%rdi)
-	movl	4(%rdx), %eax
-	bswapl	%eax
-	movl	%eax, 4(%rdi)
-	movl	8(%rdx), %eax
-	bswapl	%eax
-	movl	%eax, 8(%rdi)
-	movl	12(%rdx), %eax
-	bswapl	%eax
-	movl	%eax, 12(%rdi)
-	movq	%rcx, %rdx
-	movq	%rcx, %rax
-	cmovgq	%rbx, %rax
-	movq	%rax, 264(%rsp)         # 8-byte Spill
-	cmpq	$8, %rsi
-	movq	%rcx, %rax
-	movq	%r11, 360(%rsp)         # 8-byte Spill
-	cmovgq	%r11, %rax
-	movq	%rax, 728(%rsp)         # 8-byte Spill
-	leaq	80(%rdi), %rbp
-	movq	%rcx, %rax
-	cmovgq	%rbp, %rax
-	movq	%rbp, %r12
-	movq	%rbp, 152(%rsp)         # 8-byte Spill
-	movq	%rax, 800(%rsp)         # 8-byte Spill
-	leaq	104(%rdi), %rbp
-	movq	%rbp, 184(%rsp)         # 8-byte Spill
-	movq	%rcx, %rax
-	cmovgq	%rbp, %rax
-	movq	%rax, 864(%rsp)         # 8-byte Spill
-	leaq	128(%rdi), %rbp
-	movq	%rbp, 400(%rsp)         # 8-byte Spill
-	movq	%rcx, %rax
-	cmovgq	%rbp, %rax
-	movq	%rax, 880(%rsp)         # 8-byte Spill
-	leaq	152(%rdi), %rbx
-	movq	%rbx, 192(%rsp)         # 8-byte Spill
-	movq	%rcx, %rax
-	cmovgq	%rbx, %rax
-	movq	%rax, 936(%rsp)         # 8-byte Spill
-	leaq	176(%rdi), %r8
-	movq	%rcx, %rax
-	cmovgq	%r8, %rax
-	movq	%r8, 568(%rsp)          # 8-byte Spill
-	movq	%rax, 256(%rsp)         # 8-byte Spill
-	cmpq	$2, %rsi
-	movq	%rcx, %rax
-	cmovgq	%rbp, %rax
-	movq	%rax, 928(%rsp)         # 8-byte Spill
-	movq	%rcx, %rax
-	cmovgq	%rbx, %rax
-	movq	%rax, 240(%rsp)         # 8-byte Spill
-	cmpq	$7, %rsi
-	leaq	52(%rdi), %rcx
-	movq	%rdx, %rax
-	cmovgq	%rcx, %rax
-	movq	%rcx, 368(%rsp)         # 8-byte Spill
-	movq	%rax, 712(%rsp)         # 8-byte Spill
-	leaq	76(%rdi), %rbp
-	movq	%rdx, %rax
-	cmovgq	%rbp, %rax
-	movq	%rbp, %r15
-	movq	%rbp, 56(%rsp)          # 8-byte Spill
-	movq	%rax, 776(%rsp)         # 8-byte Spill
-	leaq	100(%rdi), %rbx
-	movq	%rbx, 344(%rsp)         # 8-byte Spill
-	movq	%rdx, %rax
-	cmovgq	%rbx, %rax
-	movq	%rax, 848(%rsp)         # 8-byte Spill
-	leaq	124(%rdi), %rbp
-	movq	%rbp, 64(%rsp)          # 8-byte Spill
-	movq	%rdx, %rax
-	cmovgq	%rbp, %rax
-	movq	%rax, 872(%rsp)         # 8-byte Spill
-	leaq	148(%rdi), %rbx
-	movq	%rdx, %rax
-	cmovgq	%rbx, %rax
-	movq	%rbx, %r14
-	movq	%rbx, 176(%rsp)         # 8-byte Spill
-	movq	%rax, 920(%rsp)         # 8-byte Spill
-	leaq	172(%rdi), %rbx
-	movq	%rdx, %rax
-	cmovgq	%rbx, %rax
-	movq	%rbx, %r13
-	movq	%rbx, 208(%rsp)         # 8-byte Spill
-	movq	%rax, 232(%rsp)         # 8-byte Spill
-	cmpq	$1, %rsi
-	movq	%rdx, %rax
-	cmovgq	%rbp, %rax
-	movq	%rax, 912(%rsp)         # 8-byte Spill
-	movq	%rdx, %rax
-	cmovgq	%r14, %rax
-	movq	%rax, 224(%rsp)         # 8-byte Spill
-	cmpq	$11, %rsi
-	leaq	164(%rdi), %rbp
-	movq	%rbp, 8(%rsp)           # 8-byte Spill
-	movq	%rdx, %rax
-	cmovgq	%rbp, %rax
-	movq	%rax, 944(%rsp)         # 8-byte Spill
-	cmpq	$11, %rsi
-	leaq	140(%rdi), %rbp
-	movq	%rbp, -16(%rsp)         # 8-byte Spill
-	movq	%rdx, %rax
-	cmovgq	%rbp, %rax
-	movq	%rax, 888(%rsp)         # 8-byte Spill
-	cmpq	$11, %rsi
-	leaq	116(%rdi), %rbx
-	movq	%rbx, 216(%rsp)         # 8-byte Spill
-	movq	%rdx, %rax
-	movq	%rdx, %rbp
-	cmovgq	%rbx, %rax
-	movq	%rax, 856(%rsp)         # 8-byte Spill
-	cmpq	$11, %rsi
-	leaq	92(%rdi), %rax
-	movq	%rax, (%rsp)            # 8-byte Spill
-	cmovgq	%rax, %rdx
-	movq	%rdx, 792(%rsp)         # 8-byte Spill
-	cmpq	$11, %rsi
-	leaq	68(%rdi), %rax
-	movq	%rax, 160(%rsp)         # 8-byte Spill
-	movq	%rbp, %rdx
-	cmovgq	%rax, %rdx
-	movq	%rdx, 720(%rsp)         # 8-byte Spill
-	cmpq	$11, %rsi
-	leaq	44(%rdi), %rax
-	movq	%rax, 352(%rsp)         # 8-byte Spill
-	movq	%rbp, %rdx
-	cmovgq	%rax, %rdx
-	movq	%rdx, 648(%rsp)         # 8-byte Spill
-	cmpq	$10, %rsi
-	leaq	184(%rdi), %rdx
-	movq	%rdx, 600(%rsp)         # 8-byte Spill
-	movq	%rbp, %rax
-	cmovgq	%rdx, %rax
-	movq	%rax, 248(%rsp)         # 8-byte Spill
-	leaq	208(%rdi), %rdx
-	movq	%rdx, 528(%rsp)         # 8-byte Spill
-	movq	%rbp, %rax
-	cmovgq	%rdx, %rax
-	movq	%rax, 1504(%rsp)        # 8-byte Spill
-	cmpq	$3, %rsi
-	leaq	180(%rdi), %rdx
-	movq	%rdx, 32(%rsp)          # 8-byte Spill
-	movq	%rbp, %rax
-	cmovgq	%rdx, %rax
-	movq	%rax, 312(%rsp)         # 8-byte Spill
-	cmpq	$8, %rsi
-	leaq	200(%rdi), %rdx
-	movq	%rdx, 968(%rsp)         # 8-byte Spill
-	movq	%rbp, %rax
-	cmovgq	%rdx, %rax
-	movq	%rax, 304(%rsp)         # 8-byte Spill
-	cmpq	$8, %rsi
-	leaq	32(%rdi), %rdx
-	movq	%rbp, %rax
-	cmovgq	%rdx, %rax
-	movq	%rdx, %rbx
-	movq	%rdx, 640(%rsp)         # 8-byte Spill
-	movq	%rax, 656(%rsp)         # 8-byte Spill
-	cmpq	$3, %rsi
-	leaq	84(%rdi), %rdx
-	movq	%rdx, 200(%rsp)         # 8-byte Spill
-	movq	%rbp, %rax
-	cmovgq	%rdx, %rax
-	movq	%rax, 840(%rsp)         # 8-byte Spill
-	cmpq	$3, %rsi
-	leaq	60(%rdi), %rax
-	movq	%rax, -8(%rsp)          # 8-byte Spill
-	movq	%rbp, %rdx
-	cmovgq	%rax, %rdx
-	movq	%rdx, 768(%rsp)         # 8-byte Spill
-	cmpq	$3, %rsi
-	leaq	36(%rdi), %rax
-	movq	%rax, 336(%rsp)         # 8-byte Spill
-	movq	%rbp, %rdx
-	cmovgq	%rax, %rdx
-	movq	%rdx, 696(%rsp)         # 8-byte Spill
-	cmpq	$2, %rsi
-	movq	%rbp, %rax
-	cmovgq	%rbx, %rax
-	movq	%rax, 680(%rsp)         # 8-byte Spill
-	movq	%rbp, %rax
-	cmovgq	%r11, %rax
-	movq	%rax, 752(%rsp)         # 8-byte Spill
-	movq	%rbp, %rax
-	cmovgq	%r12, %rax
-	movq	%rax, 824(%rsp)         # 8-byte Spill
-	movq	%rbp, %rax
-	cmovgq	%r8, %rax
-	movq	%rax, 296(%rsp)         # 8-byte Spill
-	cmpq	$7, %rsi
-	leaq	196(%rdi), %rdx
-	movq	%rdx, -32(%rsp)         # 8-byte Spill
-	movq	%rbp, %rax
-	cmovgq	%rdx, %rax
-	movq	%rax, 288(%rsp)         # 8-byte Spill
-	cmpq	$1, %rsi
-	movq	%rbp, %rax
-	cmovgq	%rcx, %rax
-	movq	%rax, 736(%rsp)         # 8-byte Spill
-	movq	%rbp, %rax
-	cmovgq	%r15, %rax
-	movq	%rax, 808(%rsp)         # 8-byte Spill
-	movq	%rbp, %rax
-	cmovgq	%r13, %rax
-	movq	%rax, 272(%rsp)         # 8-byte Spill
-	cmpq	$1, %rsi
-	leaq	28(%rdi), %rdx
-	movq	%rdx, 328(%rsp)         # 8-byte Spill
-	movq	%rbp, %rax
-	cmovgq	%rdx, %rax
-	movq	%rax, 664(%rsp)         # 8-byte Spill
-	cmpq	$10, %rsi
-	leaq	160(%rdi), %rdx
-	movq	%rbp, %rax
-	cmovgq	%rdx, %rax
-	movq	%rdx, 392(%rsp)         # 8-byte Spill
-	movq	%rax, 904(%rsp)         # 8-byte Spill
-	cmpq	$10, %rsi
-	leaq	112(%rdi), %rcx
-	movq	%rcx, 48(%rsp)          # 8-byte Spill
-	movq	%rbp, %rax
-	cmovgq	%rcx, %rax
-	movq	%rax, 832(%rsp)         # 8-byte Spill
-	cmpq	$10, %rsi
-	leaq	88(%rdi), %rcx
-	movq	%rbp, %rax
-	cmovgq	%rcx, %rax
-	movq	%rcx, 376(%rsp)         # 8-byte Spill
-	movq	%rax, 760(%rsp)         # 8-byte Spill
-	cmpq	$10, %rsi
-	movq	%rsi, %r12
-	leaq	64(%rdi), %rax
-	movq	%rax, 384(%rsp)         # 8-byte Spill
-	movq	%rbp, %rsi
-	cmovgq	%rax, %rsi
-	movq	%rsi, 688(%rsp)         # 8-byte Spill
-	cmpq	$4, %r12
-	movq	%rbp, %rsi
-	cmovgq	%rdx, %rsi
-	movq	%rsi, 952(%rsp)         # 8-byte Spill
-	cmpq	$4, %r12
-	movq	%rbp, %rsi
-	cmovgq	%rax, %rsi
-	movq	%rsi, 744(%rsp)         # 8-byte Spill
-	movq	%rbp, %rax
-	cmovgq	%rcx, %rax
-	movq	%rax, 816(%rsp)         # 8-byte Spill
-	leaq	136(%rdi), %rdx
-	movq	%rdx, 40(%rsp)          # 8-byte Spill
-	movq	%rbp, %rax
-	cmovgq	%rdx, %rax
-	movq	%rax, 896(%rsp)         # 8-byte Spill
-	cmpq	$4, %r12
-	leaq	40(%rdi), %rdx
-	movq	%rdx, 168(%rsp)         # 8-byte Spill
-	movq	%rbp, %rax
-	cmovgq	%rdx, %rax
-	movq	%rax, 672(%rsp)         # 8-byte Spill
-	cmpq	$4, %r12
-	leaq	16(%rdi), %rax
-	movq	%rax, 960(%rsp)         # 8-byte Spill
-	movq	%rdi, %r13
-	movq	%rbp, %r8
-	movq	%rbp, %r11
-	cmovgq	%rax, %r11
-	movq	%r11, -80(%rsp)         # 8-byte Spill
-	testq	%r9, %r9
-	setg	%bl
-	movb	%bl, 480(%rsp)          # 1-byte Spill
-	cmpl	$128, %r10d
-	cmovneq	%rax, %r11
-	setne	%r14b
-	movl	%r14d, %r10d
-	orb	%bl, %r10b
-	cmpq	$1, %r9
-	setg	%bl
-	movb	%bl, -106(%rsp)         # 1-byte Spill
-	movl	%r14d, %eax
-	orb	%bl, %al
-	cmpq	$2, %r9
-	setg	%dl
-	movb	%dl, -107(%rsp)         # 1-byte Spill
-	movl	%r14d, %ebx
-	orb	%dl, %bl
-	cmpq	$3, %r9
-	setg	%dl
-	movb	%dl, -108(%rsp)         # 1-byte Spill
-	movl	%r14d, %ecx
-	movq	%r14, -72(%rsp)         # 8-byte Spill
-	orb	%dl, %cl
-	testb	%cl, %cl
-	movq	-120(%rsp), %rsi        # 8-byte Reload
-	leaq	19(%rsi), %rdi
-	cmoveq	%rbp, %rdi
-	leaq	23(%rsi), %r9
-	cmoveq	%rbp, %r9
-	testb	%bl, %bl
-	leaq	18(%rsi), %rbx
-	cmoveq	%rbp, %rbx
-	leaq	22(%rsi), %r15
-	cmoveq	%rbp, %r15
-	testb	%al, %al
-	leaq	17(%rsi), %rax
-	cmoveq	%rbp, %rax
-	leaq	21(%rsi), %rcx
-	cmoveq	%rbp, %rcx
-	testb	%r10b, %r10b
-	movb	$1, -97(%rsp)
-	leaq	16(%rsi), %rbp
-	movq	%rsi, %rdx
-	cmoveq	%r8, %rbp
-	movzbl	(%rbp), %esi
-	movzbl	(%rax), %eax
-	leaq	20(%rdx), %rbp
-	cmoveq	%r8, %rbp
-	shll	$24, %esi
-	shll	$16, %eax
-	orl	%esi, %eax
-	movzbl	(%rbx), %esi
-	shll	$8, %esi
-	orl	%eax, %esi
-	movzbl	(%rdi), %eax
-	orl	%eax, %esi
-	leal	1(%r14), %eax
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %edi
-	negl	%edi
-	movl	16(%r13), %ebx
-	andl	%edi, %ebx
-	decl	%eax
-	andl	%eax, %esi
-	orl	%ebx, %esi
-	movl	%esi, (%r11)
-	movzbl	(%rbp), %esi
-	shll	$24, %esi
-	movzbl	(%rcx), %ecx
-	shll	$16, %ecx
-	orl	%esi, %ecx
-	movzbl	(%r15), %esi
-	shll	$8, %esi
-	orl	%ecx, %esi
-	movzbl	(%r9), %ecx
-	orl	%esi, %ecx
-	andl	%eax, %ecx
-	andl	20(%r13), %edi
-	orl	%edi, %ecx
-	movq	%r12, %rdx
-	cmpq	$15, %r12
-	movq	%r8, %rax
-	movq	-8(%rsp), %rbp          # 8-byte Reload
-	cmovgq	%rbp, %rax
-	movq	%rax, -48(%rsp)         # 8-byte Spill
-	movq	%r8, %rax
-	movq	(%rsp), %rdi            # 8-byte Reload
-	cmovgq	%rdi, %rax
-	movq	%rax, -24(%rsp)         # 8-byte Spill
-	movq	%r8, %rax
-	movq	64(%rsp), %r10          # 8-byte Reload
-	cmovgq	%r10, %rax
-	movq	%rax, %r15
-	movq	%r8, %r14
-	movq	72(%rsp), %r9           # 8-byte Reload
-	cmovgq	%r9, %r14
-	leaq	252(%r13), %rax
-	cmovleq	%r8, %rax
-	movq	%rax, 1488(%rsp)        # 8-byte Spill
-	cmpq	$14, %r12
-	leaq	248(%r13), %rax
-	cmovleq	%r8, %rax
-	movq	%rax, 1480(%rsp)        # 8-byte Spill
-	cmpq	$13, %r12
-	leaq	244(%r13), %rax
-	cmovleq	%r8, %rax
-	movq	%rax, 1472(%rsp)        # 8-byte Spill
-	cmpq	$12, %r12
-	leaq	240(%r13), %rax
-	cmovleq	%r8, %rax
-	movq	%rax, 1464(%rsp)        # 8-byte Spill
-	movl	-128(%rsp), %esi        # 4-byte Reload
-	cmpl	$256, %esi              # imm = 0x100
-	setne	-104(%rsp)              # 1-byte Folded Spill
-	sete	%r12b
-	cmpq	$5, %rdx
-	movq	%rdx, %r11
-	leaq	20(%r13), %rbx
-	movq	%r8, %rdx
-	cmovgq	%rbx, %rdx
-	movq	%rdx, -56(%rsp)         # 8-byte Spill
-	cmpl	$128, %esi
-	movq	%rdx, %rax
-	cmovneq	%rbx, %rax
-	movq	%rbx, 464(%rsp)         # 8-byte Spill
-	movl	%ecx, (%rax)
-	setne	-98(%rsp)
-	sete	%al
-	movq	%rax, 1496(%rsp)        # 8-byte Spill
-	cmpl	$192, %esi
-	setne	%al
-	andb	-72(%rsp), %al          # 1-byte Folded Reload
-	movq	%rax, 1048(%rsp)        # 8-byte Spill
-	andb	%al, %r12b
-	movq	-48(%rsp), %rax         # 8-byte Reload
-	cmovneq	%rbp, %rax
-	movq	%rax, -48(%rsp)         # 8-byte Spill
-	movq	-24(%rsp), %rax         # 8-byte Reload
-	cmovneq	%rdi, %rax
-	movq	%rax, -24(%rsp)         # 8-byte Spill
-	cmovneq	%r10, %r15
-	movq	%r15, 488(%rsp)         # 8-byte Spill
-	cmovneq	%r9, %r14
-	movq	%r14, 432(%rsp)         # 8-byte Spill
-	cmpq	$14, %r11
-	movq	%r8, %rax
-	movq	192(%rsp), %rbp         # 8-byte Reload
-	cmovgq	%rbp, %rax
-	movq	%rax, %rcx
-	cmpq	$14, %r11
-	movq	%r8, %rax
-	movq	360(%rsp), %r14         # 8-byte Reload
-	cmovgq	%r14, %rax
-	movq	%rax, %r10
-	movq	%r8, %rdi
-	movq	376(%rsp), %rdx         # 8-byte Reload
-	cmovgq	%rdx, %rdi
-	leaq	120(%r13), %rax
-	movq	%r8, %rsi
-	cmovgq	%rax, %rsi
-	testb	%r12b, %r12b
-	cmovneq	%rdx, %rdi
-	movq	%rdi, 1184(%rsp)        # 8-byte Spill
-	cmovneq	%rax, %rsi
-	movq	%rsi, 1264(%rsp)        # 8-byte Spill
-	movq	%rax, 456(%rsp)         # 8-byte Spill
-	cmovneq	%rbp, %rcx
-	movq	%rcx, 552(%rsp)         # 8-byte Spill
-	cmpq	$6, %r11
-	leaq	24(%r13), %r9
-	movq	%r9, 424(%rsp)          # 8-byte Spill
-	movq	%r8, %rcx
-	cmovgq	%r9, %rcx
-	movq	%rcx, 1024(%rsp)        # 8-byte Spill
-	movq	%r8, %rbp
-	cmovgq	%r14, %rbp
-	movq	%r8, %rdi
-	cmovgq	%rdx, %rdi
-	movq	%r8, %rsi
-	cmovgq	%rax, %rsi
-	testb	%r12b, %r12b
-	cmovneq	%r9, %rcx
-	movq	%rcx, 1096(%rsp)        # 8-byte Spill
-	cmovneq	%r14, %r10
-	movq	%r10, 1104(%rsp)        # 8-byte Spill
-	cmovneq	%r14, %rbp
-	movq	%rbp, 1176(%rsp)        # 8-byte Spill
-	cmovneq	%rdx, %rdi
-	movq	%rdi, 1256(%rsp)        # 8-byte Spill
-	cmovneq	%rax, %rsi
-	movq	%rsi, 512(%rsp)         # 8-byte Spill
-	cmpq	$13, %r11
-	movq	%r8, %rax
-	movq	368(%rsp), %r10         # 8-byte Reload
-	cmovgq	%r10, %rax
-	movq	%rax, %r9
-	movq	%r8, %rbp
-	movq	200(%rsp), %rcx         # 8-byte Reload
-	cmovgq	%rcx, %rbp
-	movq	%r8, %rdi
-	movq	216(%rsp), %rax         # 8-byte Reload
-	cmovgq	%rax, %rdi
-	movq	%r8, %rsi
-	movq	176(%rsp), %rdx         # 8-byte Reload
-	cmovgq	%rdx, %rsi
-	testb	%r12b, %r12b
-	cmovneq	%rcx, %rbp
-	movq	%rbp, 1168(%rsp)        # 8-byte Spill
-	cmovneq	%rax, %rdi
-	movq	%rdi, 1248(%rsp)        # 8-byte Spill
-	cmovneq	%rdx, %rsi
-	movq	%rsi, 504(%rsp)         # 8-byte Spill
-	cmpq	$5, %r11
-	movq	%r8, %rbp
-	cmovgq	%r10, %rbp
-	movq	%r8, %rdi
-	cmovgq	%rcx, %rdi
-	movq	%rcx, %rdx
-	movq	%r8, %rsi
-	cmovgq	%rax, %rsi
-	testb	%r12b, %r12b
-	movq	-56(%rsp), %rcx         # 8-byte Reload
-	cmovneq	%rbx, %rcx
-	movq	%rcx, -56(%rsp)         # 8-byte Spill
-	cmovneq	%r10, %r9
-	movq	%r9, 1080(%rsp)         # 8-byte Spill
-	cmovneq	%r10, %rbp
-	movq	%rbp, 1152(%rsp)        # 8-byte Spill
-	cmovneq	%rdx, %rdi
-	movq	%rdi, 1232(%rsp)        # 8-byte Spill
-	cmovneq	%rax, %rsi
-	movq	%rsi, 496(%rsp)         # 8-byte Spill
-	cmpq	$12, %r11
-	movq	%r8, %rax
-	movq	152(%rsp), %rdx         # 8-byte Reload
-	cmovgq	%rdx, %rax
-	movq	%rax, %r9
-	movq	%r8, %rax
-	movq	48(%rsp), %rdi          # 8-byte Reload
-	cmovgq	%rdi, %rax
-	movq	%rax, %rbp
-	leaq	144(%r13), %rax
-	movq	%r8, %rcx
-	cmovgq	%rax, %rcx
-	movq	%rcx, %rsi
-	movq	%rax, 408(%rsp)         # 8-byte Spill
-	cmpq	$12, %r11
-	leaq	48(%r13), %rcx
-	movq	%rcx, 416(%rsp)         # 8-byte Spill
-	movq	%r8, %rbx
-	cmovgq	%rcx, %rbx
-	testb	%r12b, %r12b
-	cmovneq	%rcx, %rbx
-	movq	%rbx, 1072(%rsp)        # 8-byte Spill
-	cmovneq	%rdx, %r9
-	movq	%r9, 1144(%rsp)         # 8-byte Spill
-	cmovneq	%rdi, %rbp
-	movq	%rbp, 1224(%rsp)        # 8-byte Spill
-	cmovneq	%rax, %rsi
-	movq	%rsi, 1320(%rsp)        # 8-byte Spill
-	movq	%r11, %rbx
-	cmpq	$3, %r11
-	leaq	108(%r13), %rax
-	movq	%rax, -72(%rsp)         # 8-byte Spill
-	movq	%r8, %r14
-	cmovgq	%rax, %r14
-	movq	%r14, 784(%rsp)         # 8-byte Spill
-	cmpq	$3, %r11
-	leaq	12(%r13), %r15
-	movq	%r8, %r11
-	cmovgq	%r15, %r11
-	movq	%r11, 632(%rsp)         # 8-byte Spill
-	movq	%r15, 976(%rsp)         # 8-byte Spill
-	cmpq	$7, %rbx
-	movq	%r8, %rax
-	cmovgq	328(%rsp), %rax         # 8-byte Folded Reload
-	movq	%rax, -88(%rsp)         # 8-byte Spill
-	cmpq	$3, %rbx
-	movq	%r8, %r9
-	movq	352(%rsp), %r10         # 8-byte Reload
-	cmovgq	%r10, %r9
-	movq	%r8, %rcx
-	movq	56(%rsp), %rbp          # 8-byte Reload
-	cmovgq	%rbp, %rcx
-	movq	%r8, %rdx
-	movq	208(%rsp), %rdi         # 8-byte Reload
-	cmovgq	%rdi, %rdx
-	leaq	204(%r13), %rax
-	movq	%rax, 16(%rsp)          # 8-byte Spill
-	movq	%r8, %rsi
-	cmovgq	%rax, %rsi
-	movq	%rsi, 592(%rsp)         # 8-byte Spill
-	cmpq	$10, %rbx
-	leaq	232(%r13), %rax
-	movq	%rax, 24(%rsp)          # 8-byte Spill
-	movq	%r8, %rsi
-	cmovgq	%rax, %rsi
-	movq	%rsi, %rax
-	testb	%r12b, %r12b
-	cmovneq	%r15, %r11
-	movq	%r11, 1032(%rsp)        # 8-byte Spill
-	cmovneq	%r10, %r9
-	movq	%r9, 1112(%rsp)         # 8-byte Spill
-	cmovneq	%rbp, %rcx
-	movq	%rcx, 1192(%rsp)        # 8-byte Spill
-	cmovneq	-72(%rsp), %r14         # 8-byte Folded Reload
-	movq	%r14, 1280(%rsp)        # 8-byte Spill
-	cmovneq	%rdi, %rdx
-	movq	%rdx, 1408(%rsp)        # 8-byte Spill
-	cmpq	$10, %rbx
-	movq	%r8, %r11
-	cmovgq	184(%rsp), %r11         # 8-byte Folded Reload
-	movq	%r8, %rcx
-	movq	968(%rsp), %rdi         # 8-byte Reload
-	cmovgq	%rdi, %rcx
-	movq	%rcx, %rbp
-	movq	%r8, %r15
-	cmovgq	168(%rsp), %r15         # 8-byte Folded Reload
-	movq	%r15, 624(%rsp)         # 8-byte Spill
-	movq	%r8, %rcx
-	cmovgq	40(%rsp), %rcx          # 8-byte Folded Reload
-	movq	%rcx, 128(%rsp)         # 8-byte Spill
-	cmpq	$10, %rbx
-	movq	%r13, %r9
-	leaq	72(%r13), %r14
-	movq	%r8, %rdx
-	cmovgq	%r14, %rdx
-	testb	%r12b, %r12b
-	cmovneq	24(%rsp), %rax          # 8-byte Folded Reload
-	movq	%rax, 1456(%rsp)        # 8-byte Spill
-	cmovneq	%rdi, %rbp
-	movq	%rbp, 1400(%rsp)        # 8-byte Spill
-	movq	%rdi, %r13
-	cmpq	$2, %rbx
-	leaq	168(%r9), %rax
-	movq	%rax, 24(%rsp)          # 8-byte Spill
-	movq	%r8, %rsi
-	cmovgq	%rax, %rsi
-	movq	%r12, -40(%rsp)         # 8-byte Spill
-	testb	%r12b, %r12b
-	cmovneq	%rax, %rsi
-	movq	%rsi, 1392(%rsp)        # 8-byte Spill
-	cmpq	$4, %rbx
-	movq	%r8, %rax
-	cmovgq	48(%rsp), %rax          # 8-byte Folded Reload
-	movq	%rax, 136(%rsp)         # 8-byte Spill
-	cmpq	$9, %rbx
-	movq	%r8, %rsi
-	movq	-32(%rsp), %rax         # 8-byte Reload
-	cmovgq	%rax, %rsi
-	testb	%r12b, %r12b
-	cmovneq	%rax, %rsi
-	movq	%rsi, 1376(%rsp)        # 8-byte Spill
-	cmpq	$15, %rbx
-	movq	%r8, %rsi
-	movq	144(%rsp), %rax         # 8-byte Reload
-	cmovgq	%rax, %rsi
-	testb	%r12b, %r12b
-	cmovneq	%rax, %rsi
-	movq	%rsi, 520(%rsp)         # 8-byte Spill
-	cmpq	$14, %rbx
-	movq	%r8, %rsi
-	movq	600(%rsp), %rax         # 8-byte Reload
-	cmovgq	%rax, %rsi
-	testb	%r12b, %r12b
-	cmovneq	%rax, %rsi
-	movq	%rsi, 1352(%rsp)        # 8-byte Spill
-	cmpq	$6, %rbx
-	movq	%r8, %rsi
-	movq	192(%rsp), %rbp         # 8-byte Reload
-	cmovgq	%rbp, %rsi
-	testb	%r12b, %r12b
-	movq	168(%rsp), %rdi         # 8-byte Reload
-	cmovneq	%rdi, %r15
-	movq	%r15, 1016(%rsp)        # 8-byte Spill
-	cmovneq	%r14, %rdx
-	movq	%rdx, 1088(%rsp)        # 8-byte Spill
-	movq	184(%rsp), %rcx         # 8-byte Reload
-	cmovneq	%rcx, %r11
-	movq	%r11, 1160(%rsp)        # 8-byte Spill
-	movq	128(%rsp), %rdx         # 8-byte Reload
-	cmovneq	40(%rsp), %rdx          # 8-byte Folded Reload
-	movq	%rdx, 1240(%rsp)        # 8-byte Spill
-	cmovneq	%rbp, %rsi
-	movq	%rsi, 1344(%rsp)        # 8-byte Spill
-	movq	%rbx, %r15
-	cmpq	$15, %rbx
-	movq	%r9, %rsi
-	leaq	220(%r9), %rbp
-	movq	%rbp, 544(%rsp)         # 8-byte Spill
-	movq	%r8, %rdx
-	cmovgq	%rbp, %rdx
-	movq	%rdx, 584(%rsp)         # 8-byte Spill
-	cmpq	$13, %rbx
-	movq	%r8, %rdx
-	cmovgq	32(%rsp), %rdx          # 8-byte Folded Reload
-	movq	%rdx, 112(%rsp)         # 8-byte Spill
-	cmpq	$2, %rbx
-	movq	%r8, %rdx
-	cmovgq	%rcx, %rdx
-	movq	%rdx, 120(%rsp)         # 8-byte Spill
-	movq	%rcx, %r11
-	cmpq	$2, %rbx
-	movq	%r8, %rbx
-	cmovgq	%rdi, %rbx
-	movq	%rdi, %r9
-	movq	%r8, %rdx
-	cmovgq	%r14, %rdx
-	movq	%r14, 440(%rsp)         # 8-byte Spill
-	movq	%r8, %rax
-	movq	%r13, %r12
-	cmovgq	%r13, %rax
-	movq	%rax, %rbp
-	leaq	8(%rsi), %rax
-	movq	%rsi, %rdi
-	movq	%rsi, 560(%rsp)         # 8-byte Spill
-	movq	%r8, %rcx
-	cmovgq	%rax, %rcx
-	movq	%rcx, 616(%rsp)         # 8-byte Spill
-	movq	%rax, 472(%rsp)         # 8-byte Spill
-	cmpq	$1, %r15
-	movq	%r8, %rsi
-	cmovgq	8(%rsp), %rsi           # 8-byte Folded Reload
-	movq	%rsi, 576(%rsp)         # 8-byte Spill
-	movq	%r8, %r13
-	cmovgq	-32(%rsp), %r13         # 8-byte Folded Reload
-	cmpl	$192, -128(%rsp)        # 4-byte Folded Reload
-	sete	%r10b
-	movq	%r10, 1448(%rsp)        # 8-byte Spill
-	cmpq	$11, %r15
-	setg	%sil
-	movq	-40(%rsp), %r10         # 8-byte Reload
-	orb	%r10b, %sil
-	movb	%sil, -128(%rsp)        # 1-byte Spill
-	testb	%sil, %sil
-	leaq	236(%rdi), %rsi
-	cmoveq	%r8, %rsi
-	movq	%rsi, 1440(%rsp)        # 8-byte Spill
-	testb	%r10b, %r10b
-	cmovneq	%rax, %rcx
-	movq	%rcx, 1008(%rsp)        # 8-byte Spill
-	cmovneq	%r9, %rbx
-	movq	%rbx, 1064(%rsp)        # 8-byte Spill
-	cmovneq	%r14, %rdx
-	movq	%rdx, 1136(%rsp)        # 8-byte Spill
-	movq	120(%rsp), %r14         # 8-byte Reload
-	cmovneq	%r11, %r14
-	movq	%r14, 1216(%rsp)        # 8-byte Spill
-	cmovneq	%r12, %rbp
-	movq	%rbp, 1432(%rsp)        # 8-byte Spill
-	movq	592(%rsp), %rax         # 8-byte Reload
-	cmovneq	16(%rsp), %rax          # 8-byte Folded Reload
-	movq	%rax, 592(%rsp)         # 8-byte Spill
-	cmpq	$9, %r15
-	movq	%r8, %rax
-	movq	336(%rsp), %rdi         # 8-byte Reload
-	cmovgq	%rdi, %rax
-	movq	%rax, %r11
-	movq	%r8, %rax
-	movq	160(%rsp), %r10         # 8-byte Reload
-	cmovgq	%r10, %rax
-	movq	%rax, %rbp
-	movq	%r8, %rax
-	movq	344(%rsp), %rcx         # 8-byte Reload
-	cmovgq	%rcx, %rax
-	movq	%rax, %rbx
-	movq	%r8, %rax
-	movq	80(%rsp), %rdx          # 8-byte Reload
-	cmovgq	%rdx, %rax
-	movq	560(%rsp), %r12         # 8-byte Reload
-	leaq	228(%r12), %r9
-	movq	%r8, %rsi
-	cmovgq	%r9, %rsi
-	cmpb	$0, -40(%rsp)           # 1-byte Folded Reload
-	cmovneq	%r9, %rsi
-	movq	%rsi, 1424(%rsp)        # 8-byte Spill
-	cmovneq	%rdi, %r11
-	movq	%r11, 1000(%rsp)        # 8-byte Spill
-	cmovneq	%r10, %rbp
-	movq	%rbp, 1056(%rsp)        # 8-byte Spill
-	cmovneq	%rcx, %rbx
-	movq	%rbx, 1128(%rsp)        # 8-byte Spill
-	cmovneq	%rdx, %rax
-	movq	%rax, 1208(%rsp)        # 8-byte Spill
-	movq	112(%rsp), %rax         # 8-byte Reload
-	cmovneq	32(%rsp), %rax          # 8-byte Folded Reload
-	movq	%rax, 112(%rsp)         # 8-byte Spill
-	movq	576(%rsp), %rax         # 8-byte Reload
-	cmovneq	8(%rsp), %rax           # 8-byte Folded Reload
-	movq	%rax, 576(%rsp)         # 8-byte Spill
-	cmovneq	-32(%rsp), %r13         # 8-byte Folded Reload
-	movq	%r13, 1416(%rsp)        # 8-byte Spill
-	movq	%r15, %r11
-	cmpq	$5, %r15
-	movq	%r8, %rax
-	movq	176(%rsp), %rbp         # 8-byte Reload
-	cmovgq	%rbp, %rax
-	movq	%rax, %rsi
-	cmpq	$1, %r15
-	movq	%r8, %rax
-	cmovgq	%rcx, %rax
-	movq	%rcx, %r13
-	movq	%rax, %r15
-	movq	%rax, 704(%rsp)         # 8-byte Spill
-	cmpq	$1, %r11
-	movq	%r8, %rdx
-	cmovgq	%rdi, %rdx
-	movq	%r8, %rax
-	cmovgq	%r10, %rax
-	movq	%rax, %rbx
-	leaq	4(%r12), %rax
-	movq	%rax, 448(%rsp)         # 8-byte Spill
-	movq	%r8, %rcx
-	movq	%r8, %r14
-	cmovgq	%rax, %rcx
-	movq	%rcx, 608(%rsp)         # 8-byte Spill
-	cmpq	$7, %r11
-	setg	%r9b
-	movb	%r9b, -105(%rsp)        # 1-byte Spill
-	movq	-40(%rsp), %r8          # 8-byte Reload
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rcx
-	movq	%rcx, 992(%rsp)         # 8-byte Spill
-	cmovneq	%rdi, %rdx
-	movq	%rdx, 1040(%rsp)        # 8-byte Spill
-	cmovneq	%r10, %rbx
-	movq	%rbx, 1120(%rsp)        # 8-byte Spill
-	cmovneq	%r13, %r15
-	movq	%r15, 1200(%rsp)        # 8-byte Spill
-	cmovneq	%rbp, %rsi
-	movq	%rsi, 1336(%rsp)        # 8-byte Spill
-	movl	%r8d, %eax
-	orb	%r9b, %al
-	movb	%al, -96(%rsp)          # 1-byte Spill
-	movq	%r14, %rax
-	movq	328(%rsp), %r15         # 8-byte Reload
-	cmovneq	%r15, %rax
-	movq	%rax, 984(%rsp)         # 8-byte Spill
-	movq	%r14, %rax
-	movq	544(%rsp), %rcx         # 8-byte Reload
-	cmovneq	%rcx, %rax
-	movq	%rax, 1384(%rsp)        # 8-byte Spill
-	testb	%r8b, %r8b
-	movq	584(%rsp), %rax         # 8-byte Reload
-	cmovneq	%rcx, %rax
-	movq	%rax, 584(%rsp)         # 8-byte Spill
-	cmpq	$14, %r11
-	leaq	216(%r12), %rax
-	movq	%r14, %rdx
-	cmovgq	%rax, %rdx
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rdx
-	movq	%rdx, 544(%rsp)         # 8-byte Spill
-	cmpq	$6, %r11
-	movq	%r14, %rax
-	movq	600(%rsp), %r9          # 8-byte Reload
-	cmovgq	%r9, %rax
-	testb	%r8b, %r8b
-	cmovneq	%r9, %rax
-	movq	%rax, 1368(%rsp)        # 8-byte Spill
-	cmpq	$13, %r11
-	movq	%r14, %rax
-	movq	536(%rsp), %rdx         # 8-byte Reload
-	cmovgq	%rdx, %rax
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %rax
-	movq	%rax, 536(%rsp)         # 8-byte Spill
-	cmpq	$5, %r11
-	movq	%r14, %rdx
-	movq	32(%rsp), %rax          # 8-byte Reload
-	cmovgq	%rax, %rdx
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rdx
-	movq	%rdx, 1360(%rsp)        # 8-byte Spill
-	cmpq	$12, %r11
-	movq	%r14, %rsi
-	movq	568(%rsp), %rax         # 8-byte Reload
-	cmovgq	%rax, %rsi
-	movq	%r14, %rdx
-	movq	528(%rsp), %rbp         # 8-byte Reload
-	cmovgq	%rbp, %rdx
-	testb	%r8b, %r8b
-	cmovneq	%rbp, %rdx
-	movq	%rdx, 528(%rsp)         # 8-byte Spill
-	cmovneq	%rax, %rsi
-	movq	%rsi, 1328(%rsp)        # 8-byte Spill
-	cmpq	$3, %r11
-	movq	%r14, %rdx
-	movq	-16(%rsp), %rax         # 8-byte Reload
-	cmovgq	%rax, %rdx
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rdx
-	movq	%rdx, 1312(%rsp)        # 8-byte Spill
-	cmpq	$10, %r11
-	movq	%r14, %rax
-	movq	24(%rsp), %r10          # 8-byte Reload
-	cmovgq	%r10, %rax
-	testb	%r8b, %r8b
-	cmovneq	%r10, %rax
-	movq	%rax, 1304(%rsp)        # 8-byte Spill
-	cmpq	$2, %r11
-	movq	%r14, %rdx
-	movq	40(%rsp), %rax          # 8-byte Reload
-	cmovgq	%rax, %rdx
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rdx
-	movq	%rdx, 1296(%rsp)        # 8-byte Spill
-	cmpq	$9, %r11
-	movq	%r14, %rdx
-	movq	8(%rsp), %rax           # 8-byte Reload
-	cmovgq	%rax, %rdx
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rdx
-	movq	%rdx, 1288(%rsp)        # 8-byte Spill
-	cmpq	$1, %r11
-	movq	%r11, %r13
-	movq	%r14, %rdx
-	movq	80(%rsp), %rax          # 8-byte Reload
-	cmovgq	%rax, %rdx
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rdx
-	movq	%rdx, 1272(%rsp)        # 8-byte Spill
-	movb	480(%rsp), %al          # 1-byte Reload
-	movq	1048(%rsp), %r12        # 8-byte Reload
-	orb	%r12b, %al
-	movb	-106(%rsp), %dl         # 1-byte Reload
-	orb	%r12b, %dl
-	movb	-107(%rsp), %bl         # 1-byte Reload
-	orb	%r12b, %bl
-	movb	-108(%rsp), %cl         # 1-byte Reload
-	orb	%r12b, %cl
-	testb	%r12b, %r12b
-	movq	1024(%rsp), %r8         # 8-byte Reload
-	cmovneq	424(%rsp), %r8          # 8-byte Folded Reload
-	movq	-88(%rsp), %r11         # 8-byte Reload
-	cmovneq	%r15, %r11
-	testb	%cl, %cl
-	movq	-120(%rsp), %r10        # 8-byte Reload
-	leaq	27(%r10), %rdi
-	movq	%r14, %r15
-	cmoveq	%r14, %rdi
-	leaq	31(%r10), %r14
-	cmoveq	%r15, %r14
-	testb	%bl, %bl
-	leaq	26(%r10), %rsi
-	cmoveq	%r15, %rsi
-	leaq	30(%r10), %rbx
-	cmoveq	%r15, %rbx
-	testb	%dl, %dl
-	leaq	25(%r10), %rcx
-	cmoveq	%r15, %rcx
-	leaq	29(%r10), %r9
-	cmoveq	%r15, %r9
-	testb	%al, %al
-	leaq	24(%r10), %rax
-	leaq	28(%r10), %rbp
-	cmoveq	%r15, %rax
-	movzbl	(%rax), %eax
-	movzbl	(%rcx), %ecx
-	cmoveq	%r15, %rbp
-	shll	$24, %eax
-	shll	$16, %ecx
-	orl	%eax, %ecx
-	movzbl	(%rsi), %edx
-	shll	$8, %edx
-	orl	%ecx, %edx
-	movzbl	(%rdi), %eax
-	orl	%eax, %edx
-	leal	1(%r12), %eax
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %ecx
-	negl	%ecx
-	movq	560(%rsp), %r10         # 8-byte Reload
-	movl	24(%r10), %esi
-	andl	%ecx, %esi
-	decl	%eax
-	andl	%eax, %edx
-	orl	%esi, %edx
-	movl	%edx, (%r8)
-	movzbl	(%rbp), %edx
-	shll	$24, %edx
-	movzbl	(%r9), %esi
-	shll	$16, %esi
-	orl	%edx, %esi
-	movzbl	(%rbx), %edx
-	shll	$8, %edx
-	orl	%esi, %edx
-	movzbl	(%r14), %esi
-	orl	%edx, %esi
-	andl	%eax, %esi
-	andl	28(%r10), %ecx
-	orl	%ecx, %esi
-	movl	%esi, (%r11)
-	movb	%r12b, -99(%rsp)
-	movq	-40(%rsp), %r8          # 8-byte Reload
-	movb	%r8b, 106(%rsp)
-	movq	984(%rsp), %r12         # 8-byte Reload
-	movl	(%r12), %eax
-	movq	%rax, %rcx
-	shrq	$24, %rcx
-	cmpq	$256, %rcx              # imm = 0x100
-	leaq	Te4(,%rcx,4), %rdx
-	movq	%r15, %rcx
-	cmovlq	%rdx, %rcx
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %rcx
-	movzbl	%al, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te4(,%rdx,4), %rdx
-	movq	%r15, %rsi
-	cmovlq	%rdx, %rsi
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %rsi
-	movzbl	%ah, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te4(,%rdx,4), %rdx
-	movq	%r15, %rdi
-	cmovlq	%rdx, %rdi
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %rdi
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r15, %rdx
-	cmovlq	%rax, %rdx
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rdx
-	cmpb	$0, -128(%rsp)          # 1-byte Folded Reload
-	movq	%r15, %r11
-	cmovneq	352(%rsp), %r11         # 8-byte Folded Reload
-	cmpq	$8, %r13
-	movq	%r13, %r9
-	movq	%r13, -64(%rsp)         # 8-byte Spill
-	movzbl	2(%rdi), %eax
-	movzbl	1(%rsi), %ebp
-	setg	%bl
-	shll	$16, %eax
-	shll	$8, %ebp
-	xorl	%eax, %ebp
-	movzbl	(%rcx), %eax
-	xorl	%eax, %ebp
-	movzbl	3(%rdx), %eax
-	shll	$24, %eax
-	movq	%r10, %rsi
-	xorl	(%r10), %eax
-	xorl	%eax, %ebp
-	xorl	$16777216, %ebp         # imm = 0x1000000
-	orb	%r8b, %bl
-	movb	%bl, -120(%rsp)         # 1-byte Spill
-	movq	%r15, %r13
-	cmovneq	640(%rsp), %r13         # 8-byte Folded Reload
-	leal	1(%r8), %eax
-	movzbl	%al, %r14d
-	andl	$1, %r14d
-	movl	%r14d, %r10d
-	negl	%r10d
-	movl	32(%rsi), %eax
-	andl	%r10d, %eax
-	decl	%r14d
-	andl	%r14d, %ebp
-	orl	%eax, %ebp
-	movl	%ebp, (%r13)
-	movq	992(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ebp
-	movl	36(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %ebp
-	orl	%eax, %ebp
-	movq	1000(%rsp), %rax        # 8-byte Reload
-	movl	%ebp, (%rax)
-	movq	1008(%rsp), %rax        # 8-byte Reload
-	xorl	(%rax), %ebp
-	movl	40(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %ebp
-	orl	%eax, %ebp
-	movq	1016(%rsp), %rax        # 8-byte Reload
-	movl	%ebp, (%rax)
-	movq	1032(%rsp), %rax        # 8-byte Reload
-	xorl	(%rax), %ebp
-	movl	44(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %ebp
-	orl	%eax, %ebp
-	movl	%ebp, (%r11)
-	movb	%r8b, 105(%rsp)
-	movl	(%r11), %edx
-	movzbl	%dl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r15, %rbp
-	cmovlq	%rax, %rbp
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rbp
-	movzbl	%dh, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rdi
-	movq	%r15, %rax
-	cmovlq	%rdi, %rax
-	testb	%r8b, %r8b
-	cmovneq	%rdi, %rax
-	movl	%edx, %edi
-	shrl	$16, %edi
-	movzbl	%dil, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r15, %rbx
-	cmovlq	%rdi, %rbx
-	testb	%r8b, %r8b
-	cmovneq	%rdi, %rbx
-	shrq	$24, %rdx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te4(,%rdx,4), %rdx
-	movq	%r15, %rdi
-	cmovlq	%rdx, %rdi
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %rdi
-	movq	-80(%rsp), %rdx         # 8-byte Reload
-	cmovneq	960(%rsp), %rdx         # 8-byte Folded Reload
-	cmpb	$0, -96(%rsp)           # 1-byte Folded Reload
-	movzbl	3(%rdi), %edi
-	movq	%r15, %rcx
-	cmovneq	-8(%rsp), %rcx          # 8-byte Folded Reload
-	movq	%rcx, 480(%rsp)         # 8-byte Spill
-	shll	$24, %edi
-	xorl	(%rdx), %edi
-	movzbl	2(%rbx), %ebx
-	movzbl	1(%rax), %edx
-	shll	$16, %ebx
-	shll	$8, %edx
-	xorl	%ebx, %edx
-	movzbl	(%rbp), %eax
-	xorl	%eax, %edx
-	xorl	%edi, %edx
-	movl	48(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	1072(%rsp), %rax        # 8-byte Reload
-	movl	%edx, (%rax)
-	movq	-56(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %edx
-	movl	52(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	1080(%rsp), %rax        # 8-byte Reload
-	movl	%edx, (%rax)
-	movq	1096(%rsp), %rax        # 8-byte Reload
-	xorl	(%rax), %edx
-	movl	56(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	1104(%rsp), %rax        # 8-byte Reload
-	movl	%edx, (%rax)
-	xorl	(%r12), %edx
-	movl	60(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	-48(%rsp), %rax         # 8-byte Reload
-	movl	%edx, (%rax)
-	movl	(%rcx), %eax
-	movq	%rax, %rdx
-	shrq	$24, %rdx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te4(,%rdx,4), %rdx
-	movq	%r15, %rbx
-	cmovlq	%rdx, %rbx
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %rbx
-	movzbl	%al, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te4(,%rdx,4), %rdi
-	movq	%r15, %rdx
-	cmovlq	%rdi, %rdx
-	testb	%r8b, %r8b
-	cmovneq	%rdi, %rdx
-	movzbl	%ah, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r15, %rcx
-	cmovlq	%rdi, %rcx
-	testb	%r8b, %r8b
-	cmovneq	%rdi, %rcx
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r15, %rdi
-	cmovlq	%rax, %rdi
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rdi
-	cmpq	$4, %r9
-	movq	%r15, %r9
-	movq	416(%rsp), %r11         # 8-byte Reload
-	cmovgq	%r11, %r9
-	cmpb	$0, -128(%rsp)          # 1-byte Folded Reload
-	movq	%r15, %r12
-	cmovneq	56(%rsp), %r12          # 8-byte Folded Reload
-	cmpb	$0, -120(%rsp)          # 1-byte Folded Reload
-	movzbl	3(%rdi), %edi
-	movq	%r15, %rax
-	cmovneq	384(%rsp), %rax         # 8-byte Folded Reload
-	movq	%rax, -56(%rsp)         # 8-byte Spill
-	shll	$24, %edi
-	xorl	(%r13), %edi
-	movzbl	2(%rcx), %ebp
-	movzbl	1(%rdx), %ecx
-	shll	$16, %ebp
-	shll	$8, %ecx
-	xorl	%ebp, %ecx
-	movzbl	(%rbx), %edx
-	xorl	%edx, %ecx
-	xorl	%edi, %ecx
-	xorl	$33554432, %ecx         # imm = 0x2000000
-	movl	64(%rsi), %edx
-	andl	%r10d, %edx
-	andl	%r14d, %ecx
-	orl	%edx, %ecx
-	movl	%ecx, (%rax)
-	movq	1040(%rsp), %rdx        # 8-byte Reload
-	xorl	(%rdx), %ecx
-	movl	68(%rsi), %edx
-	andl	%r10d, %edx
-	andl	%r14d, %ecx
-	orl	%edx, %ecx
-	movq	1056(%rsp), %rdx        # 8-byte Reload
-	movl	%ecx, (%rdx)
-	movq	1064(%rsp), %rdx        # 8-byte Reload
-	xorl	(%rdx), %ecx
-	movl	72(%rsi), %edx
-	andl	%r10d, %edx
-	andl	%r14d, %ecx
-	orl	%edx, %ecx
-	movq	1088(%rsp), %rdx        # 8-byte Reload
-	movl	%ecx, (%rdx)
-	movq	1112(%rsp), %rdx        # 8-byte Reload
-	xorl	(%rdx), %ecx
-	movl	76(%rsi), %edx
-	andl	%r10d, %edx
-	andl	%r14d, %ecx
-	orl	%edx, %ecx
-	movl	%ecx, (%r12)
-	movb	%r8b, 104(%rsp)
-	movl	(%r12), %ebx
-	movzbl	%bl, %ecx
-	cmpq	$256, %rcx              # imm = 0x100
-	leaq	Te4(,%rcx,4), %rdx
-	movq	%r15, %rcx
-	cmovlq	%rdx, %rcx
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %rcx
-	movzbl	%bh, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te4(,%rdx,4), %rdi
-	movq	%r15, %rdx
-	cmovlq	%rdi, %rdx
-	testb	%r8b, %r8b
-	cmovneq	%rdi, %rdx
-	movl	%ebx, %edi
-	shrl	$16, %edi
-	movzbl	%dil, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r15, %rbp
-	cmovlq	%rdi, %rbp
-	testb	%r8b, %r8b
-	cmovneq	%rdi, %rbp
-	shrq	$24, %rbx
-	cmpq	$256, %rbx              # imm = 0x100
-	leaq	Te4(,%rbx,4), %rdi
-	movq	%r15, %rbx
-	cmovlq	%rdi, %rbx
-	testb	%r8b, %r8b
-	cmovneq	%rdi, %rbx
-	cmovneq	%r11, %r9
-	cmpb	$0, -96(%rsp)           # 1-byte Folded Reload
-	movzbl	3(%rbx), %edi
-	movq	%r15, %rbx
-	cmovneq	(%rsp), %rbx            # 8-byte Folded Reload
-	movq	%rbx, -48(%rsp)         # 8-byte Spill
-	shll	$24, %edi
-	xorl	(%r9), %edi
-	movzbl	2(%rbp), %eax
-	movzbl	1(%rdx), %ebp
-	shll	$16, %eax
-	shll	$8, %ebp
-	xorl	%eax, %ebp
-	movzbl	(%rcx), %eax
-	xorl	%eax, %ebp
-	xorl	%edi, %ebp
-	movl	80(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %ebp
-	orl	%eax, %ebp
-	movq	1144(%rsp), %rax        # 8-byte Reload
-	movl	%ebp, (%rax)
-	movq	1152(%rsp), %rax        # 8-byte Reload
-	xorl	(%rax), %ebp
-	movl	84(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %ebp
-	orl	%eax, %ebp
-	movq	1168(%rsp), %rax        # 8-byte Reload
-	movl	%ebp, (%rax)
-	movq	1176(%rsp), %rax        # 8-byte Reload
-	xorl	(%rax), %ebp
-	movl	88(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %ebp
-	orl	%eax, %ebp
-	movq	1184(%rsp), %rax        # 8-byte Reload
-	movl	%ebp, (%rax)
-	movq	480(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ebp
-	movl	92(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %ebp
-	orl	%eax, %ebp
-	movq	-24(%rsp), %rax         # 8-byte Reload
-	movl	%ebp, (%rax)
-	movl	(%rbx), %ebx
-	movq	%rbx, %rax
-	shrq	$24, %rax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r15, %rcx
-	cmovlq	%rax, %rcx
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rcx
-	movzbl	%bl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r15, %rdx
-	cmovlq	%rax, %rdx
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rdx
-	movzbl	%bh, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r15, %rdi
-	cmovlq	%rax, %rdi
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rdi
-	shrl	$16, %ebx
-	movzbl	%bl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r15, %rbp
-	cmovlq	%rax, %rbp
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rbp
-	cmpq	$4, -64(%rsp)           # 8-byte Folded Reload
-	movq	%r15, %r9
-	movq	152(%rsp), %r11         # 8-byte Reload
-	cmovgq	%r11, %r9
-	movb	-128(%rsp), %r13b       # 1-byte Reload
-	testb	%r13b, %r13b
-	movq	%r15, %rax
-	cmovneq	-72(%rsp), %rax         # 8-byte Folded Reload
-	cmpb	$0, -120(%rsp)          # 1-byte Folded Reload
-	movzbl	3(%rbp), %ebp
-	leaq	96(%rsi), %rbx
-	movq	%rbx, -24(%rsp)         # 8-byte Spill
-	movq	%r15, %r12
-	cmovneq	%rbx, %r12
-	shll	$24, %ebp
-	movq	-56(%rsp), %rbx         # 8-byte Reload
-	xorl	(%rbx), %ebp
-	movzbl	2(%rdi), %edi
-	movzbl	1(%rdx), %edx
-	shll	$16, %edi
-	shll	$8, %edx
-	xorl	%edi, %edx
-	movzbl	(%rcx), %ecx
-	xorl	%ecx, %edx
-	xorl	%ebp, %edx
-	xorl	$67108864, %edx         # imm = 0x4000000
-	movl	96(%rsi), %ecx
-	andl	%r10d, %ecx
-	andl	%r14d, %edx
-	orl	%ecx, %edx
-	movl	%edx, (%r12)
-	movq	1120(%rsp), %rcx        # 8-byte Reload
-	xorl	(%rcx), %edx
-	movl	100(%rsi), %ecx
-	andl	%r10d, %ecx
-	andl	%r14d, %edx
-	orl	%ecx, %edx
-	movq	1128(%rsp), %rcx        # 8-byte Reload
-	movl	%edx, (%rcx)
-	movq	1136(%rsp), %rcx        # 8-byte Reload
-	xorl	(%rcx), %edx
-	movl	104(%rsi), %ecx
-	andl	%r10d, %ecx
-	andl	%r14d, %edx
-	orl	%ecx, %edx
-	movq	1160(%rsp), %rcx        # 8-byte Reload
-	movl	%edx, (%rcx)
-	movq	1192(%rsp), %rcx        # 8-byte Reload
-	xorl	(%rcx), %edx
-	movl	108(%rsi), %ecx
-	andl	%r10d, %ecx
-	andl	%r14d, %edx
-	orl	%ecx, %edx
-	movl	%edx, (%rax)
-	movb	%r8b, 96(%rsp)
-	movl	(%rax), %edx
-	movzbl	%dl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r15, %rcx
-	cmovlq	%rax, %rcx
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rcx
-	movzbl	%dh, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rdi
-	movq	%r15, %rax
-	cmovlq	%rdi, %rax
-	testb	%r8b, %r8b
-	cmovneq	%rdi, %rax
-	movl	%edx, %edi
-	shrl	$16, %edi
-	movzbl	%dil, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r15, %rbp
-	cmovlq	%rdi, %rbp
-	testb	%r8b, %r8b
-	cmovneq	%rdi, %rbp
-	shrq	$24, %rdx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te4(,%rdx,4), %rdx
-	movq	%r15, %rdi
-	cmovlq	%rdx, %rdi
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %rdi
-	cmovneq	%r11, %r9
-	cmpb	$0, -96(%rsp)           # 1-byte Folded Reload
-	movzbl	3(%rdi), %edi
-	movq	%r15, %r11
-	cmovneq	64(%rsp), %r11          # 8-byte Folded Reload
-	shll	$24, %edi
-	xorl	(%r9), %edi
-	movzbl	2(%rbp), %ebx
-	movzbl	1(%rax), %edx
-	shll	$16, %ebx
-	shll	$8, %edx
-	xorl	%ebx, %edx
-	movzbl	(%rcx), %eax
-	xorl	%eax, %edx
-	xorl	%edi, %edx
-	movl	112(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	1224(%rsp), %rax        # 8-byte Reload
-	movl	%edx, (%rax)
-	movq	1232(%rsp), %rax        # 8-byte Reload
-	xorl	(%rax), %edx
-	movl	116(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	1248(%rsp), %rax        # 8-byte Reload
-	movl	%edx, (%rax)
-	movq	1256(%rsp), %rax        # 8-byte Reload
-	xorl	(%rax), %edx
-	movl	120(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	1264(%rsp), %rax        # 8-byte Reload
-	movl	%edx, (%rax)
-	movq	-48(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %edx
-	movl	124(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	488(%rsp), %rax         # 8-byte Reload
-	movl	%edx, (%rax)
-	movl	(%r11), %ecx
-	movq	%rcx, %rax
-	shrq	$24, %rax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r15, %rbx
-	cmovlq	%rax, %rbx
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rbx
-	movzbl	%cl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rdx
-	movq	%r15, %rax
-	cmovlq	%rdx, %rax
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %rax
-	movzbl	%ch, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te4(,%rdx,4), %rdx
-	movq	%r15, %rdi
-	cmovlq	%rdx, %rdi
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %rdi
-	shrl	$16, %ecx
-	movzbl	%cl, %ecx
-	cmpq	$256, %rcx              # imm = 0x100
-	leaq	Te4(,%rcx,4), %rcx
-	movq	%r15, %rdx
-	cmovlq	%rcx, %rdx
-	testb	%r8b, %r8b
-	cmovneq	%rcx, %rdx
-	testb	%r13b, %r13b
-	movq	%r15, %rcx
-	cmovneq	-16(%rsp), %rcx         # 8-byte Folded Reload
-	cmpb	$0, -120(%rsp)          # 1-byte Folded Reload
-	movzbl	3(%rdx), %ebp
-	movq	%r15, %r13
-	cmovneq	400(%rsp), %r13         # 8-byte Folded Reload
-	shll	$24, %ebp
-	xorl	(%r12), %ebp
-	movzbl	2(%rdi), %edi
-	movzbl	1(%rax), %edx
-	shll	$16, %edi
-	shll	$8, %edx
-	xorl	%edi, %edx
-	movzbl	(%rbx), %eax
-	xorl	%eax, %edx
-	xorl	%ebp, %edx
-	xorl	$134217728, %edx        # imm = 0x8000000
-	movl	128(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movl	%edx, (%r13)
-	movq	1200(%rsp), %rax        # 8-byte Reload
-	xorl	(%rax), %edx
-	movl	132(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	1208(%rsp), %rax        # 8-byte Reload
-	movl	%edx, (%rax)
-	movq	1216(%rsp), %rax        # 8-byte Reload
-	xorl	(%rax), %edx
-	movl	136(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	1240(%rsp), %rax        # 8-byte Reload
-	movl	%edx, (%rax)
-	movq	1280(%rsp), %rax        # 8-byte Reload
-	xorl	(%rax), %edx
-	movl	140(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movl	%edx, (%rcx)
-	movb	%r8b, 95(%rsp)
-	movl	(%rcx), %edx
-	movzbl	%dl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r15, %rcx
-	cmovlq	%rax, %rcx
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rcx
-	movzbl	%dh, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rdi
-	movq	%r15, %rax
-	cmovlq	%rdi, %rax
-	testb	%r8b, %r8b
-	cmovneq	%rdi, %rax
-	movl	%edx, %edi
-	shrl	$16, %edi
-	movzbl	%dil, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r15, %rbp
-	cmovlq	%rdi, %rbp
-	testb	%r8b, %r8b
-	cmovneq	%rdi, %rbp
-	shrq	$24, %rdx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te4(,%rdx,4), %rdx
-	movq	%r15, %rdi
-	cmovlq	%rdx, %rdi
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %rdi
-	movq	136(%rsp), %rdx         # 8-byte Reload
-	cmovneq	48(%rsp), %rdx          # 8-byte Folded Reload
-	cmpb	$0, -96(%rsp)           # 1-byte Folded Reload
-	movzbl	3(%rdi), %edi
-	movq	%r15, %rbx
-	cmovneq	72(%rsp), %rbx          # 8-byte Folded Reload
-	movq	%rbx, 488(%rsp)         # 8-byte Spill
-	shll	$24, %edi
-	xorl	(%rdx), %edi
-	movzbl	2(%rbp), %ebp
-	movzbl	1(%rax), %edx
-	shll	$16, %ebp
-	shll	$8, %edx
-	xorl	%ebp, %edx
-	movzbl	(%rcx), %eax
-	xorl	%eax, %edx
-	xorl	%edi, %edx
-	movl	144(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	1320(%rsp), %rax        # 8-byte Reload
-	movl	%edx, (%rax)
-	movq	496(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %edx
-	movl	148(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	504(%rsp), %rax         # 8-byte Reload
-	movl	%edx, (%rax)
-	movq	512(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %edx
-	movl	152(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	552(%rsp), %rax         # 8-byte Reload
-	movl	%edx, (%rax)
-	xorl	(%r11), %edx
-	movl	156(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	432(%rsp), %rax         # 8-byte Reload
-	movl	%edx, (%rax)
-	movl	(%rbx), %ebx
-	movq	%rbx, %rax
-	shrq	$24, %rax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r15, %r9
-	cmovlq	%rax, %r9
-	testb	%r8b, %r8b
-	cmovneq	%rax, %r9
-	movzbl	%bl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r15, %rcx
-	cmovlq	%rax, %rcx
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rcx
-	movzbl	%bh, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rdi
-	movq	%r15, %rax
-	cmovlq	%rdi, %rax
-	testb	%r8b, %r8b
-	cmovneq	%rdi, %rax
-	shrl	$16, %ebx
-	movzbl	%bl, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r15, %rbx
-	cmovlq	%rdi, %rbx
-	testb	%r8b, %r8b
-	cmovneq	%rdi, %rbx
-	movq	-64(%rsp), %rsi         # 8-byte Reload
-	cmpq	$4, %rsi
-	movq	%r15, %rdi
-	movq	408(%rsp), %r12         # 8-byte Reload
-	cmovgq	%r12, %rdi
-	movq	%r15, %rdx
-	cmovgq	568(%rsp), %rdx         # 8-byte Folded Reload
-	movq	%rdx, 512(%rsp)         # 8-byte Spill
-	setg	-56(%rsp)               # 1-byte Folded Spill
-	cmpb	$0, -128(%rsp)          # 1-byte Folded Reload
-	movq	%r15, %r11
-	cmovneq	208(%rsp), %r11         # 8-byte Folded Reload
-	movq	%r15, %rdx
-	cmovneq	16(%rsp), %rdx          # 8-byte Folded Reload
-	movq	%rdx, 504(%rsp)         # 8-byte Spill
-	cmpq	$3, %rsi
-	setg	-48(%rsp)               # 1-byte Folded Spill
-	cmpq	$2, %rsi
-	setg	552(%rsp)               # 1-byte Folded Spill
-	cmpq	$9, %rsi
-	setg	-128(%rsp)              # 1-byte Folded Spill
-	cmpb	$0, -120(%rsp)          # 1-byte Folded Reload
-	movzbl	3(%rbx), %ebp
-	movq	%r15, %rbx
-	cmovneq	392(%rsp), %rbx         # 8-byte Folded Reload
-	shll	$24, %ebp
-	xorl	(%r13), %ebp
-	movzbl	2(%rax), %eax
-	movzbl	1(%rcx), %ecx
-	shll	$16, %eax
-	shll	$8, %ecx
-	xorl	%eax, %ecx
-	movzbl	(%r9), %eax
-	xorl	%eax, %ecx
-	xorl	%ebp, %ecx
-	xorl	$268435456, %ecx        # imm = 0x10000000
-	movq	560(%rsp), %rsi         # 8-byte Reload
-	movl	160(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %ecx
-	orl	%eax, %ecx
-	movl	%ecx, (%rbx)
-	movq	1272(%rsp), %rax        # 8-byte Reload
-	xorl	(%rax), %ecx
-	movl	164(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %ecx
-	orl	%eax, %ecx
-	movq	1288(%rsp), %rax        # 8-byte Reload
-	movl	%ecx, (%rax)
-	movq	1296(%rsp), %rax        # 8-byte Reload
-	xorl	(%rax), %ecx
-	movl	168(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %ecx
-	orl	%eax, %ecx
-	movq	1304(%rsp), %rax        # 8-byte Reload
-	movl	%ecx, (%rax)
-	movq	1312(%rsp), %rax        # 8-byte Reload
-	xorl	(%rax), %ecx
-	movl	172(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %ecx
-	orl	%eax, %ecx
-	movl	%ecx, (%r11)
-	movb	%r8b, 94(%rsp)
-	movl	(%r11), %eax
-	movzbl	%al, %ecx
-	cmpq	$256, %rcx              # imm = 0x100
-	leaq	Te4(,%rcx,4), %rdx
-	movq	%r15, %r9
-	movq	%r15, %rcx
-	cmovlq	%rdx, %rcx
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %rcx
-	movzbl	%ah, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te4(,%rdx,4), %rbp
-	movq	%r15, %rdx
-	cmovlq	%rbp, %rdx
-	testb	%r8b, %r8b
-	cmovneq	%rbp, %rdx
-	movl	%eax, %ebp
-	shrl	$16, %ebp
-	movzbl	%bpl, %ebp
-	cmpq	$256, %rbp              # imm = 0x100
-	leaq	Te4(,%rbp,4), %rbp
-	movq	%r15, %r13
-	cmovlq	%rbp, %r13
-	testb	%r8b, %r8b
-	cmovneq	%rbp, %r13
-	shrq	$24, %rax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	cmovlq	%rax, %r15
-	testb	%r8b, %r8b
-	cmovneq	%rax, %r15
-	cmovneq	%r12, %rdi
-	movb	-120(%rsp), %r11b       # 1-byte Reload
-	testb	%r11b, %r11b
-	leaq	224(%rsi), %rax
-	cmoveq	%r9, %rax
-	movq	%rax, 496(%rsp)         # 8-byte Spill
-	cmpb	$0, -96(%rsp)           # 1-byte Folded Reload
-	movq	%r9, %rbp
-	cmovneq	144(%rsp), %rbp         # 8-byte Folded Reload
-	movq	-64(%rsp), %r12         # 8-byte Reload
-	cmpq	$6, %r12
-	movzbl	3(%r15), %eax
-	setg	432(%rsp)               # 1-byte Folded Spill
-	shll	$24, %eax
-	xorl	(%rdi), %eax
-	movzbl	2(%r13), %edi
-	movzbl	1(%rdx), %edx
-	shll	$16, %edi
-	shll	$8, %edx
-	xorl	%edi, %edx
-	movzbl	(%rcx), %ecx
-	xorl	%ecx, %edx
-	xorl	%eax, %edx
-	movl	176(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	1328(%rsp), %rax        # 8-byte Reload
-	movl	%edx, (%rax)
-	movq	1336(%rsp), %rax        # 8-byte Reload
-	xorl	(%rax), %edx
-	movl	180(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	112(%rsp), %rax         # 8-byte Reload
-	movl	%edx, (%rax)
-	movq	1344(%rsp), %rax        # 8-byte Reload
-	xorl	(%rax), %edx
-	movl	184(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	1352(%rsp), %rax        # 8-byte Reload
-	movl	%edx, (%rax)
-	movq	488(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %edx
-	movl	188(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	520(%rsp), %rax         # 8-byte Reload
-	movl	%edx, (%rax)
-	movl	(%rbp), %eax
-	movq	%rax, %rcx
-	shrq	$24, %rcx
-	cmpq	$256, %rcx              # imm = 0x100
-	leaq	Te4(,%rcx,4), %rdx
-	movq	%r9, %r15
-	cmovlq	%rdx, %r15
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %r15
-	movzbl	%al, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te4(,%rdx,4), %rdi
-	movq	%r9, %rdx
-	movq	%r9, %r13
-	cmovlq	%rdi, %rdx
-	testb	%r8b, %r8b
-	cmovneq	%rdi, %rdx
-	movzbl	%ah, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r9, %rcx
-	cmovlq	%rdi, %rcx
-	testb	%r8b, %r8b
-	cmovneq	%rdi, %rcx
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r9, %rdi
-	cmovlq	%rax, %rdi
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rdi
-	cmpq	$1, %r12
-	setg	112(%rsp)               # 1-byte Folded Spill
-	testb	%r11b, %r11b
-	movzbl	3(%rdi), %eax
-	leaq	192(%rsi), %rdi
-	movq	%rdi, 520(%rsp)         # 8-byte Spill
-	movq	%r9, %r12
-	cmovneq	%rdi, %r12
-	shll	$24, %eax
-	xorl	(%rbx), %eax
-	movzbl	2(%rcx), %ecx
-	movzbl	1(%rdx), %edx
-	shll	$16, %ecx
-	shll	$8, %edx
-	xorl	%ecx, %edx
-	movzbl	(%r15), %ecx
-	xorl	%ecx, %edx
-	xorl	%eax, %edx
-	xorl	$536870912, %edx        # imm = 0x20000000
-	movl	192(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movl	%edx, (%r12)
-	movq	576(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %edx
-	movl	196(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	1376(%rsp), %rax        # 8-byte Reload
-	movl	%edx, (%rax)
-	movq	1392(%rsp), %rax        # 8-byte Reload
-	xorl	(%rax), %edx
-	movl	200(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	1400(%rsp), %rax        # 8-byte Reload
-	movl	%edx, (%rax)
-	movq	1408(%rsp), %rax        # 8-byte Reload
-	xorl	(%rax), %edx
-	movl	204(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	504(%rsp), %rax         # 8-byte Reload
-	movl	%edx, (%rax)
-	movb	%r8b, 93(%rsp)
-	movl	(%rax), %edx
-	movzbl	%dl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r9, %r15
-	cmovlq	%rax, %r15
-	testb	%r8b, %r8b
-	cmovneq	%rax, %r15
-	movzbl	%dh, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r9, %rbx
-	cmovlq	%rax, %rbx
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rbx
-	movl	%edx, %eax
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r9, %rdi
-	cmovlq	%rax, %rdi
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rdi
-	shrq	$24, %rdx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te4(,%rdx,4), %rax
-	movq	%r9, %rdx
-	cmovlq	%rax, %rdx
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rdx
-	movq	568(%rsp), %r9          # 8-byte Reload
-	movq	512(%rsp), %rcx         # 8-byte Reload
-	cmovneq	%r9, %rcx
-	movzbl	3(%rdx), %eax
-	shll	$24, %eax
-	xorl	(%rcx), %eax
-	movzbl	2(%rdi), %edx
-	shll	$16, %edx
-	movzbl	1(%rbx), %edi
-	shll	$8, %edi
-	xorl	%edx, %edi
-	movzbl	(%r15), %ecx
-	xorl	%edi, %ecx
-	xorl	%eax, %ecx
-	movl	208(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %ecx
-	orl	%eax, %ecx
-	movq	528(%rsp), %rax         # 8-byte Reload
-	movl	%ecx, (%rax)
-	movq	1360(%rsp), %rax        # 8-byte Reload
-	xorl	(%rax), %ecx
-	movl	212(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %ecx
-	orl	%eax, %ecx
-	movq	536(%rsp), %rax         # 8-byte Reload
-	movl	%ecx, (%rax)
-	movq	1368(%rsp), %rax        # 8-byte Reload
-	xorl	(%rax), %ecx
-	movl	216(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %ecx
-	orl	%eax, %ecx
-	movq	544(%rsp), %rax         # 8-byte Reload
-	movl	%ecx, (%rax)
-	xorl	(%rbp), %ecx
-	movl	220(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %ecx
-	orl	%eax, %ecx
-	movq	584(%rsp), %rax         # 8-byte Reload
-	movl	%ecx, (%rax)
-	movq	1384(%rsp), %rax        # 8-byte Reload
-	movl	(%rax), %edx
-	movq	%rdx, %rax
-	shrq	$24, %rax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r13, %rcx
-	cmovlq	%rax, %rcx
-	testb	%r8b, %r8b
-	cmovneq	%rax, %rcx
-	movzbl	%dl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rdi
-	movq	%r13, %rax
-	cmovlq	%rdi, %rax
-	testb	%r8b, %r8b
-	cmovneq	%rdi, %rax
-	movzbl	%dh, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r13, %rbx
-	cmovlq	%rdi, %rbx
-	testb	%r8b, %r8b
-	cmovneq	%rdi, %rbx
-	shrl	$16, %edx
-	movzbl	%dl, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te4(,%rdx,4), %rdx
-	movq	%r13, %rdi
-	cmovlq	%rdx, %rdi
-	testb	%r8b, %r8b
-	cmovneq	%rdx, %rdi
-	cmpq	$5, -64(%rsp)           # 8-byte Folded Reload
-	movzbl	3(%rdi), %edi
-	setg	%bpl
-	movb	%bpl, -64(%rsp)         # 1-byte Spill
-	shll	$24, %edi
-	xorl	(%r12), %edi
-	movzbl	2(%rbx), %ebx
-	movzbl	1(%rax), %edx
-	shll	$16, %ebx
-	shll	$8, %edx
-	xorl	%ebx, %edx
-	movzbl	(%rcx), %eax
-	xorl	%eax, %edx
-	xorl	%edi, %edx
-	xorl	$1073741824, %edx       # imm = 0x40000000
-	movl	224(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	496(%rsp), %rax         # 8-byte Reload
-	movl	%edx, (%rax)
-	movq	1416(%rsp), %rax        # 8-byte Reload
-	xorl	(%rax), %edx
-	movl	228(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	1424(%rsp), %rax        # 8-byte Reload
-	movl	%edx, (%rax)
-	movq	1432(%rsp), %rax        # 8-byte Reload
-	xorl	(%rax), %edx
-	movl	232(%rsi), %eax
-	andl	%r10d, %eax
-	andl	%r14d, %edx
-	orl	%eax, %edx
-	movq	1456(%rsp), %rax        # 8-byte Reload
-	movl	%edx, (%rax)
-	movq	592(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %edx
-	andl	%r14d, %edx
-	andl	236(%rsi), %r10d
-	orl	%r10d, %edx
-	movq	1440(%rsp), %rax        # 8-byte Reload
-	movl	%edx, (%rax)
-	movb	%r8b, -103(%rsp)
-	movq	%rsi, %r15
-	movl	240(%rsi), %eax
-	movq	1464(%rsp), %rcx        # 8-byte Reload
-	movl	%eax, (%rcx)
-	movl	244(%rsi), %eax
-	movq	1472(%rsp), %rcx        # 8-byte Reload
-	movl	%eax, (%rcx)
-	movl	248(%rsi), %eax
-	movq	1480(%rsp), %rcx        # 8-byte Reload
-	movl	%eax, (%rcx)
-	movl	252(%rsi), %eax
-	movq	1488(%rsp), %rcx        # 8-byte Reload
-	movl	%eax, (%rcx)
-	movb	-103(%rsp), %al
-	movb	%al, -101(%rsp)
-	movb	$0, 92(%rsp)
-	movq	1448(%rsp), %r14        # 8-byte Reload
-	andb	-98(%rsp), %r14b
-	movb	%r14b, 109(%rsp)
-	movl	%r14d, %r12d
-	orb	%bpl, %r12b
-	movq	%r13, %r11
-	movq	%r13, %rax
-	cmovneq	464(%rsp), %rax         # 8-byte Folded Reload
-	movq	%rax, -40(%rsp)         # 8-byte Spill
-	movl	(%rax), %edx
-	movq	%rdx, %r8
-	shrq	$24, %r8
-	movb	-128(%rsp), %r13b       # 1-byte Reload
-	orb	%r14b, %r13b
-	movq	16(%rsp), %rax          # 8-byte Reload
-	cmoveq	%r11, %rax
-	movq	%rax, 16(%rsp)          # 8-byte Spill
-	testb	%r14b, %r14b
-	movq	248(%rsp), %rax         # 8-byte Reload
-	cmovneq	600(%rsp), %rax         # 8-byte Folded Reload
-	movq	%rax, 248(%rsp)         # 8-byte Spill
-	movq	288(%rsp), %rax         # 8-byte Reload
-	cmovneq	-32(%rsp), %rax         # 8-byte Folded Reload
-	movq	%rax, 288(%rsp)         # 8-byte Spill
-	movq	256(%rsp), %rax         # 8-byte Reload
-	cmovneq	%r9, %rax
-	movq	%rax, 256(%rsp)         # 8-byte Spill
-	movq	296(%rsp), %rax         # 8-byte Reload
-	cmovneq	%r9, %rax
-	movq	%rax, 296(%rsp)         # 8-byte Spill
-	movq	304(%rsp), %rax         # 8-byte Reload
-	cmovneq	968(%rsp), %rax         # 8-byte Folded Reload
-	movq	%rax, 304(%rsp)         # 8-byte Spill
-	movq	608(%rsp), %rax         # 8-byte Reload
-	cmovneq	448(%rsp), %rax         # 8-byte Folded Reload
-	movq	%rax, 608(%rsp)         # 8-byte Spill
-	movq	328(%rsp), %rsi         # 8-byte Reload
-	movq	-88(%rsp), %rax         # 8-byte Reload
-	cmovneq	%rsi, %rax
-	movq	%rax, -88(%rsp)         # 8-byte Spill
-	movq	616(%rsp), %rax         # 8-byte Reload
-	cmovneq	472(%rsp), %rax         # 8-byte Folded Reload
-	movq	%rax, 616(%rsp)         # 8-byte Spill
-	movq	640(%rsp), %rax         # 8-byte Reload
-	movq	656(%rsp), %rcx         # 8-byte Reload
-	cmovneq	%rax, %rcx
-	movq	%rcx, 656(%rsp)         # 8-byte Spill
-	movq	632(%rsp), %rcx         # 8-byte Reload
-	cmovneq	976(%rsp), %rcx         # 8-byte Folded Reload
-	movq	%rcx, 632(%rsp)         # 8-byte Spill
-	movq	-80(%rsp), %rcx         # 8-byte Reload
-	cmovneq	960(%rsp), %rcx         # 8-byte Folded Reload
-	movq	%rcx, -80(%rsp)         # 8-byte Spill
-	movq	168(%rsp), %rcx         # 8-byte Reload
-	movq	624(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rcx, %rbp
-	movq	%rbp, 624(%rsp)         # 8-byte Spill
-	movq	352(%rsp), %rbx         # 8-byte Reload
-	movq	648(%rsp), %rdi         # 8-byte Reload
-	cmovneq	%rbx, %rdi
-	movq	%rdi, 648(%rsp)         # 8-byte Spill
-	movq	664(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rsi, %rbp
-	movq	%rbp, 664(%rsp)         # 8-byte Spill
-	movq	368(%rsp), %rdi         # 8-byte Reload
-	movq	712(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rdi, %rbp
-	movq	%rbp, 712(%rsp)         # 8-byte Spill
-	movq	680(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rax, %rbp
-	movq	%rbp, 680(%rsp)         # 8-byte Spill
-	movq	360(%rsp), %rax         # 8-byte Reload
-	movq	728(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rax, %rbp
-	movq	%rbp, 728(%rsp)         # 8-byte Spill
-	movq	336(%rsp), %r9          # 8-byte Reload
-	movq	696(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%r9, %rbp
-	movq	%rbp, 696(%rsp)         # 8-byte Spill
-	movq	672(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rcx, %rbp
-	movq	%rbp, 672(%rsp)         # 8-byte Spill
-	movq	384(%rsp), %rbp         # 8-byte Reload
-	movq	688(%rsp), %rcx         # 8-byte Reload
-	cmovneq	%rbp, %rcx
-	movq	%rcx, 688(%rsp)         # 8-byte Spill
-	movq	160(%rsp), %rsi         # 8-byte Reload
-	movq	720(%rsp), %rcx         # 8-byte Reload
-	cmovneq	%rsi, %rcx
-	movq	%rcx, 720(%rsp)         # 8-byte Spill
-	movq	736(%rsp), %rcx         # 8-byte Reload
-	cmovneq	%rdi, %rcx
-	movq	%rcx, 736(%rsp)         # 8-byte Spill
-	movq	56(%rsp), %rsi          # 8-byte Reload
-	movq	776(%rsp), %rcx         # 8-byte Reload
-	cmovneq	%rsi, %rcx
-	movq	%rcx, 776(%rsp)         # 8-byte Spill
-	movq	752(%rsp), %rcx         # 8-byte Reload
-	cmovneq	%rax, %rcx
-	movq	%rcx, 752(%rsp)         # 8-byte Spill
-	movq	152(%rsp), %rcx         # 8-byte Reload
-	movq	800(%rsp), %rax         # 8-byte Reload
-	cmovneq	%rcx, %rax
-	movq	%rax, 800(%rsp)         # 8-byte Spill
-	movq	768(%rsp), %rax         # 8-byte Reload
-	cmovneq	-8(%rsp), %rax          # 8-byte Folded Reload
-	movq	%rax, 768(%rsp)         # 8-byte Spill
-	movq	744(%rsp), %rax         # 8-byte Reload
-	cmovneq	%rbp, %rax
-	movq	%rax, 744(%rsp)         # 8-byte Spill
-	movq	376(%rsp), %rbp         # 8-byte Reload
-	movq	760(%rsp), %rax         # 8-byte Reload
-	cmovneq	%rbp, %rax
-	movq	%rax, 760(%rsp)         # 8-byte Spill
-	movq	792(%rsp), %rax         # 8-byte Reload
-	cmovneq	(%rsp), %rax            # 8-byte Folded Reload
-	movq	%rax, 792(%rsp)         # 8-byte Spill
-	movq	808(%rsp), %rax         # 8-byte Reload
-	cmovneq	%rsi, %rax
-	movq	%rax, 808(%rsp)         # 8-byte Spill
-	movq	344(%rsp), %rax         # 8-byte Reload
-	movq	848(%rsp), %rdi         # 8-byte Reload
-	cmovneq	%rax, %rdi
-	movq	%rdi, 848(%rsp)         # 8-byte Spill
-	movq	824(%rsp), %rdi         # 8-byte Reload
-	cmovneq	%rcx, %rdi
-	movq	%rdi, 824(%rsp)         # 8-byte Spill
-	movq	184(%rsp), %rcx         # 8-byte Reload
-	movq	864(%rsp), %rdi         # 8-byte Reload
-	cmovneq	%rcx, %rdi
-	movq	%rdi, 864(%rsp)         # 8-byte Spill
-	movq	840(%rsp), %rdi         # 8-byte Reload
-	cmovneq	200(%rsp), %rdi         # 8-byte Folded Reload
-	movq	%rdi, 840(%rsp)         # 8-byte Spill
-	movq	816(%rsp), %rdi         # 8-byte Reload
-	cmovneq	%rbp, %rdi
-	movq	%rdi, 816(%rsp)         # 8-byte Spill
-	movq	48(%rsp), %rdi          # 8-byte Reload
-	movq	832(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rdi, %rbp
-	movq	%rbp, 832(%rsp)         # 8-byte Spill
-	movq	856(%rsp), %rbp         # 8-byte Reload
-	cmovneq	216(%rsp), %rbp         # 8-byte Folded Reload
-	movq	%rbp, 856(%rsp)         # 8-byte Spill
-	movq	704(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rax, %rbp
-	movq	%rbp, 704(%rsp)         # 8-byte Spill
-	movq	64(%rsp), %rax          # 8-byte Reload
-	movq	872(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rax, %rbp
-	movq	%rbp, 872(%rsp)         # 8-byte Spill
-	movq	120(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rcx, %rbp
-	movq	%rbp, 120(%rsp)         # 8-byte Spill
-	movq	400(%rsp), %rcx         # 8-byte Reload
-	movq	880(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rcx, %rbp
-	movq	%rbp, 880(%rsp)         # 8-byte Spill
-	movq	784(%rsp), %rbp         # 8-byte Reload
-	cmovneq	-72(%rsp), %rbp         # 8-byte Folded Reload
-	movq	%rbp, 784(%rsp)         # 8-byte Spill
-	movq	136(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rdi, %rbp
-	movq	%rbp, 136(%rsp)         # 8-byte Spill
-	movq	40(%rsp), %rsi          # 8-byte Reload
-	movq	128(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rsi, %rbp
-	movq	%rbp, 128(%rsp)         # 8-byte Spill
-	movq	888(%rsp), %rbp         # 8-byte Reload
-	cmovneq	-16(%rsp), %rbp         # 8-byte Folded Reload
-	movq	%rbp, 888(%rsp)         # 8-byte Spill
-	movq	912(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rax, %rbp
-	movq	%rbp, 912(%rsp)         # 8-byte Spill
-	movq	176(%rsp), %rax         # 8-byte Reload
-	movq	920(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rax, %rbp
-	movq	%rbp, 920(%rsp)         # 8-byte Spill
-	movq	928(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rcx, %rbp
-	movq	%rbp, 928(%rsp)         # 8-byte Spill
-	movq	192(%rsp), %rcx         # 8-byte Reload
-	movq	936(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rcx, %rbp
-	movq	%rbp, 936(%rsp)         # 8-byte Spill
-	movq	280(%rsp), %rbp         # 8-byte Reload
-	cmovneq	80(%rsp), %rbp          # 8-byte Folded Reload
-	movq	%rbp, 280(%rsp)         # 8-byte Spill
-	movq	896(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rsi, %rbp
-	movq	%rbp, 896(%rsp)         # 8-byte Spill
-	movq	392(%rsp), %rdi         # 8-byte Reload
-	movq	904(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rdi, %rbp
-	movq	%rbp, 904(%rsp)         # 8-byte Spill
-	movq	944(%rsp), %rbp         # 8-byte Reload
-	cmovneq	8(%rsp), %rbp           # 8-byte Folded Reload
-	movq	%rbp, 944(%rsp)         # 8-byte Spill
-	movq	224(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rax, %rbp
-	movq	%rbp, 224(%rsp)         # 8-byte Spill
-	movq	208(%rsp), %rax         # 8-byte Reload
-	movq	232(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rax, %rbp
-	movq	%rbp, 232(%rsp)         # 8-byte Spill
-	movq	240(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rcx, %rbp
-	movq	%rbp, 240(%rsp)         # 8-byte Spill
-	movq	264(%rsp), %rcx         # 8-byte Reload
-	cmovneq	72(%rsp), %rcx          # 8-byte Folded Reload
-	movq	%rcx, 264(%rsp)         # 8-byte Spill
-	movq	952(%rsp), %rcx         # 8-byte Reload
-	cmovneq	%rdi, %rcx
-	movq	%rcx, 952(%rsp)         # 8-byte Spill
-	movq	320(%rsp), %rcx         # 8-byte Reload
-	cmovneq	144(%rsp), %rcx         # 8-byte Folded Reload
-	movq	%rcx, 320(%rsp)         # 8-byte Spill
-	movq	272(%rsp), %rcx         # 8-byte Reload
-	cmovneq	%rax, %rcx
-	movq	%rcx, 272(%rsp)         # 8-byte Spill
-	movq	312(%rsp), %rax         # 8-byte Reload
-	cmovneq	32(%rsp), %rax          # 8-byte Folded Reload
-	movq	%rax, 312(%rsp)         # 8-byte Spill
-	cmpq	$256, %r8               # imm = 0x100
-	leaq	Te4(,%r8,4), %rax
-	movq	%r11, %rsi
-	cmovlq	%rax, %rsi
-	testb	%r14b, %r14b
-	cmovneq	%rax, %rsi
-	movzbl	%dl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r11, %rdi
-	cmovlq	%rax, %rdi
-	testb	%r14b, %r14b
-	cmovneq	%rax, %rdi
-	movzbl	%dh, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r11, %rbp
-	cmovlq	%rax, %rbp
-	testb	%r14b, %r14b
-	cmovneq	%rax, %rbp
-	shrl	$16, %edx
-	movzbl	%dl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r11, %rdx
-	cmovlq	%rax, %rdx
-	testb	%r14b, %r14b
-	cmovneq	%rax, %rdx
-	movl	%r13d, %r8d
-	movb	%r13b, -128(%rsp)       # 1-byte Spill
-	testb	%r13b, %r13b
-	movq	%r11, %rcx
-	cmovneq	%r9, %rcx
-	testb	%r12b, %r12b
-	movzbl	2(%rbp), %eax
-	movzbl	1(%rdi), %ebp
-	movq	%r11, %rdi
-	cmovneq	%rbx, %rdi
-	movq	%rdi, -32(%rsp)         # 8-byte Spill
-	shll	$16, %eax
-	shll	$8, %ebp
-	xorl	%eax, %ebp
-	movzbl	(%rsi), %eax
-	xorl	%eax, %ebp
-	movzbl	3(%rdx), %eax
-	shll	$24, %eax
-	xorl	(%r15), %eax
-	xorl	%eax, %ebp
-	xorl	$16777216, %ebp         # imm = 0x1000000
-	movl	%r14d, %r9d
-	orb	432(%rsp), %r9b         # 1-byte Folded Reload
-	movb	%r9b, -120(%rsp)        # 1-byte Spill
-	movq	%r11, %r13
-	cmovneq	424(%rsp), %r13         # 8-byte Folded Reload
-	leal	1(%r14), %eax
-	movzbl	%al, %edx
-	andl	$1, %edx
-	movl	%edx, %r10d
-	negl	%r10d
-	movl	24(%r15), %eax
-	andl	%r10d, %eax
-	decl	%edx
-	andl	%edx, %ebp
-	orl	%eax, %ebp
-	movl	%ebp, (%r13)
-	movq	608(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ebp
-	movl	28(%r15), %eax
-	andl	%r10d, %eax
-	andl	%edx, %ebp
-	orl	%eax, %ebp
-	movq	-88(%rsp), %rax         # 8-byte Reload
-	movl	%ebp, (%rax)
-	movq	616(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ebp
-	movl	32(%r15), %eax
-	andl	%r10d, %eax
-	andl	%edx, %ebp
-	orl	%eax, %ebp
-	movq	656(%rsp), %rax         # 8-byte Reload
-	movl	%ebp, (%rax)
-	movq	632(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ebp
-	movl	36(%r15), %eax
-	andl	%r10d, %eax
-	andl	%edx, %ebp
-	orl	%eax, %ebp
-	movl	%ebp, (%rcx)
-	movb	%r14b, 108(%rsp)
-	movq	-80(%rsp), %rax         # 8-byte Reload
-	movl	(%rax), %eax
-	xorl	(%rcx), %eax
-	movl	40(%r15), %ecx
-	andl	%r10d, %ecx
-	andl	%edx, %eax
-	orl	%ecx, %eax
-	movq	624(%rsp), %rcx         # 8-byte Reload
-	movl	%eax, (%rcx)
-	movq	-40(%rsp), %rcx         # 8-byte Reload
-	xorl	(%rcx), %eax
-	movl	44(%r15), %ecx
-	andl	%r10d, %ecx
-	andl	%edx, %eax
-	orl	%ecx, %eax
-	movq	648(%rsp), %rcx         # 8-byte Reload
-	movl	%eax, (%rcx)
-	movl	(%rdi), %eax
-	movq	%rax, %rcx
-	shrq	$24, %rcx
-	cmpq	$256, %rcx              # imm = 0x100
-	leaq	Te4(,%rcx,4), %rbp
-	movq	%r11, %rcx
-	cmovlq	%rbp, %rcx
-	testb	%r14b, %r14b
-	cmovneq	%rbp, %rcx
-	movzbl	%al, %ebp
-	cmpq	$256, %rbp              # imm = 0x100
-	leaq	Te4(,%rbp,4), %rbp
-	movq	%r11, %rbx
-	cmovlq	%rbp, %rbx
-	testb	%r14b, %r14b
-	cmovneq	%rbp, %rbx
-	movzbl	%ah, %ebp
-	cmpq	$256, %rbp              # imm = 0x100
-	leaq	Te4(,%rbp,4), %rbp
-	movq	%r11, %rdi
-	cmovlq	%rbp, %rdi
-	testb	%r14b, %r14b
-	cmovneq	%rbp, %rdi
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r11, %rbp
-	cmovlq	%rax, %rbp
-	testb	%r14b, %r14b
-	cmovneq	%rax, %rbp
-	testb	%r8b, %r8b
-	movq	%r11, %rax
-	cmovneq	-8(%rsp), %rax          # 8-byte Folded Reload
-	movl	%r12d, %r8d
-	testb	%r12b, %r12b
-	movq	%r11, %rsi
-	cmovneq	160(%rsp), %rsi         # 8-byte Folded Reload
-	movq	%rsi, -88(%rsp)         # 8-byte Spill
-	testb	%r9b, %r9b
-	movzbl	3(%rbp), %ebp
-	movq	%r11, %r12
-	cmovneq	416(%rsp), %r12         # 8-byte Folded Reload
-	shll	$24, %ebp
-	xorl	(%r13), %ebp
-	movzbl	2(%rdi), %edi
-	movzbl	1(%rbx), %ebx
-	shll	$16, %edi
-	shll	$8, %ebx
-	xorl	%edi, %ebx
-	movzbl	(%rcx), %ecx
-	xorl	%ecx, %ebx
-	xorl	%ebp, %ebx
-	xorl	$33554432, %ebx         # imm = 0x2000000
-	movl	48(%r15), %ecx
-	andl	%r10d, %ecx
-	andl	%edx, %ebx
-	orl	%ecx, %ebx
-	movl	%ebx, (%r12)
-	movq	664(%rsp), %rcx         # 8-byte Reload
-	xorl	(%rcx), %ebx
-	movl	52(%r15), %ecx
-	andl	%r10d, %ecx
-	andl	%edx, %ebx
-	orl	%ecx, %ebx
-	movq	712(%rsp), %rcx         # 8-byte Reload
-	movl	%ebx, (%rcx)
-	movq	680(%rsp), %rcx         # 8-byte Reload
-	xorl	(%rcx), %ebx
-	movl	56(%r15), %ecx
-	andl	%r10d, %ecx
-	andl	%edx, %ebx
-	orl	%ecx, %ebx
-	movq	728(%rsp), %rcx         # 8-byte Reload
-	movl	%ebx, (%rcx)
-	movq	696(%rsp), %rcx         # 8-byte Reload
-	xorl	(%rcx), %ebx
-	movl	60(%r15), %ecx
-	andl	%r10d, %ecx
-	andl	%edx, %ebx
-	orl	%ecx, %ebx
-	movl	%ebx, (%rax)
-	movb	%r14b, 107(%rsp)
-	movq	672(%rsp), %rcx         # 8-byte Reload
-	movl	(%rcx), %ecx
-	xorl	(%rax), %ecx
-	movl	64(%r15), %eax
-	andl	%r10d, %eax
-	andl	%edx, %ecx
-	orl	%eax, %ecx
-	movq	688(%rsp), %rax         # 8-byte Reload
-	movl	%ecx, (%rax)
-	movq	-32(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ecx
-	movl	68(%r15), %eax
-	andl	%r10d, %eax
-	andl	%edx, %ecx
-	orl	%eax, %ecx
-	movq	720(%rsp), %rax         # 8-byte Reload
-	movl	%ecx, (%rax)
-	movl	(%rsi), %eax
-	movq	%rax, %rcx
-	shrq	$24, %rcx
-	cmpq	$256, %rcx              # imm = 0x100
-	leaq	Te4(,%rcx,4), %rdi
-	movq	%r11, %rcx
-	cmovlq	%rdi, %rcx
-	testb	%r14b, %r14b
-	cmovneq	%rdi, %rcx
-	movzbl	%al, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r11, %rbx
-	cmovlq	%rdi, %rbx
-	testb	%r14b, %r14b
-	cmovneq	%rdi, %rbx
-	movzbl	%ah, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r11, %rbp
-	cmovlq	%rdi, %rbp
-	testb	%r14b, %r14b
-	cmovneq	%rdi, %rbp
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r11, %rdi
-	cmovlq	%rax, %rdi
-	testb	%r14b, %r14b
-	cmovneq	%rax, %rdi
-	cmpb	$0, -128(%rsp)          # 1-byte Folded Reload
-	movq	%r11, %r9
-	cmovneq	200(%rsp), %r9          # 8-byte Folded Reload
-	testb	%r8b, %r8b
-	movb	%r8b, -96(%rsp)         # 1-byte Spill
-	movq	%r11, %rsi
-	cmovneq	(%rsp), %rsi            # 8-byte Folded Reload
-	movq	%rsi, -80(%rsp)         # 8-byte Spill
-	cmpb	$0, -120(%rsp)          # 1-byte Folded Reload
-	movzbl	3(%rdi), %edi
-	movq	%r11, %r13
-	cmovneq	440(%rsp), %r13         # 8-byte Folded Reload
-	shll	$24, %edi
-	xorl	(%r12), %edi
-	movzbl	2(%rbp), %ebp
-	movzbl	1(%rbx), %ebx
-	shll	$16, %ebp
-	shll	$8, %ebx
-	xorl	%ebp, %ebx
-	movzbl	(%rcx), %ecx
-	xorl	%ecx, %ebx
-	xorl	%edi, %ebx
-	xorl	$67108864, %ebx         # imm = 0x4000000
-	movl	72(%r15), %ecx
-	andl	%r10d, %ecx
-	andl	%edx, %ebx
-	orl	%ecx, %ebx
-	movl	%ebx, (%r13)
-	movq	736(%rsp), %rcx         # 8-byte Reload
-	xorl	(%rcx), %ebx
-	movl	76(%r15), %ecx
-	andl	%r10d, %ecx
-	andl	%edx, %ebx
-	orl	%ecx, %ebx
-	movq	776(%rsp), %rcx         # 8-byte Reload
-	movl	%ebx, (%rcx)
-	movq	752(%rsp), %rcx         # 8-byte Reload
-	xorl	(%rcx), %ebx
-	movl	80(%r15), %ecx
-	andl	%r10d, %ecx
-	andl	%edx, %ebx
-	orl	%ecx, %ebx
-	movq	800(%rsp), %rcx         # 8-byte Reload
-	movl	%ebx, (%rcx)
-	movq	768(%rsp), %rcx         # 8-byte Reload
-	xorl	(%rcx), %ebx
-	movl	84(%r15), %ecx
-	andl	%r10d, %ecx
-	andl	%edx, %ebx
-	orl	%ecx, %ebx
-	movl	%ebx, (%r9)
-	movb	%r14b, 102(%rsp)
-	movq	744(%rsp), %rcx         # 8-byte Reload
-	movl	(%rcx), %ecx
-	xorl	(%r9), %ecx
-	movl	88(%r15), %eax
-	andl	%r10d, %eax
-	andl	%edx, %ecx
-	orl	%eax, %ecx
-	movq	760(%rsp), %rax         # 8-byte Reload
-	movl	%ecx, (%rax)
-	movq	-88(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ecx
-	movl	92(%r15), %eax
-	andl	%r10d, %eax
-	andl	%edx, %ecx
-	orl	%eax, %ecx
-	movq	792(%rsp), %rax         # 8-byte Reload
-	movl	%ecx, (%rax)
-	movl	(%rsi), %eax
-	movq	%rax, %rcx
-	shrq	$24, %rcx
-	cmpq	$256, %rcx              # imm = 0x100
-	leaq	Te4(,%rcx,4), %rdi
-	movq	%r11, %rcx
-	cmovlq	%rdi, %rcx
-	testb	%r14b, %r14b
-	cmovneq	%rdi, %rcx
-	movzbl	%al, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r11, %rbx
-	cmovlq	%rdi, %rbx
-	testb	%r14b, %r14b
-	cmovneq	%rdi, %rbx
-	movzbl	%ah, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r11, %r9
-	cmovlq	%rdi, %r9
-	testb	%r14b, %r14b
-	cmovneq	%rdi, %r9
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r11, %rdi
-	cmovlq	%rax, %rdi
-	testb	%r14b, %r14b
-	cmovneq	%rax, %rdi
-	cmpb	$0, -128(%rsp)          # 1-byte Folded Reload
-	movq	%r11, %rbp
-	cmovneq	-72(%rsp), %rbp         # 8-byte Folded Reload
-	testb	%r8b, %r8b
-	movq	%r11, %rsi
-	cmovneq	216(%rsp), %rsi         # 8-byte Folded Reload
-	movq	%rsi, -88(%rsp)         # 8-byte Spill
-	movb	-120(%rsp), %r8b        # 1-byte Reload
-	testb	%r8b, %r8b
-	movzbl	3(%rdi), %eax
-	movq	%r11, %r12
-	cmovneq	-24(%rsp), %r12         # 8-byte Folded Reload
-	shll	$24, %eax
-	xorl	(%r13), %eax
-	movzbl	2(%r9), %edi
-	movzbl	1(%rbx), %ebx
-	shll	$16, %edi
-	shll	$8, %ebx
-	xorl	%edi, %ebx
-	movzbl	(%rcx), %ecx
-	xorl	%ecx, %ebx
-	xorl	%eax, %ebx
-	xorl	$134217728, %ebx        # imm = 0x8000000
-	movl	96(%r15), %eax
-	andl	%r10d, %eax
-	andl	%edx, %ebx
-	orl	%eax, %ebx
-	movl	%ebx, (%r12)
-	movq	808(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ebx
-	movl	100(%r15), %eax
-	andl	%r10d, %eax
-	andl	%edx, %ebx
-	orl	%eax, %ebx
-	movq	848(%rsp), %rax         # 8-byte Reload
-	movl	%ebx, (%rax)
-	movq	824(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ebx
-	movl	104(%r15), %eax
-	andl	%r10d, %eax
-	andl	%edx, %ebx
-	orl	%eax, %ebx
-	movq	864(%rsp), %rax         # 8-byte Reload
-	movl	%ebx, (%rax)
-	movq	840(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ebx
-	movl	108(%r15), %eax
-	andl	%r10d, %eax
-	andl	%edx, %ebx
-	orl	%eax, %ebx
-	movl	%ebx, (%rbp)
-	movb	%r14b, 101(%rsp)
-	movq	816(%rsp), %rax         # 8-byte Reload
-	movl	(%rax), %eax
-	xorl	(%rbp), %eax
-	movl	112(%r15), %ecx
-	andl	%r10d, %ecx
-	andl	%edx, %eax
-	orl	%ecx, %eax
-	movq	832(%rsp), %rcx         # 8-byte Reload
-	movl	%eax, (%rcx)
-	movq	-80(%rsp), %rcx         # 8-byte Reload
-	xorl	(%rcx), %eax
-	movl	116(%r15), %ecx
-	andl	%r10d, %ecx
-	andl	%edx, %eax
-	orl	%ecx, %eax
-	movq	856(%rsp), %rcx         # 8-byte Reload
-	movl	%eax, (%rcx)
-	movl	(%rsi), %eax
-	movq	%rax, %rcx
-	shrq	$24, %rcx
-	cmpq	$256, %rcx              # imm = 0x100
-	leaq	Te4(,%rcx,4), %rdi
-	movq	%r11, %rcx
-	cmovlq	%rdi, %rcx
-	testb	%r14b, %r14b
-	cmovneq	%rdi, %rcx
-	movzbl	%al, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r11, %rbx
-	cmovlq	%rdi, %rbx
-	testb	%r14b, %r14b
-	cmovneq	%rdi, %rbx
-	movzbl	%ah, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r11, %rbp
-	cmovlq	%rdi, %rbp
-	testb	%r14b, %r14b
-	cmovneq	%rdi, %rbp
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r11, %rdi
-	cmovlq	%rax, %rdi
-	testb	%r14b, %r14b
-	cmovneq	%rax, %rdi
-	movb	-128(%rsp), %r13b       # 1-byte Reload
-	testb	%r13b, %r13b
-	movq	%r11, %rax
-	cmovneq	80(%rsp), %rax          # 8-byte Folded Reload
-	cmpb	$0, -96(%rsp)           # 1-byte Folded Reload
-	movq	%r11, %rsi
-	cmovneq	-16(%rsp), %rsi         # 8-byte Folded Reload
-	movq	%rsi, -80(%rsp)         # 8-byte Spill
-	testb	%r8b, %r8b
-	movzbl	3(%rdi), %edi
-	movq	%r11, %r9
-	cmovneq	456(%rsp), %r9          # 8-byte Folded Reload
-	shll	$24, %edi
-	xorl	(%r12), %edi
-	movzbl	2(%rbp), %ebp
-	movzbl	1(%rbx), %ebx
-	shll	$16, %ebp
-	shll	$8, %ebx
-	xorl	%ebp, %ebx
-	movzbl	(%rcx), %ecx
-	xorl	%ecx, %ebx
-	xorl	%edi, %ebx
-	xorl	$268435456, %ebx        # imm = 0x10000000
-	movl	120(%r15), %ecx
-	andl	%r10d, %ecx
-	andl	%edx, %ebx
-	orl	%ecx, %ebx
-	movl	%ebx, (%r9)
-	movq	704(%rsp), %rcx         # 8-byte Reload
-	xorl	(%rcx), %ebx
-	movl	124(%r15), %ecx
-	andl	%r10d, %ecx
-	andl	%edx, %ebx
-	orl	%ecx, %ebx
-	movq	872(%rsp), %rcx         # 8-byte Reload
-	movl	%ebx, (%rcx)
-	movq	120(%rsp), %rcx         # 8-byte Reload
-	xorl	(%rcx), %ebx
-	movl	128(%r15), %ecx
-	andl	%r10d, %ecx
-	andl	%edx, %ebx
-	orl	%ecx, %ebx
-	movq	880(%rsp), %rcx         # 8-byte Reload
-	movl	%ebx, (%rcx)
-	movq	784(%rsp), %rcx         # 8-byte Reload
-	xorl	(%rcx), %ebx
-	movl	132(%r15), %ecx
-	andl	%r10d, %ecx
-	andl	%edx, %ebx
-	orl	%ecx, %ebx
-	movl	%ebx, (%rax)
-	movb	%r14b, 100(%rsp)
-	movq	136(%rsp), %rcx         # 8-byte Reload
-	movl	(%rcx), %ecx
-	xorl	(%rax), %ecx
-	movl	136(%r15), %eax
-	andl	%r10d, %eax
-	andl	%edx, %ecx
-	orl	%eax, %ecx
-	movq	128(%rsp), %rax         # 8-byte Reload
-	movl	%ecx, (%rax)
-	movq	-88(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ecx
-	movl	140(%r15), %eax
-	andl	%r10d, %eax
-	andl	%edx, %ecx
-	orl	%eax, %ecx
-	movq	888(%rsp), %rax         # 8-byte Reload
-	movl	%ecx, (%rax)
-	movl	(%rsi), %eax
-	movq	%rax, %rcx
-	shrq	$24, %rcx
-	cmpq	$256, %rcx              # imm = 0x100
-	leaq	Te4(,%rcx,4), %rdi
-	movq	%r11, %rcx
-	cmovlq	%rdi, %rcx
-	testb	%r14b, %r14b
-	cmovneq	%rdi, %rcx
-	movzbl	%al, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r11, %rbx
-	cmovlq	%rdi, %rbx
-	testb	%r14b, %r14b
-	cmovneq	%rdi, %rbx
-	movzbl	%ah, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r11, %rbp
-	cmovlq	%rdi, %rbp
-	testb	%r14b, %r14b
-	cmovneq	%rdi, %rbp
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r11, %rdi
-	cmovlq	%rax, %rdi
-	testb	%r14b, %r14b
-	cmovneq	%rax, %rdi
-	testb	%r13b, %r13b
-	movq	%r11, %r8
-	cmovneq	72(%rsp), %r8           # 8-byte Folded Reload
-	cmpb	$0, -96(%rsp)           # 1-byte Folded Reload
-	movq	%r11, %rsi
-	cmovneq	8(%rsp), %rsi           # 8-byte Folded Reload
-	movb	-120(%rsp), %r13b       # 1-byte Reload
-	testb	%r13b, %r13b
-	movzbl	3(%rdi), %edi
-	movq	%r11, %r12
-	cmovneq	408(%rsp), %r12         # 8-byte Folded Reload
-	shll	$24, %edi
-	xorl	(%r9), %edi
-	movzbl	2(%rbp), %ebp
-	movzbl	1(%rbx), %ebx
-	shll	$16, %ebp
-	shll	$8, %ebx
-	xorl	%ebp, %ebx
-	movzbl	(%rcx), %ecx
-	xorl	%ecx, %ebx
-	xorl	%edi, %ebx
-	xorl	$536870912, %ebx        # imm = 0x20000000
-	movl	144(%r15), %ecx
-	andl	%r10d, %ecx
-	andl	%edx, %ebx
-	orl	%ecx, %ebx
-	movl	%ebx, (%r12)
-	movq	912(%rsp), %rcx         # 8-byte Reload
-	xorl	(%rcx), %ebx
-	movl	148(%r15), %ecx
-	andl	%r10d, %ecx
-	andl	%edx, %ebx
-	orl	%ecx, %ebx
-	movq	920(%rsp), %rcx         # 8-byte Reload
-	movl	%ebx, (%rcx)
-	movq	928(%rsp), %rcx         # 8-byte Reload
-	xorl	(%rcx), %ebx
-	movl	152(%r15), %ecx
-	andl	%r10d, %ecx
-	andl	%edx, %ebx
-	orl	%ecx, %ebx
-	movq	936(%rsp), %rcx         # 8-byte Reload
-	movl	%ebx, (%rcx)
-	movq	280(%rsp), %rcx         # 8-byte Reload
-	xorl	(%rcx), %ebx
-	movl	156(%r15), %ecx
-	andl	%r10d, %ecx
-	andl	%edx, %ebx
-	orl	%ecx, %ebx
-	movl	%ebx, (%r8)
-	movb	%r14b, 99(%rsp)
-	movq	896(%rsp), %rcx         # 8-byte Reload
-	movl	(%rcx), %ecx
-	xorl	(%r8), %ecx
-	movl	160(%r15), %eax
-	andl	%r10d, %eax
-	andl	%edx, %ecx
-	orl	%eax, %ecx
-	movq	904(%rsp), %rax         # 8-byte Reload
-	movl	%ecx, (%rax)
-	movq	-80(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ecx
-	movl	164(%r15), %eax
-	andl	%r10d, %eax
-	andl	%edx, %ecx
-	orl	%eax, %ecx
-	movq	944(%rsp), %rax         # 8-byte Reload
-	movl	%ecx, (%rax)
-	movl	(%rsi), %eax
-	movq	%rax, %rcx
-	shrq	$24, %rcx
-	cmpq	$256, %rcx              # imm = 0x100
-	leaq	Te4(,%rcx,4), %rdi
-	movq	%r11, %rcx
-	cmovlq	%rdi, %rcx
-	testb	%r14b, %r14b
-	cmovneq	%rdi, %rcx
-	movzbl	%al, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r11, %rbp
-	cmovlq	%rdi, %rbp
-	testb	%r14b, %r14b
-	cmovneq	%rdi, %rbp
-	movzbl	%ah, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r11, %rbx
-	cmovlq	%rdi, %rbx
-	testb	%r14b, %r14b
-	cmovneq	%rdi, %rbx
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r11, %rdi
-	cmovlq	%rax, %rdi
-	testb	%r14b, %r14b
-	cmovneq	%rax, %rdi
-	cmpb	$0, -128(%rsp)          # 1-byte Folded Reload
-	movq	32(%rsp), %r8           # 8-byte Reload
-	cmoveq	%r11, %r8
-	cmpb	$0, -96(%rsp)           # 1-byte Folded Reload
-	movq	144(%rsp), %r9          # 8-byte Reload
-	cmoveq	%r11, %r9
-	testb	%r13b, %r13b
-	movzbl	3(%rdi), %eax
-	movq	%r11, %r13
-	cmovneq	24(%rsp), %r13          # 8-byte Folded Reload
-	shll	$24, %eax
-	xorl	(%r12), %eax
-	movzbl	2(%rbx), %edi
-	movzbl	1(%rbp), %ebp
-	shll	$16, %edi
-	shll	$8, %ebp
-	xorl	%edi, %ebp
-	movzbl	(%rcx), %ecx
-	xorl	%ecx, %ebp
-	xorl	%eax, %ebp
-	xorl	$1073741824, %ebp       # imm = 0x40000000
-	movl	168(%r15), %eax
-	andl	%r10d, %eax
-	andl	%edx, %ebp
-	orl	%eax, %ebp
-	movl	%ebp, (%r13)
-	movq	224(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ebp
-	movl	172(%r15), %eax
-	andl	%r10d, %eax
-	andl	%edx, %ebp
-	orl	%eax, %ebp
-	movq	232(%rsp), %rax         # 8-byte Reload
-	movl	%ebp, (%rax)
-	movq	240(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ebp
-	movl	176(%r15), %eax
-	andl	%r10d, %eax
-	andl	%edx, %ebp
-	orl	%eax, %ebp
-	movq	256(%rsp), %rax         # 8-byte Reload
-	movl	%ebp, (%rax)
-	movq	264(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ebp
-	movl	180(%r15), %eax
-	andl	%r10d, %eax
-	andl	%edx, %ebp
-	orl	%eax, %ebp
-	movl	%ebp, (%r8)
-	movb	%r14b, 98(%rsp)
-	movq	952(%rsp), %rax         # 8-byte Reload
-	movl	(%rax), %eax
-	xorl	(%r8), %eax
-	movl	184(%r15), %ecx
-	andl	%r10d, %ecx
-	andl	%edx, %eax
-	orl	%ecx, %eax
-	movq	248(%rsp), %rcx         # 8-byte Reload
-	movl	%eax, (%rcx)
-	xorl	(%rsi), %eax
-	movl	188(%r15), %ecx
-	andl	%r10d, %ecx
-	andl	%edx, %eax
-	orl	%ecx, %eax
-	movq	320(%rsp), %rcx         # 8-byte Reload
-	movl	%eax, (%rcx)
-	movl	(%r9), %ebx
-	movq	%rbx, %rax
-	shrq	$24, %rax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r11, %r8
-	cmovlq	%rax, %r8
-	testb	%r14b, %r14b
-	cmovneq	%rax, %r8
-	movzbl	%bl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rdi
-	movq	%r11, %rax
-	cmovlq	%rdi, %rax
-	testb	%r14b, %r14b
-	cmovneq	%rdi, %rax
-	movzbl	%bh, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r11, %rbp
-	cmovlq	%rdi, %rbp
-	testb	%r14b, %r14b
-	cmovneq	%rdi, %rbp
-	shrl	$16, %ebx
-	movzbl	%bl, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r11, %rbx
-	cmovlq	%rdi, %rbx
-	testb	%r14b, %r14b
-	cmovneq	%rdi, %rbx
-	cmpb	$0, -120(%rsp)          # 1-byte Folded Reload
-	movzbl	3(%rbx), %edi
-	movq	520(%rsp), %rcx         # 8-byte Reload
-	cmoveq	%r11, %rcx
-	shll	$24, %edi
-	xorl	(%r13), %edi
-	movzbl	2(%rbp), %ebx
-	movzbl	1(%rax), %ebp
-	shll	$16, %ebx
-	shll	$8, %ebp
-	xorl	%ebx, %ebp
-	movzbl	(%r8), %eax
-	xorl	%eax, %ebp
-	xorl	%edi, %ebp
-	xorl	$-2147483648, %ebp      # imm = 0x80000000
-	movl	192(%r15), %eax
-	andl	%r10d, %eax
-	andl	%edx, %ebp
-	orl	%eax, %ebp
-	movl	%ebp, (%rcx)
-	movq	272(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ebp
-	movl	196(%r15), %eax
-	andl	%r10d, %eax
-	andl	%edx, %ebp
-	orl	%eax, %ebp
-	movq	288(%rsp), %rax         # 8-byte Reload
-	movl	%ebp, (%rax)
-	movq	296(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ebp
-	movl	200(%r15), %eax
-	andl	%r10d, %eax
-	andl	%edx, %ebp
-	orl	%eax, %ebp
-	movq	304(%rsp), %rax         # 8-byte Reload
-	movl	%ebp, (%rax)
-	movq	312(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ebp
-	andl	%edx, %ebp
-	andl	204(%r15), %r10d
-	orl	%r10d, %ebp
-	movq	16(%rsp), %rax          # 8-byte Reload
-	movl	%ebp, (%rax)
-	movb	%r14b, -102(%rsp)
-	movl	208(%r15), %eax
-	movq	1504(%rsp), %rcx        # 8-byte Reload
-	movl	%eax, (%rcx)
-	movl	212(%r15), %eax
-	movq	1512(%rsp), %rcx        # 8-byte Reload
-	movl	%eax, (%rcx)
-	movb	-102(%rsp), %al
-	movb	%al, -100(%rsp)
-	movq	1496(%rsp), %r12        # 8-byte Reload
-	andb	-97(%rsp), %r12b
-	orb	%r12b, -48(%rsp)        # 1-byte Folded Spill
-	orb	%r12b, -56(%rsp)        # 1-byte Folded Spill
-	orb	%r12b, 112(%rsp)        # 1-byte Folded Spill
-	orb	%r12b, -64(%rsp)        # 1-byte Folded Spill
-	movb	552(%rsp), %sil         # 1-byte Reload
-	orb	%r12b, %sil
-	movb	432(%rsp), %cl          # 1-byte Reload
-	orb	%r12b, %cl
-	orb	%r12b, -105(%rsp)       # 1-byte Folded Spill
-	movq	%r11, %r9
-	movq	%r11, %rax
-	cmovneq	328(%rsp), %rax         # 8-byte Folded Reload
-	movq	%rax, 240(%rsp)         # 8-byte Spill
-	movq	%r11, %rax
-	cmovneq	352(%rsp), %rax         # 8-byte Folded Reload
-	movq	%rax, 264(%rsp)         # 8-byte Spill
-	movq	%r11, %rax
-	cmovneq	-8(%rsp), %rax          # 8-byte Folded Reload
-	movq	%rax, 288(%rsp)         # 8-byte Spill
-	movq	%r11, %rax
-	cmovneq	56(%rsp), %rax          # 8-byte Folded Reload
-	movq	%rax, 312(%rsp)         # 8-byte Spill
-	movq	%r11, %rax
-	cmovneq	(%rsp), %rax            # 8-byte Folded Reload
-	movq	%rax, -40(%rsp)         # 8-byte Spill
-	movq	%r11, %rax
-	cmovneq	-72(%rsp), %rax         # 8-byte Folded Reload
-	movq	%rax, -80(%rsp)         # 8-byte Spill
-	movq	%r11, %rax
-	cmovneq	64(%rsp), %rax          # 8-byte Folded Reload
-	movq	%rax, 136(%rsp)         # 8-byte Spill
-	movq	%r11, %rax
-	cmovneq	-16(%rsp), %rax         # 8-byte Folded Reload
-	movq	%rax, -120(%rsp)        # 8-byte Spill
-	movq	%r11, %rax
-	movq	72(%rsp), %r13          # 8-byte Reload
-	cmovneq	%r13, %rax
-	movq	%rax, -128(%rsp)        # 8-byte Spill
-	movq	208(%rsp), %rax         # 8-byte Reload
-	cmoveq	%r11, %rax
-	movq	%rax, 208(%rsp)         # 8-byte Spill
-	testb	%cl, %cl
-	movq	%r11, %rax
-	movq	424(%rsp), %rcx         # 8-byte Reload
-	cmovneq	%rcx, %rax
-	movq	%rax, 232(%rsp)         # 8-byte Spill
-	movq	%r11, %rax
-	movq	168(%rsp), %r14         # 8-byte Reload
-	cmovneq	%r14, %rax
-	movq	%rax, 256(%rsp)         # 8-byte Spill
-	movq	%r9, %rax
-	movq	360(%rsp), %r11         # 8-byte Reload
-	cmovneq	%r11, %rax
-	movq	%rax, 280(%rsp)         # 8-byte Spill
-	movq	%r9, %rdx
-	movq	440(%rsp), %rax         # 8-byte Reload
-	cmovneq	%rax, %rdx
-	movq	%rdx, 304(%rsp)         # 8-byte Spill
-	movq	%r9, %rdx
-	movq	376(%rsp), %rbx         # 8-byte Reload
-	cmovneq	%rbx, %rdx
-	movq	%rdx, 320(%rsp)         # 8-byte Spill
-	movq	%r9, %rdx
-	movq	184(%rsp), %r10         # 8-byte Reload
-	cmovneq	%r10, %rdx
-	movq	%rdx, -88(%rsp)         # 8-byte Spill
-	movq	%r9, %rdi
-	movq	456(%rsp), %rdx         # 8-byte Reload
-	cmovneq	%rdx, %rdi
-	movq	%rdi, 128(%rsp)         # 8-byte Spill
-	movq	%r9, %rdi
-	movq	40(%rsp), %r8           # 8-byte Reload
-	cmovneq	%r8, %rdi
-	movq	%rdi, -96(%rsp)         # 8-byte Spill
-	movq	%r9, %rbp
-	movq	192(%rsp), %rdi         # 8-byte Reload
-	cmovneq	%rdi, %rbp
-	movq	%rbp, 32(%rsp)          # 8-byte Spill
-	movq	24(%rsp), %rbp          # 8-byte Reload
-	cmoveq	%r9, %rbp
-	movq	%rbp, 24(%rsp)          # 8-byte Spill
-	testb	%sil, %sil
-	movq	472(%rsp), %rsi         # 8-byte Reload
-	cmoveq	%r9, %rsi
-	movq	%rsi, 472(%rsp)         # 8-byte Spill
-	cmoveq	%r9, %rcx
-	movq	%rcx, 424(%rsp)         # 8-byte Spill
-	cmoveq	%r9, %r14
-	movq	%r14, 168(%rsp)         # 8-byte Spill
-	cmoveq	%r9, %r11
-	movq	%r11, 360(%rsp)         # 8-byte Spill
-	cmoveq	%r9, %rax
-	movq	%rax, 440(%rsp)         # 8-byte Spill
-	cmoveq	%r9, %rbx
-	movq	%rbx, 376(%rsp)         # 8-byte Spill
-	cmoveq	%r9, %r10
-	movq	%r10, 184(%rsp)         # 8-byte Spill
-	cmoveq	%r9, %rdx
-	movq	%rdx, 456(%rsp)         # 8-byte Spill
-	cmoveq	%r9, %r8
-	movq	%r8, 40(%rsp)           # 8-byte Spill
-	cmoveq	%r9, %rdi
-	movq	%rdi, 192(%rsp)         # 8-byte Spill
-	cmpb	$0, -64(%rsp)           # 1-byte Folded Reload
-	movq	%r9, %rax
-	movq	464(%rsp), %rsi         # 8-byte Reload
-	cmovneq	%rsi, %rax
-	movq	%rax, 224(%rsp)         # 8-byte Spill
-	movq	%r9, %rax
-	movq	336(%rsp), %r8          # 8-byte Reload
-	cmovneq	%r8, %rax
-	movq	%rax, 248(%rsp)         # 8-byte Spill
-	movq	%r9, %rax
-	movq	368(%rsp), %rbp         # 8-byte Reload
-	cmovneq	%rbp, %rax
-	movq	%rax, 272(%rsp)         # 8-byte Spill
-	movq	%r9, %rax
-	movq	160(%rsp), %rcx         # 8-byte Reload
-	cmovneq	%rcx, %rax
-	movq	%rax, 296(%rsp)         # 8-byte Spill
-	movq	%r9, %rax
-	movq	200(%rsp), %r11         # 8-byte Reload
-	cmovneq	%r11, %rax
-	movq	%rax, -64(%rsp)         # 8-byte Spill
-	movq	%r9, %rax
-	movq	344(%rsp), %rbx         # 8-byte Reload
-	cmovneq	%rbx, %rax
-	movq	%rax, -32(%rsp)         # 8-byte Spill
-	movq	%r9, %rax
-	movq	216(%rsp), %rdx         # 8-byte Reload
-	cmovneq	%rdx, %rax
-	movq	%rax, 120(%rsp)         # 8-byte Spill
-	movq	%r9, %rax
-	movq	80(%rsp), %r10          # 8-byte Reload
-	cmovneq	%r10, %rax
-	movq	%rax, 144(%rsp)         # 8-byte Spill
-	movq	%r9, %rdi
-	movq	176(%rsp), %rax         # 8-byte Reload
-	cmovneq	%rax, %rdi
-	movq	%rdi, 16(%rsp)          # 8-byte Spill
-	movq	8(%rsp), %rdi           # 8-byte Reload
-	cmoveq	%r9, %rdi
-	movq	%rdi, 8(%rsp)           # 8-byte Spill
-	cmpb	$0, 112(%rsp)           # 1-byte Folded Reload
-	movq	448(%rsp), %rdi         # 8-byte Reload
-	cmoveq	%r9, %rdi
-	movq	%rdi, 448(%rsp)         # 8-byte Spill
-	cmoveq	%r9, %rsi
-	movq	%rsi, 464(%rsp)         # 8-byte Spill
-	cmoveq	%r9, %r8
-	movq	%r8, 336(%rsp)          # 8-byte Spill
-	cmoveq	%r9, %rbp
-	movq	%rbp, 368(%rsp)         # 8-byte Spill
-	cmoveq	%r9, %rcx
-	movq	%rcx, 160(%rsp)         # 8-byte Spill
-	cmoveq	%r9, %r11
-	movq	%r11, 200(%rsp)         # 8-byte Spill
-	cmoveq	%r9, %rbx
-	movq	%rbx, 344(%rsp)         # 8-byte Spill
-	cmoveq	%r9, %rdx
-	movq	%rdx, 216(%rsp)         # 8-byte Spill
-	cmoveq	%r9, %r10
-	movq	%r10, 80(%rsp)          # 8-byte Spill
-	cmoveq	%r9, %rax
-	movq	%rax, 176(%rsp)         # 8-byte Spill
-	cmpb	$0, -56(%rsp)           # 1-byte Folded Reload
-	movq	960(%rsp), %rax         # 8-byte Reload
-	cmoveq	%r9, %rax
-	movq	640(%rsp), %r11         # 8-byte Reload
-	cmoveq	%r9, %r11
-	movq	416(%rsp), %rcx         # 8-byte Reload
-	cmoveq	%r9, %rcx
-	movq	%rcx, 416(%rsp)         # 8-byte Spill
-	movq	384(%rsp), %rcx         # 8-byte Reload
-	cmoveq	%r9, %rcx
-	movq	%rcx, 384(%rsp)         # 8-byte Spill
-	movq	152(%rsp), %rcx         # 8-byte Reload
-	cmoveq	%r9, %rcx
-	movq	%rcx, 152(%rsp)         # 8-byte Spill
-	movq	-24(%rsp), %rcx         # 8-byte Reload
-	cmoveq	%r9, %rcx
-	movq	%rcx, -24(%rsp)         # 8-byte Spill
-	movq	48(%rsp), %rcx          # 8-byte Reload
-	cmoveq	%r9, %rcx
-	movq	%rcx, 48(%rsp)          # 8-byte Spill
-	movq	400(%rsp), %rcx         # 8-byte Reload
-	cmoveq	%r9, %rcx
-	movq	%rcx, 400(%rsp)         # 8-byte Spill
-	movq	408(%rsp), %rcx         # 8-byte Reload
-	cmoveq	%r9, %rcx
-	movq	%rcx, 408(%rsp)         # 8-byte Spill
-	movq	392(%rsp), %rcx         # 8-byte Reload
-	cmoveq	%r9, %rcx
-	movq	%rcx, 392(%rsp)         # 8-byte Spill
-	cmpb	$0, -48(%rsp)           # 1-byte Folded Reload
-	movb	$0, 97(%rsp)
-	movb	%r12b, 111(%rsp)
-	movq	976(%rsp), %rcx         # 8-byte Reload
-	cmoveq	%r9, %rcx
-	movq	328(%rsp), %r8          # 8-byte Reload
-	cmoveq	%r9, %r8
-	movq	352(%rsp), %r14         # 8-byte Reload
-	cmoveq	%r9, %r14
-	movq	-8(%rsp), %rdx          # 8-byte Reload
-	cmoveq	%r9, %rdx
-	movq	%rdx, -8(%rsp)          # 8-byte Spill
-	movq	56(%rsp), %rdx          # 8-byte Reload
-	cmoveq	%r9, %rdx
-	movq	%rdx, 56(%rsp)          # 8-byte Spill
-	movq	(%rsp), %rdx            # 8-byte Reload
-	cmoveq	%r9, %rdx
-	movq	%rdx, (%rsp)            # 8-byte Spill
-	movq	-72(%rsp), %rdx         # 8-byte Reload
-	cmoveq	%r9, %rdx
-	movq	%rdx, -72(%rsp)         # 8-byte Spill
-	movq	64(%rsp), %rdx          # 8-byte Reload
-	cmoveq	%r9, %rdx
-	movq	%rdx, 64(%rsp)          # 8-byte Spill
-	movq	-16(%rsp), %rdx         # 8-byte Reload
-	cmoveq	%r9, %rdx
-	movq	%rdx, -16(%rsp)         # 8-byte Spill
-	cmoveq	%r9, %r13
-	movq	%r13, 72(%rsp)          # 8-byte Spill
-	movl	(%rcx), %ebx
-	movq	%rcx, %r13
-	movq	%rbx, %rcx
-	shrq	$24, %rcx
-	cmpq	$256, %rcx              # imm = 0x100
-	leaq	Te4(,%rcx,4), %rdx
-	movq	%r9, %rcx
-	cmovlq	%rdx, %rcx
-	testb	%r12b, %r12b
-	cmovneq	%rdx, %rcx
-	movzbl	%bl, %edx
-	cmpq	$256, %rdx              # imm = 0x100
-	leaq	Te4(,%rdx,4), %rbp
-	movq	%r9, %rdx
-	cmovlq	%rbp, %rdx
-	testb	%r12b, %r12b
-	cmovneq	%rbp, %rdx
-	movzbl	%bh, %ebp
-	cmpq	$256, %rbp              # imm = 0x100
-	leaq	Te4(,%rbp,4), %rbp
-	movq	%r9, %r10
-	cmovlq	%rbp, %r10
-	testb	%r12b, %r12b
-	cmovneq	%rbp, %r10
-	shrl	$16, %ebx
-	movzbl	%bl, %ebx
-	cmpq	$256, %rbx              # imm = 0x100
-	leaq	Te4(,%rbx,4), %rbx
-	movq	%r9, %rdi
-	cmovlq	%rbx, %rdi
-	testb	%r12b, %r12b
-	cmovneq	%rbx, %rdi
-	movzbl	2(%r10), %ebp
-	shll	$16, %ebp
-	movzbl	1(%rdx), %edx
-	shll	$8, %edx
-	xorl	%ebp, %edx
-	movzbl	(%rcx), %ebp
-	xorl	%edx, %ebp
-	movzbl	3(%rdi), %ecx
-	shll	$24, %ecx
-	xorl	(%r15), %ecx
-	xorl	%ecx, %ebp
-	xorl	$16777216, %ebp         # imm = 0x1000000
-	leal	1(%r12), %ecx
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %edx
-	negl	%edx
-	movl	16(%r15), %edi
-	andl	%edx, %edi
-	decl	%ecx
-	andl	%ecx, %ebp
-	orl	%edi, %ebp
-	movq	%rax, %r10
-	movl	%ebp, (%rax)
-	movq	448(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ebp
-	movl	20(%r15), %edi
-	andl	%edx, %edi
-	andl	%ecx, %ebp
-	orl	%edi, %ebp
-	movq	224(%rsp), %rax         # 8-byte Reload
-	movl	%ebp, (%rax)
-	movq	472(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %ebp
-	movl	24(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %ebp
-	orl	%esi, %ebp
-	movq	232(%rsp), %rax         # 8-byte Reload
-	movl	%ebp, (%rax)
-	xorl	(%r13), %ebp
-	movl	28(%r15), %eax
-	andl	%edx, %eax
-	andl	%ecx, %ebp
-	orl	%eax, %ebp
-	movq	240(%rsp), %rax         # 8-byte Reload
-	movl	%ebp, (%rax)
-	movl	(%r8), %eax
-	movq	%rax, %rsi
-	shrq	$24, %rsi
-	cmpq	$256, %rsi              # imm = 0x100
-	leaq	Te4(,%rsi,4), %rdi
-	movq	%r9, %rsi
-	cmovlq	%rdi, %rsi
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rsi
-	movzbl	%al, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r9, %rbp
-	cmovlq	%rdi, %rbp
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rbp
-	movzbl	%ah, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r9, %rbx
-	cmovlq	%rdi, %rbx
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rbx
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r9, %rdi
-	cmovlq	%rax, %rdi
-	testb	%r12b, %r12b
-	cmovneq	%rax, %rdi
-	movzbl	3(%rdi), %eax
-	shll	$24, %eax
-	xorl	(%r10), %eax
-	movzbl	2(%rbx), %edi
-	shll	$16, %edi
-	movzbl	1(%rbp), %ebp
-	shll	$8, %ebp
-	xorl	%edi, %ebp
-	movzbl	(%rsi), %esi
-	xorl	%ebp, %esi
-	xorl	%eax, %esi
-	xorl	$33554432, %esi         # imm = 0x2000000
-	movl	32(%r15), %eax
-	andl	%edx, %eax
-	andl	%ecx, %esi
-	orl	%eax, %esi
-	movl	%esi, (%r11)
-	movq	464(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %esi
-	movl	36(%r15), %eax
-	andl	%edx, %eax
-	andl	%ecx, %esi
-	orl	%eax, %esi
-	movq	248(%rsp), %rax         # 8-byte Reload
-	movl	%esi, (%rax)
-	movq	424(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %esi
-	movl	40(%r15), %eax
-	andl	%edx, %eax
-	andl	%ecx, %esi
-	orl	%eax, %esi
-	movq	256(%rsp), %rax         # 8-byte Reload
-	movl	%esi, (%rax)
-	xorl	(%r8), %esi
-	movl	44(%r15), %eax
-	andl	%edx, %eax
-	andl	%ecx, %esi
-	orl	%eax, %esi
-	movq	264(%rsp), %rax         # 8-byte Reload
-	movl	%esi, (%rax)
-	movl	(%r14), %eax
-	movq	%rax, %rsi
-	shrq	$24, %rsi
-	cmpq	$256, %rsi              # imm = 0x100
-	leaq	Te4(,%rsi,4), %rdi
-	movq	%r9, %rsi
-	cmovlq	%rdi, %rsi
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rsi
-	movzbl	%al, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r9, %rbp
-	cmovlq	%rdi, %rbp
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rbp
-	movzbl	%ah, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r9, %rbx
-	cmovlq	%rdi, %rbx
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rbx
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r9, %rdi
-	cmovlq	%rax, %rdi
-	testb	%r12b, %r12b
-	cmovneq	%rax, %rdi
-	movzbl	3(%rdi), %eax
-	shll	$24, %eax
-	xorl	(%r11), %eax
-	movzbl	2(%rbx), %edi
-	shll	$16, %edi
-	movzbl	1(%rbp), %ebp
-	shll	$8, %ebp
-	xorl	%edi, %ebp
-	movzbl	(%rsi), %esi
-	xorl	%ebp, %esi
-	xorl	%eax, %esi
-	xorl	$67108864, %esi         # imm = 0x4000000
-	movl	48(%r15), %eax
-	andl	%edx, %eax
-	andl	%ecx, %esi
-	orl	%eax, %esi
-	movq	416(%rsp), %r8          # 8-byte Reload
-	movl	%esi, (%r8)
-	movq	336(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %esi
-	movl	52(%r15), %eax
-	andl	%edx, %eax
-	andl	%ecx, %esi
-	orl	%eax, %esi
-	movq	272(%rsp), %rax         # 8-byte Reload
-	movl	%esi, (%rax)
-	movq	168(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %esi
-	movl	56(%r15), %eax
-	andl	%edx, %eax
-	andl	%ecx, %esi
-	orl	%eax, %esi
-	movq	280(%rsp), %rax         # 8-byte Reload
-	movl	%esi, (%rax)
-	xorl	(%r14), %esi
-	movl	60(%r15), %eax
-	andl	%edx, %eax
-	andl	%ecx, %esi
-	orl	%eax, %esi
-	movq	288(%rsp), %rax         # 8-byte Reload
-	movl	%esi, (%rax)
-	movq	-8(%rsp), %r10          # 8-byte Reload
-	movl	(%r10), %eax
-	movq	%rax, %rsi
-	shrq	$24, %rsi
-	cmpq	$256, %rsi              # imm = 0x100
-	leaq	Te4(,%rsi,4), %rdi
-	movq	%r9, %rsi
-	cmovlq	%rdi, %rsi
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rsi
-	movzbl	%al, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r9, %rbp
-	cmovlq	%rdi, %rbp
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rbp
-	movzbl	%ah, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r9, %rbx
-	cmovlq	%rdi, %rbx
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rbx
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r9, %rdi
-	cmovlq	%rax, %rdi
-	testb	%r12b, %r12b
-	cmovneq	%rax, %rdi
-	movzbl	3(%rdi), %eax
-	shll	$24, %eax
-	xorl	(%r8), %eax
-	movzbl	2(%rbx), %edi
-	shll	$16, %edi
-	movzbl	1(%rbp), %ebp
-	shll	$8, %ebp
-	xorl	%edi, %ebp
-	movzbl	(%rsi), %esi
-	xorl	%ebp, %esi
-	xorl	%eax, %esi
-	xorl	$134217728, %esi        # imm = 0x8000000
-	movl	64(%r15), %eax
-	andl	%edx, %eax
-	andl	%ecx, %esi
-	orl	%eax, %esi
-	movq	384(%rsp), %r8          # 8-byte Reload
-	movl	%esi, (%r8)
-	movq	368(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %esi
-	movl	68(%r15), %eax
-	andl	%edx, %eax
-	andl	%ecx, %esi
-	orl	%eax, %esi
-	movq	296(%rsp), %rax         # 8-byte Reload
-	movl	%esi, (%rax)
-	movq	360(%rsp), %rax         # 8-byte Reload
-	xorl	(%rax), %esi
-	movl	72(%r15), %eax
-	andl	%edx, %eax
-	andl	%ecx, %esi
-	orl	%eax, %esi
-	movq	304(%rsp), %rax         # 8-byte Reload
-	movl	%esi, (%rax)
-	xorl	(%r10), %esi
-	movl	76(%r15), %eax
-	andl	%edx, %eax
-	andl	%ecx, %esi
-	orl	%eax, %esi
-	movq	312(%rsp), %rax         # 8-byte Reload
-	movl	%esi, (%rax)
-	movq	56(%rsp), %r10          # 8-byte Reload
-	movl	(%r10), %ebx
-	movq	%rbx, %rax
-	shrq	$24, %rax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r9, %rsi
-	cmovlq	%rax, %rsi
-	testb	%r12b, %r12b
-	cmovneq	%rax, %rsi
-	movzbl	%bl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rdi
-	movq	%r9, %rax
-	cmovlq	%rdi, %rax
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rax
-	movzbl	%bh, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r9, %rbp
-	cmovlq	%rdi, %rbp
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rbp
-	shrl	$16, %ebx
-	movzbl	%bl, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r9, %rbx
-	cmovlq	%rdi, %rbx
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rbx
-	movzbl	3(%rbx), %edi
-	shll	$24, %edi
-	xorl	(%r8), %edi
-	movzbl	2(%rbp), %ebp
-	shll	$16, %ebp
-	movzbl	1(%rax), %ebx
-	shll	$8, %ebx
-	xorl	%ebp, %ebx
-	movzbl	(%rsi), %eax
-	xorl	%ebx, %eax
-	xorl	%edi, %eax
-	xorl	$268435456, %eax        # imm = 0x10000000
-	movl	80(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	152(%rsp), %r8          # 8-byte Reload
-	movl	%eax, (%r8)
-	movq	160(%rsp), %rsi         # 8-byte Reload
-	xorl	(%rsi), %eax
-	movl	84(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	-64(%rsp), %rsi         # 8-byte Reload
-	movl	%eax, (%rsi)
-	movq	440(%rsp), %rsi         # 8-byte Reload
-	xorl	(%rsi), %eax
-	movl	88(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	320(%rsp), %rsi         # 8-byte Reload
-	movl	%eax, (%rsi)
-	xorl	(%r10), %eax
-	movl	92(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	-40(%rsp), %rsi         # 8-byte Reload
-	movl	%eax, (%rsi)
-	movq	(%rsp), %r10            # 8-byte Reload
-	movl	(%r10), %ebx
-	movq	%rbx, %rax
-	shrq	$24, %rax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r9, %rsi
-	cmovlq	%rax, %rsi
-	testb	%r12b, %r12b
-	cmovneq	%rax, %rsi
-	movzbl	%bl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rdi
-	movq	%r9, %rax
-	cmovlq	%rdi, %rax
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rax
-	movzbl	%bh, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r9, %rbp
-	cmovlq	%rdi, %rbp
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rbp
-	shrl	$16, %ebx
-	movzbl	%bl, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r9, %rbx
-	cmovlq	%rdi, %rbx
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rbx
-	movzbl	3(%rbx), %edi
-	shll	$24, %edi
-	xorl	(%r8), %edi
-	movzbl	2(%rbp), %ebp
-	shll	$16, %ebp
-	movzbl	1(%rax), %ebx
-	shll	$8, %ebx
-	xorl	%ebp, %ebx
-	movzbl	(%rsi), %eax
-	xorl	%ebx, %eax
-	xorl	%edi, %eax
-	xorl	$536870912, %eax        # imm = 0x20000000
-	movl	96(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	-24(%rsp), %r8          # 8-byte Reload
-	movl	%eax, (%r8)
-	movq	200(%rsp), %rsi         # 8-byte Reload
-	xorl	(%rsi), %eax
-	movl	100(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	-32(%rsp), %rsi         # 8-byte Reload
-	movl	%eax, (%rsi)
-	movq	376(%rsp), %rsi         # 8-byte Reload
-	xorl	(%rsi), %eax
-	movl	104(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	-88(%rsp), %rsi         # 8-byte Reload
-	movl	%eax, (%rsi)
-	xorl	(%r10), %eax
-	movl	108(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	-80(%rsp), %rsi         # 8-byte Reload
-	movl	%eax, (%rsi)
-	movq	-72(%rsp), %r11         # 8-byte Reload
-	movl	(%r11), %ebx
-	movq	%rbx, %rax
-	shrq	$24, %rax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r9, %rsi
-	cmovlq	%rax, %rsi
-	testb	%r12b, %r12b
-	cmovneq	%rax, %rsi
-	movzbl	%bl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rdi
-	movq	%r9, %rax
-	cmovlq	%rdi, %rax
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rax
-	movzbl	%bh, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r9, %rbp
-	cmovlq	%rdi, %rbp
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rbp
-	shrl	$16, %ebx
-	movzbl	%bl, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r9, %rbx
-	cmovlq	%rdi, %rbx
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rbx
-	movzbl	3(%rbx), %edi
-	shll	$24, %edi
-	xorl	(%r8), %edi
-	movzbl	2(%rbp), %ebp
-	shll	$16, %ebp
-	movzbl	1(%rax), %ebx
-	shll	$8, %ebx
-	xorl	%ebp, %ebx
-	movzbl	(%rsi), %eax
-	xorl	%ebx, %eax
-	xorl	%edi, %eax
-	xorl	$1073741824, %eax       # imm = 0x40000000
-	movl	112(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	48(%rsp), %r10          # 8-byte Reload
-	movl	%eax, (%r10)
-	movq	344(%rsp), %rsi         # 8-byte Reload
-	xorl	(%rsi), %eax
-	movl	116(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	120(%rsp), %rsi         # 8-byte Reload
-	movl	%eax, (%rsi)
-	movq	184(%rsp), %rsi         # 8-byte Reload
-	xorl	(%rsi), %eax
-	movl	120(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	128(%rsp), %rsi         # 8-byte Reload
-	movl	%eax, (%rsi)
-	xorl	(%r11), %eax
-	movl	124(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	136(%rsp), %rsi         # 8-byte Reload
-	movl	%eax, (%rsi)
-	movq	64(%rsp), %r8           # 8-byte Reload
-	movl	(%r8), %ebx
-	movq	%rbx, %rax
-	shrq	$24, %rax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r9, %rsi
-	cmovlq	%rax, %rsi
-	testb	%r12b, %r12b
-	cmovneq	%rax, %rsi
-	movzbl	%bl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rdi
-	movq	%r9, %rax
-	cmovlq	%rdi, %rax
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rax
-	movzbl	%bh, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r9, %rbp
-	cmovlq	%rdi, %rbp
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rbp
-	shrl	$16, %ebx
-	movzbl	%bl, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r9, %rbx
-	cmovlq	%rdi, %rbx
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rbx
-	movzbl	3(%rbx), %edi
-	shll	$24, %edi
-	xorl	(%r10), %edi
-	movzbl	2(%rbp), %ebp
-	shll	$16, %ebp
-	movzbl	1(%rax), %ebx
-	shll	$8, %ebx
-	xorl	%ebp, %ebx
-	movzbl	(%rsi), %eax
-	xorl	%ebx, %eax
-	xorl	%edi, %eax
-	xorl	$-2147483648, %eax      # imm = 0x80000000
-	movl	128(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	400(%rsp), %r10         # 8-byte Reload
-	movl	%eax, (%r10)
-	movq	216(%rsp), %rsi         # 8-byte Reload
-	xorl	(%rsi), %eax
-	movl	132(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	144(%rsp), %rsi         # 8-byte Reload
-	movl	%eax, (%rsi)
-	movq	456(%rsp), %rsi         # 8-byte Reload
-	xorl	(%rsi), %eax
-	movl	136(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	-96(%rsp), %rsi         # 8-byte Reload
-	movl	%eax, (%rsi)
-	xorl	(%r8), %eax
-	movl	140(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	-120(%rsp), %rsi        # 8-byte Reload
-	movl	%eax, (%rsi)
-	movq	-16(%rsp), %r8          # 8-byte Reload
-	movl	(%r8), %ebx
-	movq	%rbx, %rax
-	shrq	$24, %rax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r9, %rsi
-	cmovlq	%rax, %rsi
-	testb	%r12b, %r12b
-	cmovneq	%rax, %rsi
-	movzbl	%bl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rdi
-	movq	%r9, %rax
-	cmovlq	%rdi, %rax
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rax
-	movzbl	%bh, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r9, %rbp
-	cmovlq	%rdi, %rbp
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rbp
-	shrl	$16, %ebx
-	movzbl	%bl, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r9, %rbx
-	cmovlq	%rdi, %rbx
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rbx
-	movzbl	3(%rbx), %edi
-	shll	$24, %edi
-	xorl	(%r10), %edi
-	movzbl	2(%rbp), %ebp
-	shll	$16, %ebp
-	movzbl	1(%rax), %ebx
-	shll	$8, %ebx
-	xorl	%ebp, %ebx
-	movzbl	(%rsi), %eax
-	xorl	%ebx, %eax
-	xorl	%edi, %eax
-	xorl	$452984832, %eax        # imm = 0x1B000000
-	movl	144(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	408(%rsp), %r10         # 8-byte Reload
-	movl	%eax, (%r10)
-	movq	80(%rsp), %rsi          # 8-byte Reload
-	xorl	(%rsi), %eax
-	movl	148(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	16(%rsp), %rsi          # 8-byte Reload
-	movl	%eax, (%rsi)
-	movq	40(%rsp), %rsi          # 8-byte Reload
-	xorl	(%rsi), %eax
-	movl	152(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	32(%rsp), %rsi          # 8-byte Reload
-	movl	%eax, (%rsi)
-	xorl	(%r8), %eax
-	movl	156(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	-128(%rsp), %rsi        # 8-byte Reload
-	movl	%eax, (%rsi)
-	movq	72(%rsp), %r8           # 8-byte Reload
-	movl	(%r8), %ebx
-	movq	%rbx, %rax
-	shrq	$24, %rax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rax
-	movq	%r9, %rsi
-	cmovlq	%rax, %rsi
-	testb	%r12b, %r12b
-	cmovneq	%rax, %rsi
-	movzbl	%bl, %eax
-	cmpq	$256, %rax              # imm = 0x100
-	leaq	Te4(,%rax,4), %rdi
-	movq	%r9, %rax
-	cmovlq	%rdi, %rax
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rax
-	movzbl	%bh, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	movq	%r9, %rbp
-	cmovlq	%rdi, %rbp
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %rbp
-	shrl	$16, %ebx
-	movzbl	%bl, %edi
-	cmpq	$256, %rdi              # imm = 0x100
-	leaq	Te4(,%rdi,4), %rdi
-	cmovlq	%rdi, %r9
-	testb	%r12b, %r12b
-	cmovneq	%rdi, %r9
-	movzbl	3(%r9), %edi
-	shll	$24, %edi
-	xorl	(%r10), %edi
-	movzbl	2(%rbp), %ebp
-	shll	$16, %ebp
-	movzbl	1(%rax), %ebx
-	shll	$8, %ebx
-	xorl	%ebp, %ebx
-	movzbl	(%rsi), %eax
-	xorl	%ebx, %eax
-	xorl	%edi, %eax
-	xorl	$905969664, %eax        # imm = 0x36000000
-	movl	160(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	392(%rsp), %rsi         # 8-byte Reload
-	movl	%eax, (%rsi)
-	movq	176(%rsp), %rsi         # 8-byte Reload
-	xorl	(%rsi), %eax
-	movl	164(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	8(%rsp), %rsi           # 8-byte Reload
-	movl	%eax, (%rsi)
-	movq	192(%rsp), %rsi         # 8-byte Reload
-	xorl	(%rsi), %eax
-	movl	168(%r15), %esi
-	andl	%edx, %esi
-	andl	%ecx, %eax
-	orl	%esi, %eax
-	movq	24(%rsp), %rsi          # 8-byte Reload
-	movl	%eax, (%rsi)
-	xorl	(%r8), %eax
-	andl	172(%r15), %edx
-	andl	%ecx, %eax
-	orl	%edx, %eax
-	movq	208(%rsp), %rcx         # 8-byte Reload
-	movl	%eax, (%rcx)
-	movb	-104(%rsp), %bl         # 1-byte Reload
-	andb	-99(%rsp), %bl
-	movzbl	-100(%rsp), %ecx
-	movl	%ecx, %eax
-	xorl	$1, %eax
-	leal	12(%rax,%rax), %eax
-	xorl	%edx, %edx
-	testb	%bl, %bl
-	cmovel	%eax, %edx
-	testb	%r12b, %r12b
-	movl	$10, %eax
-	cmovel	%edx, %eax
-	orb	%bl, %cl
-	movb	%r12b, 110(%rsp)
-	orb	%r12b, %cl
-	orb	-101(%rsp), %cl
-	andb	$1, %cl
-	movb	%cl, 103(%rsp)
-	addq	$1528, %rsp             # imm = 0x5F8
-	.cfi_def_cfa_offset 56
-	popq	%rbx
-	.cfi_def_cfa_offset 48
-	popq	%r12
-	.cfi_def_cfa_offset 40
-	popq	%r13
-	.cfi_def_cfa_offset 32
-	popq	%r14
-	.cfi_def_cfa_offset 24
-	popq	%r15
-	.cfi_def_cfa_offset 16
-	popq	%rbp
-	.cfi_def_cfa_offset 8
-	retq
-.Lfunc_end4:
-	.size	rijndaelKeySetupEnc, .Lfunc_end4-rijndaelKeySetupEnc
+	.size	init_dut, .Lfunc_end2-init_dut
 	.cfi_endproc
                                         # -- End function
 	.globl	prepare_inputs          # -- Begin function prepare_inputs
@@ -6295,11 +440,11 @@ prepare_inputs:                         # @prepare_inputs
 	callq	randombit
 	movb	%al, (%r14)
 	testb	%al, %al
-	jne	.LBB5_2
+	jne	.LBB3_2
 # %bb.1:
 	movq	$0, 8(%rbx)
 	movq	$0, (%rbx)
-.LBB5_2:
+.LBB3_2:
 	addq	$8, %rsp
 	.cfi_def_cfa_offset 24
 	popq	%rbx
@@ -6307,8 +452,4375 @@ prepare_inputs:                         # @prepare_inputs
 	popq	%r14
 	.cfi_def_cfa_offset 8
 	retq
-.Lfunc_end5:
-	.size	prepare_inputs, .Lfunc_end5-prepare_inputs
+.Lfunc_end3:
+	.size	prepare_inputs, .Lfunc_end3-prepare_inputs
+	.cfi_endproc
+                                        # -- End function
+	.globl	rijndaelKeySetupEnc     # -- Begin function rijndaelKeySetupEnc
+	.p2align	4, 0x90
+	.type	rijndaelKeySetupEnc,@function
+rijndaelKeySetupEnc:                    # @rijndaelKeySetupEnc
+	.cfi_startproc
+# %bb.0:                                # %.preheader8
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	pushq	%r15
+	.cfi_def_cfa_offset 24
+	pushq	%r14
+	.cfi_def_cfa_offset 32
+	pushq	%r13
+	.cfi_def_cfa_offset 40
+	pushq	%r12
+	.cfi_def_cfa_offset 48
+	pushq	%rbx
+	.cfi_def_cfa_offset 56
+	subq	$2016, %rsp             # imm = 0x7E0
+	.cfi_def_cfa_offset 2072
+	.cfi_offset %rbx, -56
+	.cfi_offset %r12, -48
+	.cfi_offset %r13, -40
+	.cfi_offset %r14, -32
+	.cfi_offset %r15, -24
+	.cfi_offset %rbp, -16
+	movl	%r8d, -16(%rsp)         # 4-byte Spill
+	movq	%rcx, 264(%rsp)         # 8-byte Spill
+	movq	%rdx, 272(%rsp)         # 8-byte Spill
+	movq	%rdi, %r14
+	leaq	28(%rdi), %rbx
+	leaq	44(%rdi), %r11
+	addq	$60, %rdi
+	leaq	76(%r14), %rdx
+	leaq	92(%r14), %r15
+	cmpq	$7, %rsi
+	leaq	2008(%rsp), %r8
+	movq	%r8, %rax
+	cmovgq	%rbx, %rax
+	movq	%rax, 240(%rsp)         # 8-byte Spill
+	movq	%rbx, %r12
+	movq	%rbx, -64(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%r11, %rax
+	movq	%r11, 72(%rsp)          # 8-byte Spill
+	movq	%rax, 1904(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rdi, %rax
+	movq	%rax, 512(%rsp)         # 8-byte Spill
+	movq	%rdi, %r9
+	movq	%r8, %rax
+	cmovgq	%rdx, %rax
+	movq	%rdx, %rbx
+	movq	%rdx, -56(%rsp)         # 8-byte Spill
+	movq	%rax, 504(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%r15, %rax
+	movq	%rax, 520(%rsp)         # 8-byte Spill
+	leaq	108(%r14), %rcx
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rcx, %rdx
+	movq	%rax, 1968(%rsp)        # 8-byte Spill
+	leaq	124(%r14), %r13
+	movq	%r8, %rax
+	cmovgq	%r13, %rax
+	movq	%r13, (%rsp)            # 8-byte Spill
+	movq	%rax, 288(%rsp)         # 8-byte Spill
+	leaq	140(%r14), %r10
+	movq	%r8, %rax
+	cmovgq	%r10, %rax
+	movq	%r10, 88(%rsp)          # 8-byte Spill
+	movq	%rax, 2000(%rsp)        # 8-byte Spill
+	leaq	156(%r14), %rcx
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rcx, %rbp
+	movq	%rax, 536(%rsp)         # 8-byte Spill
+	leaq	172(%r14), %rcx
+	movq	%rcx, -88(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 552(%rsp)         # 8-byte Spill
+	cmpq	$6, %rsi
+	leaq	168(%r14), %rcx
+	movq	%rcx, 128(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 792(%rsp)         # 8-byte Spill
+	cmpq	$6, %rsi
+	leaq	152(%r14), %rcx
+	movq	%rcx, -104(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 784(%rsp)         # 8-byte Spill
+	cmpq	$6, %rsi
+	leaq	136(%r14), %rcx
+	movq	%rcx, -112(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 1992(%rsp)        # 8-byte Spill
+	cmpq	$6, %rsi
+	leaq	120(%r14), %rcx
+	movq	%rcx, 80(%rsp)          # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 424(%rsp)         # 8-byte Spill
+	cmpq	$6, %rsi
+	leaq	104(%r14), %rcx
+	movq	%rcx, 56(%rsp)          # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 1952(%rsp)        # 8-byte Spill
+	cmpq	$6, %rsi
+	leaq	88(%r14), %rcx
+	movq	%rcx, 48(%rsp)          # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 696(%rsp)         # 8-byte Spill
+	cmpq	$1, %rsi
+	leaq	100(%r14), %rcx
+	movq	%rcx, -72(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 416(%rsp)         # 8-byte Spill
+	cmpq	$6, %rsi
+	leaq	72(%r14), %rcx
+	movq	%rcx, 64(%rsp)          # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 672(%rsp)         # 8-byte Spill
+	cmpq	$6, %rsi
+	leaq	56(%r14), %rcx
+	movq	%rcx, -24(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 640(%rsp)         # 8-byte Spill
+	cmpq	$6, %rsi
+	leaq	40(%r14), %rcx
+	movq	%rcx, -40(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 1896(%rsp)        # 8-byte Spill
+	cmpq	$6, %rsi
+	leaq	24(%r14), %rcx
+	movq	%rcx, 224(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 296(%rsp)         # 8-byte Spill
+	cmpq	$6, %rsi
+	leaq	184(%r14), %rcx
+	movq	%rcx, 216(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 1448(%rsp)        # 8-byte Spill
+	cmpq	$5, %rsi
+	leaq	180(%r14), %rcx
+	movq	%rcx, 136(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 1424(%rsp)        # 8-byte Spill
+	cmpq	$4, %rsi
+	leaq	176(%r14), %rdi
+	movq	%rdi, 200(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rdi, %rax
+	movq	%rax, 1400(%rsp)        # 8-byte Spill
+	cmpq	$3, %rsi
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 1848(%rsp)        # 8-byte Spill
+	leaq	12(%r14), %rcx
+	movq	%rcx, 384(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 376(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%r12, %rax
+	movq	%rax, 1880(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%r11, %rax
+	movq	%rax, 584(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%r9, %rax
+	movq	%r9, %r12
+	movq	%r9, 112(%rsp)          # 8-byte Spill
+	movq	%rax, 624(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rbx, %rax
+	movq	%rax, 664(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	movq	%r15, 184(%rsp)         # 8-byte Spill
+	cmovgq	%r15, %rax
+	movq	%rax, 688(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rdx, %rax
+	movq	%rdx, %r11
+	movq	%rdx, -80(%rsp)         # 8-byte Spill
+	movq	%rax, 408(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%r13, %rax
+	movq	%rax, 704(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%r10, %rax
+	movq	%rax, 736(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rbp, %rax
+	movq	%rbp, %r10
+	movq	%rbp, 24(%rsp)          # 8-byte Spill
+	movq	%rax, 776(%rsp)         # 8-byte Spill
+	cmpq	$11, %rsi
+	leaq	204(%r14), %rax
+	movq	%rax, 328(%rsp)         # 8-byte Spill
+	movq	%r8, %rcx
+	cmovgq	%rax, %rcx
+	movq	%rcx, 1392(%rsp)        # 8-byte Spill
+	leaq	236(%r14), %rbp
+	movq	%rbp, 1520(%rsp)        # 8-byte Spill
+	movq	%r8, %rcx
+	cmovgq	%rbp, %rcx
+	movq	%rcx, 1512(%rsp)        # 8-byte Spill
+	cmpq	$3, %rsi
+	movq	%r8, %rcx
+	cmovgq	%rax, %rcx
+	movq	%rcx, 1504(%rsp)        # 8-byte Spill
+	cmpq	$10, %rsi
+	leaq	200(%r14), %rcx
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 1368(%rsp)        # 8-byte Spill
+	movq	%rcx, %rbp
+	cmpq	$3, %rsi
+	movq	%r8, %rax
+	cmovgq	-88(%rsp), %rax         # 8-byte Folded Reload
+	movq	%rax, 1384(%rsp)        # 8-byte Spill
+	cmpq	$7, %rsi
+	leaq	196(%r14), %r9
+	movq	%r8, %rax
+	cmovgq	%r9, %rax
+	movq	%r9, 232(%rsp)          # 8-byte Spill
+	movq	%rax, 1840(%rsp)        # 8-byte Spill
+	cmpq	$5, %rsi
+	leaq	164(%r14), %rcx
+	movq	%rcx, 120(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 544(%rsp)         # 8-byte Spill
+	cmpq	$5, %rsi
+	leaq	148(%r14), %rcx
+	movq	%rcx, -96(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 752(%rsp)         # 8-byte Spill
+	cmpq	$5, %rsi
+	leaq	132(%r14), %rcx
+	movq	%rcx, 16(%rsp)          # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 1984(%rsp)        # 8-byte Spill
+	cmpq	$5, %rsi
+	movq	%r8, %rax
+	cmovgq	-72(%rsp), %rax         # 8-byte Folded Reload
+	movq	%rax, 1936(%rsp)        # 8-byte Spill
+	leaq	116(%r14), %rcx
+	movq	%rcx, 8(%rsp)           # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 336(%rsp)         # 8-byte Spill
+	cmpq	$5, %rsi
+	leaq	84(%r14), %rdi
+	movq	%r8, %rax
+	cmovgq	%rdi, %rax
+	movq	%rdi, 40(%rsp)          # 8-byte Spill
+	movq	%rax, 680(%rsp)         # 8-byte Spill
+	cmpq	$5, %rsi
+	leaq	68(%r14), %rdx
+	movq	%r8, %rax
+	cmovgq	%rdx, %rax
+	movq	%rdx, 32(%rsp)          # 8-byte Spill
+	movq	%rax, 496(%rsp)         # 8-byte Spill
+	cmpq	$5, %rsi
+	leaq	52(%r14), %rcx
+	movq	%rcx, -32(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 600(%rsp)         # 8-byte Spill
+	cmpq	$5, %rsi
+	leaq	36(%r14), %rcx
+	movq	%rcx, -48(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 1888(%rsp)        # 8-byte Spill
+	cmpq	$5, %rsi
+	leaq	20(%r14), %rcx
+	movq	%rcx, 144(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 280(%rsp)         # 8-byte Spill
+	cmpq	$11, %rsi
+	movq	%r8, %rax
+	cmovgq	%rdx, %rax
+	movq	%rax, 1584(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%r15, %rax
+	movq	%rax, 1648(%rsp)        # 8-byte Spill
+	cmpq	$10, %rsi
+	movq	%r8, %rax
+	movq	48(%rsp), %rbx          # 8-byte Reload
+	cmovgq	%rbx, %rax
+	movq	%rax, 1640(%rsp)        # 8-byte Spill
+	cmpq	$10, %rsi
+	leaq	64(%r14), %rcx
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 1568(%rsp)        # 8-byte Spill
+	movq	%rcx, %rdx
+	movq	%rcx, 192(%rsp)         # 8-byte Spill
+	cmpq	$9, %rsi
+	movq	%r8, %rax
+	cmovgq	%r9, %rax
+	movq	%rax, 1352(%rsp)        # 8-byte Spill
+	leaq	228(%r14), %rcx
+	movq	%rcx, 1464(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 1456(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%r12, %rax
+	movq	%rax, 1552(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rdi, %rax
+	movq	%rax, 1632(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%r11, %rax
+	movq	%rax, 1680(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%r10, %rax
+	movq	%rax, 1768(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	136(%rsp), %rax         # 8-byte Folded Reload
+	movq	%rax, 1800(%rsp)        # 8-byte Spill
+	cmpq	$2, %rsi
+	movq	%r8, %rax
+	movq	200(%rsp), %r13         # 8-byte Reload
+	cmovgq	%r13, %rax
+	movq	%rax, 1832(%rsp)        # 8-byte Spill
+	leaq	8(%r14), %rcx
+	movq	%rcx, 368(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 360(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	224(%rsp), %rax         # 8-byte Folded Reload
+	movq	%rax, 1872(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	movq	-40(%rsp), %r10         # 8-byte Reload
+	cmovgq	%r10, %rax
+	movq	%rax, 576(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	movq	-24(%rsp), %rcx         # 8-byte Reload
+	cmovgq	%rcx, %rax
+	movq	%rax, 616(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	64(%rsp), %rax          # 8-byte Folded Reload
+	movq	%rax, 656(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rbx, %rax
+	movq	%rax, 1928(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	movq	56(%rsp), %rdi          # 8-byte Reload
+	cmovgq	%rdi, %rax
+	movq	%rax, 400(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	80(%rsp), %rax          # 8-byte Folded Reload
+	movq	%rax, 1976(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	-112(%rsp), %rax        # 8-byte Folded Reload
+	movq	%rax, 728(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	movq	-104(%rsp), %r11        # 8-byte Reload
+	cmovgq	%r11, %rax
+	movq	%rax, 768(%rsp)         # 8-byte Spill
+	cmpq	$8, %rsi
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 1528(%rsp)        # 8-byte Spill
+	leaq	80(%r14), %rcx
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 1608(%rsp)        # 8-byte Spill
+	movq	%rcx, %rbx
+	movq	%rcx, -8(%rsp)          # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rdi, %rax
+	movq	%rax, 1656(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%r11, %rax
+	movq	%rax, 1760(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%r13, %rax
+	movq	%rax, 1776(%rsp)        # 8-byte Spill
+	cmpq	$2, %rsi
+	movq	%r8, %rax
+	movq	128(%rsp), %r11         # 8-byte Reload
+	cmovgq	%r11, %rax
+	movq	%rax, 1320(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rbp, %rax
+	movq	%rbp, 320(%rsp)         # 8-byte Spill
+	movq	%rax, 1408(%rsp)        # 8-byte Spill
+	cmpq	$6, %rsi
+	leaq	192(%r14), %rcx
+	movq	%rcx, 312(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 1824(%rsp)        # 8-byte Spill
+	cmpq	$1, %rsi
+	movq	%r8, %rax
+	movq	-88(%rsp), %r15         # 8-byte Reload
+	cmovgq	%r15, %rax
+	movq	%rax, 1816(%rsp)        # 8-byte Spill
+	cmpq	$5, %rsi
+	leaq	188(%r14), %rcx
+	movq	%rcx, 304(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 1784(%rsp)        # 8-byte Spill
+	cmpq	$4, %rsi
+	leaq	160(%r14), %rcx
+	movq	%rcx, 168(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 760(%rsp)         # 8-byte Spill
+	cmpq	$4, %rsi
+	leaq	144(%r14), %rcx
+	movq	%rcx, 152(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 720(%rsp)         # 8-byte Spill
+	cmpq	$4, %rsi
+	leaq	128(%r14), %r13
+	movq	%r8, %rax
+	cmovgq	%r13, %rax
+	movq	%rax, 1960(%rsp)        # 8-byte Spill
+	cmpq	$4, %rsi
+	leaq	112(%r14), %rcx
+	movq	%rcx, 160(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 392(%rsp)         # 8-byte Spill
+	cmpq	$4, %rsi
+	movq	%r8, %rax
+	cmovgq	%rdx, %rax
+	movq	%rax, 608(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rbx, %rax
+	movq	%rax, 648(%rsp)         # 8-byte Spill
+	leaq	96(%r14), %rax
+	movq	%rax, 176(%rsp)         # 8-byte Spill
+	movq	%r8, %rcx
+	cmovgq	%rax, %rcx
+	movq	%rcx, 1920(%rsp)        # 8-byte Spill
+	cmpq	$4, %rsi
+	leaq	48(%r14), %rax
+	movq	%rax, 96(%rsp)          # 8-byte Spill
+	movq	%r8, %rcx
+	cmovgq	%rax, %rcx
+	movq	%rcx, 568(%rsp)         # 8-byte Spill
+	cmpq	$4, %rsi
+	leaq	32(%r14), %rdi
+	movq	%r8, %rcx
+	cmovgq	%rdi, %rcx
+	movq	%rcx, 1864(%rsp)        # 8-byte Spill
+	movq	%rdi, 208(%rsp)         # 8-byte Spill
+	cmpq	$4, %rsi
+	leaq	16(%r14), %rax
+	movq	%rax, 256(%rsp)         # 8-byte Spill
+	movq	%r8, %rcx
+	cmovgq	%rax, %rcx
+	movq	%rcx, 248(%rsp)         # 8-byte Spill
+	cmpq	$1, %rsi
+	movq	%r8, %rax
+	cmovgq	144(%rsp), %rax         # 8-byte Folded Reload
+	movq	%rax, 1856(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	movq	-48(%rsp), %rdx         # 8-byte Reload
+	cmovgq	%rdx, %rax
+	movq	%rax, 560(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	movq	-32(%rsp), %r9          # 8-byte Reload
+	cmovgq	%r9, %rax
+	movq	%rax, 592(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	movq	32(%rsp), %r12          # 8-byte Reload
+	cmovgq	%r12, %rax
+	movq	%rax, 632(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	40(%rsp), %rax          # 8-byte Folded Reload
+	movq	%rax, 1912(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	8(%rsp), %rax           # 8-byte Folded Reload
+	movq	%rax, 1944(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	movq	16(%rsp), %rbx          # 8-byte Reload
+	cmovgq	%rbx, %rax
+	movq	%rax, 712(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	-96(%rsp), %rax         # 8-byte Folded Reload
+	movq	%rax, 744(%rsp)         # 8-byte Spill
+	cmpq	$1, %rsi
+	leaq	4(%r14), %rcx
+	movq	%rcx, 352(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 344(%rsp)         # 8-byte Spill
+	cmpq	$9, %rsi
+	movq	%r8, %rax
+	cmovgq	328(%rsp), %rax         # 8-byte Folded Reload
+	movq	%rax, 1808(%rsp)        # 8-byte Spill
+	cmpq	$11, %rsi
+	movq	%r8, %rax
+	cmovgq	%r15, %rax
+	movq	%rax, 1216(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	72(%rsp), %rax          # 8-byte Folded Reload
+	movq	%rax, 480(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	88(%rsp), %rax          # 8-byte Folded Reload
+	movq	%rax, 448(%rsp)         # 8-byte Spill
+	cmpq	$10, %rsi
+	movq	%r8, %rax
+	cmovgq	%r11, %rax
+	movq	%rax, 1208(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%r10, %rax
+	movq	%rax, 472(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	-112(%rsp), %rax        # 8-byte Folded Reload
+	movq	%rax, 440(%rsp)         # 8-byte Spill
+	cmpq	$9, %rsi
+	movq	%r8, %rax
+	movq	120(%rsp), %r15         # 8-byte Reload
+	cmovgq	%r15, %rax
+	movq	%rax, 1192(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rdx, %rax
+	movq	%rax, 464(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rbx, %rax
+	movq	%rax, 432(%rsp)         # 8-byte Spill
+	cmpq	$8, %rsi
+	movq	%r8, %rax
+	cmovgq	%rdi, %rax
+	movq	%rax, 456(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	movq	%r13, 104(%rsp)         # 8-byte Spill
+	cmovgq	%r13, %rax
+	movq	%rax, 528(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rbp, %rax
+	movq	%rax, 1792(%rsp)        # 8-byte Spill
+	cmpq	$8, %rsi
+	movq	%r8, %rax
+	movq	168(%rsp), %r13         # 8-byte Reload
+	cmovgq	%r13, %rax
+	movq	%rax, 1184(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	312(%rsp), %rax         # 8-byte Folded Reload
+	movq	%rax, 1288(%rsp)        # 8-byte Spill
+	leaq	224(%r14), %rcx
+	movq	%rcx, 1360(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 1376(%rsp)        # 8-byte Spill
+	cmpq	$15, %rsi
+	movq	%r8, %rax
+	cmovgq	112(%rsp), %rax         # 8-byte Folded Reload
+	movq	%rax, 992(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	movq	184(%rsp), %r10         # 8-byte Reload
+	cmovgq	%r10, %rax
+	movq	%rax, 1056(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	(%rsp), %rax            # 8-byte Folded Reload
+	movq	%rax, 1120(%rsp)        # 8-byte Spill
+	cmpq	$14, %rsi
+	movq	%r8, %rax
+	cmovgq	-24(%rsp), %rax         # 8-byte Folded Reload
+	movq	%rax, 984(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	movq	48(%rsp), %rbp          # 8-byte Reload
+	cmovgq	%rbp, %rax
+	movq	%rax, 1048(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	80(%rsp), %rax          # 8-byte Folded Reload
+	movq	%rax, 1112(%rsp)        # 8-byte Spill
+	cmpq	$13, %rsi
+	movq	%r8, %rax
+	movq	%r9, %r11
+	cmovgq	%r9, %rax
+	movq	%rax, 976(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	movq	40(%rsp), %r9           # 8-byte Reload
+	cmovgq	%r9, %rax
+	movq	%rax, 1040(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	movq	8(%rsp), %rcx           # 8-byte Reload
+	cmovgq	%rcx, %rax
+	movq	%rax, 1104(%rsp)        # 8-byte Spill
+	cmpq	$12, %rsi
+	movq	%r8, %rax
+	cmovgq	96(%rsp), %rax          # 8-byte Folded Reload
+	movq	%rax, 968(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	-8(%rsp), %rax          # 8-byte Folded Reload
+	movq	%rax, 1032(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	movq	160(%rsp), %rdi         # 8-byte Reload
+	cmovgq	%rdi, %rax
+	movq	%rax, 1096(%rsp)        # 8-byte Spill
+	cmpq	$11, %rsi
+	movq	%r8, %rax
+	cmovgq	-56(%rsp), %rax         # 8-byte Folded Reload
+	movq	%rax, 1024(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	-80(%rsp), %rax         # 8-byte Folded Reload
+	movq	%rax, 1088(%rsp)        # 8-byte Spill
+	cmpq	$10, %rsi
+	movq	%r8, %rax
+	cmovgq	64(%rsp), %rax          # 8-byte Folded Reload
+	movq	%rax, 1016(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	56(%rsp), %rax          # 8-byte Folded Reload
+	movq	%rax, 1080(%rsp)        # 8-byte Spill
+	cmpq	$9, %rsi
+	movq	%r8, %rax
+	cmovgq	%r12, %rax
+	movq	%rax, 1008(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	movq	-72(%rsp), %rdx         # 8-byte Reload
+	cmovgq	%rdx, %rax
+	movq	%rax, 1072(%rsp)        # 8-byte Spill
+	cmpq	$8, %rsi
+	movq	%r8, %rax
+	cmovgq	192(%rsp), %rax         # 8-byte Folded Reload
+	movq	%rax, 1000(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	movq	176(%rsp), %r12         # 8-byte Reload
+	cmovgq	%r12, %rax
+	movq	%rax, 1064(%rsp)        # 8-byte Spill
+	setg	-118(%rsp)              # 1-byte Folded Spill
+	cmpq	$11, %rsi
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 1624(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%r15, %rax
+	movq	%rax, 1736(%rsp)        # 8-byte Spill
+	cmpq	$10, %rsi
+	movq	%r8, %rax
+	cmovgq	%rdi, %rax
+	movq	%rax, 1616(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%r13, %rax
+	movq	%rax, 1728(%rsp)        # 8-byte Spill
+	cmpq	$5, %rsi
+	movq	%r8, %rax
+	cmovgq	72(%rsp), %rax          # 8-byte Folded Reload
+	movq	%rax, 1416(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%r10, %rax
+	movq	%rax, 488(%rsp)         # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	88(%rsp), %rax          # 8-byte Folded Reload
+	movq	%rax, 1664(%rsp)        # 8-byte Spill
+	cmpq	$4, %rsi
+	movq	%r8, %rax
+	cmovgq	-40(%rsp), %rax         # 8-byte Folded Reload
+	movq	%rax, 1496(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rbp, %rax
+	movq	%rax, 1600(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	-112(%rsp), %rax        # 8-byte Folded Reload
+	movq	%rax, 1720(%rsp)        # 8-byte Spill
+	setg	-114(%rsp)              # 1-byte Folded Spill
+	cmpq	$3, %rsi
+	movq	%r8, %rax
+	cmovgq	-48(%rsp), %rax         # 8-byte Folded Reload
+	movq	%rax, 1488(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%r9, %rax
+	movq	%rax, 1592(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rbx, %rax
+	movq	%rax, 1712(%rsp)        # 8-byte Spill
+	cmpq	$7, %rsi
+	movq	%r8, %rax
+	cmovgq	%r11, %rax
+	movq	%rax, 1480(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rdx, %rax
+	movq	%rax, 1576(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	movq	-96(%rsp), %r9          # 8-byte Reload
+	cmovgq	%r9, %rax
+	movq	%rax, 1704(%rsp)        # 8-byte Spill
+	cmpq	$1, %rsi
+	movq	%r8, %rax
+	cmovgq	232(%rsp), %rax         # 8-byte Folded Reload
+	movq	%rax, 1328(%rsp)        # 8-byte Spill
+	cmpq	$7, %rsi
+	movq	%r8, %rax
+	movq	304(%rsp), %rdx         # 8-byte Reload
+	cmovgq	%rdx, %rax
+	movq	%rax, 1224(%rsp)        # 8-byte Spill
+	leaq	220(%r14), %rax
+	movq	%r8, %rcx
+	cmovgq	%rax, %rcx
+	movq	%rcx, 1312(%rsp)        # 8-byte Spill
+	movq	%rax, %rdi
+	movq	%rax, 1296(%rsp)        # 8-byte Spill
+	cmpq	$11, %rsi
+	movq	%r8, %rax
+	cmovgq	%rdx, %rax
+	movq	%rax, 1752(%rsp)        # 8-byte Spill
+	cmpq	$10, %rsi
+	movq	%r8, %rax
+	movq	216(%rsp), %rbx         # 8-byte Reload
+	cmovgq	%rbx, %rax
+	movq	%rax, 1744(%rsp)        # 8-byte Spill
+	cmpq	$10, %rsi
+	leaq	232(%r14), %rcx
+	movq	%rcx, 1344(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 1336(%rsp)        # 8-byte Spill
+	cmpq	$2, %rsi
+	movq	%r8, %rax
+	cmovgq	208(%rsp), %rax         # 8-byte Folded Reload
+	movq	%rax, 1472(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	-8(%rsp), %rax          # 8-byte Folded Reload
+	movq	%rax, 1560(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	104(%rsp), %rax         # 8-byte Folded Reload
+	movq	%rax, 1696(%rsp)        # 8-byte Spill
+	cmpq	$6, %rsi
+	movq	%r8, %rax
+	cmovgq	96(%rsp), %rax          # 8-byte Folded Reload
+	movq	%rax, 1440(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%r12, %rax
+	movq	%rax, 1544(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	movq	152(%rsp), %rbp         # 8-byte Reload
+	cmovgq	%rbp, %rax
+	movq	%rax, 1688(%rsp)        # 8-byte Spill
+	setg	-117(%rsp)              # 1-byte Folded Spill
+	cmpq	$1, %rsi
+	movq	%r8, %rax
+	cmovgq	%r15, %rax
+	movq	%rax, 1232(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	-64(%rsp), %rax         # 8-byte Folded Reload
+	movq	%rax, 1432(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	-56(%rsp), %rax         # 8-byte Folded Reload
+	movq	%rax, 1536(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	(%rsp), %rax            # 8-byte Folded Reload
+	movq	%rax, 1672(%rsp)        # 8-byte Spill
+	cmpq	$15, %rsi
+	movq	%r8, %rax
+	cmovgq	24(%rsp), %rax          # 8-byte Folded Reload
+	movq	%rax, 1152(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rdx, %rax
+	movq	%rax, 1200(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rdi, %rax
+	movq	%rax, 1304(%rsp)        # 8-byte Spill
+	cmpq	$14, %rsi
+	movq	%r8, %rax
+	cmovgq	-104(%rsp), %rax        # 8-byte Folded Reload
+	movq	%rax, 1144(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rbx, %rax
+	movq	%rax, 1176(%rsp)        # 8-byte Spill
+	leaq	216(%r14), %rcx
+	movq	%rcx, 1280(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 1272(%rsp)        # 8-byte Spill
+	cmpq	$13, %rsi
+	movq	%r8, %rax
+	cmovgq	%r9, %rax
+	movq	%rax, 1136(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	136(%rsp), %rax         # 8-byte Folded Reload
+	movq	%rax, 1168(%rsp)        # 8-byte Spill
+	leaq	212(%r14), %rcx
+	movq	%rcx, 1264(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 1256(%rsp)        # 8-byte Spill
+	cmpq	$12, %rsi
+	movq	%r8, %rax
+	cmovgq	%rbp, %rax
+	movq	%rax, 1128(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	200(%rsp), %rax         # 8-byte Folded Reload
+	movq	%rax, 1160(%rsp)        # 8-byte Spill
+	leaq	208(%r14), %rcx
+	movq	%rcx, 1248(%rsp)        # 8-byte Spill
+	movq	%r8, %rax
+	cmovgq	%rcx, %rax
+	movq	%rax, 1240(%rsp)        # 8-byte Spill
+	movq	264(%rsp), %rcx         # 8-byte Reload
+	cmpq	$3, %rcx
+	movq	272(%rsp), %rax         # 8-byte Reload
+	leaq	19(%rax), %rdx
+	movq	%rdx, 832(%rsp)         # 8-byte Spill
+	movq	%r8, %r9
+	cmovgq	%rdx, %r9
+	leaq	23(%rax), %rdx
+	movq	%rdx, 856(%rsp)         # 8-byte Spill
+	movq	%r8, %r12
+	cmovgq	%rdx, %r12
+	leaq	27(%rax), %rsi
+	movq	%rsi, 920(%rsp)         # 8-byte Spill
+	movq	%r8, %rdx
+	cmovgq	%rsi, %rdx
+	movq	%rdx, 928(%rsp)         # 8-byte Spill
+	leaq	31(%rax), %rsi
+	movq	%rsi, 952(%rsp)         # 8-byte Spill
+	movq	%r8, %rdx
+	cmovgq	%rsi, %rdx
+	movq	%rdx, 960(%rsp)         # 8-byte Spill
+	cmpq	$2, %rcx
+	leaq	18(%rax), %rdx
+	movq	%rdx, 816(%rsp)         # 8-byte Spill
+	movq	%r8, %rdi
+	cmovgq	%rdx, %rdi
+	leaq	22(%rax), %rdx
+	movq	%rdx, 840(%rsp)         # 8-byte Spill
+	movq	%r8, %r11
+	cmovgq	%rdx, %r11
+	leaq	26(%rax), %rsi
+	movq	%rsi, 872(%rsp)         # 8-byte Spill
+	movq	%r8, %rdx
+	cmovgq	%rsi, %rdx
+	movq	%rdx, 880(%rsp)         # 8-byte Spill
+	leaq	30(%rax), %rsi
+	movq	%rsi, 936(%rsp)         # 8-byte Spill
+	movq	%r8, %rdx
+	cmovgq	%rsi, %rdx
+	movq	%rdx, 944(%rsp)         # 8-byte Spill
+	cmpq	$1, %rcx
+	leaq	17(%rax), %rsi
+	movq	%rsi, 800(%rsp)         # 8-byte Spill
+	movq	%r8, %rdx
+	cmovgq	%rsi, %rdx
+	leaq	21(%rax), %rsi
+	movq	%rsi, 824(%rsp)         # 8-byte Spill
+	movq	%r8, %r10
+	cmovgq	%rsi, %r10
+	leaq	25(%rax), %rsi
+	movq	%rsi, 864(%rsp)         # 8-byte Spill
+	movq	%r8, %r13
+	cmovgq	%rsi, %r13
+	leaq	29(%rax), %rbx
+	movq	%rbx, 912(%rsp)         # 8-byte Spill
+	movq	%r8, %rsi
+	cmovgq	%rbx, %rsi
+	movq	%rsi, 904(%rsp)         # 8-byte Spill
+	testq	%rcx, %rcx
+	leaq	28(%rax), %rbx
+	movq	%rbx, 888(%rsp)         # 8-byte Spill
+	movq	%r8, %rsi
+	cmovgq	%rbx, %rsi
+	movq	%rsi, 896(%rsp)         # 8-byte Spill
+	testq	%rcx, %rcx
+	leaq	24(%rax), %rsi
+	movq	%rsi, 848(%rsp)         # 8-byte Spill
+	movq	%r8, %rbx
+	cmovgq	%rsi, %rbx
+	testq	%rcx, %rcx
+	leaq	20(%rax), %rbp
+	movq	%rbp, 808(%rsp)         # 8-byte Spill
+	movq	%r8, %rsi
+	cmovgq	%rbp, %rsi
+	testq	%rcx, %rcx
+	movb	$1, -113(%rsp)
+	movl	(%rax), %ebp
+	bswapl	%ebp
+	movl	%ebp, (%r14)
+	movl	4(%rax), %ebp
+	bswapl	%ebp
+	movl	%ebp, 4(%r14)
+	movl	8(%rax), %ebp
+	bswapl	%ebp
+	movl	%ebp, 8(%r14)
+	movl	12(%rax), %ebp
+	bswapl	%ebp
+	movl	%ebp, 12(%r14)
+	leaq	16(%rax), %rbp
+	movq	%r8, %rax
+	cmovgq	%rbp, %rax
+	movl	-16(%rsp), %r15d        # 4-byte Reload
+	cmpl	$128, %r15d
+	sete	272(%rsp)               # 1-byte Folded Spill
+	setne	%cl
+	andb	-113(%rsp), %cl
+	cmovneq	%rbp, %rax
+	cmovneq	800(%rsp), %rdx         # 8-byte Folded Reload
+	cmovneq	816(%rsp), %rdi         # 8-byte Folded Reload
+	cmovneq	832(%rsp), %r9          # 8-byte Folded Reload
+	movb	%cl, -115(%rsp)
+	movzbl	(%rax), %eax
+	movzbl	(%rdx), %edx
+	shll	$24, %eax
+	shll	$16, %edx
+	orl	%eax, %edx
+	movzbl	(%rdi), %eax
+	shll	$8, %eax
+	orl	%edx, %eax
+	movzbl	(%r9), %edx
+	orl	%eax, %edx
+	testb	%cl, %cl
+	movq	248(%rsp), %rax         # 8-byte Reload
+	cmovneq	256(%rsp), %rax         # 8-byte Folded Reload
+	cmovel	16(%r14), %edx
+	movl	%edx, (%rax)
+	movb	-115(%rsp), %al
+	testb	%al, %al
+	cmovneq	808(%rsp), %rsi         # 8-byte Folded Reload
+	cmovneq	824(%rsp), %r10         # 8-byte Folded Reload
+	cmovneq	840(%rsp), %r11         # 8-byte Folded Reload
+	cmovneq	856(%rsp), %r12         # 8-byte Folded Reload
+	movzbl	(%rsi), %ecx
+	movzbl	(%r10), %edx
+	shll	$24, %ecx
+	shll	$16, %edx
+	orl	%ecx, %edx
+	movzbl	(%r11), %ecx
+	shll	$8, %ecx
+	orl	%edx, %ecx
+	movzbl	(%r12), %edx
+	orl	%ecx, %edx
+	testb	%al, %al
+	movq	280(%rsp), %r12         # 8-byte Reload
+	movq	%r12, %rax
+	cmovneq	144(%rsp), %rax         # 8-byte Folded Reload
+	cmovel	20(%r14), %edx
+	movl	%edx, (%rax)
+	cmpl	$192, %r15d
+	sete	264(%rsp)               # 1-byte Folded Spill
+	setne	%cl
+	andb	-115(%rsp), %cl
+	cmovneq	848(%rsp), %rbx         # 8-byte Folded Reload
+	cmovneq	864(%rsp), %r13         # 8-byte Folded Reload
+	movq	880(%rsp), %rdi         # 8-byte Reload
+	cmovneq	872(%rsp), %rdi         # 8-byte Folded Reload
+	movq	928(%rsp), %rax         # 8-byte Reload
+	cmovneq	920(%rsp), %rax         # 8-byte Folded Reload
+	movb	%cl, -116(%rsp)
+	movzbl	(%rbx), %edx
+	movzbl	(%r13), %esi
+	shll	$24, %edx
+	shll	$16, %esi
+	orl	%edx, %esi
+	movzbl	(%rdi), %edx
+	shll	$8, %edx
+	orl	%esi, %edx
+	movzbl	(%rax), %esi
+	orl	%edx, %esi
+	testb	%cl, %cl
+	movq	296(%rsp), %r9          # 8-byte Reload
+	movq	%r9, %rcx
+	movq	224(%rsp), %r11         # 8-byte Reload
+	cmovneq	%r11, %rcx
+	cmovel	24(%r14), %esi
+	movl	%esi, (%rcx)
+	movb	-116(%rsp), %cl
+	testb	%cl, %cl
+	movq	896(%rsp), %rdx         # 8-byte Reload
+	cmovneq	888(%rsp), %rdx         # 8-byte Folded Reload
+	movq	904(%rsp), %rsi         # 8-byte Reload
+	cmovneq	912(%rsp), %rsi         # 8-byte Folded Reload
+	movq	944(%rsp), %rdi         # 8-byte Reload
+	cmovneq	936(%rsp), %rdi         # 8-byte Folded Reload
+	movq	960(%rsp), %rax         # 8-byte Reload
+	cmovneq	952(%rsp), %rax         # 8-byte Folded Reload
+	movzbl	(%rdx), %edx
+	movzbl	(%rsi), %esi
+	shll	$24, %edx
+	shll	$16, %esi
+	orl	%edx, %esi
+	movzbl	(%rdi), %edx
+	shll	$8, %edx
+	orl	%esi, %edx
+	movzbl	(%rax), %esi
+	orl	%edx, %esi
+	testb	%cl, %cl
+	movq	240(%rsp), %rdi         # 8-byte Reload
+	movq	%rdi, %rcx
+	movq	-64(%rsp), %rax         # 8-byte Reload
+	cmovneq	%rax, %rcx
+	cmovel	28(%r14), %esi
+	movl	%esi, (%rcx)
+	cmpl	$256, %r15d             # imm = 0x100
+	setne	-16(%rsp)               # 1-byte Folded Spill
+	sete	%dl
+	andb	-116(%rsp), %dl
+	movb	%dl, -121(%rsp)
+	movq	%rdi, %rcx
+	cmovneq	%rax, %rcx
+	movl	(%rcx), %ecx
+	movq	%rcx, %rsi
+	shrq	$24, %rsi
+	cmpq	$256, %rsi              # imm = 0x100
+	leaq	Te4(,%rsi,4), %rdi
+	movq	%r8, %rsi
+	cmovlq	%rdi, %rsi
+	testb	%dl, %dl
+	cmovneq	%rdi, %rsi
+	movzbl	%cl, %edi
+	cmpq	$256, %rdi              # imm = 0x100
+	leaq	Te4(,%rdi,4), %rbp
+	movq	%r8, %rdi
+	cmovlq	%rbp, %rdi
+	testb	%dl, %dl
+	cmovneq	%rbp, %rdi
+	movzbl	%ch, %ebx
+	cmpq	$256, %rbx              # imm = 0x100
+	leaq	Te4(,%rbx,4), %rbp
+	movq	%r8, %rbx
+	cmovlq	%rbp, %rbx
+	testb	%dl, %dl
+	cmovneq	%rbp, %rbx
+	shrl	$16, %ecx
+	movzbl	%cl, %ecx
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te4(,%rcx,4), %rcx
+	movq	%r8, %rbp
+	cmovlq	%rcx, %rbp
+	testb	%dl, %dl
+	cmovneq	%rcx, %rbp
+	movzbl	2(%rbx), %ecx
+	shll	$16, %ecx
+	movzbl	1(%rdi), %edi
+	shll	$8, %edi
+	xorl	%ecx, %edi
+	movzbl	(%rsi), %ecx
+	xorl	%edi, %ecx
+	movzbl	3(%rbp), %esi
+	shll	$24, %esi
+	xorl	(%r14), %esi
+	xorl	%esi, %ecx
+	xorl	$16777216, %ecx         # imm = 0x1000000
+	testb	%dl, %dl
+	movq	456(%rsp), %rsi         # 8-byte Reload
+	movq	%rsi, %rdx
+	movq	208(%rsp), %r10         # 8-byte Reload
+	cmovneq	%r10, %rdx
+	cmovel	32(%r14), %ecx
+	movl	%ecx, (%rdx)
+	movb	-121(%rsp), %cl
+	testb	%cl, %cl
+	movq	344(%rsp), %rdx         # 8-byte Reload
+	cmovneq	352(%rsp), %rdx         # 8-byte Folded Reload
+	movl	(%rdx), %edx
+	cmovneq	%r10, %rsi
+	xorl	(%rsi), %edx
+	testb	%cl, %cl
+	movq	464(%rsp), %rsi         # 8-byte Reload
+	movq	%rsi, %rcx
+	movq	-48(%rsp), %rax         # 8-byte Reload
+	cmovneq	%rax, %rcx
+	cmovel	36(%r14), %edx
+	movl	%edx, (%rcx)
+	movb	-121(%rsp), %cl
+	testb	%cl, %cl
+	movq	360(%rsp), %rdx         # 8-byte Reload
+	cmovneq	368(%rsp), %rdx         # 8-byte Folded Reload
+	movl	(%rdx), %edx
+	cmovneq	%rax, %rsi
+	xorl	(%rsi), %edx
+	testb	%cl, %cl
+	movq	472(%rsp), %rsi         # 8-byte Reload
+	movq	%rsi, %rcx
+	movq	-40(%rsp), %rax         # 8-byte Reload
+	cmovneq	%rax, %rcx
+	cmovel	40(%r14), %edx
+	movl	%edx, (%rcx)
+	movb	-121(%rsp), %cl
+	testb	%cl, %cl
+	movq	376(%rsp), %rdx         # 8-byte Reload
+	cmovneq	384(%rsp), %rdx         # 8-byte Folded Reload
+	movl	(%rdx), %edx
+	cmovneq	%rax, %rsi
+	xorl	(%rsi), %edx
+	testb	%cl, %cl
+	movq	480(%rsp), %rsi         # 8-byte Reload
+	movq	%rsi, %rcx
+	movq	72(%rsp), %rax          # 8-byte Reload
+	cmovneq	%rax, %rcx
+	cmovel	44(%r14), %edx
+	movl	%edx, (%rcx)
+	movb	-121(%rsp), %dl
+	testb	%dl, %dl
+	movq	%rsi, %rcx
+	cmovneq	%rax, %rcx
+	movl	(%rcx), %ebx
+	movzbl	%bl, %ecx
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te4(,%rcx,4), %rcx
+	movq	%r8, %rsi
+	cmovlq	%rcx, %rsi
+	testb	%dl, %dl
+	cmovneq	%rcx, %rsi
+	movzbl	%bh, %ecx
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te4(,%rcx,4), %rcx
+	movq	%r8, %rdi
+	cmovlq	%rcx, %rdi
+	testb	%dl, %dl
+	cmovneq	%rcx, %rdi
+	movl	%ebx, %ecx
+	shrl	$16, %ecx
+	movzbl	%cl, %ecx
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te4(,%rcx,4), %rcx
+	movq	%r8, %rbp
+	cmovlq	%rcx, %rbp
+	testb	%dl, %dl
+	cmovneq	%rcx, %rbp
+	shrq	$24, %rbx
+	cmpq	$256, %rbx              # imm = 0x100
+	leaq	Te4(,%rbx,4), %rcx
+	movq	%r8, %rbx
+	cmovlq	%rcx, %rbx
+	testb	%dl, %dl
+	cmovneq	%rcx, %rbx
+	movq	248(%rsp), %rcx         # 8-byte Reload
+	cmovneq	256(%rsp), %rcx         # 8-byte Folded Reload
+	movzbl	3(%rbx), %ebx
+	shll	$24, %ebx
+	xorl	(%rcx), %ebx
+	movzbl	2(%rbp), %ecx
+	shll	$16, %ecx
+	movzbl	1(%rdi), %edi
+	shll	$8, %edi
+	xorl	%ecx, %edi
+	movzbl	(%rsi), %ecx
+	xorl	%edi, %ecx
+	xorl	%ebx, %ecx
+	testb	%dl, %dl
+	movq	968(%rsp), %rsi         # 8-byte Reload
+	movq	%rsi, %rdx
+	movq	96(%rsp), %rax          # 8-byte Reload
+	cmovneq	%rax, %rdx
+	cmovel	48(%r14), %ecx
+	movl	%ecx, (%rdx)
+	movb	-121(%rsp), %cl
+	testb	%cl, %cl
+	cmovneq	144(%rsp), %r12         # 8-byte Folded Reload
+	movl	(%r12), %edx
+	cmovneq	%rax, %rsi
+	movq	%rax, %r12
+	xorl	(%rsi), %edx
+	testb	%cl, %cl
+	movq	976(%rsp), %rsi         # 8-byte Reload
+	movq	%rsi, %rcx
+	movq	-32(%rsp), %rax         # 8-byte Reload
+	cmovneq	%rax, %rcx
+	cmovel	52(%r14), %edx
+	movl	%edx, (%rcx)
+	movb	-121(%rsp), %cl
+	testb	%cl, %cl
+	cmovneq	%r11, %r9
+	movl	(%r9), %edx
+	cmovneq	%rax, %rsi
+	xorl	(%rsi), %edx
+	testb	%cl, %cl
+	movq	984(%rsp), %rsi         # 8-byte Reload
+	movq	%rsi, %rcx
+	movq	-24(%rsp), %rax         # 8-byte Reload
+	cmovneq	%rax, %rcx
+	cmovel	56(%r14), %edx
+	movl	%edx, (%rcx)
+	movb	-121(%rsp), %cl
+	testb	%cl, %cl
+	movq	240(%rsp), %rdx         # 8-byte Reload
+	cmovneq	-64(%rsp), %rdx         # 8-byte Folded Reload
+	movl	(%rdx), %edx
+	cmovneq	%rax, %rsi
+	xorl	(%rsi), %edx
+	testb	%cl, %cl
+	movq	112(%rsp), %rax         # 8-byte Reload
+	movq	992(%rsp), %rcx         # 8-byte Reload
+	cmovneq	%rax, %rcx
+	cmovel	60(%r14), %edx
+	movl	%edx, (%rcx)
+	movb	-121(%rsp), %dl
+	testb	%dl, %dl
+	movq	512(%rsp), %r9          # 8-byte Reload
+	movq	%r9, %rcx
+	cmovneq	%rax, %rcx
+	movq	%rax, %r13
+	movl	(%rcx), %ebx
+	movl	%edx, %ecx
+	movb	-118(%rsp), %r15b       # 1-byte Reload
+	orb	%r15b, %cl
+	movq	%rbx, %rsi
+	shrq	$24, %rsi
+	cmpq	$256, %rsi              # imm = 0x100
+	leaq	Te4(,%rsi,4), %rax
+	movq	%r8, %rdi
+	cmovlq	%rax, %rdi
+	testb	%cl, %cl
+	movq	%r8, %rbp
+	cmovneq	%r10, %rbp
+	movq	%r8, %r10
+	movq	192(%rsp), %r11         # 8-byte Reload
+	cmovneq	%r11, %r10
+	testb	%dl, %dl
+	cmovneq	%rax, %rdi
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rcx
+	cmovlq	%rax, %rcx
+	testb	%dl, %dl
+	cmovneq	%rax, %rcx
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rsi
+	cmovlq	%rax, %rsi
+	testb	%dl, %dl
+	cmovneq	%rax, %rsi
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbx
+	cmovlq	%rax, %rbx
+	testb	%dl, %dl
+	cmovneq	%rax, %rbx
+	movzbl	3(%rbx), %eax
+	shll	$24, %eax
+	xorl	(%rbp), %eax
+	movzbl	2(%rsi), %esi
+	shll	$16, %esi
+	movzbl	1(%rcx), %ecx
+	shll	$8, %ecx
+	xorl	%esi, %ecx
+	movzbl	(%rdi), %esi
+	xorl	%ecx, %esi
+	xorl	%eax, %esi
+	xorl	$33554432, %esi         # imm = 0x2000000
+	testb	%dl, %dl
+	cmovel	64(%r14), %esi
+	movl	%esi, (%r10)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	560(%rsp), %rcx         # 8-byte Reload
+	cmovneq	-48(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	movq	1000(%rsp), %rdx        # 8-byte Reload
+	cmovneq	%r11, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1008(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	32(%rsp), %rdx          # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	68(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	576(%rsp), %rcx         # 8-byte Reload
+	cmovneq	-40(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	1016(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	64(%rsp), %rdx          # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	72(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	584(%rsp), %rcx         # 8-byte Reload
+	cmovneq	72(%rsp), %rcx          # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	1024(%rsp), %rdi        # 8-byte Reload
+	movq	%rdi, %rax
+	movq	-56(%rsp), %rsi         # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	76(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %dl
+	testb	%dl, %dl
+	cmovneq	%rsi, %rdi
+	movl	(%rdi), %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rsi
+	cmovlq	%rax, %rsi
+	testb	%dl, %dl
+	cmovneq	%rax, %rsi
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rcx
+	cmovlq	%rax, %rcx
+	testb	%dl, %dl
+	cmovneq	%rax, %rcx
+	movl	%ebx, %eax
+	shrl	$16, %eax
+	movzbl	%al, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdi
+	cmovlq	%rax, %rdi
+	testb	%dl, %dl
+	cmovneq	%rax, %rdi
+	shrq	$24, %rbx
+	cmpq	$256, %rbx              # imm = 0x100
+	leaq	Te4(,%rbx,4), %rax
+	movq	%r8, %rbp
+	cmovlq	%rax, %rbp
+	testb	%dl, %dl
+	cmovneq	%rax, %rbp
+	movq	568(%rsp), %rax         # 8-byte Reload
+	cmovneq	%r12, %rax
+	movzbl	3(%rbp), %ebp
+	shll	$24, %ebp
+	xorl	(%rax), %ebp
+	movzbl	2(%rdi), %eax
+	shll	$16, %eax
+	movzbl	1(%rcx), %ecx
+	shll	$8, %ecx
+	xorl	%eax, %ecx
+	movzbl	(%rsi), %eax
+	xorl	%ecx, %eax
+	xorl	%ebp, %eax
+	testb	%dl, %dl
+	movq	1032(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rcx
+	movq	-8(%rsp), %r12          # 8-byte Reload
+	cmovneq	%r12, %rcx
+	cmovel	80(%r14), %eax
+	movl	%eax, (%rcx)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	600(%rsp), %rcx         # 8-byte Reload
+	cmovneq	-32(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%r12, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	1040(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	40(%rsp), %rdx          # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	84(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	640(%rsp), %rcx         # 8-byte Reload
+	cmovneq	-24(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	1048(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	48(%rsp), %rdx          # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	88(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	%r9, %rcx
+	cmovneq	%r13, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	184(%rsp), %rsi         # 8-byte Reload
+	movq	1056(%rsp), %rax        # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	92(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %dl
+	testb	%dl, %dl
+	movq	520(%rsp), %r9          # 8-byte Reload
+	movq	%r9, %rax
+	cmovneq	%rsi, %rax
+	movq	%rsi, %r13
+	movl	(%rax), %ebx
+	movl	%edx, %eax
+	orb	%r15b, %al
+	movq	%rbx, %rcx
+	shrq	$24, %rcx
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te4(,%rcx,4), %rcx
+	movq	%r8, %rdi
+	cmovlq	%rcx, %rdi
+	testb	%al, %al
+	movq	%r8, %rbp
+	cmovneq	%r11, %rbp
+	movq	%r8, %r10
+	movq	176(%rsp), %r11         # 8-byte Reload
+	cmovneq	%r11, %r10
+	testb	%dl, %dl
+	cmovneq	%rcx, %rdi
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rcx
+	cmovlq	%rax, %rcx
+	testb	%dl, %dl
+	cmovneq	%rax, %rcx
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rsi
+	cmovlq	%rax, %rsi
+	testb	%dl, %dl
+	cmovneq	%rax, %rsi
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbx
+	cmovlq	%rax, %rbx
+	testb	%dl, %dl
+	cmovneq	%rax, %rbx
+	movzbl	3(%rbx), %eax
+	shll	$24, %eax
+	xorl	(%rbp), %eax
+	movzbl	2(%rsi), %esi
+	shll	$16, %esi
+	movzbl	1(%rcx), %ecx
+	shll	$8, %ecx
+	xorl	%esi, %ecx
+	movzbl	(%rdi), %esi
+	xorl	%ecx, %esi
+	xorl	%eax, %esi
+	xorl	$67108864, %esi         # imm = 0x4000000
+	testb	%dl, %dl
+	cmovel	96(%r14), %esi
+	movl	%esi, (%r10)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	632(%rsp), %rcx         # 8-byte Reload
+	cmovneq	32(%rsp), %rcx          # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	movq	1064(%rsp), %rdx        # 8-byte Reload
+	cmovneq	%r11, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1072(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	-72(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	100(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	656(%rsp), %rcx         # 8-byte Reload
+	cmovneq	64(%rsp), %rcx          # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	1080(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	56(%rsp), %rdx          # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	104(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	664(%rsp), %rcx         # 8-byte Reload
+	cmovneq	-56(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	1088(%rsp), %rdi        # 8-byte Reload
+	movq	%rdi, %rax
+	movq	-80(%rsp), %rsi         # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	108(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %dl
+	testb	%dl, %dl
+	cmovneq	%rsi, %rdi
+	movl	(%rdi), %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rsi
+	cmovlq	%rax, %rsi
+	testb	%dl, %dl
+	cmovneq	%rax, %rsi
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rcx
+	cmovlq	%rax, %rcx
+	testb	%dl, %dl
+	cmovneq	%rax, %rcx
+	movl	%ebx, %eax
+	shrl	$16, %eax
+	movzbl	%al, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdi
+	cmovlq	%rax, %rdi
+	testb	%dl, %dl
+	cmovneq	%rax, %rdi
+	shrq	$24, %rbx
+	cmpq	$256, %rbx              # imm = 0x100
+	leaq	Te4(,%rbx,4), %rax
+	movq	%r8, %rbp
+	cmovlq	%rax, %rbp
+	testb	%dl, %dl
+	cmovneq	%rax, %rbp
+	movq	648(%rsp), %rax         # 8-byte Reload
+	cmovneq	%r12, %rax
+	movzbl	3(%rbp), %ebp
+	shll	$24, %ebp
+	xorl	(%rax), %ebp
+	movzbl	2(%rdi), %eax
+	shll	$16, %eax
+	movzbl	1(%rcx), %ecx
+	shll	$8, %ecx
+	xorl	%eax, %ecx
+	movzbl	(%rsi), %eax
+	xorl	%ecx, %eax
+	xorl	%ebp, %eax
+	testb	%dl, %dl
+	movq	1096(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rcx
+	movq	160(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%rdx, %rcx
+	cmovel	112(%r14), %eax
+	movl	%eax, (%rcx)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	680(%rsp), %rcx         # 8-byte Reload
+	cmovneq	40(%rsp), %rcx          # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	movq	%rdx, %r12
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	1104(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	8(%rsp), %rdx           # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	116(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	696(%rsp), %rcx         # 8-byte Reload
+	cmovneq	48(%rsp), %rcx          # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	1112(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	80(%rsp), %rdx          # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	120(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	%r9, %rcx
+	cmovneq	%r13, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	movq	%rdx, %r13
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	(%rsp), %rsi            # 8-byte Reload
+	movq	1120(%rsp), %rax        # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	124(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %dl
+	testb	%dl, %dl
+	movq	288(%rsp), %r9          # 8-byte Reload
+	movq	%r9, %rax
+	cmovneq	%rsi, %rax
+	movq	%rsi, %r15
+	movl	(%rax), %ebx
+	movl	%edx, %eax
+	orb	-118(%rsp), %al         # 1-byte Folded Reload
+	movq	%rbx, %rcx
+	shrq	$24, %rcx
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te4(,%rcx,4), %rcx
+	movq	%r8, %rdi
+	cmovlq	%rcx, %rdi
+	testb	%al, %al
+	movq	%r8, %rbp
+	cmovneq	%r11, %rbp
+	movq	%r8, %r10
+	movq	104(%rsp), %r11         # 8-byte Reload
+	cmovneq	%r11, %r10
+	testb	%dl, %dl
+	cmovneq	%rcx, %rdi
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rcx
+	cmovlq	%rax, %rcx
+	testb	%dl, %dl
+	cmovneq	%rax, %rcx
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rsi
+	cmovlq	%rax, %rsi
+	testb	%dl, %dl
+	cmovneq	%rax, %rsi
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbx
+	cmovlq	%rax, %rbx
+	testb	%dl, %dl
+	cmovneq	%rax, %rbx
+	movzbl	3(%rbx), %eax
+	shll	$24, %eax
+	xorl	(%rbp), %eax
+	movzbl	2(%rsi), %esi
+	shll	$16, %esi
+	movzbl	1(%rcx), %ecx
+	shll	$8, %ecx
+	xorl	%esi, %ecx
+	movzbl	(%rdi), %esi
+	xorl	%ecx, %esi
+	xorl	%eax, %esi
+	xorl	$134217728, %esi        # imm = 0x8000000
+	testb	%dl, %dl
+	cmovel	128(%r14), %esi
+	movl	%esi, (%r10)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	416(%rsp), %rcx         # 8-byte Reload
+	cmovneq	-72(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	movq	528(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%r11, %rdx
+	movq	%r11, %r10
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	432(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rax
+	movq	16(%rsp), %rsi          # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	132(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	400(%rsp), %rcx         # 8-byte Reload
+	cmovneq	56(%rsp), %rcx          # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rsi, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	440(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rax
+	movq	-112(%rsp), %rsi        # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	136(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	408(%rsp), %rcx         # 8-byte Reload
+	cmovneq	-80(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rsi, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	448(%rsp), %rdi         # 8-byte Reload
+	movq	%rdi, %rax
+	movq	88(%rsp), %rsi          # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	140(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %dl
+	testb	%dl, %dl
+	movq	%rdi, %rax
+	cmovneq	%rsi, %rax
+	movq	%rsi, %r11
+	movl	(%rax), %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rsi
+	cmovlq	%rax, %rsi
+	testb	%dl, %dl
+	cmovneq	%rax, %rsi
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rcx
+	cmovlq	%rax, %rcx
+	testb	%dl, %dl
+	cmovneq	%rax, %rcx
+	movl	%ebx, %eax
+	shrl	$16, %eax
+	movzbl	%al, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdi
+	cmovlq	%rax, %rdi
+	testb	%dl, %dl
+	cmovneq	%rax, %rdi
+	shrq	$24, %rbx
+	cmpq	$256, %rbx              # imm = 0x100
+	leaq	Te4(,%rbx,4), %rax
+	movq	%r8, %rbp
+	cmovlq	%rax, %rbp
+	testb	%dl, %dl
+	cmovneq	%rax, %rbp
+	movq	392(%rsp), %rax         # 8-byte Reload
+	cmovneq	%r12, %rax
+	movzbl	3(%rbp), %ebp
+	shll	$24, %ebp
+	xorl	(%rax), %ebp
+	movzbl	2(%rdi), %eax
+	shll	$16, %eax
+	movzbl	1(%rcx), %ecx
+	shll	$8, %ecx
+	xorl	%eax, %ecx
+	movzbl	(%rsi), %eax
+	xorl	%ecx, %eax
+	xorl	%ebp, %eax
+	testb	%dl, %dl
+	movq	1128(%rsp), %rdx        # 8-byte Reload
+	movq	%rdx, %rcx
+	movq	152(%rsp), %r12         # 8-byte Reload
+	cmovneq	%r12, %rcx
+	cmovel	144(%r14), %eax
+	movl	%eax, (%rcx)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	336(%rsp), %rcx         # 8-byte Reload
+	cmovneq	8(%rsp), %rcx           # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%r12, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1136(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	-96(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	148(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	424(%rsp), %rcx         # 8-byte Reload
+	cmovneq	%r13, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	1144(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	-104(%rsp), %rdx        # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	152(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	%r9, %rcx
+	cmovneq	%r15, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	24(%rsp), %rsi          # 8-byte Reload
+	movq	1152(%rsp), %rax        # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	156(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %dl
+	testb	%dl, %dl
+	movq	536(%rsp), %r13         # 8-byte Reload
+	movq	%r13, %rax
+	cmovneq	%rsi, %rax
+	movl	(%rax), %ebx
+	movl	%edx, %eax
+	movb	-118(%rsp), %r15b       # 1-byte Reload
+	orb	%r15b, %al
+	movq	%rbx, %rcx
+	shrq	$24, %rcx
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te4(,%rcx,4), %rcx
+	movq	%r8, %rdi
+	cmovlq	%rcx, %rdi
+	testb	%al, %al
+	movq	%r8, %rbp
+	cmovneq	%r10, %rbp
+	movq	%r8, %r10
+	movq	168(%rsp), %r9          # 8-byte Reload
+	cmovneq	%r9, %r10
+	testb	%dl, %dl
+	cmovneq	%rcx, %rdi
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rcx
+	cmovlq	%rax, %rcx
+	testb	%dl, %dl
+	cmovneq	%rax, %rcx
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rsi
+	cmovlq	%rax, %rsi
+	testb	%dl, %dl
+	cmovneq	%rax, %rsi
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbx
+	cmovlq	%rax, %rbx
+	testb	%dl, %dl
+	cmovneq	%rax, %rbx
+	movzbl	3(%rbx), %eax
+	shll	$24, %eax
+	xorl	(%rbp), %eax
+	movzbl	2(%rsi), %esi
+	shll	$16, %esi
+	movzbl	1(%rcx), %ecx
+	shll	$8, %ecx
+	xorl	%esi, %ecx
+	movzbl	(%rdi), %esi
+	xorl	%ecx, %esi
+	xorl	%eax, %esi
+	xorl	$268435456, %esi        # imm = 0x10000000
+	testb	%dl, %dl
+	cmovel	160(%r14), %esi
+	movl	%esi, (%r10)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	712(%rsp), %rcx         # 8-byte Reload
+	cmovneq	16(%rsp), %rcx          # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	movq	1184(%rsp), %rdx        # 8-byte Reload
+	cmovneq	%r9, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1192(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	120(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	164(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	728(%rsp), %rcx         # 8-byte Reload
+	cmovneq	-112(%rsp), %rcx        # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	1208(%rsp), %rdx        # 8-byte Reload
+	movq	%rdx, %rax
+	movq	128(%rsp), %rsi         # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	168(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	736(%rsp), %rcx         # 8-byte Reload
+	cmovneq	%r11, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%rsi, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1216(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	-88(%rsp), %rdi         # 8-byte Reload
+	cmovneq	%rdi, %rax
+	cmovel	172(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %dl
+	testb	%dl, %dl
+	cmovneq	%rdi, %rsi
+	movl	(%rsi), %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rsi
+	cmovlq	%rax, %rsi
+	testb	%dl, %dl
+	cmovneq	%rax, %rsi
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rcx
+	cmovlq	%rax, %rcx
+	testb	%dl, %dl
+	cmovneq	%rax, %rcx
+	movl	%ebx, %eax
+	shrl	$16, %eax
+	movzbl	%al, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdi
+	cmovlq	%rax, %rdi
+	testb	%dl, %dl
+	cmovneq	%rax, %rdi
+	shrq	$24, %rbx
+	cmpq	$256, %rbx              # imm = 0x100
+	leaq	Te4(,%rbx,4), %rax
+	movq	%r8, %rbp
+	cmovlq	%rax, %rbp
+	testb	%dl, %dl
+	cmovneq	%rax, %rbp
+	movq	720(%rsp), %rax         # 8-byte Reload
+	cmovneq	%r12, %rax
+	movzbl	3(%rbp), %ebp
+	shll	$24, %ebp
+	xorl	(%rax), %ebp
+	movzbl	2(%rdi), %eax
+	shll	$16, %eax
+	movzbl	1(%rcx), %ecx
+	shll	$8, %ecx
+	xorl	%eax, %ecx
+	movzbl	(%rsi), %eax
+	xorl	%ecx, %eax
+	xorl	%ebp, %eax
+	testb	%dl, %dl
+	movq	1160(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rcx
+	movq	200(%rsp), %r11         # 8-byte Reload
+	cmovneq	%r11, %rcx
+	cmovel	176(%r14), %eax
+	movl	%eax, (%rcx)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	752(%rsp), %rcx         # 8-byte Reload
+	cmovneq	-96(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%r11, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	1168(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	136(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	180(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	784(%rsp), %rcx         # 8-byte Reload
+	cmovneq	-104(%rsp), %rcx        # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	1176(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	216(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	184(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	%r13, %rcx
+	cmovneq	24(%rsp), %rcx          # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	304(%rsp), %rsi         # 8-byte Reload
+	movq	1200(%rsp), %rax        # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	188(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %dl
+	testb	%dl, %dl
+	movq	1224(%rsp), %r13        # 8-byte Reload
+	movq	%r13, %rax
+	cmovneq	%rsi, %rax
+	movq	%rsi, %r12
+	movl	(%rax), %ebx
+	movl	%edx, %eax
+	orb	%r15b, %al
+	movq	%rbx, %rcx
+	shrq	$24, %rcx
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te4(,%rcx,4), %rcx
+	movq	%r8, %rdi
+	cmovlq	%rcx, %rdi
+	testb	%al, %al
+	movq	%r8, %rbp
+	cmovneq	%r9, %rbp
+	movq	%r8, %r10
+	movq	312(%rsp), %r9          # 8-byte Reload
+	cmovneq	%r9, %r10
+	testb	%dl, %dl
+	cmovneq	%rcx, %rdi
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rcx
+	cmovlq	%rax, %rcx
+	testb	%dl, %dl
+	cmovneq	%rax, %rcx
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rsi
+	cmovlq	%rax, %rsi
+	testb	%dl, %dl
+	cmovneq	%rax, %rsi
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbx
+	cmovlq	%rax, %rbx
+	testb	%dl, %dl
+	cmovneq	%rax, %rbx
+	movzbl	3(%rbx), %eax
+	shll	$24, %eax
+	xorl	(%rbp), %eax
+	movzbl	2(%rsi), %esi
+	shll	$16, %esi
+	movzbl	1(%rcx), %ecx
+	shll	$8, %ecx
+	xorl	%esi, %ecx
+	movzbl	(%rdi), %esi
+	xorl	%ecx, %esi
+	xorl	%eax, %esi
+	xorl	$536870912, %esi        # imm = 0x20000000
+	testb	%dl, %dl
+	cmovel	192(%r14), %esi
+	movl	%esi, (%r10)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	1232(%rsp), %rcx        # 8-byte Reload
+	cmovneq	120(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	movq	1288(%rsp), %rdx        # 8-byte Reload
+	cmovneq	%r9, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1352(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	232(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	196(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	1320(%rsp), %rcx        # 8-byte Reload
+	cmovneq	128(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	1368(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	320(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	200(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	1384(%rsp), %rcx        # 8-byte Reload
+	cmovneq	-88(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	1392(%rsp), %rdi        # 8-byte Reload
+	movq	%rdi, %rax
+	movq	328(%rsp), %rsi         # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	204(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %dl
+	testb	%dl, %dl
+	cmovneq	%rsi, %rdi
+	movq	%rsi, %r15
+	movl	(%rdi), %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rsi
+	cmovlq	%rax, %rsi
+	testb	%dl, %dl
+	cmovneq	%rax, %rsi
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rcx
+	cmovlq	%rax, %rcx
+	testb	%dl, %dl
+	cmovneq	%rax, %rcx
+	movl	%ebx, %eax
+	shrl	$16, %eax
+	movzbl	%al, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdi
+	cmovlq	%rax, %rdi
+	testb	%dl, %dl
+	cmovneq	%rax, %rdi
+	shrq	$24, %rbx
+	cmpq	$256, %rbx              # imm = 0x100
+	leaq	Te4(,%rbx,4), %rax
+	movq	%r8, %rbp
+	cmovlq	%rax, %rbp
+	testb	%dl, %dl
+	cmovneq	%rax, %rbp
+	movq	1400(%rsp), %rbx        # 8-byte Reload
+	cmovneq	%r11, %rbx
+	movzbl	3(%rbp), %eax
+	shll	$24, %eax
+	xorl	(%rbx), %eax
+	movzbl	2(%rdi), %edi
+	shll	$16, %edi
+	movzbl	1(%rcx), %ecx
+	shll	$8, %ecx
+	xorl	%edi, %ecx
+	movzbl	(%rsi), %esi
+	xorl	%ecx, %esi
+	xorl	%eax, %esi
+	testb	%dl, %dl
+	movq	1240(%rsp), %rcx        # 8-byte Reload
+	movq	%rcx, %rax
+	movq	1248(%rsp), %rdx        # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	208(%r14), %esi
+	movl	%esi, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	cmovneq	%rdx, %rcx
+	movq	%rcx, %rdx
+	movq	1424(%rsp), %rcx        # 8-byte Reload
+	cmovneq	136(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1256(%rsp), %rdx        # 8-byte Reload
+	movq	%rdx, %rax
+	movq	1264(%rsp), %rsi        # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	212(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	cmovneq	%rsi, %rdx
+	movq	1448(%rsp), %rcx        # 8-byte Reload
+	cmovneq	216(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1272(%rsp), %rdx        # 8-byte Reload
+	movq	%rdx, %rax
+	movq	1280(%rsp), %rsi        # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	216(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	cmovneq	%rsi, %rdx
+	movq	%r13, %rcx
+	cmovneq	%r12, %rcx
+	movl	(%rcx), %ecx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1296(%rsp), %rsi        # 8-byte Reload
+	movq	1304(%rsp), %rax        # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	220(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %dl
+	testb	%dl, %dl
+	movq	1312(%rsp), %rax        # 8-byte Reload
+	cmovneq	%rsi, %rax
+	movl	(%rax), %ebx
+	movb	-118(%rsp), %cl         # 1-byte Reload
+	orb	%dl, %cl
+	movq	%rbx, %rax
+	shrq	$24, %rax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdi
+	cmovlq	%rax, %rdi
+	testb	%cl, %cl
+	movq	%r8, %rbp
+	cmovneq	%r9, %rbp
+	movq	%r8, %r10
+	movq	1360(%rsp), %r9         # 8-byte Reload
+	cmovneq	%r9, %r10
+	testb	%dl, %dl
+	cmovneq	%rax, %rdi
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rcx
+	cmovlq	%rax, %rcx
+	testb	%dl, %dl
+	cmovneq	%rax, %rcx
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rsi
+	cmovlq	%rax, %rsi
+	testb	%dl, %dl
+	cmovneq	%rax, %rsi
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbx
+	cmovlq	%rax, %rbx
+	testb	%dl, %dl
+	cmovneq	%rax, %rbx
+	movzbl	3(%rbx), %eax
+	shll	$24, %eax
+	xorl	(%rbp), %eax
+	movzbl	2(%rsi), %esi
+	shll	$16, %esi
+	movzbl	1(%rcx), %ecx
+	shll	$8, %ecx
+	xorl	%esi, %ecx
+	movzbl	(%rdi), %esi
+	xorl	%ecx, %esi
+	xorl	%eax, %esi
+	xorl	$1073741824, %esi       # imm = 0x40000000
+	testb	%dl, %dl
+	cmovel	224(%r14), %esi
+	movl	%esi, (%r10)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	movq	1376(%rsp), %rdx        # 8-byte Reload
+	cmovneq	%r9, %rdx
+	movq	1328(%rsp), %rcx        # 8-byte Reload
+	cmovneq	232(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1456(%rsp), %rdx        # 8-byte Reload
+	movq	%rdx, %rax
+	movq	1464(%rsp), %rsi        # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	228(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	cmovneq	%rsi, %rdx
+	movq	1408(%rsp), %rcx        # 8-byte Reload
+	cmovneq	320(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1336(%rsp), %rdx        # 8-byte Reload
+	movq	%rdx, %rax
+	movq	1344(%rsp), %rsi        # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	232(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-121(%rsp), %al
+	testb	%al, %al
+	cmovneq	%rsi, %rdx
+	movq	1504(%rsp), %rcx        # 8-byte Reload
+	cmovneq	%r15, %rcx
+	movl	(%rcx), %ecx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1512(%rsp), %rax        # 8-byte Reload
+	cmovneq	1520(%rsp), %rax        # 8-byte Folded Reload
+	cmovel	236(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	264(%rsp), %r9b         # 1-byte Reload
+	andb	-115(%rsp), %r9b
+	movb	%r9b, -120(%rsp)
+	movq	280(%rsp), %r10         # 8-byte Reload
+	movq	%r10, %rax
+	movq	144(%rsp), %rbp         # 8-byte Reload
+	cmovneq	%rbp, %rax
+	movl	(%rax), %ebx
+	movq	%rbx, %rax
+	shrq	$24, %rax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdx
+	cmovlq	%rax, %rdx
+	testb	%r9b, %r9b
+	cmovneq	%rax, %rdx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rcx
+	cmovlq	%rax, %rcx
+	testb	%r9b, %r9b
+	cmovneq	%rax, %rcx
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rsi
+	cmovlq	%rax, %rsi
+	testb	%r9b, %r9b
+	cmovneq	%rax, %rsi
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdi
+	cmovlq	%rax, %rdi
+	testb	%r9b, %r9b
+	cmovneq	%rax, %rdi
+	movzbl	2(%rsi), %eax
+	shll	$16, %eax
+	movzbl	1(%rcx), %ecx
+	shll	$8, %ecx
+	xorl	%eax, %ecx
+	movzbl	(%rdx), %eax
+	xorl	%ecx, %eax
+	movzbl	3(%rdi), %ecx
+	shll	$24, %ecx
+	xorl	(%r14), %ecx
+	xorl	%ecx, %eax
+	xorl	$16777216, %eax         # imm = 0x1000000
+	testb	%r9b, %r9b
+	movq	296(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rcx
+	movq	224(%rsp), %rdi         # 8-byte Reload
+	cmovneq	%rdi, %rcx
+	cmovel	24(%r14), %eax
+	movl	%eax, (%rcx)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	344(%rsp), %rcx         # 8-byte Reload
+	cmovneq	352(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rdi, %rdx
+	movq	%rdi, %r9
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	240(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rax
+	movq	-64(%rsp), %rsi         # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	28(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	360(%rsp), %rcx         # 8-byte Reload
+	cmovneq	368(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rsi, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	456(%rsp), %rsi         # 8-byte Reload
+	movq	%rsi, %rax
+	movq	208(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	32(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	376(%rsp), %rcx         # 8-byte Reload
+	cmovneq	384(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	movq	%rdx, %r12
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	464(%rsp), %rsi         # 8-byte Reload
+	movq	%rsi, %rax
+	movq	-48(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	36(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	248(%rsp), %rcx         # 8-byte Reload
+	cmovneq	256(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	472(%rsp), %rsi         # 8-byte Reload
+	movq	%rsi, %rax
+	movq	-40(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	40(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%rbp, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	72(%rsp), %rdx          # 8-byte Reload
+	movq	480(%rsp), %rax         # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	44(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %cl
+	testb	%cl, %cl
+	movq	1416(%rsp), %r15        # 8-byte Reload
+	movq	%r15, %rax
+	cmovneq	%rdx, %rax
+	movq	%rdx, %r13
+	movl	(%rax), %ebx
+	movl	%ecx, %eax
+	movb	-117(%rsp), %r11b       # 1-byte Reload
+	orb	%r11b, %al
+	movq	%rbx, %rdx
+	shrq	$24, %rdx
+	cmpq	$256, %rdx              # imm = 0x100
+	leaq	Te4(,%rdx,4), %rbp
+	movq	%r8, %rsi
+	cmovlq	%rbp, %rsi
+	testb	%al, %al
+	movq	%r8, %rdi
+	cmovneq	%r9, %rdi
+	movq	%r8, %r9
+	movq	96(%rsp), %r10          # 8-byte Reload
+	cmovneq	%r10, %r9
+	testb	%cl, %cl
+	cmovneq	%rbp, %rsi
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbp
+	cmovlq	%rax, %rbp
+	testb	%cl, %cl
+	cmovneq	%rax, %rbp
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdx
+	cmovlq	%rax, %rdx
+	testb	%cl, %cl
+	cmovneq	%rax, %rdx
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbx
+	cmovlq	%rax, %rbx
+	testb	%cl, %cl
+	cmovneq	%rax, %rbx
+	movzbl	3(%rbx), %eax
+	shll	$24, %eax
+	xorl	(%rdi), %eax
+	movzbl	2(%rdx), %edx
+	shll	$16, %edx
+	movzbl	1(%rbp), %edi
+	shll	$8, %edi
+	xorl	%edx, %edi
+	movzbl	(%rsi), %edx
+	xorl	%edi, %edx
+	xorl	%eax, %edx
+	xorl	$33554432, %edx         # imm = 0x2000000
+	testb	%cl, %cl
+	cmovel	48(%r14), %edx
+	movl	%edx, (%r9)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	1432(%rsp), %rcx        # 8-byte Reload
+	cmovneq	-64(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	movq	1440(%rsp), %rdx        # 8-byte Reload
+	cmovneq	%r10, %rdx
+	movq	%r10, %r9
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1480(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	-32(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	52(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	1472(%rsp), %rcx        # 8-byte Reload
+	cmovneq	%r12, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	1528(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	-24(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	56(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	1488(%rsp), %rcx        # 8-byte Reload
+	cmovneq	-48(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	1552(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	112(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	60(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	1496(%rsp), %rcx        # 8-byte Reload
+	cmovneq	-40(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	1568(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	192(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	64(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	%r15, %rcx
+	cmovneq	%r13, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	movq	%rdx, %r12
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	32(%rsp), %rdx          # 8-byte Reload
+	movq	1584(%rsp), %rax        # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	68(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %cl
+	testb	%cl, %cl
+	movq	496(%rsp), %r10         # 8-byte Reload
+	movq	%r10, %rax
+	cmovneq	%rdx, %rax
+	movq	%rdx, %r15
+	movl	(%rax), %ebx
+	movl	%ecx, %eax
+	orb	%r11b, %al
+	movq	%rbx, %rdx
+	shrq	$24, %rdx
+	cmpq	$256, %rdx              # imm = 0x100
+	leaq	Te4(,%rdx,4), %rbp
+	movq	%r8, %rsi
+	cmovlq	%rbp, %rsi
+	testb	%al, %al
+	movq	%r8, %rdi
+	cmovneq	%r9, %rdi
+	movq	%r8, %r9
+	movq	64(%rsp), %r11          # 8-byte Reload
+	cmovneq	%r11, %r9
+	testb	%cl, %cl
+	cmovneq	%rbp, %rsi
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbp
+	cmovlq	%rax, %rbp
+	testb	%cl, %cl
+	cmovneq	%rax, %rbp
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdx
+	cmovlq	%rax, %rdx
+	testb	%cl, %cl
+	cmovneq	%rax, %rdx
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbx
+	cmovlq	%rax, %rbx
+	testb	%cl, %cl
+	cmovneq	%rax, %rbx
+	movzbl	3(%rbx), %eax
+	shll	$24, %eax
+	xorl	(%rdi), %eax
+	movzbl	2(%rdx), %edx
+	shll	$16, %edx
+	movzbl	1(%rbp), %edi
+	shll	$8, %edi
+	xorl	%edx, %edi
+	movzbl	(%rsi), %edx
+	xorl	%edi, %edx
+	xorl	%eax, %edx
+	xorl	$67108864, %edx         # imm = 0x4000000
+	testb	%cl, %cl
+	cmovel	72(%r14), %edx
+	movl	%edx, (%r9)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	592(%rsp), %rcx         # 8-byte Reload
+	cmovneq	-32(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	movq	672(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%r11, %rdx
+	movq	%r11, %r9
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	504(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rax
+	movq	-56(%rsp), %rsi         # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	76(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	616(%rsp), %rcx         # 8-byte Reload
+	cmovneq	-24(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rsi, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1608(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	-8(%rsp), %rdx          # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	80(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	624(%rsp), %rcx         # 8-byte Reload
+	cmovneq	112(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	1632(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	40(%rsp), %rdx          # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	84(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	608(%rsp), %rcx         # 8-byte Reload
+	cmovneq	%r12, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	movq	%rdx, %r13
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	1640(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	48(%rsp), %rdx          # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	88(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r15, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	movq	%rdx, %r12
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	184(%rsp), %rdx         # 8-byte Reload
+	movq	1648(%rsp), %rax        # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	92(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %cl
+	testb	%cl, %cl
+	movq	488(%rsp), %rax         # 8-byte Reload
+	cmovneq	%rdx, %rax
+	movq	%rdx, %r15
+	movl	(%rax), %ebx
+	movl	%ecx, %eax
+	movb	-117(%rsp), %r11b       # 1-byte Reload
+	orb	%r11b, %al
+	movq	%rbx, %rdx
+	shrq	$24, %rdx
+	cmpq	$256, %rdx              # imm = 0x100
+	leaq	Te4(,%rdx,4), %rbp
+	movq	%r8, %rsi
+	cmovlq	%rbp, %rsi
+	testb	%al, %al
+	movq	%r8, %rdi
+	cmovneq	%r9, %rdi
+	movq	%r8, %r9
+	movq	176(%rsp), %r10         # 8-byte Reload
+	cmovneq	%r10, %r9
+	testb	%cl, %cl
+	cmovneq	%rbp, %rsi
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbp
+	cmovlq	%rax, %rbp
+	testb	%cl, %cl
+	cmovneq	%rax, %rbp
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdx
+	cmovlq	%rax, %rdx
+	testb	%cl, %cl
+	cmovneq	%rax, %rdx
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbx
+	cmovlq	%rax, %rbx
+	testb	%cl, %cl
+	cmovneq	%rax, %rbx
+	movzbl	3(%rbx), %eax
+	shll	$24, %eax
+	xorl	(%rdi), %eax
+	movzbl	2(%rdx), %edx
+	shll	$16, %edx
+	movzbl	1(%rbp), %edi
+	shll	$8, %edi
+	xorl	%edx, %edi
+	movzbl	(%rsi), %edx
+	xorl	%edi, %edx
+	xorl	%eax, %edx
+	xorl	$134217728, %edx        # imm = 0x8000000
+	testb	%cl, %cl
+	cmovel	96(%r14), %edx
+	movl	%edx, (%r9)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	1536(%rsp), %rcx        # 8-byte Reload
+	cmovneq	-56(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	movq	1544(%rsp), %rdx        # 8-byte Reload
+	cmovneq	%r10, %rdx
+	movq	%r10, %r9
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1576(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	-72(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	100(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	1560(%rsp), %rcx        # 8-byte Reload
+	cmovneq	-8(%rsp), %rcx          # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	1656(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	56(%rsp), %rdx          # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	104(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	1592(%rsp), %rcx        # 8-byte Reload
+	cmovneq	%r13, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	movq	%rdx, %r13
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	1680(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	-80(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	108(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	1600(%rsp), %rcx        # 8-byte Reload
+	cmovneq	%r12, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	1616(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	160(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	112(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	488(%rsp), %rcx         # 8-byte Reload
+	cmovneq	%r15, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	movq	%rdx, %r12
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	8(%rsp), %rdx           # 8-byte Reload
+	movq	1624(%rsp), %rax        # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	116(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %cl
+	testb	%cl, %cl
+	movq	336(%rsp), %r10         # 8-byte Reload
+	movq	%r10, %rax
+	cmovneq	%rdx, %rax
+	movq	%rdx, %r15
+	movl	(%rax), %ebx
+	movl	%ecx, %eax
+	orb	%r11b, %al
+	movq	%rbx, %rdx
+	shrq	$24, %rdx
+	cmpq	$256, %rdx              # imm = 0x100
+	leaq	Te4(,%rdx,4), %rbp
+	movq	%r8, %rsi
+	cmovlq	%rbp, %rsi
+	testb	%al, %al
+	movq	%r8, %rdi
+	cmovneq	%r9, %rdi
+	movq	%r8, %r9
+	movq	80(%rsp), %r11          # 8-byte Reload
+	cmovneq	%r11, %r9
+	testb	%cl, %cl
+	cmovneq	%rbp, %rsi
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbp
+	cmovlq	%rax, %rbp
+	testb	%cl, %cl
+	cmovneq	%rax, %rbp
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdx
+	cmovlq	%rax, %rdx
+	testb	%cl, %cl
+	cmovneq	%rax, %rdx
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbx
+	cmovlq	%rax, %rbx
+	testb	%cl, %cl
+	cmovneq	%rax, %rbx
+	movzbl	3(%rbx), %eax
+	shll	$24, %eax
+	xorl	(%rdi), %eax
+	movzbl	2(%rdx), %edx
+	shll	$16, %edx
+	movzbl	1(%rbp), %edi
+	shll	$8, %edi
+	xorl	%edx, %edi
+	movzbl	(%rsi), %edx
+	xorl	%edi, %edx
+	xorl	%eax, %edx
+	xorl	$268435456, %edx        # imm = 0x10000000
+	testb	%cl, %cl
+	cmovel	120(%r14), %edx
+	movl	%edx, (%r9)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	416(%rsp), %rcx         # 8-byte Reload
+	cmovneq	-72(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	movq	424(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%r11, %rdx
+	movq	%r11, %r9
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	288(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rax
+	movq	(%rsp), %rsi            # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	124(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	400(%rsp), %rcx         # 8-byte Reload
+	cmovneq	%r13, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%rsi, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	528(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rax
+	movq	104(%rsp), %rsi         # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	128(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	408(%rsp), %rcx         # 8-byte Reload
+	cmovneq	-80(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rsi, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	432(%rsp), %rsi         # 8-byte Reload
+	movq	%rsi, %rax
+	movq	16(%rsp), %rdx          # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	132(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	392(%rsp), %rcx         # 8-byte Reload
+	cmovneq	%r12, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	440(%rsp), %rsi         # 8-byte Reload
+	movq	%rsi, %rax
+	movq	-112(%rsp), %rdx        # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	136(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r15, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	movq	%rdx, %r12
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	88(%rsp), %r11          # 8-byte Reload
+	movq	448(%rsp), %rax         # 8-byte Reload
+	cmovneq	%r11, %rax
+	cmovel	140(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %cl
+	testb	%cl, %cl
+	movq	1664(%rsp), %r15        # 8-byte Reload
+	movq	%r15, %rax
+	cmovneq	%r11, %rax
+	movq	%r11, %r13
+	movl	(%rax), %ebx
+	movl	%ecx, %eax
+	movb	-117(%rsp), %r11b       # 1-byte Reload
+	orb	%r11b, %al
+	movq	%rbx, %rdx
+	shrq	$24, %rdx
+	cmpq	$256, %rdx              # imm = 0x100
+	leaq	Te4(,%rdx,4), %rbp
+	movq	%r8, %rsi
+	cmovlq	%rbp, %rsi
+	testb	%al, %al
+	movq	%r8, %rdi
+	cmovneq	%r9, %rdi
+	movq	%r8, %r9
+	movq	152(%rsp), %r10         # 8-byte Reload
+	cmovneq	%r10, %r9
+	testb	%cl, %cl
+	cmovneq	%rbp, %rsi
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbp
+	cmovlq	%rax, %rbp
+	testb	%cl, %cl
+	cmovneq	%rax, %rbp
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdx
+	cmovlq	%rax, %rdx
+	testb	%cl, %cl
+	cmovneq	%rax, %rdx
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbx
+	cmovlq	%rax, %rbx
+	testb	%cl, %cl
+	cmovneq	%rax, %rbx
+	movzbl	3(%rbx), %eax
+	shll	$24, %eax
+	xorl	(%rdi), %eax
+	movzbl	2(%rdx), %edx
+	shll	$16, %edx
+	movzbl	1(%rbp), %edi
+	shll	$8, %edi
+	xorl	%edx, %edi
+	movzbl	(%rsi), %edx
+	xorl	%edi, %edx
+	xorl	%eax, %edx
+	xorl	$536870912, %edx        # imm = 0x20000000
+	testb	%cl, %cl
+	cmovel	144(%r14), %edx
+	movl	%edx, (%r9)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	1672(%rsp), %rcx        # 8-byte Reload
+	cmovneq	(%rsp), %rcx            # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	movq	1688(%rsp), %rdx        # 8-byte Reload
+	cmovneq	%r10, %rdx
+	movq	%r10, %r9
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1704(%rsp), %rdx        # 8-byte Reload
+	movq	%rdx, %rax
+	movq	-96(%rsp), %rsi         # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	148(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	1696(%rsp), %rcx        # 8-byte Reload
+	cmovneq	104(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rsi, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1760(%rsp), %rdx        # 8-byte Reload
+	movq	%rdx, %rax
+	movq	-104(%rsp), %rsi        # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	152(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	1712(%rsp), %rcx        # 8-byte Reload
+	cmovneq	16(%rsp), %rcx          # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rsi, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1768(%rsp), %rdx        # 8-byte Reload
+	movq	%rdx, %rax
+	movq	24(%rsp), %rsi          # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	156(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	1720(%rsp), %rcx        # 8-byte Reload
+	cmovneq	%r12, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%rsi, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1728(%rsp), %rsi        # 8-byte Reload
+	movq	%rsi, %rax
+	movq	168(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	160(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	%r15, %rcx
+	cmovneq	%r13, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%rdx, %rsi
+	movq	%rdx, %r13
+	xorl	(%rsi), %ecx
+	testb	%al, %al
+	movq	120(%rsp), %r15         # 8-byte Reload
+	movq	1736(%rsp), %rax        # 8-byte Reload
+	cmovneq	%r15, %rax
+	cmovel	164(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %cl
+	testb	%cl, %cl
+	movq	544(%rsp), %r10         # 8-byte Reload
+	movq	%r10, %rax
+	cmovneq	%r15, %rax
+	movq	%r15, %r12
+	movl	(%rax), %ebx
+	movl	%ecx, %eax
+	orb	%r11b, %al
+	movq	%rbx, %rdx
+	shrq	$24, %rdx
+	cmpq	$256, %rdx              # imm = 0x100
+	leaq	Te4(,%rdx,4), %rbp
+	movq	%r8, %rsi
+	cmovlq	%rbp, %rsi
+	testb	%al, %al
+	movq	%r8, %rdi
+	cmovneq	%r9, %rdi
+	movq	%r8, %r9
+	movq	128(%rsp), %r11         # 8-byte Reload
+	cmovneq	%r11, %r9
+	testb	%cl, %cl
+	cmovneq	%rbp, %rsi
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbp
+	cmovlq	%rax, %rbp
+	testb	%cl, %cl
+	cmovneq	%rax, %rbp
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdx
+	cmovlq	%rax, %rdx
+	testb	%cl, %cl
+	cmovneq	%rax, %rdx
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbx
+	cmovlq	%rax, %rbx
+	testb	%cl, %cl
+	cmovneq	%rax, %rbx
+	movzbl	3(%rbx), %eax
+	shll	$24, %eax
+	xorl	(%rdi), %eax
+	movzbl	2(%rdx), %edx
+	shll	$16, %edx
+	movzbl	1(%rbp), %edi
+	shll	$8, %edi
+	xorl	%edx, %edi
+	movzbl	(%rsi), %edx
+	xorl	%edi, %edx
+	xorl	%eax, %edx
+	xorl	$1073741824, %edx       # imm = 0x40000000
+	testb	%cl, %cl
+	cmovel	168(%r14), %edx
+	movl	%edx, (%r9)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	744(%rsp), %rcx         # 8-byte Reload
+	cmovneq	-96(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	movq	792(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%r11, %rdx
+	movq	%r11, %rbp
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	552(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rax
+	movq	-88(%rsp), %rsi         # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	172(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	768(%rsp), %rcx         # 8-byte Reload
+	cmovneq	-104(%rsp), %rcx        # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%rsi, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1776(%rsp), %rdx        # 8-byte Reload
+	movq	%rdx, %rax
+	movq	200(%rsp), %r15         # 8-byte Reload
+	cmovneq	%r15, %rax
+	cmovel	176(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	776(%rsp), %rcx         # 8-byte Reload
+	cmovneq	24(%rsp), %rcx          # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%r15, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1800(%rsp), %rdx        # 8-byte Reload
+	movq	%rdx, %rax
+	movq	136(%rsp), %r11         # 8-byte Reload
+	cmovneq	%r11, %rax
+	cmovel	180(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	760(%rsp), %rcx         # 8-byte Reload
+	cmovneq	%r13, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%r11, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1744(%rsp), %rdx        # 8-byte Reload
+	movq	%rdx, %rax
+	movq	216(%rsp), %rsi         # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	184(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	cmovneq	%rsi, %rdx
+	movq	%r10, %rcx
+	cmovneq	%r12, %rcx
+	movl	(%rcx), %ecx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1752(%rsp), %rax        # 8-byte Reload
+	movq	304(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	188(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %cl
+	testb	%cl, %cl
+	movq	1784(%rsp), %rax        # 8-byte Reload
+	cmovneq	%rdx, %rax
+	movl	(%rax), %ebx
+	movb	-117(%rsp), %dl         # 1-byte Reload
+	orb	%cl, %dl
+	movq	%rbx, %rax
+	shrq	$24, %rax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rsi
+	cmovlq	%rax, %rsi
+	testb	%dl, %dl
+	movq	%r8, %rdi
+	cmovneq	%rbp, %rdi
+	movq	%r8, %r9
+	movq	312(%rsp), %r10         # 8-byte Reload
+	cmovneq	%r10, %r9
+	testb	%cl, %cl
+	cmovneq	%rax, %rsi
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbp
+	cmovlq	%rax, %rbp
+	testb	%cl, %cl
+	cmovneq	%rax, %rbp
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdx
+	cmovlq	%rax, %rdx
+	testb	%cl, %cl
+	cmovneq	%rax, %rdx
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbx
+	cmovlq	%rax, %rbx
+	testb	%cl, %cl
+	cmovneq	%rax, %rbx
+	movzbl	3(%rbx), %eax
+	shll	$24, %eax
+	xorl	(%rdi), %eax
+	movzbl	2(%rdx), %edx
+	shll	$16, %edx
+	movzbl	1(%rbp), %edi
+	shll	$8, %edi
+	xorl	%edx, %edi
+	movzbl	(%rsi), %edx
+	xorl	%edi, %edx
+	xorl	%eax, %edx
+	xorl	$-2147483648, %edx      # imm = 0x80000000
+	testb	%cl, %cl
+	cmovel	192(%r14), %edx
+	movl	%edx, (%r9)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	1824(%rsp), %rdx        # 8-byte Reload
+	cmovneq	%r10, %rdx
+	movq	1816(%rsp), %rcx        # 8-byte Reload
+	cmovneq	-88(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1840(%rsp), %rdx        # 8-byte Reload
+	movq	%rdx, %rax
+	movq	232(%rsp), %rsi         # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	196(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	1832(%rsp), %rcx        # 8-byte Reload
+	cmovneq	%r15, %rcx
+	cmovneq	%rsi, %rdx
+	movl	(%rcx), %ecx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1792(%rsp), %rdx        # 8-byte Reload
+	movq	%rdx, %rax
+	movq	320(%rsp), %rsi         # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	200(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-120(%rsp), %al
+	testb	%al, %al
+	movq	1848(%rsp), %rcx        # 8-byte Reload
+	cmovneq	%r11, %rcx
+	cmovneq	%rsi, %rdx
+	movl	(%rcx), %ecx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1808(%rsp), %rax        # 8-byte Reload
+	cmovneq	328(%rsp), %rax         # 8-byte Folded Reload
+	cmovel	204(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	272(%rsp), %r10b        # 1-byte Reload
+	andb	-113(%rsp), %r10b
+	movb	%r10b, -119(%rsp)
+	movq	376(%rsp), %r9          # 8-byte Reload
+	movq	%r9, %rax
+	movq	384(%rsp), %rbp         # 8-byte Reload
+	cmovneq	%rbp, %rax
+	movl	(%rax), %ebx
+	movq	%rbx, %rax
+	shrq	$24, %rax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rcx
+	cmovlq	%rax, %rcx
+	testb	%r10b, %r10b
+	cmovneq	%rax, %rcx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdx
+	cmovlq	%rax, %rdx
+	testb	%r10b, %r10b
+	cmovneq	%rax, %rdx
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rsi
+	cmovlq	%rax, %rsi
+	testb	%r10b, %r10b
+	cmovneq	%rax, %rsi
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdi
+	cmovlq	%rax, %rdi
+	testb	%r10b, %r10b
+	cmovneq	%rax, %rdi
+	movzbl	2(%rsi), %eax
+	shll	$16, %eax
+	movzbl	1(%rdx), %edx
+	shll	$8, %edx
+	xorl	%eax, %edx
+	movzbl	(%rcx), %eax
+	xorl	%edx, %eax
+	movzbl	3(%rdi), %ecx
+	shll	$24, %ecx
+	xorl	(%r14), %ecx
+	xorl	%ecx, %eax
+	xorl	$16777216, %eax         # imm = 0x1000000
+	testb	%r10b, %r10b
+	movq	248(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rcx
+	movq	256(%rsp), %r11         # 8-byte Reload
+	cmovneq	%r11, %rcx
+	cmovel	16(%r14), %eax
+	movl	%eax, (%rcx)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	344(%rsp), %rcx         # 8-byte Reload
+	cmovneq	352(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%r11, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	280(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rax
+	movq	144(%rsp), %r15         # 8-byte Reload
+	cmovneq	%r15, %rax
+	cmovel	20(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	360(%rsp), %rcx         # 8-byte Reload
+	cmovneq	368(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%r15, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	296(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rax
+	movq	224(%rsp), %r10         # 8-byte Reload
+	cmovneq	%r10, %rax
+	cmovel	24(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	%r9, %rcx
+	cmovneq	%rbp, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%r10, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	-64(%rsp), %rdx         # 8-byte Reload
+	movq	240(%rsp), %rax         # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	28(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %cl
+	testb	%cl, %cl
+	movq	1880(%rsp), %r13        # 8-byte Reload
+	movq	%r13, %rax
+	cmovneq	%rdx, %rax
+	movl	(%rax), %ebx
+	movl	%ecx, %eax
+	movb	-114(%rsp), %r12b       # 1-byte Reload
+	orb	%r12b, %al
+	movq	%rbx, %rdx
+	shrq	$24, %rdx
+	cmpq	$256, %rdx              # imm = 0x100
+	leaq	Te4(,%rdx,4), %rdi
+	movq	%r8, %rsi
+	cmovlq	%rdi, %rsi
+	testb	%al, %al
+	cmoveq	%r8, %r11
+	movq	%r8, %rdx
+	movq	208(%rsp), %r9          # 8-byte Reload
+	cmovneq	%r9, %rdx
+	testb	%cl, %cl
+	cmovneq	%rdi, %rsi
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdi
+	cmovlq	%rax, %rdi
+	testb	%cl, %cl
+	cmovneq	%rax, %rdi
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbp
+	cmovlq	%rax, %rbp
+	testb	%cl, %cl
+	cmovneq	%rax, %rbp
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbx
+	cmovlq	%rax, %rbx
+	testb	%cl, %cl
+	cmovneq	%rax, %rbx
+	movzbl	3(%rbx), %eax
+	shll	$24, %eax
+	xorl	(%r11), %eax
+	movzbl	2(%rbp), %ebp
+	shll	$16, %ebp
+	movzbl	1(%rdi), %edi
+	shll	$8, %edi
+	xorl	%ebp, %edi
+	movzbl	(%rsi), %esi
+	xorl	%edi, %esi
+	xorl	%eax, %esi
+	xorl	$33554432, %esi         # imm = 0x2000000
+	testb	%cl, %cl
+	cmovel	32(%r14), %esi
+	movl	%esi, (%rdx)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	1856(%rsp), %rcx        # 8-byte Reload
+	cmovneq	%r15, %rcx
+	movl	(%rcx), %ecx
+	movq	1864(%rsp), %rdx        # 8-byte Reload
+	movq	%r9, %rbp
+	cmovneq	%r9, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1888(%rsp), %rdx        # 8-byte Reload
+	movq	%rdx, %rax
+	movq	-48(%rsp), %r15         # 8-byte Reload
+	cmovneq	%r15, %rax
+	cmovel	36(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	1872(%rsp), %rcx        # 8-byte Reload
+	cmovneq	%r10, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%r15, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1896(%rsp), %rdx        # 8-byte Reload
+	movq	%rdx, %rax
+	movq	-40(%rsp), %r10         # 8-byte Reload
+	cmovneq	%r10, %rax
+	cmovel	40(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	cmovneq	-64(%rsp), %r13         # 8-byte Folded Reload
+	movl	(%r13), %ecx
+	cmovneq	%r10, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	72(%rsp), %r9           # 8-byte Reload
+	movq	1904(%rsp), %rax        # 8-byte Reload
+	cmovneq	%r9, %rax
+	cmovel	44(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %cl
+	testb	%cl, %cl
+	movq	584(%rsp), %r11         # 8-byte Reload
+	movq	%r11, %rax
+	cmovneq	%r9, %rax
+	movl	(%rax), %ebx
+	movl	%ecx, %eax
+	orb	%r12b, %al
+	movq	%rbx, %rdx
+	shrq	$24, %rdx
+	cmpq	$256, %rdx              # imm = 0x100
+	leaq	Te4(,%rdx,4), %rdi
+	movq	%r8, %rsi
+	cmovlq	%rdi, %rsi
+	testb	%al, %al
+	cmoveq	%r8, %rbp
+	movq	%rbp, %r12
+	movq	%r8, %rdx
+	movq	96(%rsp), %r13          # 8-byte Reload
+	cmovneq	%r13, %rdx
+	testb	%cl, %cl
+	cmovneq	%rdi, %rsi
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdi
+	cmovlq	%rax, %rdi
+	testb	%cl, %cl
+	cmovneq	%rax, %rdi
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbp
+	cmovlq	%rax, %rbp
+	testb	%cl, %cl
+	cmovneq	%rax, %rbp
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbx
+	cmovlq	%rax, %rbx
+	testb	%cl, %cl
+	cmovneq	%rax, %rbx
+	movzbl	3(%rbx), %eax
+	shll	$24, %eax
+	xorl	(%r12), %eax
+	movzbl	2(%rbp), %ebp
+	shll	$16, %ebp
+	movzbl	1(%rdi), %edi
+	shll	$8, %edi
+	xorl	%ebp, %edi
+	movzbl	(%rsi), %esi
+	xorl	%edi, %esi
+	xorl	%eax, %esi
+	xorl	$67108864, %esi         # imm = 0x4000000
+	testb	%cl, %cl
+	cmovel	48(%r14), %esi
+	movl	%esi, (%rdx)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	560(%rsp), %rcx         # 8-byte Reload
+	cmovneq	%r15, %rcx
+	movl	(%rcx), %ecx
+	movq	568(%rsp), %rdx         # 8-byte Reload
+	movq	%r13, %rbp
+	cmovneq	%r13, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	600(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rax
+	movq	-32(%rsp), %rsi         # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	52(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	576(%rsp), %rcx         # 8-byte Reload
+	cmovneq	%r10, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%rsi, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	640(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rax
+	movq	-24(%rsp), %r10         # 8-byte Reload
+	cmovneq	%r10, %rax
+	cmovel	56(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%r10, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	112(%rsp), %r9          # 8-byte Reload
+	movq	512(%rsp), %rax         # 8-byte Reload
+	cmovneq	%r9, %rax
+	cmovel	60(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %cl
+	testb	%cl, %cl
+	movq	624(%rsp), %r11         # 8-byte Reload
+	movq	%r11, %rax
+	cmovneq	%r9, %rax
+	movl	(%rax), %ebx
+	movl	%ecx, %eax
+	movb	-114(%rsp), %r15b       # 1-byte Reload
+	orb	%r15b, %al
+	movq	%rbx, %rdx
+	shrq	$24, %rdx
+	cmpq	$256, %rdx              # imm = 0x100
+	leaq	Te4(,%rdx,4), %rdi
+	movq	%r8, %rsi
+	cmovlq	%rdi, %rsi
+	testb	%al, %al
+	cmoveq	%r8, %rbp
+	movq	%rbp, %r12
+	movq	%r8, %rdx
+	movq	192(%rsp), %r13         # 8-byte Reload
+	cmovneq	%r13, %rdx
+	testb	%cl, %cl
+	cmovneq	%rdi, %rsi
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdi
+	cmovlq	%rax, %rdi
+	testb	%cl, %cl
+	cmovneq	%rax, %rdi
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbp
+	cmovlq	%rax, %rbp
+	testb	%cl, %cl
+	cmovneq	%rax, %rbp
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbx
+	cmovlq	%rax, %rbx
+	testb	%cl, %cl
+	cmovneq	%rax, %rbx
+	movzbl	3(%rbx), %eax
+	shll	$24, %eax
+	xorl	(%r12), %eax
+	movzbl	2(%rbp), %ebp
+	shll	$16, %ebp
+	movzbl	1(%rdi), %edi
+	shll	$8, %edi
+	xorl	%ebp, %edi
+	movzbl	(%rsi), %esi
+	xorl	%edi, %esi
+	xorl	%eax, %esi
+	xorl	$134217728, %esi        # imm = 0x8000000
+	testb	%cl, %cl
+	cmovel	64(%r14), %esi
+	movl	%esi, (%rdx)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	592(%rsp), %rcx         # 8-byte Reload
+	cmovneq	-32(%rsp), %rcx         # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	movq	608(%rsp), %rdx         # 8-byte Reload
+	movq	%r13, %rbp
+	cmovneq	%r13, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	496(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rax
+	movq	32(%rsp), %rsi          # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	68(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	616(%rsp), %rcx         # 8-byte Reload
+	cmovneq	%r10, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%rsi, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	672(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rax
+	movq	64(%rsp), %r10          # 8-byte Reload
+	cmovneq	%r10, %rax
+	cmovel	72(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%r10, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	-56(%rsp), %r9          # 8-byte Reload
+	movq	504(%rsp), %rax         # 8-byte Reload
+	cmovneq	%r9, %rax
+	cmovel	76(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %cl
+	testb	%cl, %cl
+	movq	664(%rsp), %r12         # 8-byte Reload
+	movq	%r12, %rax
+	cmovneq	%r9, %rax
+	movl	(%rax), %ebx
+	movl	%ecx, %eax
+	orb	%r15b, %al
+	movq	%rbx, %rdx
+	shrq	$24, %rdx
+	cmpq	$256, %rdx              # imm = 0x100
+	leaq	Te4(,%rdx,4), %rdi
+	movq	%r8, %rsi
+	cmovlq	%rdi, %rsi
+	testb	%al, %al
+	cmoveq	%r8, %rbp
+	movq	%rbp, %r11
+	movq	%r8, %rdx
+	movq	-8(%rsp), %r13          # 8-byte Reload
+	cmovneq	%r13, %rdx
+	testb	%cl, %cl
+	cmovneq	%rdi, %rsi
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdi
+	cmovlq	%rax, %rdi
+	testb	%cl, %cl
+	cmovneq	%rax, %rdi
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbp
+	cmovlq	%rax, %rbp
+	testb	%cl, %cl
+	cmovneq	%rax, %rbp
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbx
+	cmovlq	%rax, %rbx
+	testb	%cl, %cl
+	cmovneq	%rax, %rbx
+	movzbl	3(%rbx), %eax
+	shll	$24, %eax
+	xorl	(%r11), %eax
+	movzbl	2(%rbp), %ebp
+	shll	$16, %ebp
+	movzbl	1(%rdi), %edi
+	shll	$8, %edi
+	xorl	%ebp, %edi
+	movzbl	(%rsi), %esi
+	xorl	%edi, %esi
+	xorl	%eax, %esi
+	xorl	$268435456, %esi        # imm = 0x10000000
+	testb	%cl, %cl
+	cmovel	80(%r14), %esi
+	movl	%esi, (%rdx)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	632(%rsp), %rcx         # 8-byte Reload
+	cmovneq	32(%rsp), %rcx          # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	movq	648(%rsp), %rdx         # 8-byte Reload
+	movq	%r13, %rbp
+	cmovneq	%r13, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	680(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rax
+	movq	40(%rsp), %r11          # 8-byte Reload
+	cmovneq	%r11, %rax
+	cmovel	84(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	656(%rsp), %rcx         # 8-byte Reload
+	cmovneq	%r10, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%r11, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	696(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rax
+	movq	48(%rsp), %r10          # 8-byte Reload
+	cmovneq	%r10, %rax
+	cmovel	88(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	cmovneq	%r9, %r12
+	movl	(%r12), %ecx
+	cmovneq	%r10, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	184(%rsp), %r9          # 8-byte Reload
+	movq	520(%rsp), %rax         # 8-byte Reload
+	cmovneq	%r9, %rax
+	cmovel	92(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %cl
+	testb	%cl, %cl
+	movq	688(%rsp), %rax         # 8-byte Reload
+	cmovneq	%r9, %rax
+	movl	(%rax), %ebx
+	movl	%ecx, %eax
+	orb	%r15b, %al
+	movq	%rbx, %rdx
+	shrq	$24, %rdx
+	cmpq	$256, %rdx              # imm = 0x100
+	leaq	Te4(,%rdx,4), %rdi
+	movq	%r8, %rsi
+	cmovlq	%rdi, %rsi
+	testb	%al, %al
+	cmoveq	%r8, %rbp
+	movq	%rbp, %r12
+	movq	%r8, %rdx
+	movq	176(%rsp), %r13         # 8-byte Reload
+	cmovneq	%r13, %rdx
+	testb	%cl, %cl
+	cmovneq	%rdi, %rsi
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdi
+	cmovlq	%rax, %rdi
+	testb	%cl, %cl
+	cmovneq	%rax, %rdi
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbp
+	cmovlq	%rax, %rbp
+	testb	%cl, %cl
+	cmovneq	%rax, %rbp
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbx
+	cmovlq	%rax, %rbx
+	testb	%cl, %cl
+	cmovneq	%rax, %rbx
+	movzbl	3(%rbx), %eax
+	shll	$24, %eax
+	xorl	(%r12), %eax
+	movzbl	2(%rbp), %ebp
+	shll	$16, %ebp
+	movzbl	1(%rdi), %edi
+	shll	$8, %edi
+	xorl	%ebp, %edi
+	movzbl	(%rsi), %esi
+	xorl	%edi, %esi
+	xorl	%eax, %esi
+	xorl	$536870912, %esi        # imm = 0x20000000
+	testb	%cl, %cl
+	cmovel	96(%r14), %esi
+	movl	%esi, (%rdx)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	1912(%rsp), %rcx        # 8-byte Reload
+	cmovneq	%r11, %rcx
+	movl	(%rcx), %ecx
+	movq	%r13, %rbp
+	movq	1920(%rsp), %rdx        # 8-byte Reload
+	cmovneq	%r13, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1936(%rsp), %rdx        # 8-byte Reload
+	movq	%rdx, %rax
+	movq	-72(%rsp), %r11         # 8-byte Reload
+	cmovneq	%r11, %rax
+	cmovel	100(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	1928(%rsp), %rcx        # 8-byte Reload
+	cmovneq	%r10, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%r11, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1952(%rsp), %rdx        # 8-byte Reload
+	movq	%rdx, %rax
+	movq	56(%rsp), %r10          # 8-byte Reload
+	cmovneq	%r10, %rax
+	cmovel	104(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	688(%rsp), %rcx         # 8-byte Reload
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%r10, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	-80(%rsp), %rdx         # 8-byte Reload
+	movq	1968(%rsp), %rax        # 8-byte Reload
+	cmovneq	%rdx, %rax
+	cmovel	108(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %cl
+	testb	%cl, %cl
+	movq	408(%rsp), %r12         # 8-byte Reload
+	movq	%r12, %rax
+	cmovneq	%rdx, %rax
+	movl	(%rax), %ebx
+	movl	%ecx, %eax
+	orb	%r15b, %al
+	movq	%rbx, %rdx
+	shrq	$24, %rdx
+	cmpq	$256, %rdx              # imm = 0x100
+	leaq	Te4(,%rdx,4), %rdi
+	movq	%r8, %rsi
+	cmovlq	%rdi, %rsi
+	testb	%al, %al
+	cmoveq	%r8, %rbp
+	movq	%rbp, %r9
+	movq	%r8, %rdx
+	movq	160(%rsp), %r13         # 8-byte Reload
+	cmovneq	%r13, %rdx
+	testb	%cl, %cl
+	cmovneq	%rdi, %rsi
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdi
+	cmovlq	%rax, %rdi
+	testb	%cl, %cl
+	cmovneq	%rax, %rdi
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbp
+	cmovlq	%rax, %rbp
+	testb	%cl, %cl
+	cmovneq	%rax, %rbp
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbx
+	cmovlq	%rax, %rbx
+	testb	%cl, %cl
+	cmovneq	%rax, %rbx
+	movzbl	3(%rbx), %eax
+	shll	$24, %eax
+	xorl	(%r9), %eax
+	movzbl	2(%rbp), %ebp
+	shll	$16, %ebp
+	movzbl	1(%rdi), %edi
+	shll	$8, %edi
+	xorl	%ebp, %edi
+	movzbl	(%rsi), %esi
+	xorl	%edi, %esi
+	xorl	%eax, %esi
+	xorl	$1073741824, %esi       # imm = 0x40000000
+	testb	%cl, %cl
+	cmovel	112(%r14), %esi
+	movl	%esi, (%rdx)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	416(%rsp), %rcx         # 8-byte Reload
+	cmovneq	%r11, %rcx
+	movl	(%rcx), %ecx
+	movq	392(%rsp), %rdx         # 8-byte Reload
+	movq	%r13, %rbp
+	cmovneq	%r13, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	336(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rax
+	movq	8(%rsp), %r11           # 8-byte Reload
+	cmovneq	%r11, %rax
+	cmovel	116(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	400(%rsp), %rcx         # 8-byte Reload
+	cmovneq	%r10, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%r11, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	424(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rax
+	movq	80(%rsp), %r10          # 8-byte Reload
+	cmovneq	%r10, %rax
+	cmovel	120(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	cmovneq	-80(%rsp), %r12         # 8-byte Folded Reload
+	movl	(%r12), %ecx
+	cmovneq	%r10, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	(%rsp), %r9             # 8-byte Reload
+	movq	288(%rsp), %rax         # 8-byte Reload
+	cmovneq	%r9, %rax
+	cmovel	124(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %cl
+	testb	%cl, %cl
+	movq	704(%rsp), %rax         # 8-byte Reload
+	cmovneq	%r9, %rax
+	movl	(%rax), %ebx
+	movl	%ecx, %eax
+	orb	%r15b, %al
+	movq	%rbx, %rdx
+	shrq	$24, %rdx
+	cmpq	$256, %rdx              # imm = 0x100
+	leaq	Te4(,%rdx,4), %rdi
+	movq	%r8, %rsi
+	cmovlq	%rdi, %rsi
+	testb	%al, %al
+	cmoveq	%r8, %rbp
+	movq	%rbp, %r12
+	movq	%r8, %rdx
+	movq	104(%rsp), %r13         # 8-byte Reload
+	cmovneq	%r13, %rdx
+	testb	%cl, %cl
+	cmovneq	%rdi, %rsi
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdi
+	cmovlq	%rax, %rdi
+	testb	%cl, %cl
+	cmovneq	%rax, %rdi
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbp
+	cmovlq	%rax, %rbp
+	testb	%cl, %cl
+	cmovneq	%rax, %rbp
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbx
+	cmovlq	%rax, %rbx
+	testb	%cl, %cl
+	cmovneq	%rax, %rbx
+	movzbl	3(%rbx), %eax
+	shll	$24, %eax
+	xorl	(%r12), %eax
+	movzbl	2(%rbp), %ebp
+	shll	$16, %ebp
+	movzbl	1(%rdi), %edi
+	shll	$8, %edi
+	xorl	%ebp, %edi
+	movzbl	(%rsi), %esi
+	xorl	%edi, %esi
+	xorl	%eax, %esi
+	xorl	$-2147483648, %esi      # imm = 0x80000000
+	testb	%cl, %cl
+	cmovel	128(%r14), %esi
+	movl	%esi, (%rdx)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	1944(%rsp), %rcx        # 8-byte Reload
+	cmovneq	%r11, %rcx
+	movl	(%rcx), %ecx
+	movq	1960(%rsp), %rdx        # 8-byte Reload
+	movq	%r13, %rbp
+	cmovneq	%r13, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1984(%rsp), %rdx        # 8-byte Reload
+	movq	%rdx, %rax
+	movq	16(%rsp), %r11          # 8-byte Reload
+	cmovneq	%r11, %rax
+	cmovel	132(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	1976(%rsp), %rcx        # 8-byte Reload
+	cmovneq	%r10, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%r11, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	1992(%rsp), %rdx        # 8-byte Reload
+	movq	%rdx, %rax
+	movq	-112(%rsp), %rsi        # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	136(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	704(%rsp), %rcx         # 8-byte Reload
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %ecx
+	cmovneq	%rsi, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	88(%rsp), %r9           # 8-byte Reload
+	movq	2000(%rsp), %rax        # 8-byte Reload
+	cmovneq	%r9, %rax
+	cmovel	140(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %cl
+	testb	%cl, %cl
+	movq	736(%rsp), %r10         # 8-byte Reload
+	movq	%r10, %rax
+	cmovneq	%r9, %rax
+	movl	(%rax), %ebx
+	movl	%ecx, %eax
+	orb	%r15b, %al
+	movq	%rbx, %rdx
+	shrq	$24, %rdx
+	cmpq	$256, %rdx              # imm = 0x100
+	leaq	Te4(,%rdx,4), %rdi
+	movq	%r8, %rsi
+	cmovlq	%rdi, %rsi
+	testb	%al, %al
+	cmoveq	%r8, %rbp
+	movq	%rbp, %r12
+	movq	%r8, %rdx
+	movq	152(%rsp), %r13         # 8-byte Reload
+	cmovneq	%r13, %rdx
+	testb	%cl, %cl
+	cmovneq	%rdi, %rsi
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdi
+	cmovlq	%rax, %rdi
+	testb	%cl, %cl
+	cmovneq	%rax, %rdi
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbp
+	cmovlq	%rax, %rbp
+	testb	%cl, %cl
+	cmovneq	%rax, %rbp
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbx
+	cmovlq	%rax, %rbx
+	testb	%cl, %cl
+	cmovneq	%rax, %rbx
+	movzbl	3(%rbx), %eax
+	shll	$24, %eax
+	xorl	(%r12), %eax
+	movzbl	2(%rbp), %ebp
+	shll	$16, %ebp
+	movzbl	1(%rdi), %edi
+	shll	$8, %edi
+	xorl	%ebp, %edi
+	movzbl	(%rsi), %esi
+	xorl	%edi, %esi
+	xorl	%eax, %esi
+	xorl	$452984832, %esi        # imm = 0x1B000000
+	testb	%cl, %cl
+	cmovel	144(%r14), %esi
+	movl	%esi, (%rdx)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	712(%rsp), %rcx         # 8-byte Reload
+	cmovneq	%r11, %rcx
+	movl	(%rcx), %ecx
+	movq	720(%rsp), %rdx         # 8-byte Reload
+	movq	%r13, %rdi
+	cmovneq	%r13, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	752(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rax
+	movq	-96(%rsp), %r11         # 8-byte Reload
+	cmovneq	%r11, %rax
+	cmovel	148(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	728(%rsp), %rcx         # 8-byte Reload
+	cmovneq	-112(%rsp), %rcx        # 8-byte Folded Reload
+	movl	(%rcx), %ecx
+	cmovneq	%r11, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	784(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rax
+	movq	-104(%rsp), %r13        # 8-byte Reload
+	cmovneq	%r13, %rax
+	cmovel	152(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	cmovneq	%r9, %r10
+	movl	(%r10), %ecx
+	cmovneq	%r13, %rdx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	24(%rsp), %r9           # 8-byte Reload
+	movq	536(%rsp), %rax         # 8-byte Reload
+	cmovneq	%r9, %rax
+	cmovel	156(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %cl
+	testb	%cl, %cl
+	movq	776(%rsp), %r10         # 8-byte Reload
+	movq	%r10, %rax
+	cmovneq	%r9, %rax
+	movl	(%rax), %ebx
+	orb	%cl, %r15b
+	movq	%rbx, %rax
+	shrq	$24, %rax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rsi
+	cmovlq	%rax, %rsi
+	testb	%r15b, %r15b
+	cmoveq	%r8, %rdi
+	movq	%rdi, %r15
+	movq	%r8, %rdx
+	movq	168(%rsp), %r12         # 8-byte Reload
+	cmovneq	%r12, %rdx
+	testb	%cl, %cl
+	cmovneq	%rax, %rsi
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rdi
+	cmovlq	%rax, %rdi
+	testb	%cl, %cl
+	cmovneq	%rax, %rdi
+	movzbl	%bh, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r8, %rbp
+	cmovlq	%rax, %rbp
+	testb	%cl, %cl
+	cmovneq	%rax, %rbp
+	shrl	$16, %ebx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	cmovlq	%rax, %r8
+	testb	%cl, %cl
+	cmovneq	%rax, %r8
+	movzbl	3(%r8), %eax
+	shll	$24, %eax
+	xorl	(%r15), %eax
+	movzbl	2(%rbp), %ebp
+	shll	$16, %ebp
+	movzbl	1(%rdi), %edi
+	shll	$8, %edi
+	xorl	%ebp, %edi
+	movzbl	(%rsi), %esi
+	xorl	%edi, %esi
+	xorl	%eax, %esi
+	xorl	$905969664, %esi        # imm = 0x36000000
+	testb	%cl, %cl
+	cmovel	160(%r14), %esi
+	movl	%esi, (%rdx)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	744(%rsp), %rcx         # 8-byte Reload
+	cmovneq	%r11, %rcx
+	movq	760(%rsp), %rdx         # 8-byte Reload
+	cmovneq	%r12, %rdx
+	movl	(%rcx), %ecx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	544(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rax
+	movq	120(%rsp), %rsi         # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	164(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	movq	768(%rsp), %rcx         # 8-byte Reload
+	cmovneq	%r13, %rcx
+	cmovneq	%rsi, %rdx
+	movl	(%rcx), %ecx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	792(%rsp), %rdx         # 8-byte Reload
+	movq	%rdx, %rax
+	movq	128(%rsp), %rsi         # 8-byte Reload
+	cmovneq	%rsi, %rax
+	cmovel	168(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %al
+	testb	%al, %al
+	cmovneq	%r9, %r10
+	cmovneq	%rsi, %rdx
+	movl	(%r10), %ecx
+	xorl	(%rdx), %ecx
+	testb	%al, %al
+	movq	552(%rsp), %rax         # 8-byte Reload
+	cmovneq	-88(%rsp), %rax         # 8-byte Folded Reload
+	cmovel	172(%r14), %ecx
+	movl	%ecx, (%rax)
+	movb	-119(%rsp), %cl
+	movb	-120(%rsp), %dl
+	xorl	%eax, %eax
+	movb	-16(%rsp), %bl          # 1-byte Reload
+	andb	-116(%rsp), %bl
+	movl	$14, %esi
+	cmovnel	%eax, %esi
+	testb	%dl, %dl
+	movl	$12, %edi
+	cmovel	%esi, %edi
+	testb	%cl, %cl
+	movl	$10, %eax
+	cmovel	%edi, %eax
+	orb	%dl, %bl
+	orb	%cl, %bl
+	orb	-121(%rsp), %bl
+	andb	$1, %bl
+	movb	%bl, -9(%rsp)
+	addq	$2016, %rsp             # imm = 0x7E0
+	.cfi_def_cfa_offset 56
+	popq	%rbx
+	.cfi_def_cfa_offset 48
+	popq	%r12
+	.cfi_def_cfa_offset 40
+	popq	%r13
+	.cfi_def_cfa_offset 32
+	popq	%r14
+	.cfi_def_cfa_offset 24
+	popq	%r15
+	.cfi_def_cfa_offset 16
+	popq	%rbp
+	.cfi_def_cfa_offset 8
+	retq
+.Lfunc_end4:
+	.size	rijndaelKeySetupEnc, .Lfunc_end4-rijndaelKeySetupEnc
 	.cfi_endproc
                                         # -- End function
 	.globl	rijndaelKeySetupDec     # -- Begin function rijndaelKeySetupDec
@@ -6330,13 +4842,13 @@ rijndaelKeySetupDec:                    # @rijndaelKeySetupDec
                                         # kill: def $eax killed $eax def $rax
 	leal	(,%rax,4), %ecx
 	testl	%ecx, %ecx
-	jle	.LBB6_3
+	jle	.LBB5_3
 # %bb.1:                                # %.lr.ph8
 	movslq	%ecx, %rcx
 	addq	$-4, %rcx
 	xorl	%edx, %edx
 	.p2align	4, 0x90
-.LBB6_2:                                # =>This Inner Loop Header: Depth=1
+.LBB5_2:                                # =>This Inner Loop Header: Depth=1
 	movl	(%rbx,%rdx,4), %esi
 	movl	16(%rbx,%rcx,4), %edi
 	movl	%edi, (%rbx,%rdx,4)
@@ -6356,16 +4868,17 @@ rijndaelKeySetupDec:                    # @rijndaelKeySetupDec
 	addq	$4, %rdx
 	cmpq	%rcx, %rdx
 	leaq	-4(%rcx), %rcx
-	jl	.LBB6_2
-.LBB6_3:                                # %.preheader
+	jl	.LBB5_2
+.LBB5_3:                                # %.preheader
 	cmpl	$2, %eax
-	jl	.LBB6_6
-# %bb.4:                                # %.lr.ph
+	jl	.LBB5_6
+# %bb.4:                                # %.lr.ph.preheader
 	addq	$28, %rbx
 	movl	%eax, %r8d
 	decl	%r8d
 	.p2align	4, 0x90
-.LBB6_5:                                # =>This Inner Loop Header: Depth=1
+.LBB5_5:                                # %.lr.ph
+                                        # =>This Inner Loop Header: Depth=1
 	movl	-12(%rbx), %edx
 	movq	%rdx, %rsi
 	movzbl	%dh, %ebp
@@ -6432,8 +4945,8 @@ rijndaelKeySetupDec:                    # @rijndaelKeySetupDec
 	movl	%edx, (%rbx)
 	addq	$16, %rbx
 	decl	%r8d
-	jne	.LBB6_5
-.LBB6_6:
+	jne	.LBB5_5
+.LBB5_6:                                # %._crit_edge
                                         # kill: def $eax killed $eax killed $rax
 	addq	$8, %rsp
 	.cfi_def_cfa_offset 24
@@ -6442,8 +4955,1771 @@ rijndaelKeySetupDec:                    # @rijndaelKeySetupDec
 	popq	%rbp
 	.cfi_def_cfa_offset 8
 	retq
+.Lfunc_end5:
+	.size	rijndaelKeySetupDec, .Lfunc_end5-rijndaelKeySetupDec
+	.cfi_endproc
+                                        # -- End function
+	.globl	rijndaelEncrypt         # -- Begin function rijndaelEncrypt
+	.p2align	4, 0x90
+	.type	rijndaelEncrypt,@function
+rijndaelEncrypt:                        # @rijndaelEncrypt
+	.cfi_startproc
+# %bb.0:                                # %.preheader12
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	pushq	%r15
+	.cfi_def_cfa_offset 24
+	pushq	%r14
+	.cfi_def_cfa_offset 32
+	pushq	%r13
+	.cfi_def_cfa_offset 40
+	pushq	%r12
+	.cfi_def_cfa_offset 48
+	pushq	%rbx
+	.cfi_def_cfa_offset 56
+	subq	$336, %rsp              # imm = 0x150
+	.cfi_def_cfa_offset 392
+	.cfi_offset %rbx, -56
+	.cfi_offset %r12, -48
+	.cfi_offset %r13, -40
+	.cfi_offset %r14, -32
+	.cfi_offset %r15, -24
+	.cfi_offset %rbp, -16
+	movl	%edx, %r11d
+	movq	%rsi, %r10
+	movq	%rdi, %r13
+	movq	392(%rsp), %r8
+	movq	%r9, 88(%rsp)           # 8-byte Spill
+	leaq	3(%r9), %rbp
+	movq	%rbp, 152(%rsp)         # 8-byte Spill
+	leaq	7(%r9), %rdi
+	movq	%rdi, 216(%rsp)         # 8-byte Spill
+	leaq	11(%r9), %rsi
+	movq	%rsi, 264(%rsp)         # 8-byte Spill
+	leaq	15(%r9), %rdx
+	movq	%rdx, 328(%rsp)         # 8-byte Spill
+	cmpq	$3, %r8
+	leaq	-64(%rsp), %rax
+	movq	%rax, %rbx
+	cmovgq	%rbp, %rbx
+	movq	%rbx, 144(%rsp)         # 8-byte Spill
+	movq	%rax, %rbp
+	cmovgq	%rdi, %rbp
+	movq	%rbp, 208(%rsp)         # 8-byte Spill
+	movq	%rax, %rdi
+	cmovgq	%rsi, %rdi
+	movq	%rdi, 256(%rsp)         # 8-byte Spill
+	movq	%rax, %rsi
+	cmovgq	%rdx, %rsi
+	movq	%rsi, 320(%rsp)         # 8-byte Spill
+	cmpq	$2, %r8
+	leaq	2(%r9), %rsi
+	movq	%rsi, 136(%rsp)         # 8-byte Spill
+	movq	%rax, %rdx
+	cmovgq	%rsi, %rdx
+	movq	%rdx, 128(%rsp)         # 8-byte Spill
+	leaq	6(%r9), %rsi
+	movq	%rsi, 184(%rsp)         # 8-byte Spill
+	movq	%rax, %rdx
+	cmovgq	%rsi, %rdx
+	movq	%rdx, 176(%rsp)         # 8-byte Spill
+	leaq	10(%r9), %rsi
+	movq	%rsi, 248(%rsp)         # 8-byte Spill
+	movq	%rax, %rdx
+	cmovgq	%rsi, %rdx
+	movq	%rdx, 240(%rsp)         # 8-byte Spill
+	leaq	14(%r9), %rsi
+	movq	%rsi, 312(%rsp)         # 8-byte Spill
+	movq	%rax, %rdx
+	cmovgq	%rsi, %rdx
+	movq	%rdx, 304(%rsp)         # 8-byte Spill
+	cmpq	$1, %r8
+	leaq	1(%r9), %rsi
+	movq	%rsi, 104(%rsp)         # 8-byte Spill
+	movq	%rax, %rdx
+	cmovgq	%rsi, %rdx
+	movq	%rdx, 96(%rsp)          # 8-byte Spill
+	leaq	5(%r9), %rsi
+	movq	%rsi, 168(%rsp)         # 8-byte Spill
+	movq	%rax, %rdx
+	cmovgq	%rsi, %rdx
+	movq	%rdx, 160(%rsp)         # 8-byte Spill
+	leaq	9(%r9), %rsi
+	movq	%rsi, 232(%rsp)         # 8-byte Spill
+	movq	%rax, %rdx
+	cmovgq	%rsi, %rdx
+	movq	%rdx, 224(%rsp)         # 8-byte Spill
+	leaq	13(%r9), %rsi
+	movq	%rsi, 296(%rsp)         # 8-byte Spill
+	movq	%rax, %rdx
+	cmovgq	%rsi, %rdx
+	movq	%rdx, 288(%rsp)         # 8-byte Spill
+	testq	%r8, %r8
+	leaq	12(%r9), %rsi
+	movq	%rsi, 272(%rsp)         # 8-byte Spill
+	movq	%rax, %rdx
+	cmovgq	%rsi, %rdx
+	movq	%rdx, 280(%rsp)         # 8-byte Spill
+	testq	%r8, %r8
+	leaq	8(%r9), %rsi
+	movq	%rsi, 200(%rsp)         # 8-byte Spill
+	movq	%rax, %rdx
+	cmovgq	%rsi, %rdx
+	movq	%rdx, 192(%rsp)         # 8-byte Spill
+	testq	%r8, %r8
+	movq	%rax, %rdx
+	cmovgq	%r9, %rdx
+	movq	%rdx, 80(%rsp)          # 8-byte Spill
+	leaq	4(%r9), %rdx
+	movq	%rdx, 120(%rsp)         # 8-byte Spill
+	movq	%rax, %rsi
+	movq	%rax, %rdi
+	cmovgq	%rdx, %rsi
+	movq	%rsi, 112(%rsp)         # 8-byte Spill
+	movq	%r10, 40(%rsp)          # 8-byte Spill
+	cmpq	$47, %r10
+	leaq	188(%r13), %rax
+	movq	%rdi, %rdx
+	cmovgq	%rax, %rdx
+	movl	%r11d, -96(%rsp)        # 4-byte Spill
+	cmpl	$10, %r11d
+	cmovgq	%rax, %rdx
+	movq	%rdx, -80(%rsp)         # 8-byte Spill
+	cmpq	$42, %r10
+	leaq	168(%r13), %rax
+	movq	%rdi, %rdx
+	movq	%rdi, %r14
+	cmovgq	%rax, %rdx
+	cmpl	$10, %r11d
+	cmovgq	%rax, %rdx
+	movq	%rdx, -112(%rsp)        # 8-byte Spill
+	movb	$1, -81(%rsp)
+	movl	(%rcx), %eax
+	bswapl	%eax
+	xorl	(%r13), %eax
+	movl	%eax, %esi
+	shrl	$24, %esi
+	cmpq	$256, %rsi              # imm = 0x100
+	movl	4(%rcx), %ebx
+	bswapl	%ebx
+	movl	8(%rcx), %edx
+	bswapl	%edx
+	leaq	Te0(,%rsi,4), %r9
+	movq	%rdi, %rbp
+	cmovlq	%r9, %rbp
+	xorl	4(%r13), %ebx
+	movl	%ebx, %r10d
+	movzbl	%bl, %r12d
+	movzbl	%bh, %edi
+	movq	%rdi, %r15
+	movl	12(%rcx), %ecx
+	bswapl	%ecx
+	xorl	8(%r13), %edx
+	xorl	12(%r13), %ecx
+	testl	%esi, %esi
+	cmovneq	%r9, %rbp
+	setne	-82(%rsp)
+	movl	(%rbp), %r8d
+	cmovel	Te0(%rip), %r8d
+	shrl	$16, %ebx
+	movzbl	%bl, %ebp
+	cmpq	$256, %rbp              # imm = 0x100
+	leaq	Te1(,%rbp,4), %rbx
+	movq	%r14, %rdi
+	cmovlq	%rbx, %rdi
+	testl	%ebp, %ebp
+	cmovneq	%rbx, %rdi
+	setne	-84(%rsp)
+	movl	(%rdi), %edi
+	cmovel	Te1(%rip), %edi
+	movzbl	%dh, %ebx
+	cmpq	$256, %rbx              # imm = 0x100
+	leaq	Te2(,%rbx,4), %rbp
+	movq	%r14, %rsi
+	cmovlq	%rbp, %rsi
+	testl	%ebx, %ebx
+	cmovneq	%rbp, %rsi
+	setne	-86(%rsp)
+	movl	(%rsi), %esi
+	cmovel	Te2(%rip), %esi
+	xorl	%edi, %esi
+	movzbl	%cl, %edi
+	cmpq	$256, %rdi              # imm = 0x100
+	leaq	Te3(,%rdi,4), %rbp
+	movq	%r14, %rbx
+	cmovlq	%rbp, %rbx
+	testl	%edi, %edi
+	cmovneq	%rbp, %rbx
+	setne	-88(%rsp)
+	movl	%edx, %r11d
+	movzbl	%dl, %r9d
+	movl	(%rbx), %ebx
+	cmovel	Te3(%rip), %ebx
+	xorl	%esi, %ebx
+	xorl	%r8d, %ebx
+	shrl	$24, %r10d
+	movzbl	%al, %edi
+	movzbl	%ah, %esi
+	shrl	$16, %eax
+	movzbl	%al, %r8d
+	movl	Te0(,%r10,4), %eax
+	shrl	$16, %edx
+	movzbl	%dl, %edx
+	xorl	Te1(,%rdx,4), %eax
+	movzbl	%ch, %edx
+	xorl	Te2(,%rdx,4), %eax
+	xorl	Te3(,%rdi,4), %eax
+	movb	$1, -83(%rsp)
+	movb	$1, -85(%rsp)
+	movb	$1, -87(%rsp)
+	movb	$1, -121(%rsp)
+	xorl	20(%r13), %eax
+	shrl	$24, %r11d
+	movl	%eax, %r14d
+	movzbl	%al, %edx
+	movq	%rdx, -120(%rsp)        # 8-byte Spill
+	movzbl	%ah, %edx
+	movq	%rdx, %r10
+	movl	%eax, %ebp
+	movl	Te0(,%r11,4), %edx
+	movl	%ecx, %eax
+	shrl	$16, %eax
+	movzbl	%al, %eax
+	xorl	Te1(,%rax,4), %edx
+	xorl	Te2(,%rsi,4), %edx
+	xorl	Te3(,%r12,4), %edx
+	shrl	$24, %ecx
+	movl	Te0(,%rcx,4), %eax
+	xorl	Te1(,%r8,4), %eax
+	xorl	Te2(,%r15,4), %eax
+	xorl	Te3(,%r9,4), %eax
+	xorl	16(%r13), %ebx
+	xorl	24(%r13), %edx
+	movl	%ebx, %esi
+	shrl	$24, %esi
+	movzbl	%dh, %ecx
+	movl	%edx, %r11d
+	movzbl	%dl, %r8d
+	movl	%edx, %edi
+	movl	Te0(,%rsi,4), %edx
+	shrl	$16, %ebp
+	movzbl	%bpl, %esi
+	xorl	Te1(,%rsi,4), %edx
+	xorl	Te2(,%rcx,4), %edx
+	xorl	28(%r13), %eax
+	movzbl	%al, %ecx
+	xorl	Te3(,%rcx,4), %edx
+	shrl	$24, %r14d
+	movzbl	%bl, %ecx
+	movzbl	%bh, %esi
+	shrl	$16, %ebx
+	movzbl	%bl, %r12d
+	movl	Te0(,%r14,4), %ebx
+	shrl	$16, %edi
+	movzbl	%dil, %edi
+	xorl	Te1(,%rdi,4), %ebx
+	movzbl	%ah, %edi
+	xorl	Te2(,%rdi,4), %ebx
+	xorl	Te3(,%rcx,4), %ebx
+	xorl	36(%r13), %ebx
+	shrl	$24, %r11d
+	movl	%ebx, %r14d
+	movzbl	%bl, %ecx
+	movq	%rcx, -104(%rsp)        # 8-byte Spill
+	movzbl	%bh, %ecx
+	movq	%rcx, %r15
+	movl	%ebx, %ebp
+	movl	Te0(,%r11,4), %ebx
+	movl	%eax, %ecx
+	shrl	$16, %ecx
+	movzbl	%cl, %ecx
+	xorl	Te1(,%rcx,4), %ebx
+	xorl	Te2(,%rsi,4), %ebx
+	movq	-120(%rsp), %rcx        # 8-byte Reload
+	xorl	Te3(,%rcx,4), %ebx
+	shrl	$24, %eax
+	movl	Te0(,%rax,4), %ecx
+	xorl	Te1(,%r12,4), %ecx
+	xorl	Te2(,%r10,4), %ecx
+	xorl	Te3(,%r8,4), %ecx
+	xorl	32(%r13), %edx
+	xorl	40(%r13), %ebx
+	movl	%edx, %esi
+	shrl	$24, %esi
+	movzbl	%bh, %eax
+	movl	%ebx, %r8d
+	movzbl	%bl, %r10d
+	movl	%ebx, %edi
+	movl	Te0(,%rsi,4), %ebx
+	shrl	$16, %ebp
+	movzbl	%bpl, %esi
+	xorl	Te1(,%rsi,4), %ebx
+	xorl	Te2(,%rax,4), %ebx
+	xorl	44(%r13), %ecx
+	movzbl	%cl, %eax
+	xorl	Te3(,%rax,4), %ebx
+	shrl	$24, %r14d
+	movzbl	%dl, %eax
+	movzbl	%dh, %ebp
+	shrl	$16, %edx
+	movzbl	%dl, %r12d
+	movl	Te0(,%r14,4), %edx
+	shrl	$16, %edi
+	movzbl	%dil, %esi
+	xorl	Te1(,%rsi,4), %edx
+	movzbl	%ch, %esi
+	xorl	Te2(,%rsi,4), %edx
+	xorl	Te3(,%rax,4), %edx
+	xorl	52(%r13), %edx
+	shrl	$24, %r8d
+	movl	%edx, %esi
+	movzbl	%dl, %eax
+	movq	%rax, -120(%rsp)        # 8-byte Spill
+	movzbl	%dh, %eax
+	movq	%rax, %r9
+	movl	%edx, %eax
+	movl	Te0(,%r8,4), %edx
+	movl	%ecx, %edi
+	shrl	$16, %edi
+	movzbl	%dil, %edi
+	xorl	Te1(,%rdi,4), %edx
+	xorl	Te2(,%rbp,4), %edx
+	movq	-104(%rsp), %rdi        # 8-byte Reload
+	xorl	Te3(,%rdi,4), %edx
+	shrl	$24, %ecx
+	movl	Te0(,%rcx,4), %ecx
+	xorl	Te1(,%r12,4), %ecx
+	xorl	Te2(,%r15,4), %ecx
+	xorl	Te3(,%r10,4), %ecx
+	xorl	48(%r13), %ebx
+	xorl	56(%r13), %edx
+	movl	%ebx, %ebp
+	shrl	$24, %ebp
+	movzbl	%dh, %edi
+	movl	%edx, %r8d
+	movzbl	%dl, %r10d
+	movl	Te0(,%rbp,4), %ebp
+	shrl	$16, %eax
+	movzbl	%al, %eax
+	xorl	Te1(,%rax,4), %ebp
+	xorl	Te2(,%rdi,4), %ebp
+	xorl	60(%r13), %ecx
+	movzbl	%cl, %eax
+	xorl	Te3(,%rax,4), %ebp
+	shrl	$24, %esi
+	movzbl	%bl, %eax
+	movzbl	%bh, %edi
+	shrl	$16, %ebx
+	movzbl	%bl, %r12d
+	movl	Te0(,%rsi,4), %ebx
+	shrl	$16, %edx
+	movzbl	%dl, %edx
+	xorl	Te1(,%rdx,4), %ebx
+	movzbl	%ch, %edx
+	xorl	Te2(,%rdx,4), %ebx
+	xorl	Te3(,%rax,4), %ebx
+	xorl	68(%r13), %ebx
+	shrl	$24, %r8d
+	movl	%ebx, %r11d
+	movzbl	%bl, %eax
+	movq	%rax, -104(%rsp)        # 8-byte Spill
+	movzbl	%bh, %eax
+	movq	%rax, %r14
+	movl	%ebx, %esi
+	movl	Te0(,%r8,4), %eax
+	movl	%ecx, %edx
+	shrl	$16, %edx
+	movzbl	%dl, %edx
+	xorl	Te1(,%rdx,4), %eax
+	xorl	Te2(,%rdi,4), %eax
+	movq	-120(%rsp), %rdx        # 8-byte Reload
+	xorl	Te3(,%rdx,4), %eax
+	shrl	$24, %ecx
+	movl	Te0(,%rcx,4), %ebx
+	xorl	Te1(,%r12,4), %ebx
+	xorl	Te2(,%r9,4), %ebx
+	xorl	Te3(,%r10,4), %ebx
+	xorl	64(%r13), %ebp
+	xorl	72(%r13), %eax
+	movl	%ebp, %ecx
+	shrl	$24, %ecx
+	movzbl	%ah, %edi
+	movl	%eax, %r8d
+	movzbl	%al, %r10d
+	movl	Te0(,%rcx,4), %edx
+	shrl	$16, %esi
+	movzbl	%sil, %ecx
+	xorl	Te1(,%rcx,4), %edx
+	xorl	Te2(,%rdi,4), %edx
+	xorl	76(%r13), %ebx
+	movzbl	%bl, %ecx
+	xorl	Te3(,%rcx,4), %edx
+	shrl	$24, %r11d
+	movl	%ebp, %ecx
+	movzbl	%cl, %esi
+	movzbl	%ch, %edi
+	shrl	$16, %ecx
+	movzbl	%cl, %r12d
+	movl	Te0(,%r11,4), %ecx
+	shrl	$16, %eax
+	movzbl	%al, %eax
+	xorl	Te1(,%rax,4), %ecx
+	movzbl	%bh, %eax
+	xorl	Te2(,%rax,4), %ecx
+	xorl	Te3(,%rsi,4), %ecx
+	xorl	84(%r13), %ecx
+	shrl	$24, %r8d
+	movl	%ecx, %r11d
+	movzbl	%cl, %eax
+	movq	%rax, -120(%rsp)        # 8-byte Spill
+	movzbl	%ch, %eax
+	movq	%rax, %r15
+	movl	%ecx, %eax
+	movl	Te0(,%r8,4), %ecx
+	movl	%ebx, %ebp
+	shrl	$16, %ebp
+	movzbl	%bpl, %ebp
+	xorl	Te1(,%rbp,4), %ecx
+	xorl	Te2(,%rdi,4), %ecx
+	movq	-104(%rsp), %rsi        # 8-byte Reload
+	xorl	Te3(,%rsi,4), %ecx
+	shrl	$24, %ebx
+	movl	Te0(,%rbx,4), %ebx
+	xorl	Te1(,%r12,4), %ebx
+	xorl	Te2(,%r14,4), %ebx
+	xorl	Te3(,%r10,4), %ebx
+	xorl	80(%r13), %edx
+	xorl	88(%r13), %ecx
+	movl	%edx, %edi
+	shrl	$24, %edi
+	movzbl	%ch, %ebp
+	movl	%ecx, %r8d
+	movzbl	%cl, %r9d
+	movl	%ecx, %esi
+	movl	Te0(,%rdi,4), %ecx
+	shrl	$16, %eax
+	movzbl	%al, %eax
+	xorl	Te1(,%rax,4), %ecx
+	xorl	Te2(,%rbp,4), %ecx
+	xorl	92(%r13), %ebx
+	movzbl	%bl, %eax
+	xorl	Te3(,%rax,4), %ecx
+	shrl	$24, %r11d
+	movzbl	%dl, %edi
+	movzbl	%dh, %eax
+	shrl	$16, %edx
+	movzbl	%dl, %r12d
+	movl	Te0(,%r11,4), %edx
+	shrl	$16, %esi
+	movzbl	%sil, %esi
+	xorl	Te1(,%rsi,4), %edx
+	movzbl	%bh, %esi
+	xorl	Te2(,%rsi,4), %edx
+	xorl	Te3(,%rdi,4), %edx
+	xorl	100(%r13), %edx
+	shrl	$24, %r8d
+	movl	%edx, %edi
+	movzbl	%dl, %esi
+	movq	%rsi, -104(%rsp)        # 8-byte Spill
+	movzbl	%dh, %esi
+	movq	%rsi, %r10
+	movl	%edx, %esi
+	movl	Te0(,%r8,4), %edx
+	movl	%ebx, %ebp
+	shrl	$16, %ebp
+	movzbl	%bpl, %ebp
+	xorl	Te1(,%rbp,4), %edx
+	xorl	Te2(,%rax,4), %edx
+	movq	-120(%rsp), %rax        # 8-byte Reload
+	xorl	Te3(,%rax,4), %edx
+	shrl	$24, %ebx
+	movl	Te0(,%rbx,4), %ebx
+	xorl	Te1(,%r12,4), %ebx
+	xorl	Te2(,%r15,4), %ebx
+	xorl	Te3(,%r9,4), %ebx
+	xorl	96(%r13), %ecx
+	xorl	104(%r13), %edx
+	movl	%ecx, %eax
+	shrl	$24, %eax
+	movzbl	%dh, %ebp
+	movl	%edx, %r8d
+	movzbl	%dl, %r14d
+	movl	Te0(,%rax,4), %eax
+	shrl	$16, %esi
+	movzbl	%sil, %esi
+	xorl	Te1(,%rsi,4), %eax
+	xorl	Te2(,%rbp,4), %eax
+	xorl	108(%r13), %ebx
+	movzbl	%bl, %esi
+	xorl	Te3(,%rsi,4), %eax
+	shrl	$24, %edi
+	movzbl	%cl, %esi
+	movzbl	%ch, %ebp
+	shrl	$16, %ecx
+	movzbl	%cl, %r12d
+	movl	Te0(,%rdi,4), %ecx
+	shrl	$16, %edx
+	movzbl	%dl, %edx
+	xorl	Te1(,%rdx,4), %ecx
+	movzbl	%bh, %edx
+	xorl	Te2(,%rdx,4), %ecx
+	xorl	Te3(,%rsi,4), %ecx
+	xorl	116(%r13), %ecx
+	shrl	$24, %r8d
+	movl	%ecx, %r11d
+	movzbl	%cl, %edx
+	movq	%rdx, -120(%rsp)        # 8-byte Spill
+	movzbl	%ch, %edx
+	movq	%rdx, %r9
+	movl	%ecx, %edi
+	movl	Te0(,%r8,4), %ecx
+	movl	%ebx, %edx
+	shrl	$16, %edx
+	movzbl	%dl, %edx
+	xorl	Te1(,%rdx,4), %ecx
+	xorl	Te2(,%rbp,4), %ecx
+	movq	-104(%rsp), %rdx        # 8-byte Reload
+	xorl	Te3(,%rdx,4), %ecx
+	shrl	$24, %ebx
+	movl	Te0(,%rbx,4), %edx
+	xorl	Te1(,%r12,4), %edx
+	xorl	Te2(,%r10,4), %edx
+	xorl	Te3(,%r14,4), %edx
+	xorl	112(%r13), %eax
+	xorl	120(%r13), %ecx
+	movl	%eax, %ebp
+	shrl	$24, %ebp
+	movzbl	%ch, %ebx
+	movl	%ecx, %r8d
+	movzbl	%cl, %r10d
+	movl	%ecx, %esi
+	movl	Te0(,%rbp,4), %ecx
+	shrl	$16, %edi
+	movzbl	%dil, %edi
+	xorl	Te1(,%rdi,4), %ecx
+	xorl	Te2(,%rbx,4), %ecx
+	xorl	124(%r13), %edx
+	movzbl	%dl, %edi
+	xorl	Te3(,%rdi,4), %ecx
+	shrl	$24, %r11d
+	movzbl	%al, %edi
+	movzbl	%ah, %ebx
+	movq	%rbx, %r14
+	shrl	$16, %eax
+	movzbl	%al, %r12d
+	movl	Te0(,%r11,4), %eax
+	shrl	$16, %esi
+	movzbl	%sil, %esi
+	xorl	Te1(,%rsi,4), %eax
+	movzbl	%dh, %esi
+	xorl	Te2(,%rsi,4), %eax
+	xorl	Te3(,%rdi,4), %eax
+	xorl	132(%r13), %eax
+	shrl	$24, %r8d
+	movl	%eax, %r11d
+	movzbl	%ah, %ebx
+	movzbl	%al, %r15d
+	movl	%eax, %edi
+	movl	Te0(,%r8,4), %eax
+	movl	%edx, %ebp
+	shrl	$16, %ebp
+	movzbl	%bpl, %ebp
+	xorl	Te1(,%rbp,4), %eax
+	xorl	Te2(,%r14,4), %eax
+	movq	-120(%rsp), %rsi        # 8-byte Reload
+	xorl	Te3(,%rsi,4), %eax
+	shrl	$24, %edx
+	movl	Te0(,%rdx,4), %edx
+	xorl	Te1(,%r12,4), %edx
+	xorl	Te2(,%r9,4), %edx
+	xorl	Te3(,%r10,4), %edx
+	xorl	128(%r13), %ecx
+	xorl	136(%r13), %eax
+	shrl	$24, %edi
+	movzbl	%cl, %r8d
+	movl	%ecx, %r9d
+	movzbl	%ch, %ebp
+	movl	%ecx, %esi
+	movl	Te0(,%rdi,4), %edi
+	movl	%eax, %ecx
+	shrl	$16, %ecx
+	movzbl	%cl, %ecx
+	xorl	Te1(,%rcx,4), %edi
+	xorl	140(%r13), %edx
+	movzbl	%dh, %ecx
+	xorl	Te2(,%rcx,4), %edi
+	xorl	Te3(,%r8,4), %edi
+	xorl	148(%r13), %edi
+	movl	%edi, -120(%rsp)        # 4-byte Spill
+	movq	%r13, %r8
+	movzbl	%dil, %ecx
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te3(,%rcx,4), %rdi
+	leaq	-64(%rsp), %r14
+	movq	%r14, %r13
+	cmovlq	%rdi, %r13
+	movl	-96(%rsp), %r10d        # 4-byte Reload
+	cmpl	$10, %r10d
+	cmovgq	%rdi, %r13
+	shrl	$24, %esi
+	shrl	$16, %r11d
+	movzbl	%r11b, %edi
+	movl	Te0(,%rsi,4), %ecx
+	xorl	Te1(,%rdi,4), %ecx
+	movzbl	%ah, %esi
+	xorl	Te2(,%rsi,4), %ecx
+	movzbl	%dl, %esi
+	xorl	Te3(,%rsi,4), %ecx
+	xorl	144(%r8), %ecx
+	movq	%r8, %r11
+	movzbl	%ch, %esi
+	movl	%ecx, %r12d
+	cmpq	$256, %rsi              # imm = 0x100
+	leaq	Te2(,%rsi,4), %rsi
+	movq	%r14, %rdi
+	cmovlq	%rsi, %rdi
+	cmpl	$10, %r10d
+	cmovgq	%rsi, %rdi
+	movl	%edx, %esi
+	shrl	$24, %esi
+	shrl	$16, %r9d
+	movzbl	%r9b, %r8d
+	movl	Te0(,%rsi,4), %ecx
+	xorl	Te1(,%r8,4), %ecx
+	xorl	Te2(,%rbx,4), %ecx
+	movzbl	%al, %esi
+	xorl	Te3(,%rsi,4), %ecx
+	xorl	156(%r11), %ecx
+	movl	%ecx, %esi
+	movl	%ecx, %r8d
+	shrl	$16, %esi
+	movzbl	%sil, %esi
+	cmpq	$256, %rsi              # imm = 0x100
+	leaq	Te1(,%rsi,4), %rsi
+	movq	%r14, %rbx
+	cmovlq	%rsi, %rbx
+	cmpl	$10, %r10d
+	cmovgq	%rsi, %rbx
+	shrl	$16, %edx
+	movzbl	%dl, %edx
+	shrl	$24, %eax
+	movl	Te0(,%rax,4), %ecx
+	xorl	Te1(,%rdx,4), %ecx
+	xorl	Te2(,%rbp,4), %ecx
+	xorl	Te3(,%r15,4), %ecx
+	movq	%r11, %r15
+	xorl	152(%r11), %ecx
+	movl	%ecx, %eax
+	movl	%ecx, %r11d
+	shrl	$24, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te0(,%rax,4), %rax
+	movq	%r14, %rdx
+	cmovlq	%rax, %rdx
+	cmpl	$10, %r10d
+	cmovgq	%rax, %rdx
+	setg	-122(%rsp)
+	movl	(%rdx), %ecx
+	xorl	(%rbx), %ecx
+	xorl	(%rdi), %ecx
+	xorl	(%r13), %ecx
+	movq	-112(%rsp), %rax        # 8-byte Reload
+	xorl	(%rax), %ecx
+	movl	%ecx, -112(%rsp)        # 4-byte Spill
+	movzbl	%cl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te3(,%rax,4), %rax
+	movq	%r14, %r9
+	movq	%r14, %rcx
+	cmovlq	%rax, %rcx
+	movl	%r10d, %r13d
+	cmpl	$10, %r10d
+	cmovgq	%rax, %rcx
+	movq	%rcx, 16(%rsp)          # 8-byte Spill
+	movq	40(%rsp), %r10          # 8-byte Reload
+	cmpq	$41, %r10
+	leaq	164(%r15), %rcx
+	movq	%r14, %rax
+	cmovgq	%rcx, %rax
+	cmpl	$10, %r13d
+	cmovgq	%rcx, %rax
+	movl	%r12d, %r14d
+	movzbl	%r14b, %ecx
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te3(,%rcx,4), %rcx
+	movq	%r9, %rdx
+	cmovlq	%rcx, %rdx
+	cmpl	$10, %r13d
+	cmovgq	%rcx, %rdx
+	movl	%r8d, %ebx
+	movzbl	%bh, %ecx
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te2(,%rcx,4), %rcx
+	movq	%r9, %rsi
+	cmovlq	%rcx, %rsi
+	cmpl	$10, %r13d
+	cmovgq	%rcx, %rsi
+	movl	%r11d, %ecx
+	shrl	$16, %ecx
+	movzbl	%cl, %ecx
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te1(,%rcx,4), %rcx
+	movq	%r9, %rdi
+	cmovlq	%rcx, %rdi
+	cmpl	$10, %r13d
+	cmovgq	%rcx, %rdi
+	movl	-120(%rsp), %r12d       # 4-byte Reload
+	movl	%r12d, %ecx
+	shrl	$24, %ecx
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te0(,%rcx,4), %rcx
+	movq	%r9, %rbp
+	cmovlq	%rcx, %rbp
+	cmpl	$10, %r13d
+	cmovgq	%rcx, %rbp
+	movl	(%rbp), %ecx
+	xorl	(%rdi), %ecx
+	xorl	(%rsi), %ecx
+	xorl	(%rdx), %ecx
+	xorl	(%rax), %ecx
+	movl	%ecx, 24(%rsp)          # 4-byte Spill
+	movzbl	%ch, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te2(,%rax,4), %rax
+	movq	%r9, %rcx
+	cmovlq	%rax, %rcx
+	cmpl	$10, %r13d
+	cmovgq	%rax, %rcx
+	movq	%rcx, (%rsp)            # 8-byte Spill
+	cmpq	$40, %r10
+	leaq	160(%r15), %rcx
+	movq	%r9, %rax
+	cmovgq	%rcx, %rax
+	cmpl	$10, %r13d
+	cmovgq	%rcx, %rax
+	movzbl	%bl, %ecx
+	movl	%r8d, 48(%rsp)          # 4-byte Spill
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te3(,%rcx,4), %rdx
+	movq	%r9, %rcx
+	cmovlq	%rdx, %rcx
+	cmpl	$10, %r13d
+	cmovgq	%rdx, %rcx
+	movl	%r11d, %ebx
+	movl	%r11d, -104(%rsp)       # 4-byte Spill
+	movzbl	%bh, %edx
+	cmpq	$256, %rdx              # imm = 0x100
+	leaq	Te2(,%rdx,4), %rdx
+	movq	%r9, %rsi
+	cmovlq	%rdx, %rsi
+	cmpl	$10, %r13d
+	cmovgq	%rdx, %rsi
+	movl	%r12d, %edx
+	shrl	$16, %edx
+	movzbl	%dl, %edx
+	cmpq	$256, %rdx              # imm = 0x100
+	leaq	Te1(,%rdx,4), %rdx
+	movq	%r9, %rdi
+	cmovlq	%rdx, %rdi
+	cmpl	$10, %r13d
+	cmovgq	%rdx, %rdi
+	movl	%r14d, 52(%rsp)         # 4-byte Spill
+	movl	%r14d, %edx
+	shrl	$24, %edx
+	cmpq	$256, %rdx              # imm = 0x100
+	leaq	Te0(,%rdx,4), %rdx
+	movq	%r9, %rbp
+	cmovlq	%rdx, %rbp
+	cmpl	$10, %r13d
+	cmovgq	%rdx, %rbp
+	movl	(%rbp), %edx
+	xorl	(%rdi), %edx
+	xorl	(%rsi), %edx
+	xorl	(%rcx), %edx
+	xorl	(%rax), %edx
+	movl	%edx, %eax
+	movq	%rdx, %r11
+	shrl	$16, %eax
+	movzbl	%al, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te1(,%rax,4), %rax
+	movq	%r9, %rcx
+	cmovlq	%rax, %rcx
+	cmpl	$10, %r13d
+	cmovgq	%rax, %rcx
+	movq	%rcx, -8(%rsp)          # 8-byte Spill
+	cmpq	$43, %r10
+	leaq	172(%r15), %rax
+	movq	%r9, %rcx
+	cmovgq	%rax, %rcx
+	cmpl	$10, %r13d
+	cmovgq	%rax, %rcx
+	movzbl	%bl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te3(,%rax,4), %rax
+	movq	%r9, %rsi
+	cmovlq	%rax, %rsi
+	cmpl	$10, %r13d
+	cmovgq	%rax, %rsi
+	movl	-120(%rsp), %eax        # 4-byte Reload
+	movzbl	%ah, %eax
+	leaq	Te2(,%rax,4), %rdi
+	cmpq	$256, %rax              # imm = 0x100
+	movq	%r9, %rbp
+	cmovlq	%rdi, %rbp
+	cmpl	$10, %r13d
+	cmovgq	%rdi, %rbp
+	movl	%r14d, %eax
+	shrl	$16, %eax
+	movzbl	%al, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te1(,%rax,4), %rax
+	movq	%r9, %rdi
+	cmovlq	%rax, %rdi
+	cmpl	$10, %r13d
+	cmovgq	%rax, %rdi
+	movl	%r8d, %eax
+	shrl	$24, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te0(,%rax,4), %rax
+	movq	%r9, %rbx
+	cmovlq	%rax, %rbx
+	cmpl	$10, %r13d
+	cmovgq	%rax, %rbx
+	movl	(%rbx), %eax
+	xorl	(%rdi), %eax
+	xorl	(%rbp), %eax
+	xorl	(%rsi), %eax
+	xorl	(%rcx), %eax
+	movl	%eax, %r8d
+	movzbl	%al, %r12d
+	movzbl	%ah, %esi
+	movl	%eax, %ecx
+	movl	-112(%rsp), %edx        # 4-byte Reload
+	movl	%edx, %r14d
+	movzbl	%dh, %eax
+	movq	%rax, 8(%rsp)           # 8-byte Spill
+	movl	%edx, %ebp
+	shrl	$24, %ecx
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te0(,%rcx,4), %rcx
+	movq	%r9, %rax
+	cmovlq	%rcx, %rax
+	movl	%r13d, %edx
+	cmpl	$10, %r13d
+	cmovgq	%rcx, %rax
+	movq	%rax, -32(%rsp)         # 8-byte Spill
+	cmpq	$46, %r10
+	movq	%r15, %rbx
+	leaq	184(%r15), %rcx
+	movq	%r9, %rax
+	cmovgq	%rcx, %rax
+	cmpl	$10, %r13d
+	cmovgq	%rcx, %rax
+	movq	%rax, -16(%rsp)         # 8-byte Spill
+	movl	24(%rsp), %r13d         # 4-byte Reload
+	movzbl	%r13b, %ecx
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te3(,%rcx,4), %rcx
+	movq	%r9, %rax
+	cmovlq	%rcx, %rax
+	cmpl	$10, %edx
+	cmovgq	%rcx, %rax
+	movq	%rax, -24(%rsp)         # 8-byte Spill
+	movq	%r11, %rax
+	movq	%r11, -40(%rsp)         # 8-byte Spill
+	movzbl	%ah, %ecx
+	leaq	Te2(,%rcx,4), %rdi
+	cmpq	$256, %rcx              # imm = 0x100
+	movq	%r9, %rcx
+	cmovlq	%rdi, %rcx
+	cmpl	$10, %edx
+	cmovgq	%rdi, %rcx
+	movq	%rcx, -72(%rsp)         # 8-byte Spill
+	shrl	$16, %r8d
+	movzbl	%r8b, %ecx
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te1(,%rcx,4), %rcx
+	movq	%r9, %rdi
+	cmovlq	%rcx, %rdi
+	cmpl	$10, %edx
+	cmovgq	%rcx, %rdi
+	movq	%rdi, -48(%rsp)         # 8-byte Spill
+	shrl	$24, %ebp
+	cmpq	$256, %rbp              # imm = 0x100
+	leaq	Te0(,%rbp,4), %rcx
+	movq	%r9, %rdi
+	cmovlq	%rcx, %rdi
+	cmpl	$10, %edx
+	cmovgq	%rcx, %rdi
+	movq	%rdi, -56(%rsp)         # 8-byte Spill
+	movq	%r10, %rdi
+	cmpq	$45, %r10
+	leaq	180(%r15), %rcx
+	movq	%r15, 32(%rsp)          # 8-byte Spill
+	movq	%r9, %rbp
+	cmovgq	%rcx, %rbp
+	cmpl	$10, %edx
+	cmovgq	%rcx, %rbp
+	movzbl	%al, %ecx
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te3(,%rcx,4), %rcx
+	movq	%r9, %r15
+	cmovlq	%rcx, %r15
+	cmpl	$10, %edx
+	cmovgq	%rcx, %r15
+	leaq	Te2(,%rsi,4), %rcx
+	cmpq	$256, %rsi              # imm = 0x100
+	movq	%r9, %r11
+	cmovlq	%rcx, %r11
+	cmpl	$10, %edx
+	cmovgq	%rcx, %r11
+	shrl	$16, %r14d
+	movzbl	%r14b, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te1(,%rax,4), %rax
+	movq	%r9, %r10
+	cmovlq	%rax, %r10
+	cmpl	$10, %edx
+	cmovgq	%rax, %r10
+	movl	%r13d, %eax
+	shrl	$24, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te0(,%rax,4), %rsi
+	movq	%r9, %r8
+	cmovlq	%rsi, %r8
+	cmpl	$10, %edx
+	cmovgq	%rsi, %r8
+	cmpq	$44, %rdi
+	movq	%rdi, %rax
+	leaq	176(%rbx), %rdi
+	movq	%r9, %r14
+	cmovgq	%rdi, %r14
+	cmpl	$10, %edx
+	cmovgq	%rdi, %r14
+	cmpq	$256, %r12              # imm = 0x100
+	leaq	Te3(,%r12,4), %r12
+	movq	%r9, %rdi
+	movq	%r9, %rcx
+	cmovlq	%r12, %rdi
+	cmpl	$10, %edx
+	cmovgq	%r12, %rdi
+	movq	8(%rsp), %rsi           # 8-byte Reload
+	cmpq	$256, %rsi              # imm = 0x100
+	leaq	Te2(,%rsi,4), %r12
+	movq	%r9, %rbx
+	cmovlq	%r12, %rbx
+	cmpl	$10, %edx
+	cmovgq	%r12, %rbx
+	movl	%r13d, %esi
+	shrl	$16, %esi
+	movzbl	%sil, %r12d
+	cmpq	$256, %r12              # imm = 0x100
+	leaq	Te1(,%r12,4), %r12
+	movq	%r9, %rsi
+	cmovlq	%r12, %rsi
+	cmpl	$10, %edx
+	cmovgq	%r12, %rsi
+	movq	-40(%rsp), %r12         # 8-byte Reload
+	shrl	$24, %r12d
+	leaq	Te0(,%r12,4), %r9
+	cmpq	$256, %r12              # imm = 0x100
+	movq	%rcx, %r12
+	cmovlq	%r9, %r12
+	cmpl	$10, %edx
+	cmovgq	%r9, %r12
+	setg	%r9b
+	cmpl	$12, %edx
+	setg	%r13b
+	andb	%r9b, %r13b
+	movq	%rax, %rdx
+	cmpq	$55, %rax
+	movq	32(%rsp), %rcx          # 8-byte Reload
+	leaq	220(%rcx), %r9
+	leaq	-64(%rsp), %rax
+	cmovgq	%r9, %rax
+	testb	%r13b, %r13b
+	cmovneq	%r9, %rax
+	movq	%rax, 24(%rsp)          # 8-byte Spill
+	cmpq	$50, %rdx
+	leaq	200(%rcx), %rdx
+	leaq	-64(%rsp), %rcx
+	movq	%rcx, %r9
+	cmovgq	%rdx, %r9
+	testb	%r13b, %r13b
+	cmovneq	%rdx, %r9
+	movl	(%r8), %eax
+	xorl	(%r10), %eax
+	xorl	(%r11), %eax
+	xorl	(%r15), %eax
+	xorl	(%rbp), %eax
+	movzbl	%al, %edx
+	movl	%eax, %r8d
+	cmpq	$256, %rdx              # imm = 0x100
+	leaq	Te3(,%rdx,4), %rdx
+	movq	%rcx, %rbp
+	movq	%rcx, %r10
+	cmovlq	%rdx, %rbp
+	testb	%r13b, %r13b
+	cmovneq	%rdx, %rbp
+	movl	(%r12), %ecx
+	xorl	(%rsi), %ecx
+	xorl	(%rbx), %ecx
+	xorl	(%rdi), %ecx
+	xorl	(%r14), %ecx
+	movzbl	%ch, %eax
+	movl	%ecx, %r15d
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te2(,%rax,4), %rax
+	movq	%r10, %rsi
+	cmovlq	%rax, %rsi
+	testb	%r13b, %r13b
+	cmovneq	%rax, %rsi
+	movq	-32(%rsp), %rax         # 8-byte Reload
+	movl	(%rax), %ebx
+	movq	-8(%rsp), %rax          # 8-byte Reload
+	xorl	(%rax), %ebx
+	movq	(%rsp), %rax            # 8-byte Reload
+	xorl	(%rax), %ebx
+	movq	16(%rsp), %rax          # 8-byte Reload
+	xorl	(%rax), %ebx
+	movq	-80(%rsp), %rax         # 8-byte Reload
+	xorl	(%rax), %ebx
+	movl	%ebx, %eax
+	shrl	$16, %eax
+	movzbl	%al, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te1(,%rax,4), %rax
+	movq	%r10, %rcx
+	cmovlq	%rax, %rcx
+	testb	%r13b, %r13b
+	cmovneq	%rax, %rcx
+	movq	-56(%rsp), %rax         # 8-byte Reload
+	movl	(%rax), %edx
+	movq	-48(%rsp), %rax         # 8-byte Reload
+	xorl	(%rax), %edx
+	movq	-72(%rsp), %rax         # 8-byte Reload
+	xorl	(%rax), %edx
+	movq	-24(%rsp), %rax         # 8-byte Reload
+	xorl	(%rax), %edx
+	movq	-16(%rsp), %rax         # 8-byte Reload
+	xorl	(%rax), %edx
+	movl	%edx, %eax
+	movl	%edx, %edi
+	shrl	$24, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te0(,%rax,4), %rax
+	movq	%r10, %rdx
+	cmovlq	%rax, %rdx
+	testb	%r13b, %r13b
+	cmovneq	%rax, %rdx
+	movl	(%rdx), %eax
+	xorl	(%rcx), %eax
+	xorl	(%rsi), %eax
+	xorl	(%rbp), %eax
+	movb	%r13b, -89(%rsp)
+	xorl	(%r9), %eax
+	movl	%eax, -72(%rsp)         # 4-byte Spill
+	movzbl	%al, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te3(,%rax,4), %rax
+	movq	%r10, %rcx
+	cmovlq	%rax, %rcx
+	testb	%r13b, %r13b
+	cmovneq	%rax, %rcx
+	movq	%rcx, 16(%rsp)          # 8-byte Spill
+	movq	40(%rsp), %r14          # 8-byte Reload
+	cmpq	$49, %r14
+	movq	32(%rsp), %r11          # 8-byte Reload
+	leaq	196(%r11), %rcx
+	movq	%r10, %r12
+	cmovgq	%rcx, %r12
+	testb	%r13b, %r13b
+	cmovneq	%rcx, %r12
+	movzbl	%r15b, %ecx
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te3(,%rcx,4), %rcx
+	movq	%r10, %rax
+	cmovlq	%rcx, %rax
+	testb	%r13b, %r13b
+	cmovneq	%rcx, %rax
+	movzbl	%bh, %ecx
+	movl	%ebx, %r9d
+	leaq	Te2(,%rcx,4), %rsi
+	cmpq	$256, %rcx              # imm = 0x100
+	movq	%r10, %rcx
+	cmovlq	%rsi, %rcx
+	testb	%r13b, %r13b
+	cmovneq	%rsi, %rcx
+	movl	%edi, %ebx
+	movl	%edi, %esi
+	shrl	$16, %esi
+	movzbl	%sil, %esi
+	cmpq	$256, %rsi              # imm = 0x100
+	leaq	Te1(,%rsi,4), %rsi
+	movq	%r10, %rdi
+	cmovlq	%rsi, %rdi
+	testb	%r13b, %r13b
+	cmovneq	%rsi, %rdi
+	movl	%r8d, -112(%rsp)        # 4-byte Spill
+	movl	%r8d, %esi
+	shrl	$24, %esi
+	cmpq	$256, %rsi              # imm = 0x100
+	leaq	Te0(,%rsi,4), %rsi
+	movq	%r10, %rbp
+	cmovlq	%rsi, %rbp
+	testb	%r13b, %r13b
+	cmovneq	%rsi, %rbp
+	movl	(%rbp), %edx
+	xorl	(%rdi), %edx
+	xorl	(%rcx), %edx
+	xorl	(%rax), %edx
+	xorl	(%r12), %edx
+	movl	%edx, -16(%rsp)         # 4-byte Spill
+	movzbl	%dh, %eax
+	leaq	Te2(,%rax,4), %rcx
+	cmpq	$256, %rax              # imm = 0x100
+	movq	%r10, %rax
+	cmovlq	%rcx, %rax
+	testb	%r13b, %r13b
+	cmovneq	%rcx, %rax
+	movq	%rax, (%rsp)            # 8-byte Spill
+	cmpq	$48, %r14
+	leaq	192(%r11), %rcx
+	movq	%r10, %rax
+	cmovgq	%rcx, %rax
+	testb	%r13b, %r13b
+	cmovneq	%rcx, %rax
+	movzbl	%r9b, %ecx
+	movl	%r9d, -32(%rsp)         # 4-byte Spill
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te3(,%rcx,4), %rcx
+	movq	%r10, %rsi
+	cmovlq	%rcx, %rsi
+	testb	%r13b, %r13b
+	cmovneq	%rcx, %rsi
+	movzbl	%bh, %ecx
+	movl	%ebx, %r12d
+	movl	%ebx, -8(%rsp)          # 4-byte Spill
+	leaq	Te2(,%rcx,4), %rdx
+	cmpq	$256, %rcx              # imm = 0x100
+	movq	%r10, %rcx
+	cmovlq	%rdx, %rcx
+	testb	%r13b, %r13b
+	cmovneq	%rdx, %rcx
+	movl	%r8d, %edx
+	shrl	$16, %edx
+	movzbl	%dl, %edx
+	cmpq	$256, %rdx              # imm = 0x100
+	leaq	Te1(,%rdx,4), %rdx
+	movq	%r10, %rdi
+	cmovlq	%rdx, %rdi
+	testb	%r13b, %r13b
+	cmovneq	%rdx, %rdi
+	movl	%r15d, -40(%rsp)        # 4-byte Spill
+	movl	%r15d, %edx
+	shrl	$24, %edx
+	cmpq	$256, %rdx              # imm = 0x100
+	leaq	Te0(,%rdx,4), %rdx
+	movq	%r10, %rbp
+	cmovlq	%rdx, %rbp
+	testb	%r13b, %r13b
+	cmovneq	%rdx, %rbp
+	movl	(%rbp), %edx
+	xorl	(%rdi), %edx
+	xorl	(%rcx), %edx
+	xorl	(%rsi), %edx
+	xorl	(%rax), %edx
+	movq	%rdx, -80(%rsp)         # 8-byte Spill
+	movl	%edx, %eax
+	shrl	$16, %eax
+	movzbl	%al, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te1(,%rax,4), %rax
+	movq	%r10, %rcx
+	cmovlq	%rax, %rcx
+	testb	%r13b, %r13b
+	cmovneq	%rax, %rcx
+	movq	%rcx, -24(%rsp)         # 8-byte Spill
+	cmpq	$51, %r14
+	leaq	204(%r11), %rax
+	movq	%r10, %rsi
+	cmovgq	%rax, %rsi
+	testb	%r13b, %r13b
+	cmovneq	%rax, %rsi
+	movzbl	%r12b, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te3(,%rax,4), %rax
+	movq	%r10, %rdi
+	cmovlq	%rax, %rdi
+	testb	%r13b, %r13b
+	cmovneq	%rax, %rdi
+	movl	-112(%rsp), %eax        # 4-byte Reload
+	movzbl	%ah, %eax
+	leaq	Te2(,%rax,4), %rcx
+	cmpq	$256, %rax              # imm = 0x100
+	movq	%r10, %rdx
+	cmovlq	%rcx, %rdx
+	testb	%r13b, %r13b
+	cmovneq	%rcx, %rdx
+	shrl	$16, %r15d
+	movzbl	%r15b, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te1(,%rax,4), %rax
+	movq	%r10, %rcx
+	cmovlq	%rax, %rcx
+	testb	%r13b, %r13b
+	cmovneq	%rax, %rcx
+	movl	%r9d, %eax
+	shrl	$24, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te0(,%rax,4), %rax
+	movq	%r10, %rbp
+	cmovlq	%rax, %rbp
+	testb	%r13b, %r13b
+	cmovneq	%rax, %rbp
+	movl	(%rbp), %eax
+	xorl	(%rcx), %eax
+	xorl	(%rdx), %eax
+	xorl	(%rdi), %eax
+	xorl	(%rsi), %eax
+	movl	%eax, %r9d
+	movzbl	%al, %ecx
+	movq	%rcx, 64(%rsp)          # 8-byte Spill
+	movzbl	%ah, %ebx
+                                        # kill: def $eax killed $eax def $rax
+	movl	-72(%rsp), %ecx         # 4-byte Reload
+	movl	%ecx, %r8d
+	movzbl	%ch, %edx
+	movq	%rdx, 56(%rsp)          # 8-byte Spill
+                                        # kill: def $ecx killed $ecx def $rcx
+	shrl	$24, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te0(,%rax,4), %rax
+	movq	%r10, %rdi
+	movq	%r10, %rdx
+	cmovlq	%rax, %rdx
+	movl	%r13d, %r15d
+	testb	%r13b, %r13b
+	cmovneq	%rax, %rdx
+	movq	%rdx, -72(%rsp)         # 8-byte Spill
+	movq	%r14, %r10
+	cmpq	$54, %r14
+	leaq	216(%r11), %rax
+	movq	%rdi, %rdx
+	cmovgq	%rax, %rdx
+	testb	%r13b, %r13b
+	cmovneq	%rax, %rdx
+	movq	%rdx, -48(%rsp)         # 8-byte Spill
+	movl	-16(%rsp), %esi         # 4-byte Reload
+	movzbl	%sil, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te3(,%rax,4), %rax
+	movq	%rdi, %rdx
+	cmovlq	%rax, %rdx
+	testb	%r13b, %r13b
+	cmovneq	%rax, %rdx
+	movq	%rdx, 72(%rsp)          # 8-byte Spill
+	movq	-80(%rsp), %rdx         # 8-byte Reload
+	movzbl	%dh, %eax
+	leaq	Te2(,%rax,4), %r14
+	cmpq	$256, %rax              # imm = 0x100
+	movq	%rdi, %rax
+	cmovlq	%r14, %rax
+	testb	%r13b, %r13b
+	cmovneq	%r14, %rax
+	movq	%rax, -56(%rsp)         # 8-byte Spill
+	shrl	$16, %r9d
+	movzbl	%r9b, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te1(,%rax,4), %rax
+	movq	%rdi, %rbp
+	cmovlq	%rax, %rbp
+	testb	%r13b, %r13b
+	cmovneq	%rax, %rbp
+	shrl	$24, %ecx
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te0(,%rcx,4), %rax
+	movq	%rdi, %r12
+	cmovlq	%rax, %r12
+	testb	%r13b, %r13b
+	cmovneq	%rax, %r12
+	movq	%r10, %rcx
+	cmpq	$53, %r10
+	leaq	212(%r11), %rax
+	movq	%rdi, %r13
+	cmovgq	%rax, %r13
+	testb	%r15b, %r15b
+	cmovneq	%rax, %r13
+	movzbl	%dl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te3(,%rax,4), %rax
+	movq	%rdi, %r14
+	cmovlq	%rax, %r14
+	testb	%r15b, %r15b
+	cmovneq	%rax, %r14
+	leaq	Te2(,%rbx,4), %rax
+	cmpq	$256, %rbx              # imm = 0x100
+	movq	%rdi, %rbx
+	cmovlq	%rax, %rbx
+	testb	%r15b, %r15b
+	cmovneq	%rax, %rbx
+	shrl	$16, %r8d
+	movzbl	%r8b, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te1(,%rax,4), %rax
+	movq	%rdi, %r10
+	cmovlq	%rax, %r10
+	testb	%r15b, %r15b
+	cmovneq	%rax, %r10
+	movl	%esi, %eax
+	movl	%esi, %r9d
+	shrl	$24, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te0(,%rax,4), %rax
+	movq	%rdi, %r8
+	movq	%rdi, %rsi
+	cmovlq	%rax, %r8
+	testb	%r15b, %r15b
+	cmovneq	%rax, %r8
+	cmpq	$52, %rcx
+	leaq	208(%r11), %rcx
+	cmovgq	%rcx, %rdi
+	testb	%r15b, %r15b
+	movl	%r15d, %r11d
+	cmovneq	%rcx, %rdi
+	movq	64(%rsp), %rcx          # 8-byte Reload
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te3(,%rcx,4), %rcx
+	movq	%rsi, %r15
+	cmovlq	%rcx, %rsi
+	testb	%r11b, %r11b
+	cmovneq	%rcx, %rsi
+	movq	56(%rsp), %rdx          # 8-byte Reload
+	leaq	Te2(,%rdx,4), %rcx
+	cmpq	$256, %rdx              # imm = 0x100
+	movq	%r15, %rdx
+	cmovlq	%rcx, %rdx
+	testb	%r11b, %r11b
+	cmovneq	%rcx, %rdx
+	movl	%r9d, %ecx
+	shrl	$16, %ecx
+	movzbl	%cl, %ecx
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te1(,%rcx,4), %r9
+	movq	%r15, %rcx
+	cmovlq	%r9, %rcx
+	testb	%r11b, %r11b
+	movb	%r11b, 8(%rsp)          # 1-byte Spill
+	cmovneq	%r9, %rcx
+	movq	-80(%rsp), %rax         # 8-byte Reload
+	shrl	$24, %eax
+	leaq	Te0(,%rax,4), %r9
+	cmpq	$256, %rax              # imm = 0x100
+	movq	%r15, %rax
+	cmovlq	%r9, %rax
+	testb	%r11b, %r11b
+	cmovneq	%r9, %rax
+	movl	-96(%rsp), %r9d         # 4-byte Reload
+	cmpl	$11, %r9d
+	setl	%r11b
+	cmpl	$13, %r9d
+	setl	%r15b
+	movl	(%rax), %eax
+	xorl	(%rcx), %eax
+	xorl	(%rdx), %eax
+	xorl	(%rsi), %eax
+	xorl	(%rdi), %eax
+	movl	%eax, %esi
+	movl	(%r8), %r8d
+	xorl	(%r10), %r8d
+	xorl	(%rbx), %r8d
+	xorl	(%r14), %r8d
+	xorl	(%r13), %r8d
+	movl	(%r12), %eax
+	xorl	(%rbp), %eax
+	movq	-56(%rsp), %rcx         # 8-byte Reload
+	xorl	(%rcx), %eax
+	movq	72(%rsp), %rcx          # 8-byte Reload
+	xorl	(%rcx), %eax
+	movq	-48(%rsp), %rcx         # 8-byte Reload
+	xorl	(%rcx), %eax
+	movq	-72(%rsp), %rcx         # 8-byte Reload
+	movl	(%rcx), %edx
+	movq	-24(%rsp), %rcx         # 8-byte Reload
+	xorl	(%rcx), %edx
+	movq	(%rsp), %rcx            # 8-byte Reload
+	xorl	(%rcx), %edx
+	movq	16(%rsp), %rcx          # 8-byte Reload
+	xorl	(%rcx), %edx
+	movq	24(%rsp), %rcx          # 8-byte Reload
+	xorl	(%rcx), %edx
+	movl	%r11d, %ebx
+	andb	-121(%rsp), %bl
+	andb	-122(%rsp), %r15b
+	cmovnel	-40(%rsp), %esi         # 4-byte Folded Reload
+	cmovnel	-112(%rsp), %r8d        # 4-byte Folded Reload
+	cmovnel	-8(%rsp), %eax          # 4-byte Folded Reload
+	cmovnel	-32(%rsp), %edx         # 4-byte Folded Reload
+	testb	%bl, %bl
+	cmovnel	52(%rsp), %esi          # 4-byte Folded Reload
+	movl	%esi, %r11d
+	cmovnel	-120(%rsp), %r8d        # 4-byte Folded Reload
+	cmovnel	-104(%rsp), %eax        # 4-byte Folded Reload
+	cmovnel	48(%rsp), %edx          # 4-byte Folded Reload
+	movq	%rdx, %rcx
+	movq	%rdx, -120(%rsp)        # 8-byte Spill
+	movzbl	%ah, %ebp
+	movl	%eax, %r9d
+	movzbl	%al, %edx
+	movq	%rdx, -80(%rsp)         # 8-byte Spill
+	movl	%eax, %edx
+	movl	%r15d, %eax
+	orb	8(%rsp), %al            # 1-byte Folded Reload
+	orb	%bl, %al
+	movl	-96(%rsp), %esi         # 4-byte Reload
+	shll	$2, %esi
+	movslq	%esi, %r10
+	movq	40(%rsp), %r13          # 8-byte Reload
+	testq	%r13, %r13
+	movq	32(%rsp), %r15          # 8-byte Reload
+	leaq	(%r15,%r10,4), %rsi
+	leaq	-64(%rsp), %r12
+	movq	%r12, %rbx
+	cmovgq	%rsi, %rbx
+	testb	%al, %al
+	cmovneq	%rsi, %rbx
+	movzbl	%cl, %esi
+	cmpq	$256, %rsi              # imm = 0x100
+	leaq	Te4(,%rsi,4), %rsi
+	movq	%r12, %rdi
+	cmovlq	%rsi, %rdi
+	testb	%al, %al
+	cmovneq	%rsi, %rdi
+	cmpq	$256, %rbp              # imm = 0x100
+	leaq	Te4(,%rbp,4), %rsi
+	movq	%r12, %rbp
+	cmovlq	%rsi, %rbp
+	testb	%al, %al
+	cmovneq	%rsi, %rbp
+	movl	%r8d, %esi
+	shrl	$16, %esi
+	movzbl	%sil, %esi
+	cmpq	$256, %rsi              # imm = 0x100
+	leaq	Te4(,%rsi,4), %rsi
+	movq	%r12, %rcx
+	cmovlq	%rsi, %rcx
+	testb	%al, %al
+	movl	%eax, %r14d
+	cmovneq	%rsi, %rcx
+	movl	%r11d, %eax
+	movl	%r11d, -112(%rsp)       # 4-byte Spill
+	movl	%r11d, %esi
+	shrl	$24, %esi
+	cmpq	$256, %rsi              # imm = 0x100
+	leaq	Te4(,%rsi,4), %r11
+	movq	%r12, %rsi
+	cmovlq	%r11, %rsi
+	testb	%r14b, %r14b
+	cmovneq	%r11, %rsi
+	movzbl	3(%rsi), %esi
+	shll	$24, %esi
+	movzbl	2(%rcx), %ecx
+	shll	$16, %ecx
+	orl	%esi, %ecx
+	movzbl	1(%rbp), %esi
+	shll	$8, %esi
+	orl	%ecx, %esi
+	movzbl	(%rdi), %ecx
+	orl	%esi, %ecx
+	movb	%r14b, -123(%rsp)
+	xorl	(%rbx), %ecx
+	movl	%ecx, %esi
+	shrl	$24, %esi
+	testb	%r14b, %r14b
+	movq	88(%rsp), %r14          # 8-byte Reload
+	movzbl	(%r14), %edi
+	cmovnel	%esi, %edi
+	movq	80(%rsp), %rsi          # 8-byte Reload
+	cmovneq	%r14, %rsi
+	movb	%dil, (%rsi)
+	movl	%ecx, %esi
+	shrl	$16, %esi
+	cmpb	$0, -123(%rsp)
+	movq	96(%rsp), %rbp          # 8-byte Reload
+	cmovneq	104(%rsp), %rbp         # 8-byte Folded Reload
+	movzbl	1(%r14), %edi
+	cmovnel	%esi, %edi
+	movb	%dil, (%rbp)
+	movl	%ecx, %esi
+	shrl	$8, %esi
+	cmpb	$0, -123(%rsp)
+	movq	128(%rsp), %rbp         # 8-byte Reload
+	cmovneq	136(%rsp), %rbp         # 8-byte Folded Reload
+	movzbl	2(%r14), %edi
+	cmovnel	%esi, %edi
+	movb	%dil, (%rbp)
+	cmpb	$0, -123(%rsp)
+	movq	144(%rsp), %rdi         # 8-byte Reload
+	cmovneq	152(%rsp), %rdi         # 8-byte Folded Reload
+	movzbl	3(%r14), %esi
+	cmovnel	%ecx, %esi
+	movb	%sil, (%rdi)
+	cmpq	$1, %r13
+	leaq	4(%r15,%r10,4), %rcx
+	movq	%r12, %rsi
+	cmovgq	%rcx, %rsi
+	movb	-123(%rsp), %bl
+	testb	%bl, %bl
+	cmovneq	%rcx, %rsi
+	movzbl	%al, %ecx
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te4(,%rcx,4), %rcx
+	movq	%r12, %rdi
+	cmovlq	%rcx, %rdi
+	testb	%bl, %bl
+	cmovneq	%rcx, %rdi
+	movq	-120(%rsp), %rax        # 8-byte Reload
+	movzbl	%ah, %ecx
+	cmpq	$256, %rcx              # imm = 0x100
+	leaq	Te4(,%rcx,4), %rcx
+	movq	%r12, %rbp
+	cmovlq	%rcx, %rbp
+	testb	%bl, %bl
+	cmovneq	%rcx, %rbp
+	shrl	$16, %edx
+	movzbl	%dl, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r12, %rcx
+	cmovlq	%rax, %rcx
+	testb	%bl, %bl
+	cmovneq	%rax, %rcx
+	movl	%r8d, %eax
+	shrl	$24, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %r11
+	movq	%r12, %rax
+	cmovlq	%r11, %rax
+	testb	%bl, %bl
+	cmovneq	%r11, %rax
+	movzbl	3(%rax), %eax
+	shll	$24, %eax
+	movzbl	2(%rcx), %ecx
+	shll	$16, %ecx
+	orl	%eax, %ecx
+	movzbl	1(%rbp), %eax
+	shll	$8, %eax
+	orl	%ecx, %eax
+	movzbl	(%rdi), %ecx
+	orl	%eax, %ecx
+	xorl	(%rsi), %ecx
+	movl	%ecx, %eax
+	shrl	$24, %eax
+	testb	%bl, %bl
+	movq	112(%rsp), %rdi         # 8-byte Reload
+	cmovneq	120(%rsp), %rdi         # 8-byte Folded Reload
+	movzbl	4(%r14), %esi
+	cmovnel	%eax, %esi
+	movb	%sil, (%rdi)
+	movl	%ecx, %eax
+	shrl	$16, %eax
+	cmpb	$0, -123(%rsp)
+	movq	160(%rsp), %rdi         # 8-byte Reload
+	cmovneq	168(%rsp), %rdi         # 8-byte Folded Reload
+	movzbl	5(%r14), %esi
+	cmovnel	%eax, %esi
+	movb	%sil, (%rdi)
+	movl	%ecx, %eax
+	shrl	$8, %eax
+	cmpb	$0, -123(%rsp)
+	movq	176(%rsp), %rdi         # 8-byte Reload
+	cmovneq	184(%rsp), %rdi         # 8-byte Folded Reload
+	movzbl	6(%r14), %esi
+	cmovnel	%eax, %esi
+	movb	%sil, (%rdi)
+	cmpb	$0, -123(%rsp)
+	movq	208(%rsp), %rsi         # 8-byte Reload
+	cmovneq	216(%rsp), %rsi         # 8-byte Folded Reload
+	movzbl	7(%r14), %eax
+	cmovnel	%ecx, %eax
+	movb	%al, (%rsi)
+	cmpq	$2, %r13
+	leaq	8(%r15,%r10,4), %rax
+	movq	%r12, %rcx
+	cmovgq	%rax, %rcx
+	movb	-123(%rsp), %bl
+	testb	%bl, %bl
+	cmovneq	%rax, %rcx
+	movzbl	%r8b, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r12, %rsi
+	cmovlq	%rax, %rsi
+	testb	%bl, %bl
+	cmovneq	%rax, %rsi
+	movl	-112(%rsp), %eax        # 4-byte Reload
+	movzbl	%ah, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r12, %rdi
+	cmovlq	%rax, %rdi
+	testb	%bl, %bl
+	cmovneq	%rax, %rdi
+	movq	-120(%rsp), %rdx        # 8-byte Reload
+	movl	%edx, %eax
+	shrl	$16, %eax
+	movzbl	%al, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r12, %rbp
+	cmovlq	%rax, %rbp
+	testb	%bl, %bl
+	cmovneq	%rax, %rbp
+	shrl	$24, %r9d
+	cmpq	$256, %r9               # imm = 0x100
+	leaq	Te4(,%r9,4), %r9
+	movq	%r12, %rax
+	cmovlq	%r9, %rax
+	testb	%bl, %bl
+	cmovneq	%r9, %rax
+	movzbl	3(%rax), %eax
+	shll	$24, %eax
+	movzbl	2(%rbp), %ebp
+	shll	$16, %ebp
+	orl	%eax, %ebp
+	movzbl	1(%rdi), %eax
+	shll	$8, %eax
+	orl	%ebp, %eax
+	movzbl	(%rsi), %esi
+	orl	%eax, %esi
+	xorl	(%rcx), %esi
+	movl	%esi, %eax
+	shrl	$24, %eax
+	testb	%bl, %bl
+	movq	192(%rsp), %rdi         # 8-byte Reload
+	cmovneq	200(%rsp), %rdi         # 8-byte Folded Reload
+	movzbl	8(%r14), %ecx
+	cmovnel	%eax, %ecx
+	movb	%cl, (%rdi)
+	movl	%esi, %eax
+	shrl	$16, %eax
+	cmpb	$0, -123(%rsp)
+	movq	224(%rsp), %rdi         # 8-byte Reload
+	cmovneq	232(%rsp), %rdi         # 8-byte Folded Reload
+	movzbl	9(%r14), %ecx
+	cmovnel	%eax, %ecx
+	movb	%cl, (%rdi)
+	movl	%esi, %eax
+	shrl	$8, %eax
+	cmpb	$0, -123(%rsp)
+	movq	240(%rsp), %rdi         # 8-byte Reload
+	cmovneq	248(%rsp), %rdi         # 8-byte Folded Reload
+	movzbl	10(%r14), %ecx
+	cmovnel	%eax, %ecx
+	movb	%cl, (%rdi)
+	cmpb	$0, -123(%rsp)
+	movq	256(%rsp), %rcx         # 8-byte Reload
+	cmovneq	264(%rsp), %rcx         # 8-byte Folded Reload
+	movzbl	11(%r14), %eax
+	cmovnel	%esi, %eax
+	movb	%al, (%rcx)
+	leaq	12(%r15,%r10,4), %rax
+	cmpq	$3, %r13
+	movq	%r12, %rcx
+	cmovgq	%rax, %rcx
+	movb	-123(%rsp), %bl
+	testb	%bl, %bl
+	cmovneq	%rax, %rcx
+	movq	-80(%rsp), %rax         # 8-byte Reload
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r12, %rsi
+	cmovlq	%rax, %rsi
+	testb	%bl, %bl
+	cmovneq	%rax, %rsi
+	movl	%r8d, %eax
+	movzbl	%ah, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r12, %rdi
+	cmovlq	%rax, %rdi
+	testb	%bl, %bl
+	cmovneq	%rax, %rdi
+	movl	-112(%rsp), %eax        # 4-byte Reload
+	shrl	$16, %eax
+	movzbl	%al, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	movq	%r12, %rbp
+	cmovlq	%rax, %rbp
+	testb	%bl, %bl
+	cmovneq	%rax, %rbp
+	movq	%rdx, %rax
+	shrl	$24, %eax
+	cmpq	$256, %rax              # imm = 0x100
+	leaq	Te4(,%rax,4), %rax
+	cmovlq	%rax, %r12
+	testb	%bl, %bl
+	cmovneq	%rax, %r12
+	movzbl	3(%r12), %eax
+	shll	$24, %eax
+	movzbl	2(%rbp), %edx
+	shll	$16, %edx
+	orl	%eax, %edx
+	movzbl	1(%rdi), %eax
+	shll	$8, %eax
+	orl	%edx, %eax
+	movzbl	(%rsi), %edx
+	orl	%eax, %edx
+	xorl	(%rcx), %edx
+	movl	%edx, %eax
+	shrl	$24, %eax
+	testb	%bl, %bl
+	movq	280(%rsp), %rsi         # 8-byte Reload
+	cmovneq	272(%rsp), %rsi         # 8-byte Folded Reload
+	movzbl	12(%r14), %ecx
+	cmovnel	%eax, %ecx
+	movb	%cl, (%rsi)
+	movl	%edx, %eax
+	shrl	$16, %eax
+	cmpb	$0, -123(%rsp)
+	movq	288(%rsp), %rsi         # 8-byte Reload
+	cmovneq	296(%rsp), %rsi         # 8-byte Folded Reload
+	movzbl	13(%r14), %ecx
+	cmovnel	%eax, %ecx
+	movb	%cl, (%rsi)
+	movl	%edx, %eax
+	shrl	$8, %eax
+	cmpb	$0, -123(%rsp)
+	movq	304(%rsp), %rsi         # 8-byte Reload
+	cmovneq	312(%rsp), %rsi         # 8-byte Folded Reload
+	movzbl	14(%r14), %ecx
+	cmovnel	%eax, %ecx
+	movb	%cl, (%rsi)
+	cmpb	$0, -123(%rsp)
+	movq	320(%rsp), %rcx         # 8-byte Reload
+	cmovneq	328(%rsp), %rcx         # 8-byte Folded Reload
+	movzbl	15(%r14), %eax
+	cmovnel	%edx, %eax
+	movb	%al, (%rcx)
+	addq	$336, %rsp              # imm = 0x150
+	.cfi_def_cfa_offset 56
+	popq	%rbx
+	.cfi_def_cfa_offset 48
+	popq	%r12
+	.cfi_def_cfa_offset 40
+	popq	%r13
+	.cfi_def_cfa_offset 32
+	popq	%r14
+	.cfi_def_cfa_offset 24
+	popq	%r15
+	.cfi_def_cfa_offset 16
+	popq	%rbp
+	.cfi_def_cfa_offset 8
+	retq
 .Lfunc_end6:
-	.size	rijndaelKeySetupDec, .Lfunc_end6-rijndaelKeySetupDec
+	.size	rijndaelEncrypt, .Lfunc_end6-rijndaelEncrypt
 	.cfi_endproc
                                         # -- End function
 	.globl	rijndaelDecrypt         # -- Begin function rijndaelDecrypt
@@ -7256,7 +7532,8 @@ randombytes:                            # @randombytes
 	jne	.LBB8_4
 	jmp	.LBB8_2
 	.p2align	4, 0x90
-.LBB8_3:                                #   in Loop: Header=BB8_2 Depth=1
+.LBB8_3:                                # %.lr.ph7
+                                        #   in Loop: Header=BB8_2 Depth=1
 	movl	$1, %edi
 	callq	sleep
 	movl	$.L.str.2, %edi
@@ -7338,7 +7615,7 @@ randombytes:                            # @randombytes
 	movl	%eax, randombytes.fd(%rip)
 	cmpl	$-1, %eax
 	je	.LBB8_3
-.LBB8_4:
+.LBB8_4:                                # %.loopexit
 	testq	%rbx, %rbx
 	setg	%bpl
 	jle	.LBB8_9
@@ -7465,7 +7742,7 @@ randombytes:                            # @randombytes
 	setg	%bpl
 	subq	%rax, %rbx
 	jg	.LBB8_5
-.LBB8_9:
+.LBB8_9:                                # %.outer._crit_edge
 	popq	%rbx
 	.cfi_def_cfa_offset 24
 	popq	%r14
@@ -7475,7 +7752,7 @@ randombytes:                            # @randombytes
 	retq
 .LBB8_30:
 	.cfi_def_cfa_offset 32
-	movl	$.L.str.3, %edi
+	movl	$.L.str.11, %edi
 	movl	$.L.str.1, %esi
 	movl	$.L__PRETTY_FUNCTION__.randombytes, %ecx
 	movl	$14, %edx
@@ -7520,6 +7797,19 @@ randombit:                              # @randombit
 	.size	randombit, .Lfunc_end9-randombit
 	.cfi_endproc
                                         # -- End function
+	.type	.L__const.main.input_data,@object # @__const.main.input_data
+	.section	.rodata.cst16,"aM",@progbits,16
+	.p2align	4
+.L__const.main.input_data:
+	.ascii	".\261\311!#S\227\372\342\031\236e\231\366d\305"
+	.size	.L__const.main.input_data, 16
+
+	.type	.L.str,@object          # @.str
+	.section	.rodata.str1.1,"aMS",@progbits,1
+.L.str:
+	.asciz	"%d\n"
+	.size	.L.str, 4
+
 	.type	chunk_size,@object      # @chunk_size
 	.section	.rodata,"a",@progbits
 	.globl	chunk_size
@@ -7535,22 +7825,1316 @@ number_measurements:
 	.quad	1                       # 0x1
 	.size	number_measurements, 8
 
-	.type	.L__const.main.input_data,@object # @__const.main.input_data
-	.section	.rodata.cst16,"aM",@progbits,16
-	.p2align	4
-.L__const.main.input_data:
-	.ascii	".\261\311!#S\227\372\342\031\236e\231\366d\305"
-	.size	.L__const.main.input_data, 16
-
-	.type	.L.str,@object          # @.str
-	.section	.rodata.str1.1,"aMS",@progbits,1
-.L.str:
-	.asciz	"%d\n"
-	.size	.L.str, 4
-
 	.type	rk,@object              # @rk
 	.local	rk
 	.comm	rk,176,16
+	.type	Te4,@object             # @Te4
+	.data
+	.p2align	4
+Te4:
+	.long	1667457891              # 0x63636363
+	.long	2088533116              # 0x7c7c7c7c
+	.long	2004318071              # 0x77777777
+	.long	2071690107              # 0x7b7b7b7b
+	.long	4076008178              # 0xf2f2f2f2
+	.long	1802201963              # 0x6b6b6b6b
+	.long	1869573999              # 0x6f6f6f6f
+	.long	3318072773              # 0xc5c5c5c5
+	.long	808464432               # 0x30303030
+	.long	16843009                # 0x1010101
+	.long	1734829927              # 0x67676767
+	.long	724249387               # 0x2b2b2b2b
+	.long	4278124286              # 0xfefefefe
+	.long	3621246935              # 0xd7d7d7d7
+	.long	2880154539              # 0xabababab
+	.long	1987475062              # 0x76767676
+	.long	3402287818              # 0xcacacaca
+	.long	2189591170              # 0x82828282
+	.long	3385444809              # 0xc9c9c9c9
+	.long	2105376125              # 0x7d7d7d7d
+	.long	4210752250              # 0xfafafafa
+	.long	1499027801              # 0x59595959
+	.long	1195853639              # 0x47474747
+	.long	4042322160              # 0xf0f0f0f0
+	.long	2913840557              # 0xadadadad
+	.long	3570717908              # 0xd4d4d4d4
+	.long	2728567458              # 0xa2a2a2a2
+	.long	2947526575              # 0xafafafaf
+	.long	2627509404              # 0x9c9c9c9c
+	.long	2762253476              # 0xa4a4a4a4
+	.long	1920103026              # 0x72727272
+	.long	3233857728              # 0xc0c0c0c0
+	.long	3082270647              # 0xb7b7b7b7
+	.long	4261281277              # 0xfdfdfdfd
+	.long	2475922323              # 0x93939393
+	.long	640034342               # 0x26262626
+	.long	909522486               # 0x36363636
+	.long	1061109567              # 0x3f3f3f3f
+	.long	4160223223              # 0xf7f7f7f7
+	.long	3435973836              # 0xcccccccc
+	.long	875836468               # 0x34343434
+	.long	2779096485              # 0xa5a5a5a5
+	.long	3857049061              # 0xe5e5e5e5
+	.long	4059165169              # 0xf1f1f1f1
+	.long	1903260017              # 0x71717171
+	.long	3638089944              # 0xd8d8d8d8
+	.long	825307441               # 0x31313131
+	.long	353703189               # 0x15151515
+	.long	67372036                # 0x4040404
+	.long	3351758791              # 0xc7c7c7c7
+	.long	589505315               # 0x23232323
+	.long	3284386755              # 0xc3c3c3c3
+	.long	404232216               # 0x18181818
+	.long	2526451350              # 0x96969696
+	.long	84215045                # 0x5050505
+	.long	2593823386              # 0x9a9a9a9a
+	.long	117901063               # 0x7070707
+	.long	303174162               # 0x12121212
+	.long	2155905152              # 0x80808080
+	.long	3806520034              # 0xe2e2e2e2
+	.long	3958107115              # 0xebebebeb
+	.long	656877351               # 0x27272727
+	.long	2998055602              # 0xb2b2b2b2
+	.long	1970632053              # 0x75757575
+	.long	151587081               # 0x9090909
+	.long	2206434179              # 0x83838383
+	.long	741092396               # 0x2c2c2c2c
+	.long	437918234               # 0x1a1a1a1a
+	.long	454761243               # 0x1b1b1b1b
+	.long	1852730990              # 0x6e6e6e6e
+	.long	1515870810              # 0x5a5a5a5a
+	.long	2694881440              # 0xa0a0a0a0
+	.long	1381126738              # 0x52525252
+	.long	993737531               # 0x3b3b3b3b
+	.long	3604403926              # 0xd6d6d6d6
+	.long	3014898611              # 0xb3b3b3b3
+	.long	690563369               # 0x29292929
+	.long	3823363043              # 0xe3e3e3e3
+	.long	791621423               # 0x2f2f2f2f
+	.long	2223277188              # 0x84848484
+	.long	1397969747              # 0x53535353
+	.long	3520188881              # 0xd1d1d1d1
+	.long	0                       # 0x0
+	.long	3991793133              # 0xedededed
+	.long	538976288               # 0x20202020
+	.long	4244438268              # 0xfcfcfcfc
+	.long	2981212593              # 0xb1b1b1b1
+	.long	1532713819              # 0x5b5b5b5b
+	.long	1785358954              # 0x6a6a6a6a
+	.long	3419130827              # 0xcbcbcbcb
+	.long	3200171710              # 0xbebebebe
+	.long	960051513               # 0x39393939
+	.long	1246382666              # 0x4a4a4a4a
+	.long	1280068684              # 0x4c4c4c4c
+	.long	1482184792              # 0x58585858
+	.long	3486502863              # 0xcfcfcfcf
+	.long	3503345872              # 0xd0d0d0d0
+	.long	4025479151              # 0xefefefef
+	.long	2863311530              # 0xaaaaaaaa
+	.long	4227595259              # 0xfbfbfbfb
+	.long	1128481603              # 0x43434343
+	.long	1296911693              # 0x4d4d4d4d
+	.long	858993459               # 0x33333333
+	.long	2240120197              # 0x85858585
+	.long	1162167621              # 0x45454545
+	.long	4193909241              # 0xf9f9f9f9
+	.long	33686018                # 0x2020202
+	.long	2139062143              # 0x7f7f7f7f
+	.long	1347440720              # 0x50505050
+	.long	1010580540              # 0x3c3c3c3c
+	.long	2678038431              # 0x9f9f9f9f
+	.long	2829625512              # 0xa8a8a8a8
+	.long	1364283729              # 0x51515151
+	.long	2745410467              # 0xa3a3a3a3
+	.long	1077952576              # 0x40404040
+	.long	2408550287              # 0x8f8f8f8f
+	.long	2459079314              # 0x92929292
+	.long	2644352413              # 0x9d9d9d9d
+	.long	943208504               # 0x38383838
+	.long	4126537205              # 0xf5f5f5f5
+	.long	3166485692              # 0xbcbcbcbc
+	.long	3065427638              # 0xb6b6b6b6
+	.long	3671775962              # 0xdadadada
+	.long	555819297               # 0x21212121
+	.long	269488144               # 0x10101010
+	.long	4294967295              # 0xffffffff
+	.long	4092851187              # 0xf3f3f3f3
+	.long	3537031890              # 0xd2d2d2d2
+	.long	3452816845              # 0xcdcdcdcd
+	.long	202116108               # 0xc0c0c0c
+	.long	320017171               # 0x13131313
+	.long	3974950124              # 0xecececec
+	.long	1600085855              # 0x5f5f5f5f
+	.long	2543294359              # 0x97979797
+	.long	1145324612              # 0x44444444
+	.long	387389207               # 0x17171717
+	.long	3301229764              # 0xc4c4c4c4
+	.long	2812782503              # 0xa7a7a7a7
+	.long	2122219134              # 0x7e7e7e7e
+	.long	1027423549              # 0x3d3d3d3d
+	.long	1684300900              # 0x64646464
+	.long	1566399837              # 0x5d5d5d5d
+	.long	421075225               # 0x19191919
+	.long	1936946035              # 0x73737373
+	.long	1616928864              # 0x60606060
+	.long	2172748161              # 0x81818181
+	.long	1330597711              # 0x4f4f4f4f
+	.long	3705461980              # 0xdcdcdcdc
+	.long	572662306               # 0x22222222
+	.long	707406378               # 0x2a2a2a2a
+	.long	2425393296              # 0x90909090
+	.long	2290649224              # 0x88888888
+	.long	1179010630              # 0x46464646
+	.long	4008636142              # 0xeeeeeeee
+	.long	3099113656              # 0xb8b8b8b8
+	.long	336860180               # 0x14141414
+	.long	3739147998              # 0xdededede
+	.long	1583242846              # 0x5e5e5e5e
+	.long	185273099               # 0xb0b0b0b
+	.long	3688618971              # 0xdbdbdbdb
+	.long	3772834016              # 0xe0e0e0e0
+	.long	842150450               # 0x32323232
+	.long	976894522               # 0x3a3a3a3a
+	.long	168430090               # 0xa0a0a0a
+	.long	1229539657              # 0x49494949
+	.long	101058054               # 0x6060606
+	.long	606348324               # 0x24242424
+	.long	1549556828              # 0x5c5c5c5c
+	.long	3267543746              # 0xc2c2c2c2
+	.long	3553874899              # 0xd3d3d3d3
+	.long	2896997548              # 0xacacacac
+	.long	1650614882              # 0x62626262
+	.long	2442236305              # 0x91919191
+	.long	2509608341              # 0x95959595
+	.long	3840206052              # 0xe4e4e4e4
+	.long	2038004089              # 0x79797979
+	.long	3890735079              # 0xe7e7e7e7
+	.long	3368601800              # 0xc8c8c8c8
+	.long	926365495               # 0x37373737
+	.long	1835887981              # 0x6d6d6d6d
+	.long	2374864269              # 0x8d8d8d8d
+	.long	3587560917              # 0xd5d5d5d5
+	.long	1313754702              # 0x4e4e4e4e
+	.long	2846468521              # 0xa9a9a9a9
+	.long	1819044972              # 0x6c6c6c6c
+	.long	1448498774              # 0x56565656
+	.long	4109694196              # 0xf4f4f4f4
+	.long	3941264106              # 0xeaeaeaea
+	.long	1701143909              # 0x65656565
+	.long	2054847098              # 0x7a7a7a7a
+	.long	2930683566              # 0xaeaeaeae
+	.long	134744072               # 0x8080808
+	.long	3132799674              # 0xbabababa
+	.long	2021161080              # 0x78787878
+	.long	623191333               # 0x25252525
+	.long	774778414               # 0x2e2e2e2e
+	.long	471604252               # 0x1c1c1c1c
+	.long	2795939494              # 0xa6a6a6a6
+	.long	3031741620              # 0xb4b4b4b4
+	.long	3334915782              # 0xc6c6c6c6
+	.long	3907578088              # 0xe8e8e8e8
+	.long	3722304989              # 0xdddddddd
+	.long	1953789044              # 0x74747474
+	.long	522133279               # 0x1f1f1f1f
+	.long	1263225675              # 0x4b4b4b4b
+	.long	3183328701              # 0xbdbdbdbd
+	.long	2341178251              # 0x8b8b8b8b
+	.long	2324335242              # 0x8a8a8a8a
+	.long	1886417008              # 0x70707070
+	.long	1044266558              # 0x3e3e3e3e
+	.long	3048584629              # 0xb5b5b5b5
+	.long	1717986918              # 0x66666666
+	.long	1212696648              # 0x48484848
+	.long	50529027                # 0x3030303
+	.long	4143380214              # 0xf6f6f6f6
+	.long	235802126               # 0xe0e0e0e
+	.long	1633771873              # 0x61616161
+	.long	892679477               # 0x35353535
+	.long	1465341783              # 0x57575757
+	.long	3115956665              # 0xb9b9b9b9
+	.long	2256963206              # 0x86868686
+	.long	3250700737              # 0xc1c1c1c1
+	.long	488447261               # 0x1d1d1d1d
+	.long	2661195422              # 0x9e9e9e9e
+	.long	3789677025              # 0xe1e1e1e1
+	.long	4177066232              # 0xf8f8f8f8
+	.long	2560137368              # 0x98989898
+	.long	286331153               # 0x11111111
+	.long	1768515945              # 0x69696969
+	.long	3654932953              # 0xd9d9d9d9
+	.long	2391707278              # 0x8e8e8e8e
+	.long	2492765332              # 0x94949494
+	.long	2610666395              # 0x9b9b9b9b
+	.long	505290270               # 0x1e1e1e1e
+	.long	2273806215              # 0x87878787
+	.long	3924421097              # 0xe9e9e9e9
+	.long	3469659854              # 0xcececece
+	.long	1431655765              # 0x55555555
+	.long	673720360               # 0x28282828
+	.long	3755991007              # 0xdfdfdfdf
+	.long	2358021260              # 0x8c8c8c8c
+	.long	2711724449              # 0xa1a1a1a1
+	.long	2307492233              # 0x89898989
+	.long	218959117               # 0xd0d0d0d
+	.long	3217014719              # 0xbfbfbfbf
+	.long	3873892070              # 0xe6e6e6e6
+	.long	1111638594              # 0x42424242
+	.long	1751672936              # 0x68686868
+	.long	1094795585              # 0x41414141
+	.long	2576980377              # 0x99999999
+	.long	757935405               # 0x2d2d2d2d
+	.long	252645135               # 0xf0f0f0f
+	.long	2964369584              # 0xb0b0b0b0
+	.long	1414812756              # 0x54545454
+	.long	3149642683              # 0xbbbbbbbb
+	.long	370546198               # 0x16161616
+	.size	Te4, 1024
+
+	.type	Td0,@object             # @Td0
+	.section	.rodata,"a",@progbits
+	.p2align	4
+Td0:
+	.long	1374988112              # 0x51f4a750
+	.long	2118214995              # 0x7e416553
+	.long	437757123               # 0x1a17a4c3
+	.long	975658646               # 0x3a275e96
+	.long	1001089995              # 0x3bab6bcb
+	.long	530400753               # 0x1f9d45f1
+	.long	2902087851              # 0xacfa58ab
+	.long	1273168787              # 0x4be30393
+	.long	540080725               # 0x2030fa55
+	.long	2910219766              # 0xad766df6
+	.long	2295101073              # 0x88cc7691
+	.long	4110568485              # 0xf5024c25
+	.long	1340463100              # 0x4fe5d7fc
+	.long	3307916247              # 0xc52acbd7
+	.long	641025152               # 0x26354480
+	.long	3043140495              # 0xb562a38f
+	.long	3736164937              # 0xdeb15a49
+	.long	632953703               # 0x25ba1b67
+	.long	1172967064              # 0x45ea0e98
+	.long	1576976609              # 0x5dfec0e1
+	.long	3274667266              # 0xc32f7502
+	.long	2169303058              # 0x814cf012
+	.long	2370213795              # 0x8d4697a3
+	.long	1809054150              # 0x6bd3f9c6
+	.long	59727847                # 0x38f5fe7
+	.long	361929877               # 0x15929c95
+	.long	3211623147              # 0xbf6d7aeb
+	.long	2505202138              # 0x955259da
+	.long	3569255213              # 0xd4be832d
+	.long	1484005843              # 0x587421d3
+	.long	1239443753              # 0x49e06929
+	.long	2395588676              # 0x8ec9c844
+	.long	1975683434              # 0x75c2896a
+	.long	4102977912              # 0xf48e7978
+	.long	2572697195              # 0x99583e6b
+	.long	666464733               # 0x27b971dd
+	.long	3202437046              # 0xbee14fb6
+	.long	4035489047              # 0xf088ad17
+	.long	3374361702              # 0xc920ac66
+	.long	2110667444              # 0x7dce3ab4
+	.long	1675577880              # 0x63df4a18
+	.long	3843699074              # 0xe51a3182
+	.long	2538681184              # 0x97513360
+	.long	1649639237              # 0x62537f45
+	.long	2976151520              # 0xb16477e0
+	.long	3144396420              # 0xbb6bae84
+	.long	4269907996              # 0xfe81a01c
+	.long	4178062228              # 0xf9082b94
+	.long	1883793496              # 0x70486858
+	.long	2403728665              # 0x8f45fd19
+	.long	2497604743              # 0x94de6c87
+	.long	1383856311              # 0x527bf8b7
+	.long	2876494627              # 0xab73d323
+	.long	1917518562              # 0x724b02e2
+	.long	3810496343              # 0xe31f8f57
+	.long	1716890410              # 0x6655ab2a
+	.long	3001755655              # 0xb2eb2807
+	.long	800440835               # 0x2fb5c203
+	.long	2261089178              # 0x86c57b9a
+	.long	3543599269              # 0xd33708a5
+	.long	807962610               # 0x302887f2
+	.long	599762354               # 0x23bfa5b2
+	.long	33778362                # 0x2036aba
+	.long	3977675356              # 0xed16825c
+	.long	2328828971              # 0x8acf1c2b
+	.long	2809771154              # 0xa779b492
+	.long	4077384432              # 0xf307f2f0
+	.long	1315562145              # 0x4e69e2a1
+	.long	1708848333              # 0x65daf4cd
+	.long	101039829               # 0x605bed5
+	.long	3509871135              # 0xd134621f
+	.long	3299278474              # 0xc4a6fe8a
+	.long	875451293               # 0x342e539d
+	.long	2733856160              # 0xa2f355a0
+	.long	92987698                # 0x58ae132
+	.long	2767645557              # 0xa4f6eb75
+	.long	193195065               # 0xb83ec39
+	.long	1080094634              # 0x4060efaa
+	.long	1584504582              # 0x5e719f06
+	.long	3178106961              # 0xbd6e1051
+	.long	1042385657              # 0x3e218af9
+	.long	2531067453              # 0x96dd063d
+	.long	3711829422              # 0xdd3e05ae
+	.long	1306967366              # 0x4de6bd46
+	.long	2438237621              # 0x91548db5
+	.long	1908694277              # 0x71c45d05
+	.long	67556463                # 0x406d46f
+	.long	1615861247              # 0x605015ff
+	.long	429456164               # 0x1998fb24
+	.long	3602770327              # 0xd6bde997
+	.long	2302690252              # 0x894043cc
+	.long	1742315127              # 0x67d99e77
+	.long	2968011453              # 0xb0e842bd
+	.long	126454664               # 0x7898b88
+	.long	3877198648              # 0xe7195b38
+	.long	2043211483              # 0x79c8eedb
+	.long	2709260871              # 0xa17c0a47
+	.long	2084704233              # 0x7c420fe9
+	.long	4169408201              # 0xf8841ec9
+	.long	0                       # 0x0
+	.long	159417987               # 0x9808683
+	.long	841739592               # 0x322bed48
+	.long	504459436               # 0x1e1170ac
+	.long	1817866830              # 0x6c5a724e
+	.long	4245618683              # 0xfd0efffb
+	.long	260388950               # 0xf853856
+	.long	1034867998              # 0x3daed51e
+	.long	908933415               # 0x362d3927
+	.long	168810852               # 0xa0fd964
+	.long	1750902305              # 0x685ca621
+	.long	2606453969              # 0x9b5b54d1
+	.long	607530554               # 0x24362e3a
+	.long	202008497               # 0xc0a67b1
+	.long	2472011535              # 0x9357e70f
+	.long	3035535058              # 0xb4ee96d2
+	.long	463180190               # 0x1b9b919e
+	.long	2160117071              # 0x80c0c54f
+	.long	1641816226              # 0x61dc20a2
+	.long	1517767529              # 0x5a774b69
+	.long	470948374               # 0x1c121a16
+	.long	3801332234              # 0xe293ba0a
+	.long	3231722213              # 0xc0a02ae5
+	.long	1008918595              # 0x3c22e043
+	.long	303765277               # 0x121b171d
+	.long	235474187               # 0xe090d0b
+	.long	4069246893              # 0xf28bc7ad
+	.long	766945465               # 0x2db6a8b9
+	.long	337553864               # 0x141ea9c8
+	.long	1475418501              # 0x57f11985
+	.long	2943682380              # 0xaf75074c
+	.long	4003061179              # 0xee99ddbb
+	.long	2743034109              # 0xa37f60fd
+	.long	4144047775              # 0xf701269f
+	.long	1551037884              # 0x5c72f5bc
+	.long	1147550661              # 0x44663bc5
+	.long	1543208500              # 0x5bfb7e34
+	.long	2336434550              # 0x8b432976
+	.long	3408119516              # 0xcb23c6dc
+	.long	3069049960              # 0xb6edfc68
+	.long	3102011747              # 0xb8e4f163
+	.long	3610369226              # 0xd731dcca
+	.long	1113818384              # 0x42638510
+	.long	328671808               # 0x13972240
+	.long	2227573024              # 0x84c61120
+	.long	2236228733              # 0x854a247d
+	.long	3535486456              # 0xd2bb3df8
+	.long	2935566865              # 0xaef93211
+	.long	3341394285              # 0xc729a16d
+	.long	496906059               # 0x1d9e2f4b
+	.long	3702665459              # 0xdcb230f3
+	.long	226906860               # 0xd8652ec
+	.long	2009195472              # 0x77c1e3d0
+	.long	733156972               # 0x2bb3166c
+	.long	2842737049              # 0xa970b999
+	.long	294930682               # 0x119448fa
+	.long	1206477858              # 0x47e96422
+	.long	2835123396              # 0xa8fc8cc4
+	.long	2700099354              # 0xa0f03f1a
+	.long	1451044056              # 0x567d2cd8
+	.long	573804783               # 0x223390ef
+	.long	2269728455              # 0x87494ec7
+	.long	3644379585              # 0xd938d1c1
+	.long	2362090238              # 0x8ccaa2fe
+	.long	2564033334              # 0x98d40b36
+	.long	2801107407              # 0xa6f581cf
+	.long	2776292904              # 0xa57ade28
+	.long	3669462566              # 0xdab78e26
+	.long	1068351396              # 0x3fadbfa4
+	.long	742039012               # 0x2c3a9de4
+	.long	1350078989              # 0x5078920d
+	.long	1784663195              # 0x6a5fcc9b
+	.long	1417561698              # 0x547e4662
+	.long	4136440770              # 0xf68d13c2
+	.long	2430122216              # 0x90d8b8e8
+	.long	775550814               # 0x2e39f75e
+	.long	2193862645              # 0x82c3aff5
+	.long	2673705150              # 0x9f5d80be
+	.long	1775276924              # 0x69d0937c
+	.long	1876241833              # 0x6fd52da9
+	.long	3475313331              # 0xcf2512b3
+	.long	3366754619              # 0xc8ac993b
+	.long	270040487               # 0x10187da7
+	.long	3902563182              # 0xe89c636e
+	.long	3678124923              # 0xdb3bbb7b
+	.long	3441850377              # 0xcd267809
+	.long	1851332852              # 0x6e5918f4
+	.long	3969562369              # 0xec9ab701
+	.long	2203032232              # 0x834f9aa8
+	.long	3868552805              # 0xe6956e65
+	.long	2868897406              # 0xaaffe67e
+	.long	566021896               # 0x21bccf08
+	.long	4011190502              # 0xef15e8e6
+	.long	3135740889              # 0xbae79bd9
+	.long	1248802510              # 0x4a6f36ce
+	.long	3936291284              # 0xea9f09d4
+	.long	699432150               # 0x29b07cd6
+	.long	832877231               # 0x31a4b2af
+	.long	708780849               # 0x2a3f2331
+	.long	3332740144              # 0xc6a59430
+	.long	899835584               # 0x35a266c0
+	.long	1951317047              # 0x744ebc37
+	.long	4236429990              # 0xfc82caa6
+	.long	3767586992              # 0xe090d0b0
+	.long	866637845               # 0x33a7d815
+	.long	4043610186              # 0xf104984a
+	.long	1106041591              # 0x41ecdaf7
+	.long	2144161806              # 0x7fcd500e
+	.long	395441711               # 0x1791f62f
+	.long	1984812685              # 0x764dd68d
+	.long	1139781709              # 0x43efb04d
+	.long	3433712980              # 0xccaa4d54
+	.long	3835036895              # 0xe49604df
+	.long	2664543715              # 0x9ed1b5e3
+	.long	1282050075              # 0x4c6a881b
+	.long	3240894392              # 0xc12c1fb8
+	.long	1181045119              # 0x4665517f
+	.long	2640243204              # 0x9d5eea04
+	.long	25965917                # 0x18c355d
+	.long	4203181171              # 0xfa877473
+	.long	4211818798              # 0xfb0b412e
+	.long	3009879386              # 0xb3671d5a
+	.long	2463879762              # 0x92dbd252
+	.long	3910161971              # 0xe9105633
+	.long	1842759443              # 0x6dd64713
+	.long	2597806476              # 0x9ad7618c
+	.long	933301370               # 0x37a10c7a
+	.long	1509430414              # 0x59f8148e
+	.long	3943906441              # 0xeb133c89
+	.long	3467192302              # 0xcea927ee
+	.long	3076639029              # 0xb761c935
+	.long	3776767469              # 0xe11ce5ed
+	.long	2051518780              # 0x7a47b13c
+	.long	2631065433              # 0x9cd2df59
+	.long	1441952575              # 0x55f2733f
+	.long	404016761               # 0x1814ce79
+	.long	1942435775              # 0x73c737bf
+	.long	1408749034              # 0x53f7cdea
+	.long	1610459739              # 0x5ffdaa5b
+	.long	3745345300              # 0xdf3d6f14
+	.long	2017778566              # 0x7844db86
+	.long	3400528769              # 0xcaaff381
+	.long	3110650942              # 0xb968c43e
+	.long	941896748               # 0x3824342c
+	.long	3265478751              # 0xc2a3405f
+	.long	371049330               # 0x161dc372
+	.long	3168937228              # 0xbce2250c
+	.long	675039627               # 0x283c498b
+	.long	4279080257              # 0xff0d9541
+	.long	967311729               # 0x39a80171
+	.long	135050206               # 0x80cb3de
+	.long	3635733660              # 0xd8b4e49c
+	.long	1683407248              # 0x6456c190
+	.long	2076935265              # 0x7bcb8461
+	.long	3576870512              # 0xd532b670
+	.long	1215061108              # 0x486c5c74
+	.long	3501741890              # 0xd0b85742
+	.size	Td0, 1024
+
+	.type	Td1,@object             # @Td1
+	.p2align	4
+Td1:
+	.long	1347548327              # 0x5051f4a7
+	.long	1400783205              # 0x537e4165
+	.long	3273267108              # 0xc31a17a4
+	.long	2520393566              # 0x963a275e
+	.long	3409685355              # 0xcb3bab6b
+	.long	4045380933              # 0xf11f9d45
+	.long	2880240216              # 0xabacfa58
+	.long	2471224067              # 0x934be303
+	.long	1428173050              # 0x552030fa
+	.long	4138563181              # 0xf6ad766d
+	.long	2441661558              # 0x9188cc76
+	.long	636813900               # 0x25f5024c
+	.long	4233094615              # 0xfc4fe5d7
+	.long	3620022987              # 0xd7c52acb
+	.long	2149987652              # 0x80263544
+	.long	2411029155              # 0x8fb562a3
+	.long	1239331162              # 0x49deb15a
+	.long	1730525723              # 0x6725ba1b
+	.long	2554718734              # 0x9845ea0e
+	.long	3781033664              # 0xe15dfec0
+	.long	46346101                # 0x2c32f75
+	.long	310463728               # 0x12814cf0
+	.long	2743944855              # 0xa38d4697
+	.long	3328955385              # 0xc66bd3f9
+	.long	3875770207              # 0xe7038f5f
+	.long	2501218972              # 0x9515929c
+	.long	3955191162              # 0xebbf6d7a
+	.long	3667219033              # 0xda955259
+	.long	768917123               # 0x2dd4be83
+	.long	3545789473              # 0xd3587421
+	.long	692707433               # 0x2949e069
+	.long	1150208456              # 0x448ec9c8
+	.long	1786102409              # 0x6a75c289
+	.long	2029293177              # 0x78f48e79
+	.long	1805211710              # 0x6b99583e
+	.long	3710368113              # 0xdd27b971
+	.long	3065962831              # 0xb6bee14f
+	.long	401639597               # 0x17f088ad
+	.long	1724457132              # 0x66c920ac
+	.long	3028143674              # 0xb47dce3a
+	.long	409198410               # 0x1863df4a
+	.long	2196052529              # 0x82e51a31
+	.long	1620529459              # 0x60975133
+	.long	1164071807              # 0x4562537f
+	.long	3769721975              # 0xe0b16477
+	.long	2226875310              # 0x84bb6bae
+	.long	486441376               # 0x1cfe81a0
+	.long	2499348523              # 0x94f9082b
+	.long	1483753576              # 0x58704868
+	.long	428819965               # 0x198f45fd
+	.long	2274680428              # 0x8794de6c
+	.long	3075636216              # 0xb7527bf8
+	.long	598438867               # 0x23ab73d3
+	.long	3799141122              # 0xe2724b02
+	.long	1474502543              # 0x57e31f8f
+	.long	711349675               # 0x2a6655ab
+	.long	129166120               # 0x7b2eb28
+	.long	53458370                # 0x32fb5c2
+	.long	2592523643              # 0x9a86c57b
+	.long	2782082824              # 0xa5d33708
+	.long	4063242375              # 0xf2302887
+	.long	2988687269              # 0xb223bfa5
+	.long	3120694122              # 0xba02036a
+	.long	1559041666              # 0x5ced1682
+	.long	730517276               # 0x2b8acf1c
+	.long	2460449204              # 0x92a779b4
+	.long	4042459122              # 0xf0f307f2
+	.long	2706270690              # 0xa14e69e2
+	.long	3446004468              # 0xcd65daf4
+	.long	3573941694              # 0xd50605be
+	.long	533804130               # 0x1fd13462
+	.long	2328143614              # 0x8ac4a6fe
+	.long	2637442643              # 0x9d342e53
+	.long	2695033685              # 0xa0a2f355
+	.long	839224033               # 0x32058ae1
+	.long	1973745387              # 0x75a4f6eb
+	.long	957055980               # 0x390b83ec
+	.long	2856345839              # 0xaa4060ef
+	.long	106852767               # 0x65e719f
+	.long	1371368976              # 0x51bd6e10
+	.long	4181598602              # 0xf93e218a
+	.long	1033297158              # 0x3d96dd06
+	.long	2933734917              # 0xaedd3e05
+	.long	1179510461              # 0x464de6bd
+	.long	3046200461              # 0xb591548d
+	.long	91341917                # 0x571c45d
+	.long	1862534868              # 0x6f0406d4
+	.long	4284502037              # 0xff605015
+	.long	605657339               # 0x241998fb
+	.long	2547432937              # 0x97d6bde9
+	.long	3431546947              # 0xcc894043
+	.long	2003294622              # 0x7767d99e
+	.long	3182487618              # 0xbdb0e842
+	.long	2282195339              # 0x8807898b
+	.long	954669403               # 0x38e7195b
+	.long	3682191598              # 0xdb79c8ee
+	.long	1201765386              # 0x47a17c0a
+	.long	3917234703              # 0xe97c420f
+	.long	3388507166              # 0xc9f8841e
+	.long	0                       # 0x0
+	.long	2198438022              # 0x83098086
+	.long	1211247597              # 0x48322bed
+	.long	2887651696              # 0xac1e1170
+	.long	1315723890              # 0x4e6c5a72
+	.long	4227665663              # 0xfbfd0eff
+	.long	1443857720              # 0x560f8538
+	.long	507358933               # 0x1e3daed5
+	.long	657861945               # 0x27362d39
+	.long	1678381017              # 0x640a0fd9
+	.long	560487590               # 0x21685ca6
+	.long	3516619604              # 0xd19b5b54
+	.long	975451694               # 0x3a24362e
+	.long	2970356327              # 0xb10c0a67
+	.long	261314535               # 0xf9357e7
+	.long	3535072918              # 0xd2b4ee96
+	.long	2652609425              # 0x9e1b9b91
+	.long	1333838021              # 0x4f80c0c5
+	.long	2724322336              # 0xa261dc20
+	.long	1767536459              # 0x695a774b
+	.long	370938394               # 0x161c121a
+	.long	182621114               # 0xae293ba
+	.long	3854606378              # 0xe5c0a02a
+	.long	1128014560              # 0x433c22e0
+	.long	487725847               # 0x1d121b17
+	.long	185469197               # 0xb0e090d
+	.long	2918353863              # 0xadf28bc7
+	.long	3106780840              # 0xb92db6a8
+	.long	3356761769              # 0xc8141ea9
+	.long	2237133081              # 0x8557f119
+	.long	1286567175              # 0x4caf7507
+	.long	3152976349              # 0xbbee99dd
+	.long	4255350624              # 0xfda37f60
+	.long	2683765030              # 0x9ff70126
+	.long	3160175349              # 0xbc5c72f5
+	.long	3309594171              # 0xc544663b
+	.long	878443390               # 0x345bfb7e
+	.long	1988838185              # 0x768b4329
+	.long	3704300486              # 0xdccb23c6
+	.long	1756818940              # 0x68b6edfc
+	.long	1673061617              # 0x63b8e4f1
+	.long	3403100636              # 0xcad731dc
+	.long	272786309               # 0x10426385
+	.long	1075025698              # 0x40139722
+	.long	545572369               # 0x2084c611
+	.long	2105887268              # 0x7d854a24
+	.long	4174560061              # 0xf8d2bb3d
+	.long	296679730               # 0x11aef932
+	.long	1841768865              # 0x6dc729a1
+	.long	1260232239              # 0x4b1d9e2f
+	.long	4091327024              # 0xf3dcb230
+	.long	3960309330              # 0xec0d8652
+	.long	3497509347              # 0xd077c1e3
+	.long	1814803222              # 0x6c2bb316
+	.long	2578018489              # 0x99a970b9
+	.long	4195456072              # 0xfa119448
+	.long	575138148               # 0x2247e964
+	.long	3299409036              # 0xc4a8fc8c
+	.long	446754879               # 0x1aa0f03f
+	.long	3629546796              # 0xd8567d2c
+	.long	4011996048              # 0xef223390
+	.long	3347532110              # 0xc787494e
+	.long	3252238545              # 0xc1d938d1
+	.long	4270639778              # 0xfe8ccaa2
+	.long	915985419               # 0x3698d40b
+	.long	3483825537              # 0xcfa6f581
+	.long	681933534               # 0x28a57ade
+	.long	651868046               # 0x26dab78e
+	.long	2755636671              # 0xa43fadbf
+	.long	3828103837              # 0xe42c3a9d
+	.long	223377554               # 0xd507892
+	.long	2607439820              # 0x9b6a5fcc
+	.long	1649704518              # 0x62547e46
+	.long	3270937875              # 0xc2f68d13
+	.long	3901806776              # 0xe890d8b8
+	.long	1580087799              # 0x5e2e39f7
+	.long	4118987695              # 0xf582c3af
+	.long	3198115200              # 0xbe9f5d80
+	.long	2087309459              # 0x7c69d093
+	.long	2842678573              # 0xa96fd52d
+	.long	3016697106              # 0xb3cf2512
+	.long	1003007129              # 0x3bc8ac99
+	.long	2802849917              # 0xa710187d
+	.long	1860738147              # 0x6ee89c63
+	.long	2077965243              # 0x7bdb3bbb
+	.long	164439672               # 0x9cd2678
+	.long	4100872472              # 0xf46e5918
+	.long	32283319                # 0x1ec9ab7
+	.long	2827177882              # 0xa8834f9a
+	.long	1709610350              # 0x65e6956e
+	.long	2125135846              # 0x7eaaffe6
+	.long	136428751               # 0x821bccf
+	.long	3874428392              # 0xe6ef15e8
+	.long	3652904859              # 0xd9bae79b
+	.long	3460984630              # 0xce4a6f36
+	.long	3572145929              # 0xd4ea9f09
+	.long	3593056380              # 0xd629b07c
+	.long	2939266226              # 0xaf31a4b2
+	.long	824852259               # 0x312a3f23
+	.long	818324884               # 0x30c6a594
+	.long	3224740454              # 0xc035a266
+	.long	930369212               # 0x37744ebc
+	.long	2801566410              # 0xa6fc82ca
+	.long	2967507152              # 0xb0e090d0
+	.long	355706840               # 0x1533a7d8
+	.long	1257309336              # 0x4af10498
+	.long	4148292826              # 0xf741ecda
+	.long	243256656               # 0xe7fcd50
+	.long	790073846               # 0x2f1791f6
+	.long	2373340630              # 0x8d764dd6
+	.long	1296297904              # 0x4d43efb0
+	.long	1422699085              # 0x54ccaa4d
+	.long	3756299780              # 0xdfe49604
+	.long	3818836405              # 0xe39ed1b5
+	.long	457992840               # 0x1b4c6a88
+	.long	3099667487              # 0xb8c12c1f
+	.long	2135319889              # 0x7f466551
+	.long	77422314                # 0x49d5eea
+	.long	1560382517              # 0x5d018c35
+	.long	1945798516              # 0x73fa8774
+	.long	788204353               # 0x2efb0b41
+	.long	1521706781              # 0x5ab3671d
+	.long	1385356242              # 0x5292dbd2
+	.long	870912086               # 0x33e91056
+	.long	325965383               # 0x136dd647
+	.long	2358957921              # 0x8c9ad761
+	.long	2050466060              # 0x7a37a10c
+	.long	2388260884              # 0x8e59f814
+	.long	2313884476              # 0x89eb133c
+	.long	4006521127              # 0xeecea927
+	.long	901210569               # 0x35b761c9
+	.long	3990953189              # 0xede11ce5
+	.long	1014646705              # 0x3c7a47b1
+	.long	1503449823              # 0x599cd2df
+	.long	1062597235              # 0x3f55f273
+	.long	2031621326              # 0x791814ce
+	.long	3212035895              # 0xbf73c737
+	.long	3931371469              # 0xea53f7cd
+	.long	1533017514              # 0x5b5ffdaa
+	.long	350174575               # 0x14df3d6f
+	.long	2256028891              # 0x867844db
+	.long	2177544179              # 0x81caaff3
+	.long	1052338372              # 0x3eb968c4
+	.long	741876788               # 0x2c382434
+	.long	1606591296              # 0x5fc2a340
+	.long	1914052035              # 0x72161dc3
+	.long	213705253               # 0xcbce225
+	.long	2334669897              # 0x8b283c49
+	.long	1107234197              # 0x41ff0d95
+	.long	1899603969              # 0x7139a801
+	.long	3725069491              # 0xde080cb3
+	.long	2631447780              # 0x9cd8b4e4
+	.long	2422494913              # 0x906456c1
+	.long	1635502980              # 0x617bcb84
+	.long	1893020342              # 0x70d532b6
+	.long	1950903388              # 0x74486c5c
+	.long	1120974935              # 0x42d0b857
+	.size	Td1, 1024
+
+	.type	Td2,@object             # @Td2
+	.p2align	4
+Td2:
+	.long	2807058932              # 0xa75051f4
+	.long	1699970625              # 0x65537e41
+	.long	2764249623              # 0xa4c31a17
+	.long	1586903591              # 0x5e963a27
+	.long	1808481195              # 0x6bcb3bab
+	.long	1173430173              # 0x45f11f9d
+	.long	1487645946              # 0x58abacfa
+	.long	59984867                # 0x3934be3
+	.long	4199882800              # 0xfa552030
+	.long	1844882806              # 0x6df6ad76
+	.long	1989249228              # 0x769188cc
+	.long	1277555970              # 0x4c25f502
+	.long	3623636965              # 0xd7fc4fe5
+	.long	3419915562              # 0xcbd7c52a
+	.long	1149249077              # 0x44802635
+	.long	2744104290              # 0xa38fb562
+	.long	1514790577              # 0x5a49deb1
+	.long	459744698               # 0x1b6725ba
+	.long	244860394               # 0xe9845ea
+	.long	3235995134              # 0xc0e15dfe
+	.long	1963115311              # 0x7502c32f
+	.long	4027744588              # 0xf012814c
+	.long	2544078150              # 0x97a38d46
+	.long	4190530515              # 0xf9c66bd3
+	.long	1608975247              # 0x5fe7038f
+	.long	2627016082              # 0x9c951592
+	.long	2062270317              # 0x7aebbf6d
+	.long	1507497298              # 0x59da9552
+	.long	2200818878              # 0x832dd4be
+	.long	567498868               # 0x21d35874
+	.long	1764313568              # 0x692949e0
+	.long	3359936201              # 0xc8448ec9
+	.long	2305455554              # 0x896a75c2
+	.long	2037970062              # 0x7978f48e
+	.long	1047239000              # 0x3e6b9958
+	.long	1910319033              # 0x71dd27b9
+	.long	1337376481              # 0x4fb6bee1
+	.long	2904027272              # 0xad17f088
+	.long	2892417312              # 0xac66c920
+	.long	984907214               # 0x3ab47dce
+	.long	1243112415              # 0x4a1863df
+	.long	830661914               # 0x3182e51a
+	.long	861968209               # 0x33609751
+	.long	2135253587              # 0x7f456253
+	.long	2011214180              # 0x77e0b164
+	.long	2927934315              # 0xae84bb6b
+	.long	2686254721              # 0xa01cfe81
+	.long	731183368               # 0x2b94f908
+	.long	1750626376              # 0x68587048
+	.long	4246310725              # 0xfd198f45
+	.long	1820824798              # 0x6c8794de
+	.long	4172763771              # 0xf8b7527b
+	.long	3542330227              # 0xd323ab73
+	.long	48394827                # 0x2e2724b
+	.long	2404901663              # 0x8f57e31f
+	.long	2871682645              # 0xab2a6655
+	.long	671593195               # 0x2807b2eb
+	.long	3254988725              # 0xc2032fb5
+	.long	2073724613              # 0x7b9a86c5
+	.long	145085239               # 0x8a5d337
+	.long	2280796200              # 0x87f23028
+	.long	2779915199              # 0xa5b223bf
+	.long	1790575107              # 0x6aba0203
+	.long	2187128086              # 0x825ced16
+	.long	472615631               # 0x1c2b8acf
+	.long	3029510009              # 0xb492a779
+	.long	4075877127              # 0xf2f0f307
+	.long	3802222185              # 0xe2a14e69
+	.long	4107101658              # 0xf4cd65da
+	.long	3201631749              # 0xbed50605
+	.long	1646252340              # 0x621fd134
+	.long	4270507174              # 0xfe8ac4a6
+	.long	1402811438              # 0x539d342e
+	.long	1436590835              # 0x55a0a2f3
+	.long	3778151818              # 0xe132058a
+	.long	3950355702              # 0xeb75a4f6
+	.long	3963161475              # 0xec390b83
+	.long	4020912224              # 0xefaa4060
+	.long	2667994737              # 0x9f065e71
+	.long	273792366               # 0x1051bd6e
+	.long	2331590177              # 0x8af93e21
+	.long	104699613               # 0x63d96dd
+	.long	95345982                # 0x5aedd3e
+	.long	3175501286              # 0xbd464de6
+	.long	2377486676              # 0x8db59154
+	.long	1560637892              # 0x5d0571c4
+	.long	3564045318              # 0xd46f0406
+	.long	369057872               # 0x15ff6050
+	.long	4213447064              # 0xfb241998
+	.long	3919042237              # 0xe997d6bd
+	.long	1137477952              # 0x43cc8940
+	.long	2658625497              # 0x9e7767d9
+	.long	1119727848              # 0x42bdb0e8
+	.long	2340947849              # 0x8b880789
+	.long	1530455833              # 0x5b38e719
+	.long	4007360968              # 0xeedb79c8
+	.long	172466556               # 0xa47a17c
+	.long	266959938               # 0xfe97c42
+	.long	516552836               # 0x1ec9f884
+	.long	0                       # 0x0
+	.long	2256734592              # 0x86830980
+	.long	3980931627              # 0xed48322b
+	.long	1890328081              # 0x70ac1e11
+	.long	1917742170              # 0x724e6c5a
+	.long	4294704398              # 0xfffbfd0e
+	.long	945164165               # 0x38560f85
+	.long	3575528878              # 0xd51e3dae
+	.long	958871085               # 0x3927362d
+	.long	3647212047              # 0xd9640a0f
+	.long	2787207260              # 0xa621685c
+	.long	1423022939              # 0x54d19b5b
+	.long	775562294               # 0x2e3a2436
+	.long	1739656202              # 0x67b10c0a
+	.long	3876557655              # 0xe70f9357
+	.long	2530391278              # 0x96d2b4ee
+	.long	2443058075              # 0x919e1b9b
+	.long	3310321856              # 0xc54f80c0
+	.long	547512796               # 0x20a261dc
+	.long	1265195639              # 0x4b695a77
+	.long	437656594               # 0x1a161c12
+	.long	3121275539              # 0xba0ae293
+	.long	719700128               # 0x2ae5c0a0
+	.long	3762502690              # 0xe0433c22
+	.long	387781147               # 0x171d121b
+	.long	218828297               # 0xd0b0e09
+	.long	3350065803              # 0xc7adf28b
+	.long	2830708150              # 0xa8b92db6
+	.long	2848461854              # 0xa9c8141e
+	.long	428169201               # 0x198557f1
+	.long	122466165               # 0x74caf75
+	.long	3720081049              # 0xddbbee99
+	.long	1627235199              # 0x60fda37f
+	.long	648017665               # 0x269ff701
+	.long	4122762354              # 0xf5bc5c72
+	.long	1002783846              # 0x3bc54466
+	.long	2117360635              # 0x7e345bfb
+	.long	695634755               # 0x29768b43
+	.long	3336358691              # 0xc6dccb23
+	.long	4234721005              # 0xfc68b6ed
+	.long	4049844452              # 0xf163b8e4
+	.long	3704280881              # 0xdccad731
+	.long	2232435299              # 0x85104263
+	.long	574624663               # 0x22401397
+	.long	287343814               # 0x112084c6
+	.long	612205898               # 0x247d854a
+	.long	1039717051              # 0x3df8d2bb
+	.long	840019705               # 0x3211aef9
+	.long	2708326185              # 0xa16dc729
+	.long	793451934               # 0x2f4b1d9e
+	.long	821288114               # 0x30f3dcb2
+	.long	1391201670              # 0x52ec0d86
+	.long	3822090177              # 0xe3d077c1
+	.long	376187827               # 0x166c2bb3
+	.long	3113855344              # 0xb999a970
+	.long	1224348052              # 0x48fa1194
+	.long	1679968233              # 0x642247e9
+	.long	2361698556              # 0x8cc4a8fc
+	.long	1058709744              # 0x3f1aa0f0
+	.long	752375421               # 0x2cd8567d
+	.long	2431590963              # 0x90ef2233
+	.long	1321699145              # 0x4ec78749
+	.long	3519142200              # 0xd1c1d938
+	.long	2734591178              # 0xa2fe8cca
+	.long	188127444               # 0xb3698d4
+	.long	2177869557              # 0x81cfa6f5
+	.long	3727205754              # 0xde28a57a
+	.long	2384911031              # 0x8e26dab7
+	.long	3215212461              # 0xbfa43fad
+	.long	2648976442              # 0x9de42c3a
+	.long	2450346104              # 0x920d5078
+	.long	3432737375              # 0xcc9b6a5f
+	.long	1180849278              # 0x4662547e
+	.long	331544205               # 0x13c2f68d
+	.long	3102249176              # 0xb8e890d8
+	.long	4150144569              # 0xf75e2e39
+	.long	2952102595              # 0xaff582c3
+	.long	2159976285              # 0x80be9f5d
+	.long	2474404304              # 0x937c69d0
+	.long	766078933               # 0x2da96fd5
+	.long	313773861               # 0x12b3cf25
+	.long	2570832044              # 0x993bc8ac
+	.long	2108100632              # 0x7da71018
+	.long	1668212892              # 0x636ee89c
+	.long	3145456443              # 0xbb7bdb3b
+	.long	2013908262              # 0x7809cd26
+	.long	418672217               # 0x18f46e59
+	.long	3070356634              # 0xb701ec9a
+	.long	2594734927              # 0x9aa8834f
+	.long	1852171925              # 0x6e65e695
+	.long	3867060991              # 0xe67eaaff
+	.long	3473416636              # 0xcf0821bc
+	.long	3907448597              # 0xe8e6ef15
+	.long	2614737639              # 0x9bd9bae7
+	.long	919489135               # 0x36ce4a6f
+	.long	164948639               # 0x9d4ea9f
+	.long	2094410160              # 0x7cd629b0
+	.long	2997825956              # 0xb2af31a4
+	.long	590424639               # 0x23312a3f
+	.long	2486224549              # 0x9430c6a5
+	.long	1723872674              # 0x66c035a2
+	.long	3157750862              # 0xbc37744e
+	.long	3399941250              # 0xcaa6fc82
+	.long	3501252752              # 0xd0b0e090
+	.long	3625268135              # 0xd81533a7
+	.long	2555048196              # 0x984af104
+	.long	3673637356              # 0xdaf741ec
+	.long	1343127501              # 0x500e7fcd
+	.long	4130281361              # 0xf62f1791
+	.long	3599595085              # 0xd68d764d
+	.long	2957853679              # 0xb04d43ef
+	.long	1297403050              # 0x4d54ccaa
+	.long	81781910                # 0x4dfe496
+	.long	3051593425              # 0xb5e39ed1
+	.long	2283490410              # 0x881b4c6a
+	.long	532201772               # 0x1fb8c12c
+	.long	1367295589              # 0x517f4665
+	.long	3926170974              # 0xea049d5e
+	.long	895287692               # 0x355d018c
+	.long	1953757831              # 0x7473fa87
+	.long	1093597963              # 0x412efb0b
+	.long	492483431               # 0x1d5ab367
+	.long	3528626907              # 0xd25292db
+	.long	1446242576              # 0x5633e910
+	.long	1192455638              # 0x47136dd6
+	.long	1636604631              # 0x618c9ad7
+	.long	209336225               # 0xc7a37a1
+	.long	344873464               # 0x148e59f8
+	.long	1015671571              # 0x3c89eb13
+	.long	669961897               # 0x27eecea9
+	.long	3375740769              # 0xc935b761
+	.long	3857572124              # 0xe5ede11c
+	.long	2973530695              # 0xb13c7a47
+	.long	3747192018              # 0xdf599cd2
+	.long	1933530610              # 0x733f55f2
+	.long	3464042516              # 0xce791814
+	.long	935293895               # 0x37bf73c7
+	.long	3454686199              # 0xcdea53f7
+	.long	2858115069              # 0xaa5b5ffd
+	.long	1863638845              # 0x6f14df3d
+	.long	3683022916              # 0xdb867844
+	.long	4085369519              # 0xf381caaf
+	.long	3292445032              # 0xc43eb968
+	.long	875313188               # 0x342c3824
+	.long	1080017571              # 0x405fc2a3
+	.long	3279033885              # 0xc372161d
+	.long	621591778               # 0x250cbce2
+	.long	1233856572              # 0x498b283c
+	.long	2504130317              # 0x9541ff0d
+	.long	24197544                # 0x17139a8
+	.long	3017672716              # 0xb3de080c
+	.long	3835484340              # 0xe49cd8b4
+	.long	3247465558              # 0xc1906456
+	.long	2220981195              # 0x84617bcb
+	.long	3060847922              # 0xb670d532
+	.long	1551124588              # 0x5c74486c
+	.long	1463996600              # 0x5742d0b8
+	.size	Td2, 1024
+
+	.type	Td3,@object             # @Td3
+	.p2align	4
+Td3:
+	.long	4104605777              # 0xf4a75051
+	.long	1097159550              # 0x4165537e
+	.long	396673818               # 0x17a4c31a
+	.long	660510266               # 0x275e963a
+	.long	2875968315              # 0xab6bcb3b
+	.long	2638606623              # 0x9d45f11f
+	.long	4200115116              # 0xfa58abac
+	.long	3808662347              # 0xe303934b
+	.long	821712160               # 0x30fa5520
+	.long	1986918061              # 0x766df6ad
+	.long	3430322568              # 0xcc769188
+	.long	38544885                # 0x24c25f5
+	.long	3856137295              # 0xe5d7fc4f
+	.long	718002117               # 0x2acbd7c5
+	.long	893681702               # 0x35448026
+	.long	1654886325              # 0x62a38fb5
+	.long	2975484382              # 0xb15a49de
+	.long	3122358053              # 0xba1b6725
+	.long	3926825029              # 0xea0e9845
+	.long	4274053469              # 0xfec0e15d
+	.long	796197571               # 0x2f7502c3
+	.long	1290801793              # 0x4cf01281
+	.long	1184342925              # 0x4697a38d
+	.long	3556361835              # 0xd3f9c66b
+	.long	2405426947              # 0x8f5fe703
+	.long	2459735317              # 0x929c9515
+	.long	1836772287              # 0x6d7aebbf
+	.long	1381620373              # 0x5259da95
+	.long	3196267988              # 0xbe832dd4
+	.long	1948373848              # 0x7421d358
+	.long	3764988233              # 0xe0692949
+	.long	3385345166              # 0xc9c8448e
+	.long	3263785589              # 0xc2896a75
+	.long	2390325492              # 0x8e7978f4
+	.long	1480485785              # 0x583e6b99
+	.long	3111247143              # 0xb971dd27
+	.long	3780097726              # 0xe14fb6be
+	.long	2293045232              # 0x88ad17f0
+	.long	548169417               # 0x20ac66c9
+	.long	3459953789              # 0xce3ab47d
+	.long	3746175075              # 0xdf4a1863
+	.long	439452389               # 0x1a3182e5
+	.long	1362321559              # 0x51336097
+	.long	1400849762              # 0x537f4562
+	.long	1685577905              # 0x6477e0b1
+	.long	1806599355              # 0x6bae84bb
+	.long	2174754046              # 0x81a01cfe
+	.long	137073913               # 0x82b94f9
+	.long	1214797936              # 0x48685870
+	.long	1174215055              # 0x45fd198f
+	.long	3731654548              # 0xde6c8794
+	.long	2079897426              # 0x7bf8b752
+	.long	1943217067              # 0x73d323ab
+	.long	1258480242              # 0x4b02e272
+	.long	529487843               # 0x1f8f57e3
+	.long	1437280870              # 0x55ab2a66
+	.long	3945269170              # 0xeb2807b2
+	.long	3049390895              # 0xb5c2032f
+	.long	3313212038              # 0xc57b9a86
+	.long	923313619               # 0x3708a5d3
+	.long	679998000               # 0x2887f230
+	.long	3215307299              # 0xbfa5b223
+	.long	57326082                # 0x36aba02
+	.long	377642221               # 0x16825ced
+	.long	3474729866              # 0xcf1c2b8a
+	.long	2041877159              # 0x79b492a7
+	.long	133361907               # 0x7f2f0f3
+	.long	1776460110              # 0x69e2a14e
+	.long	3673476453              # 0xdaf4cd65
+	.long	96392454                # 0x5bed506
+	.long	878845905               # 0x34621fd1
+	.long	2801699524              # 0xa6fe8ac4
+	.long	777231668               # 0x2e539d34
+	.long	4082475170              # 0xf355a0a2
+	.long	2330014213              # 0x8ae13205
+	.long	4142626212              # 0xf6eb75a4
+	.long	2213296395              # 0x83ec390b
+	.long	1626319424              # 0x60efaa40
+	.long	1906247262              # 0x719f065e
+	.long	1846563261              # 0x6e1051bd
+	.long	562755902               # 0x218af93e
+	.long	3708173718              # 0xdd063d96
+	.long	1040559837              # 0x3e05aedd
+	.long	3871163981              # 0xe6bd464d
+	.long	1418573201              # 0x548db591
+	.long	3294430577              # 0xc45d0571
+	.long	114585348               # 0x6d46f04
+	.long	1343618912              # 0x5015ff60
+	.long	2566595609              # 0x98fb2419
+	.long	3186202582              # 0xbde997d6
+	.long	1078185097              # 0x4043cc89
+	.long	3651041127              # 0xd99e7767
+	.long	3896688048              # 0xe842bdb0
+	.long	2307622919              # 0x898b8807
+	.long	425408743               # 0x195b38e7
+	.long	3371096953              # 0xc8eedb79
+	.long	2081048481              # 0x7c0a47a1
+	.long	1108339068              # 0x420fe97c
+	.long	2216610296              # 0x841ec9f8
+	.long	0                       # 0x0
+	.long	2156299017              # 0x80868309
+	.long	736970802               # 0x2bed4832
+	.long	292596766               # 0x1170ac1e
+	.long	1517440620              # 0x5a724e6c
+	.long	251657213               # 0xefffbfd
+	.long	2235061775              # 0x8538560f
+	.long	2933202493              # 0xaed51e3d
+	.long	758720310               # 0x2d392736
+	.long	265905162               # 0xfd9640a
+	.long	1554391400              # 0x5ca62168
+	.long	1532285339              # 0x5b54d19b
+	.long	908999204               # 0x362e3a24
+	.long	174567692               # 0xa67b10c
+	.long	1474760595              # 0x57e70f93
+	.long	4002861748              # 0xee96d2b4
+	.long	2610011675              # 0x9b919e1b
+	.long	3234156416              # 0xc0c54f80
+	.long	3693126241              # 0xdc20a261
+	.long	2001430874              # 0x774b695a
+	.long	303699484               # 0x121a161c
+	.long	2478443234              # 0x93ba0ae2
+	.long	2687165888              # 0xa02ae5c0
+	.long	585122620               # 0x22e0433c
+	.long	454499602               # 0x1b171d12
+	.long	151849742               # 0x90d0b0e
+	.long	2345119218              # 0x8bc7adf2
+	.long	3064510765              # 0xb6a8b92d
+	.long	514443284               # 0x1ea9c814
+	.long	4044981591              # 0xf1198557
+	.long	1963412655              # 0x75074caf
+	.long	2581445614              # 0x99ddbbee
+	.long	2137062819              # 0x7f60fda3
+	.long	19308535                # 0x1269ff7
+	.long	1928707164              # 0x72f5bc5c
+	.long	1715193156              # 0x663bc544
+	.long	4219352155              # 0xfb7e345b
+	.long	1126790795              # 0x4329768b
+	.long	600235211               # 0x23c6dccb
+	.long	3992742070              # 0xedfc68b6
+	.long	3841024952              # 0xe4f163b8
+	.long	836553431               # 0x31dccad7
+	.long	1669664834              # 0x63851042
+	.long	2535604243              # 0x97224013
+	.long	3323011204              # 0xc6112084
+	.long	1243905413              # 0x4a247d85
+	.long	3141400786              # 0xbb3df8d2
+	.long	4180808110              # 0xf93211ae
+	.long	698445255               # 0x29a16dc7
+	.long	2653899549              # 0x9e2f4b1d
+	.long	2989552604              # 0xb230f3dc
+	.long	2253581325              # 0x8652ec0d
+	.long	3252932727              # 0xc1e3d077
+	.long	3004591147              # 0xb3166c2b
+	.long	1891211689              # 0x70b999a9
+	.long	2487810577              # 0x9448fa11
+	.long	3915653703              # 0xe9642247
+	.long	4237083816              # 0xfc8cc4a8
+	.long	4030667424              # 0xf03f1aa0
+	.long	2100090966              # 0x7d2cd856
+	.long	865136418               # 0x3390ef22
+	.long	1229899655              # 0x494ec787
+	.long	953270745               # 0x38d1c1d9
+	.long	3399679628              # 0xcaa2fe8c
+	.long	3557504664              # 0xd40b3698
+	.long	4118925222              # 0xf581cfa6
+	.long	2061379749              # 0x7ade28a5
+	.long	3079546586              # 0xb78e26da
+	.long	2915017791              # 0xadbfa43f
+	.long	983426092               # 0x3a9de42c
+	.long	2022837584              # 0x78920d50
+	.long	1607244650              # 0x5fcc9b6a
+	.long	2118541908              # 0x7e466254
+	.long	2366882550              # 0x8d13c2f6
+	.long	3635996816              # 0xd8b8e890
+	.long	972512814               # 0x39f75e2e
+	.long	3283088770              # 0xc3aff582
+	.long	1568718495              # 0x5d80be9f
+	.long	3499326569              # 0xd0937c69
+	.long	3576539503              # 0xd52da96f
+	.long	621982671               # 0x2512b3cf
+	.long	2895723464              # 0xac993bc8
+	.long	410887952               # 0x187da710
+	.long	2623762152              # 0x9c636ee8
+	.long	1002142683              # 0x3bbb7bdb
+	.long	645401037               # 0x267809cd
+	.long	1494807662              # 0x5918f46e
+	.long	2595684844              # 0x9ab701ec
+	.long	1335535747              # 0x4f9aa883
+	.long	2507040230              # 0x956e65e6
+	.long	4293295786              # 0xffe67eaa
+	.long	3167684641              # 0xbccf0821
+	.long	367585007               # 0x15e8e6ef
+	.long	3885750714              # 0xe79bd9ba
+	.long	1865862730              # 0x6f36ce4a
+	.long	2668221674              # 0x9f09d4ea
+	.long	2960971305              # 0xb07cd629
+	.long	2763173681              # 0xa4b2af31
+	.long	1059270954              # 0x3f23312a
+	.long	2777952454              # 0xa59430c6
+	.long	2724642869              # 0xa266c035
+	.long	1320957812              # 0x4ebc3774
+	.long	2194319100              # 0x82caa6fc
+	.long	2429595872              # 0x90d0b0e0
+	.long	2815956275              # 0xa7d81533
+	.long	77089521                # 0x4984af1
+	.long	3973773121              # 0xecdaf741
+	.long	3444575871              # 0xcd500e7f
+	.long	2448830231              # 0x91f62f17
+	.long	1305906550              # 0x4dd68d76
+	.long	4021308739              # 0xefb04d43
+	.long	2857194700              # 0xaa4d54cc
+	.long	2516901860              # 0x9604dfe4
+	.long	3518358430              # 0xd1b5e39e
+	.long	1787304780              # 0x6a881b4c
+	.long	740276417               # 0x2c1fb8c1
+	.long	1699839814              # 0x65517f46
+	.long	1592394909              # 0x5eea049d
+	.long	2352307457              # 0x8c355d01
+	.long	2272556026              # 0x877473fa
+	.long	188821243               # 0xb412efb
+	.long	1729977011              # 0x671d5ab3
+	.long	3687994002              # 0xdbd25292
+	.long	274084841               # 0x105633e9
+	.long	3594982253              # 0xd647136d
+	.long	3613494426              # 0xd7618c9a
+	.long	2701949495              # 0xa10c7a37
+	.long	4162096729              # 0xf8148e59
+	.long	322734571               # 0x133c89eb
+	.long	2837966542              # 0xa927eece
+	.long	1640576439              # 0x61c935b7
+	.long	484830689               # 0x1ce5ede1
+	.long	1202797690              # 0x47b13c7a
+	.long	3537852828              # 0xd2df599c
+	.long	4067639125              # 0xf2733f55
+	.long	349075736               # 0x14ce7918
+	.long	3342319475              # 0xc737bf73
+	.long	4157467219              # 0xf7cdea53
+	.long	4255800159              # 0xfdaa5b5f
+	.long	1030690015              # 0x3d6f14df
+	.long	1155237496              # 0x44db8678
+	.long	2951971274              # 0xaff381ca
+	.long	1757691577              # 0x68c43eb9
+	.long	607398968               # 0x24342c38
+	.long	2738905026              # 0xa3405fc2
+	.long	499347990               # 0x1dc37216
+	.long	3794078908              # 0xe2250cbc
+	.long	1011452712              # 0x3c498b28
+	.long	227885567               # 0xd9541ff
+	.long	2818666809              # 0xa8017139
+	.long	213114376               # 0xcb3de08
+	.long	3034881240              # 0xb4e49cd8
+	.long	1455525988              # 0x56c19064
+	.long	3414450555              # 0xcb84617b
+	.long	850817237               # 0x32b670d5
+	.long	1817998408              # 0x6c5c7448
+	.long	3092726480              # 0xb85742d0
+	.size	Td3, 1024
+
 	.type	Te0,@object             # @Te0
 	.data
 	.p2align	4
@@ -8596,1328 +10180,8 @@ Te3:
 	.long	370555436               # 0x16163a2c
 	.size	Te3, 1024
 
-	.type	Te4,@object             # @Te4
-	.p2align	4
-Te4:
-	.long	1667457891              # 0x63636363
-	.long	2088533116              # 0x7c7c7c7c
-	.long	2004318071              # 0x77777777
-	.long	2071690107              # 0x7b7b7b7b
-	.long	4076008178              # 0xf2f2f2f2
-	.long	1802201963              # 0x6b6b6b6b
-	.long	1869573999              # 0x6f6f6f6f
-	.long	3318072773              # 0xc5c5c5c5
-	.long	808464432               # 0x30303030
-	.long	16843009                # 0x1010101
-	.long	1734829927              # 0x67676767
-	.long	724249387               # 0x2b2b2b2b
-	.long	4278124286              # 0xfefefefe
-	.long	3621246935              # 0xd7d7d7d7
-	.long	2880154539              # 0xabababab
-	.long	1987475062              # 0x76767676
-	.long	3402287818              # 0xcacacaca
-	.long	2189591170              # 0x82828282
-	.long	3385444809              # 0xc9c9c9c9
-	.long	2105376125              # 0x7d7d7d7d
-	.long	4210752250              # 0xfafafafa
-	.long	1499027801              # 0x59595959
-	.long	1195853639              # 0x47474747
-	.long	4042322160              # 0xf0f0f0f0
-	.long	2913840557              # 0xadadadad
-	.long	3570717908              # 0xd4d4d4d4
-	.long	2728567458              # 0xa2a2a2a2
-	.long	2947526575              # 0xafafafaf
-	.long	2627509404              # 0x9c9c9c9c
-	.long	2762253476              # 0xa4a4a4a4
-	.long	1920103026              # 0x72727272
-	.long	3233857728              # 0xc0c0c0c0
-	.long	3082270647              # 0xb7b7b7b7
-	.long	4261281277              # 0xfdfdfdfd
-	.long	2475922323              # 0x93939393
-	.long	640034342               # 0x26262626
-	.long	909522486               # 0x36363636
-	.long	1061109567              # 0x3f3f3f3f
-	.long	4160223223              # 0xf7f7f7f7
-	.long	3435973836              # 0xcccccccc
-	.long	875836468               # 0x34343434
-	.long	2779096485              # 0xa5a5a5a5
-	.long	3857049061              # 0xe5e5e5e5
-	.long	4059165169              # 0xf1f1f1f1
-	.long	1903260017              # 0x71717171
-	.long	3638089944              # 0xd8d8d8d8
-	.long	825307441               # 0x31313131
-	.long	353703189               # 0x15151515
-	.long	67372036                # 0x4040404
-	.long	3351758791              # 0xc7c7c7c7
-	.long	589505315               # 0x23232323
-	.long	3284386755              # 0xc3c3c3c3
-	.long	404232216               # 0x18181818
-	.long	2526451350              # 0x96969696
-	.long	84215045                # 0x5050505
-	.long	2593823386              # 0x9a9a9a9a
-	.long	117901063               # 0x7070707
-	.long	303174162               # 0x12121212
-	.long	2155905152              # 0x80808080
-	.long	3806520034              # 0xe2e2e2e2
-	.long	3958107115              # 0xebebebeb
-	.long	656877351               # 0x27272727
-	.long	2998055602              # 0xb2b2b2b2
-	.long	1970632053              # 0x75757575
-	.long	151587081               # 0x9090909
-	.long	2206434179              # 0x83838383
-	.long	741092396               # 0x2c2c2c2c
-	.long	437918234               # 0x1a1a1a1a
-	.long	454761243               # 0x1b1b1b1b
-	.long	1852730990              # 0x6e6e6e6e
-	.long	1515870810              # 0x5a5a5a5a
-	.long	2694881440              # 0xa0a0a0a0
-	.long	1381126738              # 0x52525252
-	.long	993737531               # 0x3b3b3b3b
-	.long	3604403926              # 0xd6d6d6d6
-	.long	3014898611              # 0xb3b3b3b3
-	.long	690563369               # 0x29292929
-	.long	3823363043              # 0xe3e3e3e3
-	.long	791621423               # 0x2f2f2f2f
-	.long	2223277188              # 0x84848484
-	.long	1397969747              # 0x53535353
-	.long	3520188881              # 0xd1d1d1d1
-	.long	0                       # 0x0
-	.long	3991793133              # 0xedededed
-	.long	538976288               # 0x20202020
-	.long	4244438268              # 0xfcfcfcfc
-	.long	2981212593              # 0xb1b1b1b1
-	.long	1532713819              # 0x5b5b5b5b
-	.long	1785358954              # 0x6a6a6a6a
-	.long	3419130827              # 0xcbcbcbcb
-	.long	3200171710              # 0xbebebebe
-	.long	960051513               # 0x39393939
-	.long	1246382666              # 0x4a4a4a4a
-	.long	1280068684              # 0x4c4c4c4c
-	.long	1482184792              # 0x58585858
-	.long	3486502863              # 0xcfcfcfcf
-	.long	3503345872              # 0xd0d0d0d0
-	.long	4025479151              # 0xefefefef
-	.long	2863311530              # 0xaaaaaaaa
-	.long	4227595259              # 0xfbfbfbfb
-	.long	1128481603              # 0x43434343
-	.long	1296911693              # 0x4d4d4d4d
-	.long	858993459               # 0x33333333
-	.long	2240120197              # 0x85858585
-	.long	1162167621              # 0x45454545
-	.long	4193909241              # 0xf9f9f9f9
-	.long	33686018                # 0x2020202
-	.long	2139062143              # 0x7f7f7f7f
-	.long	1347440720              # 0x50505050
-	.long	1010580540              # 0x3c3c3c3c
-	.long	2678038431              # 0x9f9f9f9f
-	.long	2829625512              # 0xa8a8a8a8
-	.long	1364283729              # 0x51515151
-	.long	2745410467              # 0xa3a3a3a3
-	.long	1077952576              # 0x40404040
-	.long	2408550287              # 0x8f8f8f8f
-	.long	2459079314              # 0x92929292
-	.long	2644352413              # 0x9d9d9d9d
-	.long	943208504               # 0x38383838
-	.long	4126537205              # 0xf5f5f5f5
-	.long	3166485692              # 0xbcbcbcbc
-	.long	3065427638              # 0xb6b6b6b6
-	.long	3671775962              # 0xdadadada
-	.long	555819297               # 0x21212121
-	.long	269488144               # 0x10101010
-	.long	4294967295              # 0xffffffff
-	.long	4092851187              # 0xf3f3f3f3
-	.long	3537031890              # 0xd2d2d2d2
-	.long	3452816845              # 0xcdcdcdcd
-	.long	202116108               # 0xc0c0c0c
-	.long	320017171               # 0x13131313
-	.long	3974950124              # 0xecececec
-	.long	1600085855              # 0x5f5f5f5f
-	.long	2543294359              # 0x97979797
-	.long	1145324612              # 0x44444444
-	.long	387389207               # 0x17171717
-	.long	3301229764              # 0xc4c4c4c4
-	.long	2812782503              # 0xa7a7a7a7
-	.long	2122219134              # 0x7e7e7e7e
-	.long	1027423549              # 0x3d3d3d3d
-	.long	1684300900              # 0x64646464
-	.long	1566399837              # 0x5d5d5d5d
-	.long	421075225               # 0x19191919
-	.long	1936946035              # 0x73737373
-	.long	1616928864              # 0x60606060
-	.long	2172748161              # 0x81818181
-	.long	1330597711              # 0x4f4f4f4f
-	.long	3705461980              # 0xdcdcdcdc
-	.long	572662306               # 0x22222222
-	.long	707406378               # 0x2a2a2a2a
-	.long	2425393296              # 0x90909090
-	.long	2290649224              # 0x88888888
-	.long	1179010630              # 0x46464646
-	.long	4008636142              # 0xeeeeeeee
-	.long	3099113656              # 0xb8b8b8b8
-	.long	336860180               # 0x14141414
-	.long	3739147998              # 0xdededede
-	.long	1583242846              # 0x5e5e5e5e
-	.long	185273099               # 0xb0b0b0b
-	.long	3688618971              # 0xdbdbdbdb
-	.long	3772834016              # 0xe0e0e0e0
-	.long	842150450               # 0x32323232
-	.long	976894522               # 0x3a3a3a3a
-	.long	168430090               # 0xa0a0a0a
-	.long	1229539657              # 0x49494949
-	.long	101058054               # 0x6060606
-	.long	606348324               # 0x24242424
-	.long	1549556828              # 0x5c5c5c5c
-	.long	3267543746              # 0xc2c2c2c2
-	.long	3553874899              # 0xd3d3d3d3
-	.long	2896997548              # 0xacacacac
-	.long	1650614882              # 0x62626262
-	.long	2442236305              # 0x91919191
-	.long	2509608341              # 0x95959595
-	.long	3840206052              # 0xe4e4e4e4
-	.long	2038004089              # 0x79797979
-	.long	3890735079              # 0xe7e7e7e7
-	.long	3368601800              # 0xc8c8c8c8
-	.long	926365495               # 0x37373737
-	.long	1835887981              # 0x6d6d6d6d
-	.long	2374864269              # 0x8d8d8d8d
-	.long	3587560917              # 0xd5d5d5d5
-	.long	1313754702              # 0x4e4e4e4e
-	.long	2846468521              # 0xa9a9a9a9
-	.long	1819044972              # 0x6c6c6c6c
-	.long	1448498774              # 0x56565656
-	.long	4109694196              # 0xf4f4f4f4
-	.long	3941264106              # 0xeaeaeaea
-	.long	1701143909              # 0x65656565
-	.long	2054847098              # 0x7a7a7a7a
-	.long	2930683566              # 0xaeaeaeae
-	.long	134744072               # 0x8080808
-	.long	3132799674              # 0xbabababa
-	.long	2021161080              # 0x78787878
-	.long	623191333               # 0x25252525
-	.long	774778414               # 0x2e2e2e2e
-	.long	471604252               # 0x1c1c1c1c
-	.long	2795939494              # 0xa6a6a6a6
-	.long	3031741620              # 0xb4b4b4b4
-	.long	3334915782              # 0xc6c6c6c6
-	.long	3907578088              # 0xe8e8e8e8
-	.long	3722304989              # 0xdddddddd
-	.long	1953789044              # 0x74747474
-	.long	522133279               # 0x1f1f1f1f
-	.long	1263225675              # 0x4b4b4b4b
-	.long	3183328701              # 0xbdbdbdbd
-	.long	2341178251              # 0x8b8b8b8b
-	.long	2324335242              # 0x8a8a8a8a
-	.long	1886417008              # 0x70707070
-	.long	1044266558              # 0x3e3e3e3e
-	.long	3048584629              # 0xb5b5b5b5
-	.long	1717986918              # 0x66666666
-	.long	1212696648              # 0x48484848
-	.long	50529027                # 0x3030303
-	.long	4143380214              # 0xf6f6f6f6
-	.long	235802126               # 0xe0e0e0e
-	.long	1633771873              # 0x61616161
-	.long	892679477               # 0x35353535
-	.long	1465341783              # 0x57575757
-	.long	3115956665              # 0xb9b9b9b9
-	.long	2256963206              # 0x86868686
-	.long	3250700737              # 0xc1c1c1c1
-	.long	488447261               # 0x1d1d1d1d
-	.long	2661195422              # 0x9e9e9e9e
-	.long	3789677025              # 0xe1e1e1e1
-	.long	4177066232              # 0xf8f8f8f8
-	.long	2560137368              # 0x98989898
-	.long	286331153               # 0x11111111
-	.long	1768515945              # 0x69696969
-	.long	3654932953              # 0xd9d9d9d9
-	.long	2391707278              # 0x8e8e8e8e
-	.long	2492765332              # 0x94949494
-	.long	2610666395              # 0x9b9b9b9b
-	.long	505290270               # 0x1e1e1e1e
-	.long	2273806215              # 0x87878787
-	.long	3924421097              # 0xe9e9e9e9
-	.long	3469659854              # 0xcececece
-	.long	1431655765              # 0x55555555
-	.long	673720360               # 0x28282828
-	.long	3755991007              # 0xdfdfdfdf
-	.long	2358021260              # 0x8c8c8c8c
-	.long	2711724449              # 0xa1a1a1a1
-	.long	2307492233              # 0x89898989
-	.long	218959117               # 0xd0d0d0d
-	.long	3217014719              # 0xbfbfbfbf
-	.long	3873892070              # 0xe6e6e6e6
-	.long	1111638594              # 0x42424242
-	.long	1751672936              # 0x68686868
-	.long	1094795585              # 0x41414141
-	.long	2576980377              # 0x99999999
-	.long	757935405               # 0x2d2d2d2d
-	.long	252645135               # 0xf0f0f0f
-	.long	2964369584              # 0xb0b0b0b0
-	.long	1414812756              # 0x54545454
-	.long	3149642683              # 0xbbbbbbbb
-	.long	370546198               # 0x16161616
-	.size	Te4, 1024
-
-	.type	rcon,@object            # @rcon
-	.section	.rodata,"a",@progbits
-	.p2align	4
-rcon:
-	.long	16777216                # 0x1000000
-	.long	33554432                # 0x2000000
-	.long	67108864                # 0x4000000
-	.long	134217728               # 0x8000000
-	.long	268435456               # 0x10000000
-	.long	536870912               # 0x20000000
-	.long	1073741824              # 0x40000000
-	.long	2147483648              # 0x80000000
-	.long	452984832               # 0x1b000000
-	.long	905969664               # 0x36000000
-	.size	rcon, 40
-
-	.type	Td0,@object             # @Td0
-	.p2align	4
-Td0:
-	.long	1374988112              # 0x51f4a750
-	.long	2118214995              # 0x7e416553
-	.long	437757123               # 0x1a17a4c3
-	.long	975658646               # 0x3a275e96
-	.long	1001089995              # 0x3bab6bcb
-	.long	530400753               # 0x1f9d45f1
-	.long	2902087851              # 0xacfa58ab
-	.long	1273168787              # 0x4be30393
-	.long	540080725               # 0x2030fa55
-	.long	2910219766              # 0xad766df6
-	.long	2295101073              # 0x88cc7691
-	.long	4110568485              # 0xf5024c25
-	.long	1340463100              # 0x4fe5d7fc
-	.long	3307916247              # 0xc52acbd7
-	.long	641025152               # 0x26354480
-	.long	3043140495              # 0xb562a38f
-	.long	3736164937              # 0xdeb15a49
-	.long	632953703               # 0x25ba1b67
-	.long	1172967064              # 0x45ea0e98
-	.long	1576976609              # 0x5dfec0e1
-	.long	3274667266              # 0xc32f7502
-	.long	2169303058              # 0x814cf012
-	.long	2370213795              # 0x8d4697a3
-	.long	1809054150              # 0x6bd3f9c6
-	.long	59727847                # 0x38f5fe7
-	.long	361929877               # 0x15929c95
-	.long	3211623147              # 0xbf6d7aeb
-	.long	2505202138              # 0x955259da
-	.long	3569255213              # 0xd4be832d
-	.long	1484005843              # 0x587421d3
-	.long	1239443753              # 0x49e06929
-	.long	2395588676              # 0x8ec9c844
-	.long	1975683434              # 0x75c2896a
-	.long	4102977912              # 0xf48e7978
-	.long	2572697195              # 0x99583e6b
-	.long	666464733               # 0x27b971dd
-	.long	3202437046              # 0xbee14fb6
-	.long	4035489047              # 0xf088ad17
-	.long	3374361702              # 0xc920ac66
-	.long	2110667444              # 0x7dce3ab4
-	.long	1675577880              # 0x63df4a18
-	.long	3843699074              # 0xe51a3182
-	.long	2538681184              # 0x97513360
-	.long	1649639237              # 0x62537f45
-	.long	2976151520              # 0xb16477e0
-	.long	3144396420              # 0xbb6bae84
-	.long	4269907996              # 0xfe81a01c
-	.long	4178062228              # 0xf9082b94
-	.long	1883793496              # 0x70486858
-	.long	2403728665              # 0x8f45fd19
-	.long	2497604743              # 0x94de6c87
-	.long	1383856311              # 0x527bf8b7
-	.long	2876494627              # 0xab73d323
-	.long	1917518562              # 0x724b02e2
-	.long	3810496343              # 0xe31f8f57
-	.long	1716890410              # 0x6655ab2a
-	.long	3001755655              # 0xb2eb2807
-	.long	800440835               # 0x2fb5c203
-	.long	2261089178              # 0x86c57b9a
-	.long	3543599269              # 0xd33708a5
-	.long	807962610               # 0x302887f2
-	.long	599762354               # 0x23bfa5b2
-	.long	33778362                # 0x2036aba
-	.long	3977675356              # 0xed16825c
-	.long	2328828971              # 0x8acf1c2b
-	.long	2809771154              # 0xa779b492
-	.long	4077384432              # 0xf307f2f0
-	.long	1315562145              # 0x4e69e2a1
-	.long	1708848333              # 0x65daf4cd
-	.long	101039829               # 0x605bed5
-	.long	3509871135              # 0xd134621f
-	.long	3299278474              # 0xc4a6fe8a
-	.long	875451293               # 0x342e539d
-	.long	2733856160              # 0xa2f355a0
-	.long	92987698                # 0x58ae132
-	.long	2767645557              # 0xa4f6eb75
-	.long	193195065               # 0xb83ec39
-	.long	1080094634              # 0x4060efaa
-	.long	1584504582              # 0x5e719f06
-	.long	3178106961              # 0xbd6e1051
-	.long	1042385657              # 0x3e218af9
-	.long	2531067453              # 0x96dd063d
-	.long	3711829422              # 0xdd3e05ae
-	.long	1306967366              # 0x4de6bd46
-	.long	2438237621              # 0x91548db5
-	.long	1908694277              # 0x71c45d05
-	.long	67556463                # 0x406d46f
-	.long	1615861247              # 0x605015ff
-	.long	429456164               # 0x1998fb24
-	.long	3602770327              # 0xd6bde997
-	.long	2302690252              # 0x894043cc
-	.long	1742315127              # 0x67d99e77
-	.long	2968011453              # 0xb0e842bd
-	.long	126454664               # 0x7898b88
-	.long	3877198648              # 0xe7195b38
-	.long	2043211483              # 0x79c8eedb
-	.long	2709260871              # 0xa17c0a47
-	.long	2084704233              # 0x7c420fe9
-	.long	4169408201              # 0xf8841ec9
-	.long	0                       # 0x0
-	.long	159417987               # 0x9808683
-	.long	841739592               # 0x322bed48
-	.long	504459436               # 0x1e1170ac
-	.long	1817866830              # 0x6c5a724e
-	.long	4245618683              # 0xfd0efffb
-	.long	260388950               # 0xf853856
-	.long	1034867998              # 0x3daed51e
-	.long	908933415               # 0x362d3927
-	.long	168810852               # 0xa0fd964
-	.long	1750902305              # 0x685ca621
-	.long	2606453969              # 0x9b5b54d1
-	.long	607530554               # 0x24362e3a
-	.long	202008497               # 0xc0a67b1
-	.long	2472011535              # 0x9357e70f
-	.long	3035535058              # 0xb4ee96d2
-	.long	463180190               # 0x1b9b919e
-	.long	2160117071              # 0x80c0c54f
-	.long	1641816226              # 0x61dc20a2
-	.long	1517767529              # 0x5a774b69
-	.long	470948374               # 0x1c121a16
-	.long	3801332234              # 0xe293ba0a
-	.long	3231722213              # 0xc0a02ae5
-	.long	1008918595              # 0x3c22e043
-	.long	303765277               # 0x121b171d
-	.long	235474187               # 0xe090d0b
-	.long	4069246893              # 0xf28bc7ad
-	.long	766945465               # 0x2db6a8b9
-	.long	337553864               # 0x141ea9c8
-	.long	1475418501              # 0x57f11985
-	.long	2943682380              # 0xaf75074c
-	.long	4003061179              # 0xee99ddbb
-	.long	2743034109              # 0xa37f60fd
-	.long	4144047775              # 0xf701269f
-	.long	1551037884              # 0x5c72f5bc
-	.long	1147550661              # 0x44663bc5
-	.long	1543208500              # 0x5bfb7e34
-	.long	2336434550              # 0x8b432976
-	.long	3408119516              # 0xcb23c6dc
-	.long	3069049960              # 0xb6edfc68
-	.long	3102011747              # 0xb8e4f163
-	.long	3610369226              # 0xd731dcca
-	.long	1113818384              # 0x42638510
-	.long	328671808               # 0x13972240
-	.long	2227573024              # 0x84c61120
-	.long	2236228733              # 0x854a247d
-	.long	3535486456              # 0xd2bb3df8
-	.long	2935566865              # 0xaef93211
-	.long	3341394285              # 0xc729a16d
-	.long	496906059               # 0x1d9e2f4b
-	.long	3702665459              # 0xdcb230f3
-	.long	226906860               # 0xd8652ec
-	.long	2009195472              # 0x77c1e3d0
-	.long	733156972               # 0x2bb3166c
-	.long	2842737049              # 0xa970b999
-	.long	294930682               # 0x119448fa
-	.long	1206477858              # 0x47e96422
-	.long	2835123396              # 0xa8fc8cc4
-	.long	2700099354              # 0xa0f03f1a
-	.long	1451044056              # 0x567d2cd8
-	.long	573804783               # 0x223390ef
-	.long	2269728455              # 0x87494ec7
-	.long	3644379585              # 0xd938d1c1
-	.long	2362090238              # 0x8ccaa2fe
-	.long	2564033334              # 0x98d40b36
-	.long	2801107407              # 0xa6f581cf
-	.long	2776292904              # 0xa57ade28
-	.long	3669462566              # 0xdab78e26
-	.long	1068351396              # 0x3fadbfa4
-	.long	742039012               # 0x2c3a9de4
-	.long	1350078989              # 0x5078920d
-	.long	1784663195              # 0x6a5fcc9b
-	.long	1417561698              # 0x547e4662
-	.long	4136440770              # 0xf68d13c2
-	.long	2430122216              # 0x90d8b8e8
-	.long	775550814               # 0x2e39f75e
-	.long	2193862645              # 0x82c3aff5
-	.long	2673705150              # 0x9f5d80be
-	.long	1775276924              # 0x69d0937c
-	.long	1876241833              # 0x6fd52da9
-	.long	3475313331              # 0xcf2512b3
-	.long	3366754619              # 0xc8ac993b
-	.long	270040487               # 0x10187da7
-	.long	3902563182              # 0xe89c636e
-	.long	3678124923              # 0xdb3bbb7b
-	.long	3441850377              # 0xcd267809
-	.long	1851332852              # 0x6e5918f4
-	.long	3969562369              # 0xec9ab701
-	.long	2203032232              # 0x834f9aa8
-	.long	3868552805              # 0xe6956e65
-	.long	2868897406              # 0xaaffe67e
-	.long	566021896               # 0x21bccf08
-	.long	4011190502              # 0xef15e8e6
-	.long	3135740889              # 0xbae79bd9
-	.long	1248802510              # 0x4a6f36ce
-	.long	3936291284              # 0xea9f09d4
-	.long	699432150               # 0x29b07cd6
-	.long	832877231               # 0x31a4b2af
-	.long	708780849               # 0x2a3f2331
-	.long	3332740144              # 0xc6a59430
-	.long	899835584               # 0x35a266c0
-	.long	1951317047              # 0x744ebc37
-	.long	4236429990              # 0xfc82caa6
-	.long	3767586992              # 0xe090d0b0
-	.long	866637845               # 0x33a7d815
-	.long	4043610186              # 0xf104984a
-	.long	1106041591              # 0x41ecdaf7
-	.long	2144161806              # 0x7fcd500e
-	.long	395441711               # 0x1791f62f
-	.long	1984812685              # 0x764dd68d
-	.long	1139781709              # 0x43efb04d
-	.long	3433712980              # 0xccaa4d54
-	.long	3835036895              # 0xe49604df
-	.long	2664543715              # 0x9ed1b5e3
-	.long	1282050075              # 0x4c6a881b
-	.long	3240894392              # 0xc12c1fb8
-	.long	1181045119              # 0x4665517f
-	.long	2640243204              # 0x9d5eea04
-	.long	25965917                # 0x18c355d
-	.long	4203181171              # 0xfa877473
-	.long	4211818798              # 0xfb0b412e
-	.long	3009879386              # 0xb3671d5a
-	.long	2463879762              # 0x92dbd252
-	.long	3910161971              # 0xe9105633
-	.long	1842759443              # 0x6dd64713
-	.long	2597806476              # 0x9ad7618c
-	.long	933301370               # 0x37a10c7a
-	.long	1509430414              # 0x59f8148e
-	.long	3943906441              # 0xeb133c89
-	.long	3467192302              # 0xcea927ee
-	.long	3076639029              # 0xb761c935
-	.long	3776767469              # 0xe11ce5ed
-	.long	2051518780              # 0x7a47b13c
-	.long	2631065433              # 0x9cd2df59
-	.long	1441952575              # 0x55f2733f
-	.long	404016761               # 0x1814ce79
-	.long	1942435775              # 0x73c737bf
-	.long	1408749034              # 0x53f7cdea
-	.long	1610459739              # 0x5ffdaa5b
-	.long	3745345300              # 0xdf3d6f14
-	.long	2017778566              # 0x7844db86
-	.long	3400528769              # 0xcaaff381
-	.long	3110650942              # 0xb968c43e
-	.long	941896748               # 0x3824342c
-	.long	3265478751              # 0xc2a3405f
-	.long	371049330               # 0x161dc372
-	.long	3168937228              # 0xbce2250c
-	.long	675039627               # 0x283c498b
-	.long	4279080257              # 0xff0d9541
-	.long	967311729               # 0x39a80171
-	.long	135050206               # 0x80cb3de
-	.long	3635733660              # 0xd8b4e49c
-	.long	1683407248              # 0x6456c190
-	.long	2076935265              # 0x7bcb8461
-	.long	3576870512              # 0xd532b670
-	.long	1215061108              # 0x486c5c74
-	.long	3501741890              # 0xd0b85742
-	.size	Td0, 1024
-
-	.type	Td1,@object             # @Td1
-	.p2align	4
-Td1:
-	.long	1347548327              # 0x5051f4a7
-	.long	1400783205              # 0x537e4165
-	.long	3273267108              # 0xc31a17a4
-	.long	2520393566              # 0x963a275e
-	.long	3409685355              # 0xcb3bab6b
-	.long	4045380933              # 0xf11f9d45
-	.long	2880240216              # 0xabacfa58
-	.long	2471224067              # 0x934be303
-	.long	1428173050              # 0x552030fa
-	.long	4138563181              # 0xf6ad766d
-	.long	2441661558              # 0x9188cc76
-	.long	636813900               # 0x25f5024c
-	.long	4233094615              # 0xfc4fe5d7
-	.long	3620022987              # 0xd7c52acb
-	.long	2149987652              # 0x80263544
-	.long	2411029155              # 0x8fb562a3
-	.long	1239331162              # 0x49deb15a
-	.long	1730525723              # 0x6725ba1b
-	.long	2554718734              # 0x9845ea0e
-	.long	3781033664              # 0xe15dfec0
-	.long	46346101                # 0x2c32f75
-	.long	310463728               # 0x12814cf0
-	.long	2743944855              # 0xa38d4697
-	.long	3328955385              # 0xc66bd3f9
-	.long	3875770207              # 0xe7038f5f
-	.long	2501218972              # 0x9515929c
-	.long	3955191162              # 0xebbf6d7a
-	.long	3667219033              # 0xda955259
-	.long	768917123               # 0x2dd4be83
-	.long	3545789473              # 0xd3587421
-	.long	692707433               # 0x2949e069
-	.long	1150208456              # 0x448ec9c8
-	.long	1786102409              # 0x6a75c289
-	.long	2029293177              # 0x78f48e79
-	.long	1805211710              # 0x6b99583e
-	.long	3710368113              # 0xdd27b971
-	.long	3065962831              # 0xb6bee14f
-	.long	401639597               # 0x17f088ad
-	.long	1724457132              # 0x66c920ac
-	.long	3028143674              # 0xb47dce3a
-	.long	409198410               # 0x1863df4a
-	.long	2196052529              # 0x82e51a31
-	.long	1620529459              # 0x60975133
-	.long	1164071807              # 0x4562537f
-	.long	3769721975              # 0xe0b16477
-	.long	2226875310              # 0x84bb6bae
-	.long	486441376               # 0x1cfe81a0
-	.long	2499348523              # 0x94f9082b
-	.long	1483753576              # 0x58704868
-	.long	428819965               # 0x198f45fd
-	.long	2274680428              # 0x8794de6c
-	.long	3075636216              # 0xb7527bf8
-	.long	598438867               # 0x23ab73d3
-	.long	3799141122              # 0xe2724b02
-	.long	1474502543              # 0x57e31f8f
-	.long	711349675               # 0x2a6655ab
-	.long	129166120               # 0x7b2eb28
-	.long	53458370                # 0x32fb5c2
-	.long	2592523643              # 0x9a86c57b
-	.long	2782082824              # 0xa5d33708
-	.long	4063242375              # 0xf2302887
-	.long	2988687269              # 0xb223bfa5
-	.long	3120694122              # 0xba02036a
-	.long	1559041666              # 0x5ced1682
-	.long	730517276               # 0x2b8acf1c
-	.long	2460449204              # 0x92a779b4
-	.long	4042459122              # 0xf0f307f2
-	.long	2706270690              # 0xa14e69e2
-	.long	3446004468              # 0xcd65daf4
-	.long	3573941694              # 0xd50605be
-	.long	533804130               # 0x1fd13462
-	.long	2328143614              # 0x8ac4a6fe
-	.long	2637442643              # 0x9d342e53
-	.long	2695033685              # 0xa0a2f355
-	.long	839224033               # 0x32058ae1
-	.long	1973745387              # 0x75a4f6eb
-	.long	957055980               # 0x390b83ec
-	.long	2856345839              # 0xaa4060ef
-	.long	106852767               # 0x65e719f
-	.long	1371368976              # 0x51bd6e10
-	.long	4181598602              # 0xf93e218a
-	.long	1033297158              # 0x3d96dd06
-	.long	2933734917              # 0xaedd3e05
-	.long	1179510461              # 0x464de6bd
-	.long	3046200461              # 0xb591548d
-	.long	91341917                # 0x571c45d
-	.long	1862534868              # 0x6f0406d4
-	.long	4284502037              # 0xff605015
-	.long	605657339               # 0x241998fb
-	.long	2547432937              # 0x97d6bde9
-	.long	3431546947              # 0xcc894043
-	.long	2003294622              # 0x7767d99e
-	.long	3182487618              # 0xbdb0e842
-	.long	2282195339              # 0x8807898b
-	.long	954669403               # 0x38e7195b
-	.long	3682191598              # 0xdb79c8ee
-	.long	1201765386              # 0x47a17c0a
-	.long	3917234703              # 0xe97c420f
-	.long	3388507166              # 0xc9f8841e
-	.long	0                       # 0x0
-	.long	2198438022              # 0x83098086
-	.long	1211247597              # 0x48322bed
-	.long	2887651696              # 0xac1e1170
-	.long	1315723890              # 0x4e6c5a72
-	.long	4227665663              # 0xfbfd0eff
-	.long	1443857720              # 0x560f8538
-	.long	507358933               # 0x1e3daed5
-	.long	657861945               # 0x27362d39
-	.long	1678381017              # 0x640a0fd9
-	.long	560487590               # 0x21685ca6
-	.long	3516619604              # 0xd19b5b54
-	.long	975451694               # 0x3a24362e
-	.long	2970356327              # 0xb10c0a67
-	.long	261314535               # 0xf9357e7
-	.long	3535072918              # 0xd2b4ee96
-	.long	2652609425              # 0x9e1b9b91
-	.long	1333838021              # 0x4f80c0c5
-	.long	2724322336              # 0xa261dc20
-	.long	1767536459              # 0x695a774b
-	.long	370938394               # 0x161c121a
-	.long	182621114               # 0xae293ba
-	.long	3854606378              # 0xe5c0a02a
-	.long	1128014560              # 0x433c22e0
-	.long	487725847               # 0x1d121b17
-	.long	185469197               # 0xb0e090d
-	.long	2918353863              # 0xadf28bc7
-	.long	3106780840              # 0xb92db6a8
-	.long	3356761769              # 0xc8141ea9
-	.long	2237133081              # 0x8557f119
-	.long	1286567175              # 0x4caf7507
-	.long	3152976349              # 0xbbee99dd
-	.long	4255350624              # 0xfda37f60
-	.long	2683765030              # 0x9ff70126
-	.long	3160175349              # 0xbc5c72f5
-	.long	3309594171              # 0xc544663b
-	.long	878443390               # 0x345bfb7e
-	.long	1988838185              # 0x768b4329
-	.long	3704300486              # 0xdccb23c6
-	.long	1756818940              # 0x68b6edfc
-	.long	1673061617              # 0x63b8e4f1
-	.long	3403100636              # 0xcad731dc
-	.long	272786309               # 0x10426385
-	.long	1075025698              # 0x40139722
-	.long	545572369               # 0x2084c611
-	.long	2105887268              # 0x7d854a24
-	.long	4174560061              # 0xf8d2bb3d
-	.long	296679730               # 0x11aef932
-	.long	1841768865              # 0x6dc729a1
-	.long	1260232239              # 0x4b1d9e2f
-	.long	4091327024              # 0xf3dcb230
-	.long	3960309330              # 0xec0d8652
-	.long	3497509347              # 0xd077c1e3
-	.long	1814803222              # 0x6c2bb316
-	.long	2578018489              # 0x99a970b9
-	.long	4195456072              # 0xfa119448
-	.long	575138148               # 0x2247e964
-	.long	3299409036              # 0xc4a8fc8c
-	.long	446754879               # 0x1aa0f03f
-	.long	3629546796              # 0xd8567d2c
-	.long	4011996048              # 0xef223390
-	.long	3347532110              # 0xc787494e
-	.long	3252238545              # 0xc1d938d1
-	.long	4270639778              # 0xfe8ccaa2
-	.long	915985419               # 0x3698d40b
-	.long	3483825537              # 0xcfa6f581
-	.long	681933534               # 0x28a57ade
-	.long	651868046               # 0x26dab78e
-	.long	2755636671              # 0xa43fadbf
-	.long	3828103837              # 0xe42c3a9d
-	.long	223377554               # 0xd507892
-	.long	2607439820              # 0x9b6a5fcc
-	.long	1649704518              # 0x62547e46
-	.long	3270937875              # 0xc2f68d13
-	.long	3901806776              # 0xe890d8b8
-	.long	1580087799              # 0x5e2e39f7
-	.long	4118987695              # 0xf582c3af
-	.long	3198115200              # 0xbe9f5d80
-	.long	2087309459              # 0x7c69d093
-	.long	2842678573              # 0xa96fd52d
-	.long	3016697106              # 0xb3cf2512
-	.long	1003007129              # 0x3bc8ac99
-	.long	2802849917              # 0xa710187d
-	.long	1860738147              # 0x6ee89c63
-	.long	2077965243              # 0x7bdb3bbb
-	.long	164439672               # 0x9cd2678
-	.long	4100872472              # 0xf46e5918
-	.long	32283319                # 0x1ec9ab7
-	.long	2827177882              # 0xa8834f9a
-	.long	1709610350              # 0x65e6956e
-	.long	2125135846              # 0x7eaaffe6
-	.long	136428751               # 0x821bccf
-	.long	3874428392              # 0xe6ef15e8
-	.long	3652904859              # 0xd9bae79b
-	.long	3460984630              # 0xce4a6f36
-	.long	3572145929              # 0xd4ea9f09
-	.long	3593056380              # 0xd629b07c
-	.long	2939266226              # 0xaf31a4b2
-	.long	824852259               # 0x312a3f23
-	.long	818324884               # 0x30c6a594
-	.long	3224740454              # 0xc035a266
-	.long	930369212               # 0x37744ebc
-	.long	2801566410              # 0xa6fc82ca
-	.long	2967507152              # 0xb0e090d0
-	.long	355706840               # 0x1533a7d8
-	.long	1257309336              # 0x4af10498
-	.long	4148292826              # 0xf741ecda
-	.long	243256656               # 0xe7fcd50
-	.long	790073846               # 0x2f1791f6
-	.long	2373340630              # 0x8d764dd6
-	.long	1296297904              # 0x4d43efb0
-	.long	1422699085              # 0x54ccaa4d
-	.long	3756299780              # 0xdfe49604
-	.long	3818836405              # 0xe39ed1b5
-	.long	457992840               # 0x1b4c6a88
-	.long	3099667487              # 0xb8c12c1f
-	.long	2135319889              # 0x7f466551
-	.long	77422314                # 0x49d5eea
-	.long	1560382517              # 0x5d018c35
-	.long	1945798516              # 0x73fa8774
-	.long	788204353               # 0x2efb0b41
-	.long	1521706781              # 0x5ab3671d
-	.long	1385356242              # 0x5292dbd2
-	.long	870912086               # 0x33e91056
-	.long	325965383               # 0x136dd647
-	.long	2358957921              # 0x8c9ad761
-	.long	2050466060              # 0x7a37a10c
-	.long	2388260884              # 0x8e59f814
-	.long	2313884476              # 0x89eb133c
-	.long	4006521127              # 0xeecea927
-	.long	901210569               # 0x35b761c9
-	.long	3990953189              # 0xede11ce5
-	.long	1014646705              # 0x3c7a47b1
-	.long	1503449823              # 0x599cd2df
-	.long	1062597235              # 0x3f55f273
-	.long	2031621326              # 0x791814ce
-	.long	3212035895              # 0xbf73c737
-	.long	3931371469              # 0xea53f7cd
-	.long	1533017514              # 0x5b5ffdaa
-	.long	350174575               # 0x14df3d6f
-	.long	2256028891              # 0x867844db
-	.long	2177544179              # 0x81caaff3
-	.long	1052338372              # 0x3eb968c4
-	.long	741876788               # 0x2c382434
-	.long	1606591296              # 0x5fc2a340
-	.long	1914052035              # 0x72161dc3
-	.long	213705253               # 0xcbce225
-	.long	2334669897              # 0x8b283c49
-	.long	1107234197              # 0x41ff0d95
-	.long	1899603969              # 0x7139a801
-	.long	3725069491              # 0xde080cb3
-	.long	2631447780              # 0x9cd8b4e4
-	.long	2422494913              # 0x906456c1
-	.long	1635502980              # 0x617bcb84
-	.long	1893020342              # 0x70d532b6
-	.long	1950903388              # 0x74486c5c
-	.long	1120974935              # 0x42d0b857
-	.size	Td1, 1024
-
-	.type	Td2,@object             # @Td2
-	.p2align	4
-Td2:
-	.long	2807058932              # 0xa75051f4
-	.long	1699970625              # 0x65537e41
-	.long	2764249623              # 0xa4c31a17
-	.long	1586903591              # 0x5e963a27
-	.long	1808481195              # 0x6bcb3bab
-	.long	1173430173              # 0x45f11f9d
-	.long	1487645946              # 0x58abacfa
-	.long	59984867                # 0x3934be3
-	.long	4199882800              # 0xfa552030
-	.long	1844882806              # 0x6df6ad76
-	.long	1989249228              # 0x769188cc
-	.long	1277555970              # 0x4c25f502
-	.long	3623636965              # 0xd7fc4fe5
-	.long	3419915562              # 0xcbd7c52a
-	.long	1149249077              # 0x44802635
-	.long	2744104290              # 0xa38fb562
-	.long	1514790577              # 0x5a49deb1
-	.long	459744698               # 0x1b6725ba
-	.long	244860394               # 0xe9845ea
-	.long	3235995134              # 0xc0e15dfe
-	.long	1963115311              # 0x7502c32f
-	.long	4027744588              # 0xf012814c
-	.long	2544078150              # 0x97a38d46
-	.long	4190530515              # 0xf9c66bd3
-	.long	1608975247              # 0x5fe7038f
-	.long	2627016082              # 0x9c951592
-	.long	2062270317              # 0x7aebbf6d
-	.long	1507497298              # 0x59da9552
-	.long	2200818878              # 0x832dd4be
-	.long	567498868               # 0x21d35874
-	.long	1764313568              # 0x692949e0
-	.long	3359936201              # 0xc8448ec9
-	.long	2305455554              # 0x896a75c2
-	.long	2037970062              # 0x7978f48e
-	.long	1047239000              # 0x3e6b9958
-	.long	1910319033              # 0x71dd27b9
-	.long	1337376481              # 0x4fb6bee1
-	.long	2904027272              # 0xad17f088
-	.long	2892417312              # 0xac66c920
-	.long	984907214               # 0x3ab47dce
-	.long	1243112415              # 0x4a1863df
-	.long	830661914               # 0x3182e51a
-	.long	861968209               # 0x33609751
-	.long	2135253587              # 0x7f456253
-	.long	2011214180              # 0x77e0b164
-	.long	2927934315              # 0xae84bb6b
-	.long	2686254721              # 0xa01cfe81
-	.long	731183368               # 0x2b94f908
-	.long	1750626376              # 0x68587048
-	.long	4246310725              # 0xfd198f45
-	.long	1820824798              # 0x6c8794de
-	.long	4172763771              # 0xf8b7527b
-	.long	3542330227              # 0xd323ab73
-	.long	48394827                # 0x2e2724b
-	.long	2404901663              # 0x8f57e31f
-	.long	2871682645              # 0xab2a6655
-	.long	671593195               # 0x2807b2eb
-	.long	3254988725              # 0xc2032fb5
-	.long	2073724613              # 0x7b9a86c5
-	.long	145085239               # 0x8a5d337
-	.long	2280796200              # 0x87f23028
-	.long	2779915199              # 0xa5b223bf
-	.long	1790575107              # 0x6aba0203
-	.long	2187128086              # 0x825ced16
-	.long	472615631               # 0x1c2b8acf
-	.long	3029510009              # 0xb492a779
-	.long	4075877127              # 0xf2f0f307
-	.long	3802222185              # 0xe2a14e69
-	.long	4107101658              # 0xf4cd65da
-	.long	3201631749              # 0xbed50605
-	.long	1646252340              # 0x621fd134
-	.long	4270507174              # 0xfe8ac4a6
-	.long	1402811438              # 0x539d342e
-	.long	1436590835              # 0x55a0a2f3
-	.long	3778151818              # 0xe132058a
-	.long	3950355702              # 0xeb75a4f6
-	.long	3963161475              # 0xec390b83
-	.long	4020912224              # 0xefaa4060
-	.long	2667994737              # 0x9f065e71
-	.long	273792366               # 0x1051bd6e
-	.long	2331590177              # 0x8af93e21
-	.long	104699613               # 0x63d96dd
-	.long	95345982                # 0x5aedd3e
-	.long	3175501286              # 0xbd464de6
-	.long	2377486676              # 0x8db59154
-	.long	1560637892              # 0x5d0571c4
-	.long	3564045318              # 0xd46f0406
-	.long	369057872               # 0x15ff6050
-	.long	4213447064              # 0xfb241998
-	.long	3919042237              # 0xe997d6bd
-	.long	1137477952              # 0x43cc8940
-	.long	2658625497              # 0x9e7767d9
-	.long	1119727848              # 0x42bdb0e8
-	.long	2340947849              # 0x8b880789
-	.long	1530455833              # 0x5b38e719
-	.long	4007360968              # 0xeedb79c8
-	.long	172466556               # 0xa47a17c
-	.long	266959938               # 0xfe97c42
-	.long	516552836               # 0x1ec9f884
-	.long	0                       # 0x0
-	.long	2256734592              # 0x86830980
-	.long	3980931627              # 0xed48322b
-	.long	1890328081              # 0x70ac1e11
-	.long	1917742170              # 0x724e6c5a
-	.long	4294704398              # 0xfffbfd0e
-	.long	945164165               # 0x38560f85
-	.long	3575528878              # 0xd51e3dae
-	.long	958871085               # 0x3927362d
-	.long	3647212047              # 0xd9640a0f
-	.long	2787207260              # 0xa621685c
-	.long	1423022939              # 0x54d19b5b
-	.long	775562294               # 0x2e3a2436
-	.long	1739656202              # 0x67b10c0a
-	.long	3876557655              # 0xe70f9357
-	.long	2530391278              # 0x96d2b4ee
-	.long	2443058075              # 0x919e1b9b
-	.long	3310321856              # 0xc54f80c0
-	.long	547512796               # 0x20a261dc
-	.long	1265195639              # 0x4b695a77
-	.long	437656594               # 0x1a161c12
-	.long	3121275539              # 0xba0ae293
-	.long	719700128               # 0x2ae5c0a0
-	.long	3762502690              # 0xe0433c22
-	.long	387781147               # 0x171d121b
-	.long	218828297               # 0xd0b0e09
-	.long	3350065803              # 0xc7adf28b
-	.long	2830708150              # 0xa8b92db6
-	.long	2848461854              # 0xa9c8141e
-	.long	428169201               # 0x198557f1
-	.long	122466165               # 0x74caf75
-	.long	3720081049              # 0xddbbee99
-	.long	1627235199              # 0x60fda37f
-	.long	648017665               # 0x269ff701
-	.long	4122762354              # 0xf5bc5c72
-	.long	1002783846              # 0x3bc54466
-	.long	2117360635              # 0x7e345bfb
-	.long	695634755               # 0x29768b43
-	.long	3336358691              # 0xc6dccb23
-	.long	4234721005              # 0xfc68b6ed
-	.long	4049844452              # 0xf163b8e4
-	.long	3704280881              # 0xdccad731
-	.long	2232435299              # 0x85104263
-	.long	574624663               # 0x22401397
-	.long	287343814               # 0x112084c6
-	.long	612205898               # 0x247d854a
-	.long	1039717051              # 0x3df8d2bb
-	.long	840019705               # 0x3211aef9
-	.long	2708326185              # 0xa16dc729
-	.long	793451934               # 0x2f4b1d9e
-	.long	821288114               # 0x30f3dcb2
-	.long	1391201670              # 0x52ec0d86
-	.long	3822090177              # 0xe3d077c1
-	.long	376187827               # 0x166c2bb3
-	.long	3113855344              # 0xb999a970
-	.long	1224348052              # 0x48fa1194
-	.long	1679968233              # 0x642247e9
-	.long	2361698556              # 0x8cc4a8fc
-	.long	1058709744              # 0x3f1aa0f0
-	.long	752375421               # 0x2cd8567d
-	.long	2431590963              # 0x90ef2233
-	.long	1321699145              # 0x4ec78749
-	.long	3519142200              # 0xd1c1d938
-	.long	2734591178              # 0xa2fe8cca
-	.long	188127444               # 0xb3698d4
-	.long	2177869557              # 0x81cfa6f5
-	.long	3727205754              # 0xde28a57a
-	.long	2384911031              # 0x8e26dab7
-	.long	3215212461              # 0xbfa43fad
-	.long	2648976442              # 0x9de42c3a
-	.long	2450346104              # 0x920d5078
-	.long	3432737375              # 0xcc9b6a5f
-	.long	1180849278              # 0x4662547e
-	.long	331544205               # 0x13c2f68d
-	.long	3102249176              # 0xb8e890d8
-	.long	4150144569              # 0xf75e2e39
-	.long	2952102595              # 0xaff582c3
-	.long	2159976285              # 0x80be9f5d
-	.long	2474404304              # 0x937c69d0
-	.long	766078933               # 0x2da96fd5
-	.long	313773861               # 0x12b3cf25
-	.long	2570832044              # 0x993bc8ac
-	.long	2108100632              # 0x7da71018
-	.long	1668212892              # 0x636ee89c
-	.long	3145456443              # 0xbb7bdb3b
-	.long	2013908262              # 0x7809cd26
-	.long	418672217               # 0x18f46e59
-	.long	3070356634              # 0xb701ec9a
-	.long	2594734927              # 0x9aa8834f
-	.long	1852171925              # 0x6e65e695
-	.long	3867060991              # 0xe67eaaff
-	.long	3473416636              # 0xcf0821bc
-	.long	3907448597              # 0xe8e6ef15
-	.long	2614737639              # 0x9bd9bae7
-	.long	919489135               # 0x36ce4a6f
-	.long	164948639               # 0x9d4ea9f
-	.long	2094410160              # 0x7cd629b0
-	.long	2997825956              # 0xb2af31a4
-	.long	590424639               # 0x23312a3f
-	.long	2486224549              # 0x9430c6a5
-	.long	1723872674              # 0x66c035a2
-	.long	3157750862              # 0xbc37744e
-	.long	3399941250              # 0xcaa6fc82
-	.long	3501252752              # 0xd0b0e090
-	.long	3625268135              # 0xd81533a7
-	.long	2555048196              # 0x984af104
-	.long	3673637356              # 0xdaf741ec
-	.long	1343127501              # 0x500e7fcd
-	.long	4130281361              # 0xf62f1791
-	.long	3599595085              # 0xd68d764d
-	.long	2957853679              # 0xb04d43ef
-	.long	1297403050              # 0x4d54ccaa
-	.long	81781910                # 0x4dfe496
-	.long	3051593425              # 0xb5e39ed1
-	.long	2283490410              # 0x881b4c6a
-	.long	532201772               # 0x1fb8c12c
-	.long	1367295589              # 0x517f4665
-	.long	3926170974              # 0xea049d5e
-	.long	895287692               # 0x355d018c
-	.long	1953757831              # 0x7473fa87
-	.long	1093597963              # 0x412efb0b
-	.long	492483431               # 0x1d5ab367
-	.long	3528626907              # 0xd25292db
-	.long	1446242576              # 0x5633e910
-	.long	1192455638              # 0x47136dd6
-	.long	1636604631              # 0x618c9ad7
-	.long	209336225               # 0xc7a37a1
-	.long	344873464               # 0x148e59f8
-	.long	1015671571              # 0x3c89eb13
-	.long	669961897               # 0x27eecea9
-	.long	3375740769              # 0xc935b761
-	.long	3857572124              # 0xe5ede11c
-	.long	2973530695              # 0xb13c7a47
-	.long	3747192018              # 0xdf599cd2
-	.long	1933530610              # 0x733f55f2
-	.long	3464042516              # 0xce791814
-	.long	935293895               # 0x37bf73c7
-	.long	3454686199              # 0xcdea53f7
-	.long	2858115069              # 0xaa5b5ffd
-	.long	1863638845              # 0x6f14df3d
-	.long	3683022916              # 0xdb867844
-	.long	4085369519              # 0xf381caaf
-	.long	3292445032              # 0xc43eb968
-	.long	875313188               # 0x342c3824
-	.long	1080017571              # 0x405fc2a3
-	.long	3279033885              # 0xc372161d
-	.long	621591778               # 0x250cbce2
-	.long	1233856572              # 0x498b283c
-	.long	2504130317              # 0x9541ff0d
-	.long	24197544                # 0x17139a8
-	.long	3017672716              # 0xb3de080c
-	.long	3835484340              # 0xe49cd8b4
-	.long	3247465558              # 0xc1906456
-	.long	2220981195              # 0x84617bcb
-	.long	3060847922              # 0xb670d532
-	.long	1551124588              # 0x5c74486c
-	.long	1463996600              # 0x5742d0b8
-	.size	Td2, 1024
-
-	.type	Td3,@object             # @Td3
-	.p2align	4
-Td3:
-	.long	4104605777              # 0xf4a75051
-	.long	1097159550              # 0x4165537e
-	.long	396673818               # 0x17a4c31a
-	.long	660510266               # 0x275e963a
-	.long	2875968315              # 0xab6bcb3b
-	.long	2638606623              # 0x9d45f11f
-	.long	4200115116              # 0xfa58abac
-	.long	3808662347              # 0xe303934b
-	.long	821712160               # 0x30fa5520
-	.long	1986918061              # 0x766df6ad
-	.long	3430322568              # 0xcc769188
-	.long	38544885                # 0x24c25f5
-	.long	3856137295              # 0xe5d7fc4f
-	.long	718002117               # 0x2acbd7c5
-	.long	893681702               # 0x35448026
-	.long	1654886325              # 0x62a38fb5
-	.long	2975484382              # 0xb15a49de
-	.long	3122358053              # 0xba1b6725
-	.long	3926825029              # 0xea0e9845
-	.long	4274053469              # 0xfec0e15d
-	.long	796197571               # 0x2f7502c3
-	.long	1290801793              # 0x4cf01281
-	.long	1184342925              # 0x4697a38d
-	.long	3556361835              # 0xd3f9c66b
-	.long	2405426947              # 0x8f5fe703
-	.long	2459735317              # 0x929c9515
-	.long	1836772287              # 0x6d7aebbf
-	.long	1381620373              # 0x5259da95
-	.long	3196267988              # 0xbe832dd4
-	.long	1948373848              # 0x7421d358
-	.long	3764988233              # 0xe0692949
-	.long	3385345166              # 0xc9c8448e
-	.long	3263785589              # 0xc2896a75
-	.long	2390325492              # 0x8e7978f4
-	.long	1480485785              # 0x583e6b99
-	.long	3111247143              # 0xb971dd27
-	.long	3780097726              # 0xe14fb6be
-	.long	2293045232              # 0x88ad17f0
-	.long	548169417               # 0x20ac66c9
-	.long	3459953789              # 0xce3ab47d
-	.long	3746175075              # 0xdf4a1863
-	.long	439452389               # 0x1a3182e5
-	.long	1362321559              # 0x51336097
-	.long	1400849762              # 0x537f4562
-	.long	1685577905              # 0x6477e0b1
-	.long	1806599355              # 0x6bae84bb
-	.long	2174754046              # 0x81a01cfe
-	.long	137073913               # 0x82b94f9
-	.long	1214797936              # 0x48685870
-	.long	1174215055              # 0x45fd198f
-	.long	3731654548              # 0xde6c8794
-	.long	2079897426              # 0x7bf8b752
-	.long	1943217067              # 0x73d323ab
-	.long	1258480242              # 0x4b02e272
-	.long	529487843               # 0x1f8f57e3
-	.long	1437280870              # 0x55ab2a66
-	.long	3945269170              # 0xeb2807b2
-	.long	3049390895              # 0xb5c2032f
-	.long	3313212038              # 0xc57b9a86
-	.long	923313619               # 0x3708a5d3
-	.long	679998000               # 0x2887f230
-	.long	3215307299              # 0xbfa5b223
-	.long	57326082                # 0x36aba02
-	.long	377642221               # 0x16825ced
-	.long	3474729866              # 0xcf1c2b8a
-	.long	2041877159              # 0x79b492a7
-	.long	133361907               # 0x7f2f0f3
-	.long	1776460110              # 0x69e2a14e
-	.long	3673476453              # 0xdaf4cd65
-	.long	96392454                # 0x5bed506
-	.long	878845905               # 0x34621fd1
-	.long	2801699524              # 0xa6fe8ac4
-	.long	777231668               # 0x2e539d34
-	.long	4082475170              # 0xf355a0a2
-	.long	2330014213              # 0x8ae13205
-	.long	4142626212              # 0xf6eb75a4
-	.long	2213296395              # 0x83ec390b
-	.long	1626319424              # 0x60efaa40
-	.long	1906247262              # 0x719f065e
-	.long	1846563261              # 0x6e1051bd
-	.long	562755902               # 0x218af93e
-	.long	3708173718              # 0xdd063d96
-	.long	1040559837              # 0x3e05aedd
-	.long	3871163981              # 0xe6bd464d
-	.long	1418573201              # 0x548db591
-	.long	3294430577              # 0xc45d0571
-	.long	114585348               # 0x6d46f04
-	.long	1343618912              # 0x5015ff60
-	.long	2566595609              # 0x98fb2419
-	.long	3186202582              # 0xbde997d6
-	.long	1078185097              # 0x4043cc89
-	.long	3651041127              # 0xd99e7767
-	.long	3896688048              # 0xe842bdb0
-	.long	2307622919              # 0x898b8807
-	.long	425408743               # 0x195b38e7
-	.long	3371096953              # 0xc8eedb79
-	.long	2081048481              # 0x7c0a47a1
-	.long	1108339068              # 0x420fe97c
-	.long	2216610296              # 0x841ec9f8
-	.long	0                       # 0x0
-	.long	2156299017              # 0x80868309
-	.long	736970802               # 0x2bed4832
-	.long	292596766               # 0x1170ac1e
-	.long	1517440620              # 0x5a724e6c
-	.long	251657213               # 0xefffbfd
-	.long	2235061775              # 0x8538560f
-	.long	2933202493              # 0xaed51e3d
-	.long	758720310               # 0x2d392736
-	.long	265905162               # 0xfd9640a
-	.long	1554391400              # 0x5ca62168
-	.long	1532285339              # 0x5b54d19b
-	.long	908999204               # 0x362e3a24
-	.long	174567692               # 0xa67b10c
-	.long	1474760595              # 0x57e70f93
-	.long	4002861748              # 0xee96d2b4
-	.long	2610011675              # 0x9b919e1b
-	.long	3234156416              # 0xc0c54f80
-	.long	3693126241              # 0xdc20a261
-	.long	2001430874              # 0x774b695a
-	.long	303699484               # 0x121a161c
-	.long	2478443234              # 0x93ba0ae2
-	.long	2687165888              # 0xa02ae5c0
-	.long	585122620               # 0x22e0433c
-	.long	454499602               # 0x1b171d12
-	.long	151849742               # 0x90d0b0e
-	.long	2345119218              # 0x8bc7adf2
-	.long	3064510765              # 0xb6a8b92d
-	.long	514443284               # 0x1ea9c814
-	.long	4044981591              # 0xf1198557
-	.long	1963412655              # 0x75074caf
-	.long	2581445614              # 0x99ddbbee
-	.long	2137062819              # 0x7f60fda3
-	.long	19308535                # 0x1269ff7
-	.long	1928707164              # 0x72f5bc5c
-	.long	1715193156              # 0x663bc544
-	.long	4219352155              # 0xfb7e345b
-	.long	1126790795              # 0x4329768b
-	.long	600235211               # 0x23c6dccb
-	.long	3992742070              # 0xedfc68b6
-	.long	3841024952              # 0xe4f163b8
-	.long	836553431               # 0x31dccad7
-	.long	1669664834              # 0x63851042
-	.long	2535604243              # 0x97224013
-	.long	3323011204              # 0xc6112084
-	.long	1243905413              # 0x4a247d85
-	.long	3141400786              # 0xbb3df8d2
-	.long	4180808110              # 0xf93211ae
-	.long	698445255               # 0x29a16dc7
-	.long	2653899549              # 0x9e2f4b1d
-	.long	2989552604              # 0xb230f3dc
-	.long	2253581325              # 0x8652ec0d
-	.long	3252932727              # 0xc1e3d077
-	.long	3004591147              # 0xb3166c2b
-	.long	1891211689              # 0x70b999a9
-	.long	2487810577              # 0x9448fa11
-	.long	3915653703              # 0xe9642247
-	.long	4237083816              # 0xfc8cc4a8
-	.long	4030667424              # 0xf03f1aa0
-	.long	2100090966              # 0x7d2cd856
-	.long	865136418               # 0x3390ef22
-	.long	1229899655              # 0x494ec787
-	.long	953270745               # 0x38d1c1d9
-	.long	3399679628              # 0xcaa2fe8c
-	.long	3557504664              # 0xd40b3698
-	.long	4118925222              # 0xf581cfa6
-	.long	2061379749              # 0x7ade28a5
-	.long	3079546586              # 0xb78e26da
-	.long	2915017791              # 0xadbfa43f
-	.long	983426092               # 0x3a9de42c
-	.long	2022837584              # 0x78920d50
-	.long	1607244650              # 0x5fcc9b6a
-	.long	2118541908              # 0x7e466254
-	.long	2366882550              # 0x8d13c2f6
-	.long	3635996816              # 0xd8b8e890
-	.long	972512814               # 0x39f75e2e
-	.long	3283088770              # 0xc3aff582
-	.long	1568718495              # 0x5d80be9f
-	.long	3499326569              # 0xd0937c69
-	.long	3576539503              # 0xd52da96f
-	.long	621982671               # 0x2512b3cf
-	.long	2895723464              # 0xac993bc8
-	.long	410887952               # 0x187da710
-	.long	2623762152              # 0x9c636ee8
-	.long	1002142683              # 0x3bbb7bdb
-	.long	645401037               # 0x267809cd
-	.long	1494807662              # 0x5918f46e
-	.long	2595684844              # 0x9ab701ec
-	.long	1335535747              # 0x4f9aa883
-	.long	2507040230              # 0x956e65e6
-	.long	4293295786              # 0xffe67eaa
-	.long	3167684641              # 0xbccf0821
-	.long	367585007               # 0x15e8e6ef
-	.long	3885750714              # 0xe79bd9ba
-	.long	1865862730              # 0x6f36ce4a
-	.long	2668221674              # 0x9f09d4ea
-	.long	2960971305              # 0xb07cd629
-	.long	2763173681              # 0xa4b2af31
-	.long	1059270954              # 0x3f23312a
-	.long	2777952454              # 0xa59430c6
-	.long	2724642869              # 0xa266c035
-	.long	1320957812              # 0x4ebc3774
-	.long	2194319100              # 0x82caa6fc
-	.long	2429595872              # 0x90d0b0e0
-	.long	2815956275              # 0xa7d81533
-	.long	77089521                # 0x4984af1
-	.long	3973773121              # 0xecdaf741
-	.long	3444575871              # 0xcd500e7f
-	.long	2448830231              # 0x91f62f17
-	.long	1305906550              # 0x4dd68d76
-	.long	4021308739              # 0xefb04d43
-	.long	2857194700              # 0xaa4d54cc
-	.long	2516901860              # 0x9604dfe4
-	.long	3518358430              # 0xd1b5e39e
-	.long	1787304780              # 0x6a881b4c
-	.long	740276417               # 0x2c1fb8c1
-	.long	1699839814              # 0x65517f46
-	.long	1592394909              # 0x5eea049d
-	.long	2352307457              # 0x8c355d01
-	.long	2272556026              # 0x877473fa
-	.long	188821243               # 0xb412efb
-	.long	1729977011              # 0x671d5ab3
-	.long	3687994002              # 0xdbd25292
-	.long	274084841               # 0x105633e9
-	.long	3594982253              # 0xd647136d
-	.long	3613494426              # 0xd7618c9a
-	.long	2701949495              # 0xa10c7a37
-	.long	4162096729              # 0xf8148e59
-	.long	322734571               # 0x133c89eb
-	.long	2837966542              # 0xa927eece
-	.long	1640576439              # 0x61c935b7
-	.long	484830689               # 0x1ce5ede1
-	.long	1202797690              # 0x47b13c7a
-	.long	3537852828              # 0xd2df599c
-	.long	4067639125              # 0xf2733f55
-	.long	349075736               # 0x14ce7918
-	.long	3342319475              # 0xc737bf73
-	.long	4157467219              # 0xf7cdea53
-	.long	4255800159              # 0xfdaa5b5f
-	.long	1030690015              # 0x3d6f14df
-	.long	1155237496              # 0x44db8678
-	.long	2951971274              # 0xaff381ca
-	.long	1757691577              # 0x68c43eb9
-	.long	607398968               # 0x24342c38
-	.long	2738905026              # 0xa3405fc2
-	.long	499347990               # 0x1dc37216
-	.long	3794078908              # 0xe2250cbc
-	.long	1011452712              # 0x3c498b28
-	.long	227885567               # 0xd9541ff
-	.long	2818666809              # 0xa8017139
-	.long	213114376               # 0xcb3de08
-	.long	3034881240              # 0xb4e49cd8
-	.long	1455525988              # 0x56c19064
-	.long	3414450555              # 0xcb84617b
-	.long	850817237               # 0x32b670d5
-	.long	1817998408              # 0x6c5c7448
-	.long	3092726480              # 0xb85742d0
-	.size	Td3, 1024
-
 	.type	Td4,@object             # @Td4
+	.section	.rodata,"a",@progbits
 	.p2align	4
 Td4:
 	.long	1381126738              # 0x52525252
@@ -10178,11 +10442,11 @@ Td4:
 	.long	2105376125              # 0x7d7d7d7d
 	.size	Td4, 1024
 
-	.type	.L.str.3,@object        # @.str.3
+	.type	.L.str.11,@object       # @.str.11
 	.section	.rodata.str1.1,"aMS",@progbits,1
-.L.str.3:
+.L.str.11:
 	.asciz	"xlen >= 0"
-	.size	.L.str.3, 10
+	.size	.L.str.11, 10
 
 	.type	.L.str.1,@object        # @.str.1
 .L.str.1:

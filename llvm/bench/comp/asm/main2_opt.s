@@ -1,49 +1,6 @@
 	.text
 	.file	"llvm-link"
-	.section	.rodata.cst16,"aM",@progbits,16
-	.p2align	4               # -- Begin function main
-.LCPI0_0:
-	.long	0                       # 0x0
-	.long	1                       # 0x1
-	.long	2                       # 0x2
-	.long	3                       # 0x3
-.LCPI0_1:
-	.long	4                       # 0x4
-	.long	5                       # 0x5
-	.long	6                       # 0x6
-	.long	7                       # 0x7
-.LCPI0_2:
-	.long	8                       # 0x8
-	.long	9                       # 0x9
-	.long	10                      # 0xa
-	.long	11                      # 0xb
-.LCPI0_3:
-	.long	12                      # 0xc
-	.long	13                      # 0xd
-	.long	14                      # 0xe
-	.long	15                      # 0xf
-.LCPI0_4:
-	.long	16                      # 0x10
-	.long	17                      # 0x11
-	.long	18                      # 0x12
-	.long	19                      # 0x13
-.LCPI0_5:
-	.long	20                      # 0x14
-	.long	21                      # 0x15
-	.long	22                      # 0x16
-	.long	23                      # 0x17
-.LCPI0_6:
-	.long	24                      # 0x18
-	.long	25                      # 0x19
-	.long	26                      # 0x1a
-	.long	27                      # 0x1b
-.LCPI0_7:
-	.long	28                      # 0x1c
-	.long	29                      # 0x1d
-	.long	30                      # 0x1e
-	.long	31                      # 0x1f
-	.text
-	.globl	main
+	.globl	main                    # -- Begin function main
 	.p2align	4, 0x90
 	.type	main,@function
 main:                                   # @main
@@ -57,30 +14,24 @@ main:                                   # @main
 	subq	$272, %rsp              # imm = 0x110
 	movq	%fs:40, %rax
 	movq	%rax, -8(%rbp)
-	movaps	.LCPI0_0(%rip), %xmm0   # xmm0 = [0,1,2,3]
-	movaps	%xmm0, -272(%rbp)
-	movaps	%xmm0, -144(%rbp)
-	movaps	.LCPI0_1(%rip), %xmm0   # xmm0 = [4,5,6,7]
-	movaps	%xmm0, -256(%rbp)
-	movaps	%xmm0, -128(%rbp)
-	movaps	.LCPI0_2(%rip), %xmm0   # xmm0 = [8,9,10,11]
-	movaps	%xmm0, -240(%rbp)
-	movaps	%xmm0, -112(%rbp)
-	movaps	.LCPI0_3(%rip), %xmm0   # xmm0 = [12,13,14,15]
-	movaps	%xmm0, -224(%rbp)
-	movaps	%xmm0, -96(%rbp)
-	movaps	.LCPI0_4(%rip), %xmm0   # xmm0 = [16,17,18,19]
-	movaps	%xmm0, -208(%rbp)
-	movaps	%xmm0, -80(%rbp)
-	movaps	.LCPI0_5(%rip), %xmm0   # xmm0 = [20,21,22,23]
-	movaps	%xmm0, -192(%rbp)
-	movaps	%xmm0, -64(%rbp)
-	movaps	.LCPI0_6(%rip), %xmm0   # xmm0 = [24,25,26,27]
-	movaps	%xmm0, -176(%rbp)
-	movaps	%xmm0, -48(%rbp)
-	movaps	.LCPI0_7(%rip), %xmm0   # xmm0 = [28,29,30,31]
-	movaps	%xmm0, -160(%rbp)
-	movaps	%xmm0, -32(%rbp)
+	xorl	%eax, %eax
+	.p2align	4, 0x90
+.LBB0_1:                                # =>This Inner Loop Header: Depth=1
+	movl	%eax, -272(%rbp,%rax,4)
+	movl	%eax, -144(%rbp,%rax,4)
+	leal	1(%rax), %ecx
+	movl	%ecx, -268(%rbp,%rax,4)
+	movl	%ecx, -140(%rbp,%rax,4)
+	leal	2(%rax), %ecx
+	movl	%ecx, -264(%rbp,%rax,4)
+	movl	%ecx, -136(%rbp,%rax,4)
+	leal	3(%rax), %ecx
+	movl	%ecx, -260(%rbp,%rax,4)
+	movl	%ecx, -132(%rbp,%rax,4)
+	addq	$4, %rax
+	cmpq	$32, %rax
+	jne	.LBB0_1
+# %bb.2:
 	movl	$-1, -272(%rbp)
 	leaq	-144(%rbp), %rdi
 	leaq	-272(%rbp), %rsi
@@ -91,14 +42,14 @@ main:                                   # @main
 	callq	printf
 	movq	%fs:40, %rax
 	cmpq	-8(%rbp), %rax
-	jne	.LBB0_2
-# %bb.1:                                # %SP_return
+	jne	.LBB0_4
+# %bb.3:                                # %SP_return
 	xorl	%eax, %eax
 	addq	$272, %rsp              # imm = 0x110
 	popq	%rbp
 	.cfi_def_cfa %rsp, 8
 	retq
-.LBB0_2:                                # %CallStackCheckFailBlk
+.LBB0_4:                                # %CallStackCheckFailBlk
 	.cfi_def_cfa %rbp, 16
 	callq	__stack_chk_fail
 .Lfunc_end0:

@@ -49,1914 +49,2230 @@ main:                                   # @main
 mu:                                     # @mu
 	.cfi_startproc
 # %bb.0:
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	pushq	%r15
+	.cfi_def_cfa_offset 24
+	pushq	%r14
+	.cfi_def_cfa_offset 32
 	pushq	%rbx
-	.cfi_def_cfa_offset 16
+	.cfi_def_cfa_offset 40
 	subq	$88, %rsp
-	.cfi_def_cfa_offset 104
-	.cfi_offset %rbx, -16
-	movl	$0, -120(%rsp)
+	.cfi_def_cfa_offset 128
+	.cfi_offset %rbx, -40
+	.cfi_offset %r14, -32
+	.cfi_offset %r15, -24
+	.cfi_offset %rbp, -16
 	movb	$1, 79(%rsp)
+	movl	$0, -120(%rsp)
 	movq	$0, -128(%rsp)
-	movb	(%rdi), %al
-	movb	$1, 78(%rsp)
-	leal	1(%rax), %ecx
-	movzbl	%cl, %ecx
-	decl	%ecx
-	andl	$1, %ecx
-	movl	%ecx, -120(%rsp)
-	andb	$1, %al
-	movb	%al, 77(%rsp)
-	movb	4(%rdi), %al
-	movb	$1, 76(%rsp)
-	leal	1(%rax), %ecx
-	movzbl	%cl, %ecx
-	decl	%ecx
-	andl	$1, %ecx
-	movl	%ecx, -124(%rsp)
-	andb	$1, %al
-	movb	%al, 75(%rsp)
-	movb	8(%rdi), %al
-	movb	$1, 74(%rsp)
-	leal	1(%rax), %ecx
-	movzbl	%cl, %ecx
-	decl	%ecx
-	andl	$1, %ecx
-	movl	%ecx, -128(%rsp)
-	andb	$1, %al
-	movb	%al, 73(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %eax
-	leal	(%rax,%rax), %esi
-	movl	%esi, -120(%rsp)
-	movb	(%rdi), %dl
-	movl	%edx, %ecx
-	andb	$1, %cl
-	movb	$1, 72(%rsp)
-	leal	1(%rax,%rax), %eax
-	incb	%dl
-	movzbl	%dl, %edx
-	andl	$1, %edx
-	movl	%edx, %ebx
-	negl	%ebx
-	andl	%esi, %ebx
-	decl	%edx
-	andl	%eax, %edx
-	orl	%ebx, %edx
-	movl	%edx, -120(%rsp)
-	movb	%cl, 71(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 70(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
+	movl	(%rdi), %eax
 	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, 69(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 68(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, 67(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
+	movb	%al, 78(%rsp)
 	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, 66(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, 65(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 64(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
+	movb	$1, 77(%rsp)
+	leaq	4(%rdi), %r8
+	movl	4(%rdi), %eax
 	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
+	movb	%al, 76(%rsp)
 	movl	%eax, -124(%rsp)
-	movb	%cl, 63(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 62(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
+	movb	$1, 75(%rsp)
+	movl	8(%rdi), %eax
 	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
+	movb	%al, 74(%rsp)
 	movl	%eax, -128(%rsp)
-	movb	%cl, 61(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, 60(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, 59(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 58(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, 57(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 56(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, 55(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, 54(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, 53(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 52(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, 51(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 50(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, 49(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, 48(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, 47(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 46(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, 45(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 44(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, 43(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, 42(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, 41(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 40(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, 39(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 38(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, 37(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, 36(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, 35(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 34(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, 33(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 32(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, 31(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, 30(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, 29(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 28(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, 27(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 26(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, 25(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, 24(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, 23(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 22(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, 21(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 20(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, 19(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, 18(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, 17(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 16(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, 15(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 14(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, 13(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, 12(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, 11(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 10(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, 9(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 8(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, 7(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, 6(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, 5(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 4(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, 3(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, 2(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, 1(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, (%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, -1(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -2(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, -3(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -4(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, -5(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, -6(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, -7(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -8(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, -9(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -10(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, -11(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, -12(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, -13(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -14(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, -15(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -16(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, -17(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, -18(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, -19(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -20(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, -21(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -22(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, -23(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, -24(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, -25(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -26(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, -27(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -28(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, -29(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, -30(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, -31(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -32(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, -33(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -34(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, -35(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, -36(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, -37(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -38(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, -39(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -40(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, -41(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, -42(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, -43(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -44(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, -45(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -46(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, -47(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, -48(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, -49(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -50(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, -51(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -52(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, -53(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, -54(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, -55(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -56(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, -57(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -58(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, -59(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, -60(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, -61(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -62(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, -63(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -64(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, -65(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, -66(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, -67(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -68(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, -69(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -70(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, -71(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, -72(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, -73(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -74(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, -75(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -76(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, -77(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, -78(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
-	movl	%ecx, -120(%rsp)
-	movb	%dl, -79(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -80(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, -81(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
 	movb	$1, -82(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, -83(%rsp)
 	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
-	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, -84(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
+	cmpq	$1, %rsi
+	movb	-82(%rsp), %al
+	leaq	80(%rsp), %r11
+	movq	%r11, %r10
+	cmovgq	%r8, %r10
+	testb	%al, %al
+	movq	%r10, %rdx
+	cmovneq	%r8, %rdx
+	movl	(%rdx), %ecx
+	sarl	%ecx
+	testb	%al, %al
+	cmovel	4(%rdi), %ecx
+	leaq	8(%rdi), %r9
+	cmpq	$2, %rsi
+	movl	%ecx, (%rdx)
+	movb	-82(%rsp), %al
+	cmovgq	%r9, %r11
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-82(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ecx
+	addl	%ecx, %ecx
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ecx
 	movl	%ecx, -120(%rsp)
-	movb	%dl, -85(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -86(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, -87(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -88(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, -89(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, 73(%rsp)
+	movl	%ecx, %ebp
+	orl	$1, %ebp
+	testb	%bl, %bl
+	cmovel	%ecx, %ebp
+	movl	%ebp, -120(%rsp)
+	movb	%al, 72(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, 71(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, 70(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, 69(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -83(%rsp)
+	movl	(%rdi), %ecx
 	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, -90(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-83(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-83(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-83(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, 68(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
 	movl	%ecx, -120(%rsp)
-	movb	%dl, -91(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -92(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, -93(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -94(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, -95(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
+	movb	%al, 67(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, 66(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, 65(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, 64(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -84(%rsp)
+	movl	(%rdi), %ecx
 	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, -96(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-84(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-84(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-84(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, 63(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
 	movl	%ecx, -120(%rsp)
-	movb	%dl, -97(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -98(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, -99(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -100(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, -101(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
+	movb	%al, 62(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, 61(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, 60(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, 59(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -85(%rsp)
+	movl	(%rdi), %ecx
 	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, -102(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-85(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-85(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-85(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, 58(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
 	movl	%ecx, -120(%rsp)
-	movb	%dl, -103(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -104(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, -105(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -106(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, -107(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %r9d
-	movl	-124(%rsp), %r11d
-	leal	(%r9,%r9), %r8d
-	movl	%r8d, -128(%rsp)
-	leal	(%r11,%r11), %r10d
-	movl	%r10d, -124(%rsp)
-	movl	-120(%rsp), %ebx
-	leal	(%rbx,%rbx), %eax
-	movl	%eax, -120(%rsp)
-	movb	(%rdi), %cl
+	movb	%al, 57(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, 56(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, 55(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, 54(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -86(%rsp)
+	movl	(%rdi), %ecx
 	movl	%ecx, %edx
-	andb	$1, %dl
-	movb	$1, -108(%rsp)
-	leal	1(%rbx,%rbx), %ebx
-	incb	%cl
-	movzbl	%cl, %ecx
-	andl	$1, %ecx
-	movl	%ecx, %esi
-	negl	%esi
-	andl	%eax, %esi
-	decl	%ecx
-	andl	%ebx, %ecx
-	orl	%esi, %ecx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-86(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-86(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-86(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, 53(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
 	movl	%ecx, -120(%rsp)
-	movb	%dl, -109(%rsp)
-	movb	4(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -110(%rsp)
-	leal	1(%r11,%r11), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r10d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -124(%rsp)
-	movb	%cl, -111(%rsp)
-	movb	8(%rdi), %al
-	movl	%eax, %ecx
-	andb	$1, %cl
-	movb	$1, -112(%rsp)
-	leal	1(%r9,%r9), %edx
-	incb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
-	movl	%eax, %esi
-	negl	%esi
-	andl	%r8d, %esi
-	decl	%eax
-	andl	%edx, %eax
-	orl	%esi, %eax
-	movl	%eax, -128(%rsp)
-	movb	%cl, -113(%rsp)
-	sarl	(%rdi)
-	sarl	4(%rdi)
-	sarl	8(%rdi)
-	movl	-128(%rsp), %eax
-	movl	%eax, (%rdi)
-	movl	-124(%rsp), %eax
-	movl	%eax, 4(%rdi)
-	movl	-120(%rsp), %eax
-	movl	%eax, 8(%rdi)
-	movb	$1, -114(%rsp)
+	movb	%al, 52(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, 51(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, 50(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, 49(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -87(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-87(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-87(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-87(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, 48(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, 47(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, 46(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, 45(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, 44(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -88(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-88(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-88(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-88(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, 43(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, 42(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, 41(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, 40(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, 39(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -89(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-89(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-89(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-89(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, 38(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, 37(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, 36(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, 35(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, 34(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -90(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-90(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-90(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-90(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, 33(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, 32(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, 31(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, 30(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, 29(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -91(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-91(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-91(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-91(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, 28(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, 27(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, 26(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, 25(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, 24(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -92(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-92(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-92(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-92(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, 23(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, 22(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, 21(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, 20(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, 19(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -93(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-93(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-93(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-93(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, 18(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, 17(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, 16(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, 15(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, 14(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -94(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-94(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-94(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-94(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, 13(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, 12(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, 11(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, 10(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, 9(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -95(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-95(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-95(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-95(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, 8(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, 7(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, 6(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, 5(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, 4(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -96(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-96(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-96(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-96(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, 3(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, 2(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, 1(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, (%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, -1(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -97(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-97(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-97(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-97(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, -2(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, -3(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, -4(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, -5(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, -6(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -98(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-98(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-98(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-98(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, -7(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, -8(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, -9(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, -10(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, -11(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -99(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-99(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-99(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-99(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, -12(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, -13(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, -14(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, -15(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, -16(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -100(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-100(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-100(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-100(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, -17(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, -18(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, -19(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, -20(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, -21(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -101(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-101(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-101(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-101(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, -22(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, -23(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, -24(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, -25(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, -26(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -102(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-102(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-102(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-102(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, -27(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, -28(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, -29(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, -30(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, -31(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -103(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-103(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-103(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-103(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, -32(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, -33(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, -34(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, -35(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, -36(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -104(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-104(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-104(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-104(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, -37(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, -38(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, -39(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, -40(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, -41(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -105(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-105(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-105(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-105(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, -42(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, -43(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, -44(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, -45(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, -46(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -106(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-106(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-106(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-106(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, -47(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, -48(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, -49(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, -50(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, -51(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -107(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-107(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-107(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-107(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, -52(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, -53(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, -54(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, -55(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, -56(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -108(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-108(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-108(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-108(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, -57(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, -58(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, -59(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, -60(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, -61(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -109(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-109(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-109(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-109(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, -62(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, -63(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, -64(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, -65(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, -66(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -110(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-110(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-110(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-110(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, -67(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, -68(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, -69(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, -70(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, -71(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -111(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-111(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-111(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-111(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, -72(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, -73(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, -74(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, -75(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, -76(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -112(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-112(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-112(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-112(%rsp), %al
+	movl	-128(%rsp), %esi
+	movl	-124(%rsp), %edx
+	addl	%esi, %esi
+	addl	%edx, %edx
+	movl	-120(%rsp), %ebp
+	addl	%ebp, %ebp
+	testb	%al, %al
+	cmovel	-128(%rsp), %esi
+	movl	%esi, -128(%rsp)
+	cmovel	-124(%rsp), %edx
+	movl	%edx, -124(%rsp)
+	cmovel	-120(%rsp), %ebp
+	movl	%ebp, -120(%rsp)
+	movq	%r10, %r15
+	cmovneq	%r8, %r15
+	movq	%r11, %r14
+	cmovneq	%r9, %r14
+	movb	(%rdi), %bl
+	andb	%al, %bl
+	movb	%bl, -77(%rsp)
+	movl	%ebp, %ecx
+	orl	$1, %ecx
+	testb	%bl, %bl
+	cmovel	%ebp, %ecx
+	movl	%ecx, -120(%rsp)
+	movb	%al, -78(%rsp)
+	movb	(%r15), %cl
+	andb	%al, %cl
+	movb	%cl, -79(%rsp)
+	movl	%edx, %ebx
+	orl	$1, %ebx
+	testb	%cl, %cl
+	cmovel	%edx, %ebx
+	movl	%ebx, -124(%rsp)
+	movb	%al, -80(%rsp)
+	movb	(%r14), %cl
+	andb	%al, %cl
+	movb	%cl, -81(%rsp)
+	movl	%esi, %edx
+	orl	$1, %edx
+	testb	%cl, %cl
+	cmovel	%esi, %edx
+	movl	%edx, -128(%rsp)
+	movb	%al, -113(%rsp)
+	movl	(%rdi), %ecx
+	movl	%ecx, %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	%ecx, %edx
+	movl	%edx, (%rdi)
+	movb	-113(%rsp), %al
+	testb	%al, %al
+	movq	%r10, %rcx
+	cmovneq	%r8, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	cmovel	4(%rdi), %edx
+	movl	%edx, (%rcx)
+	movb	-113(%rsp), %al
+	testb	%al, %al
+	movq	%r11, %rcx
+	cmovneq	%r9, %rcx
+	movl	(%rcx), %edx
+	sarl	%edx
+	testb	%al, %al
+	leaq	-120(%rsp), %rax
+	leaq	-124(%rsp), %rsi
+	cmovel	8(%rdi), %edx
+	movl	%edx, (%rcx)
+	cmpb	$0, -113(%rsp)
+	leaq	-128(%rsp), %rcx
+	cmoveq	%rdi, %rcx
+	movl	(%rcx), %ecx
+	movl	%ecx, (%rdi)
+	cmpb	$0, -113(%rsp)
+	cmovneq	%r8, %r10
+	cmoveq	%r8, %rsi
+	movl	(%rsi), %ecx
+	movl	%ecx, (%r10)
+	cmpb	$0, -113(%rsp)
+	cmovneq	%r9, %r11
+	cmoveq	%r9, %rax
+	movl	(%rax), %eax
+	movl	%eax, (%r11)
 	addq	$88, %rsp
-	.cfi_def_cfa_offset 16
+	.cfi_def_cfa_offset 40
 	popq	%rbx
+	.cfi_def_cfa_offset 32
+	popq	%r14
+	.cfi_def_cfa_offset 24
+	popq	%r15
+	.cfi_def_cfa_offset 16
+	popq	%rbp
 	.cfi_def_cfa_offset 8
 	retq
 .Lfunc_end1:

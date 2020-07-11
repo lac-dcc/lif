@@ -9,57 +9,43 @@ target triple = "x86_64-pc-linux-gnu"
 define dso_local i32 @main() local_unnamed_addr #0 {
   %1 = alloca [32 x i32], align 16
   %2 = alloca [32 x i32], align 16
-  %3 = getelementptr inbounds [32 x i32], [32 x i32]* %2, i64 0, i64 0
-  %4 = getelementptr inbounds [32 x i32], [32 x i32]* %1, i64 0, i64 0
-  %5 = bitcast [32 x i32]* %2 to <4 x i32>*
-  store <4 x i32> <i32 0, i32 1, i32 2, i32 3>, <4 x i32>* %5, align 16
-  %6 = bitcast [32 x i32]* %1 to <4 x i32>*
-  store <4 x i32> <i32 0, i32 1, i32 2, i32 3>, <4 x i32>* %6, align 16
-  %7 = getelementptr inbounds [32 x i32], [32 x i32]* %2, i64 0, i64 4
-  %8 = getelementptr inbounds [32 x i32], [32 x i32]* %1, i64 0, i64 4
-  %9 = bitcast i32* %7 to <4 x i32>*
-  store <4 x i32> <i32 4, i32 5, i32 6, i32 7>, <4 x i32>* %9, align 16
-  %10 = bitcast i32* %8 to <4 x i32>*
-  store <4 x i32> <i32 4, i32 5, i32 6, i32 7>, <4 x i32>* %10, align 16
-  %11 = getelementptr inbounds [32 x i32], [32 x i32]* %2, i64 0, i64 8
-  %12 = getelementptr inbounds [32 x i32], [32 x i32]* %1, i64 0, i64 8
-  %13 = bitcast i32* %11 to <4 x i32>*
-  store <4 x i32> <i32 8, i32 9, i32 10, i32 11>, <4 x i32>* %13, align 16
-  %14 = bitcast i32* %12 to <4 x i32>*
-  store <4 x i32> <i32 8, i32 9, i32 10, i32 11>, <4 x i32>* %14, align 16
-  %15 = getelementptr inbounds [32 x i32], [32 x i32]* %2, i64 0, i64 12
-  %16 = getelementptr inbounds [32 x i32], [32 x i32]* %1, i64 0, i64 12
-  %17 = bitcast i32* %15 to <4 x i32>*
-  store <4 x i32> <i32 12, i32 13, i32 14, i32 15>, <4 x i32>* %17, align 16
-  %18 = bitcast i32* %16 to <4 x i32>*
-  store <4 x i32> <i32 12, i32 13, i32 14, i32 15>, <4 x i32>* %18, align 16
-  %19 = getelementptr inbounds [32 x i32], [32 x i32]* %2, i64 0, i64 16
-  %20 = getelementptr inbounds [32 x i32], [32 x i32]* %1, i64 0, i64 16
-  %21 = bitcast i32* %19 to <4 x i32>*
-  store <4 x i32> <i32 16, i32 17, i32 18, i32 19>, <4 x i32>* %21, align 16
-  %22 = bitcast i32* %20 to <4 x i32>*
-  store <4 x i32> <i32 16, i32 17, i32 18, i32 19>, <4 x i32>* %22, align 16
-  %23 = getelementptr inbounds [32 x i32], [32 x i32]* %2, i64 0, i64 20
-  %24 = getelementptr inbounds [32 x i32], [32 x i32]* %1, i64 0, i64 20
-  %25 = bitcast i32* %23 to <4 x i32>*
-  store <4 x i32> <i32 20, i32 21, i32 22, i32 23>, <4 x i32>* %25, align 16
-  %26 = bitcast i32* %24 to <4 x i32>*
-  store <4 x i32> <i32 20, i32 21, i32 22, i32 23>, <4 x i32>* %26, align 16
-  %27 = getelementptr inbounds [32 x i32], [32 x i32]* %2, i64 0, i64 24
-  %28 = getelementptr inbounds [32 x i32], [32 x i32]* %1, i64 0, i64 24
-  %29 = bitcast i32* %27 to <4 x i32>*
-  store <4 x i32> <i32 24, i32 25, i32 26, i32 27>, <4 x i32>* %29, align 16
-  %30 = bitcast i32* %28 to <4 x i32>*
-  store <4 x i32> <i32 24, i32 25, i32 26, i32 27>, <4 x i32>* %30, align 16
-  %31 = getelementptr inbounds [32 x i32], [32 x i32]* %2, i64 0, i64 28
-  %32 = getelementptr inbounds [32 x i32], [32 x i32]* %1, i64 0, i64 28
-  %33 = bitcast i32* %31 to <4 x i32>*
-  store <4 x i32> <i32 28, i32 29, i32 30, i32 31>, <4 x i32>* %33, align 16
-  %34 = bitcast i32* %32 to <4 x i32>*
-  store <4 x i32> <i32 28, i32 29, i32 30, i32 31>, <4 x i32>* %34, align 16
-  store i32 -1, i32* %3, align 16
-  %35 = call i32 @comp(i32* nonnull %4, i32* nonnull %3)
-  %36 = call i32 (i8*, ...) @printf(i8* nonnull dereferenceable(1) getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i64 0, i64 0), i32 %35)
+  br label %3
+
+3:                                                ; preds = %3, %0
+  %.06 = phi i64 [ 0, %0 ], [ %19, %3 ]
+  %4 = trunc i64 %.06 to i32
+  %5 = getelementptr inbounds [32 x i32], [32 x i32]* %2, i64 0, i64 %.06
+  store i32 %4, i32* %5, align 16
+  %6 = getelementptr inbounds [32 x i32], [32 x i32]* %1, i64 0, i64 %.06
+  store i32 %4, i32* %6, align 16
+  %7 = or i64 %.06, 1
+  %8 = trunc i64 %7 to i32
+  %9 = getelementptr inbounds [32 x i32], [32 x i32]* %2, i64 0, i64 %7
+  store i32 %8, i32* %9, align 4
+  %10 = getelementptr inbounds [32 x i32], [32 x i32]* %1, i64 0, i64 %7
+  store i32 %8, i32* %10, align 4
+  %11 = or i64 %.06, 2
+  %12 = trunc i64 %11 to i32
+  %13 = getelementptr inbounds [32 x i32], [32 x i32]* %2, i64 0, i64 %11
+  store i32 %12, i32* %13, align 8
+  %14 = getelementptr inbounds [32 x i32], [32 x i32]* %1, i64 0, i64 %11
+  store i32 %12, i32* %14, align 8
+  %15 = or i64 %.06, 3
+  %16 = trunc i64 %15 to i32
+  %17 = getelementptr inbounds [32 x i32], [32 x i32]* %2, i64 0, i64 %15
+  store i32 %16, i32* %17, align 4
+  %18 = getelementptr inbounds [32 x i32], [32 x i32]* %1, i64 0, i64 %15
+  store i32 %16, i32* %18, align 4
+  %19 = add nuw nsw i64 %.06, 4
+  %exitcond.3 = icmp eq i64 %19, 32
+  br i1 %exitcond.3, label %20, label %3
+
+20:                                               ; preds = %3
+  %21 = getelementptr inbounds [32 x i32], [32 x i32]* %2, i64 0, i64 0
+  store i32 -1, i32* %21, align 16
+  %22 = getelementptr inbounds [32 x i32], [32 x i32]* %1, i64 0, i64 0
+  %23 = call i32 @comp(i32* nonnull %22, i32* nonnull %21)
+  %24 = call i32 (i8*, ...) @printf(i8* nonnull dereferenceable(1) getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i64 0, i64 0), i32 %23)
   ret i32 0
 }
 

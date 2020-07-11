@@ -11,9 +11,10 @@ main:                                   # @main
 	.cfi_offset %rbp, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register %rbp
-	subq	$32, %rsp
+	subq	$48, %rsp
 	movq	%fs:40, %rax
 	movq	%rax, -8(%rbp)
+	movl	$0, -36(%rbp)
 	callq	init_dut
 	movaps	.L__const.main.input_data(%rip), %xmm0
 	movaps	%xmm0, -32(%rbp)
@@ -29,7 +30,7 @@ main:                                   # @main
 	jne	.LBB0_2
 # %bb.1:                                # %SP_return
 	xorl	%eax, %eax
-	addq	$32, %rsp
+	addq	$48, %rsp
 	popq	%rbp
 	.cfi_def_cfa %rsp, 8
 	retq
@@ -38,41 +39,6 @@ main:                                   # @main
 	callq	__stack_chk_fail
 .Lfunc_end0:
 	.size	main, .Lfunc_end0-main
-	.cfi_endproc
-                                        # -- End function
-	.globl	init_dut                # -- Begin function init_dut
-	.p2align	4, 0x90
-	.type	init_dut,@function
-init_dut:                               # @init_dut
-	.cfi_startproc
-# %bb.0:
-	pushq	%rbp
-	.cfi_def_cfa_offset 16
-	.cfi_offset %rbp, -16
-	movq	%rsp, %rbp
-	.cfi_def_cfa_register %rbp
-	subq	$32, %rsp
-	movq	%fs:40, %rax
-	movq	%rax, -8(%rbp)
-	xorps	%xmm0, %xmm0
-	movaps	%xmm0, -32(%rbp)
-	leaq	-32(%rbp), %rsi
-	movl	$rk, %edi
-	movl	$128, %edx
-	callq	rijndaelKeySetupEnc
-	movq	%fs:40, %rax
-	cmpq	-8(%rbp), %rax
-	jne	.LBB1_2
-# %bb.1:                                # %SP_return
-	addq	$32, %rsp
-	popq	%rbp
-	.cfi_def_cfa %rsp, 8
-	retq
-.LBB1_2:                                # %CallStackCheckFailBlk
-	.cfi_def_cfa %rbp, 16
-	callq	__stack_chk_fail
-.Lfunc_end1:
-	.size	init_dut, .Lfunc_end1-init_dut
 	.cfi_endproc
                                         # -- End function
 	.globl	do_one_computation      # -- Begin function do_one_computation
@@ -315,7 +281,7 @@ do_one_computation:                     # @do_one_computation
 	movb	-64(%rbp), %al
 	movq	%fs:40, %rcx
 	cmpq	-32(%rbp), %rcx
-	jne	.LBB2_2
+	jne	.LBB1_2
 # %bb.1:                                # %SP_return
 	addq	$40, %rsp
 	popq	%rbx
@@ -324,17 +290,17 @@ do_one_computation:                     # @do_one_computation
 	popq	%rbp
 	.cfi_def_cfa %rsp, 8
 	retq
-.LBB2_2:                                # %CallStackCheckFailBlk
+.LBB1_2:                                # %CallStackCheckFailBlk
 	.cfi_def_cfa %rbp, 16
 	callq	__stack_chk_fail
-.Lfunc_end2:
-	.size	do_one_computation, .Lfunc_end2-do_one_computation
+.Lfunc_end1:
+	.size	do_one_computation, .Lfunc_end1-do_one_computation
 	.cfi_endproc
                                         # -- End function
-	.globl	rijndaelEncrypt         # -- Begin function rijndaelEncrypt
+	.globl	init_dut                # -- Begin function init_dut
 	.p2align	4, 0x90
-	.type	rijndaelEncrypt,@function
-rijndaelEncrypt:                        # @rijndaelEncrypt
+	.type	init_dut,@function
+init_dut:                               # @init_dut
 	.cfi_startproc
 # %bb.0:
 	pushq	%rbp
@@ -342,859 +308,64 @@ rijndaelEncrypt:                        # @rijndaelEncrypt
 	.cfi_offset %rbp, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register %rbp
-	pushq	%r15
+	subq	$32, %rsp
+	movq	%fs:40, %rax
+	movq	%rax, -8(%rbp)
+	xorps	%xmm0, %xmm0
+	movaps	%xmm0, -32(%rbp)
+	leaq	-32(%rbp), %rsi
+	movl	$rk, %edi
+	movl	$128, %edx
+	callq	rijndaelKeySetupEnc
+	movq	%fs:40, %rax
+	cmpq	-8(%rbp), %rax
+	jne	.LBB2_2
+# %bb.1:                                # %SP_return
+	addq	$32, %rsp
+	popq	%rbp
+	.cfi_def_cfa %rsp, 8
+	retq
+.LBB2_2:                                # %CallStackCheckFailBlk
+	.cfi_def_cfa %rbp, 16
+	callq	__stack_chk_fail
+.Lfunc_end2:
+	.size	init_dut, .Lfunc_end2-init_dut
+	.cfi_endproc
+                                        # -- End function
+	.globl	prepare_inputs          # -- Begin function prepare_inputs
+	.p2align	4, 0x90
+	.type	prepare_inputs,@function
+prepare_inputs:                         # @prepare_inputs
+	.cfi_startproc
+# %bb.0:
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset %rbp, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register %rbp
 	pushq	%r14
-	pushq	%r13
-	pushq	%r12
 	pushq	%rbx
-	.cfi_offset %rbx, -56
-	.cfi_offset %r12, -48
-	.cfi_offset %r13, -40
-	.cfi_offset %r14, -32
-	.cfi_offset %r15, -24
-	movq	%rcx, -88(%rbp)         # 8-byte Spill
-	movl	%esi, -72(%rbp)         # 4-byte Spill
-	movl	(%rdx), %ebx
-	bswapl	%ebx
-	xorl	(%rdi), %ebx
-	movzbl	4(%rdx), %eax
-	movzbl	5(%rdx), %r12d
-	shll	$16, %r12d
-	movzbl	6(%rdx), %esi
-	shll	$8, %esi
-	movzbl	9(%rdx), %r15d
-	shll	$16, %r15d
-	movzbl	10(%rdx), %r8d
-	shll	$8, %r8d
-	movzbl	13(%rdx), %r10d
-	shll	$16, %r10d
-	movzbl	14(%rdx), %r11d
-	shll	$8, %r11d
-	movl	%ebx, -64(%rbp)         # 4-byte Spill
-	shrl	$24, %ebx
-	movzbl	7(%rdx), %ecx
-	movl	%ecx, -48(%rbp)         # 4-byte Spill
-	movl	4(%rdi), %ecx
-	movl	%ecx, -68(%rbp)         # 4-byte Spill
-	movl	8(%rdi), %r9d
-	movzbl	8(%rdx), %ecx
-	movzbl	11(%rdx), %r13d
-	movzbl	15(%rdx), %r14d
-	movq	%rdi, -80(%rbp)         # 8-byte Spill
-	movl	12(%rdi), %edi
-	movzbl	12(%rdx), %edx
-	movl	%edi, -56(%rbp)         # 4-byte Spill
+	.cfi_offset %rbx, -32
+	.cfi_offset %r14, -24
+	movq	%rsi, %r14
+	movq	%rdi, %rbx
+	movl	$16, %esi
+	callq	randombytes
+	callq	randombit
+	movb	%al, (%r14)
+	testb	%al, %al
 	jne	.LBB3_2
 # %bb.1:
-	movl	Te0(%rip), %edi
-	jmp	.LBB3_3
+	xorps	%xmm0, %xmm0
+	movups	%xmm0, (%rbx)
 .LBB3_2:
-	movl	%ebx, %ebx
-	movl	Te0(,%rbx,4), %edi
-.LBB3_3:                                # %.preheader12
-	movl	-68(%rbp), %ebx         # 4-byte Reload
-	shll	$24, %eax
-	orl	%r12d, %eax
-	xorl	%esi, %eax
-	xorl	-48(%rbp), %eax         # 4-byte Folded Reload
-	xorl	%ebx, %eax
-	shll	$24, %ecx
-	orl	%r15d, %ecx
-	xorl	%r8d, %ecx
-	xorl	%r13d, %ecx
-	xorl	%r9d, %ecx
-	shll	$24, %edx
-	orl	%r10d, %edx
-	xorl	%r11d, %edx
-	xorl	%r14d, %edx
-	movl	%eax, %esi
-	shrl	$16, %esi
-	andl	$255, %esi
-	jne	.LBB3_5
-# %bb.4:
-	movl	Te1(%rip), %esi
-	jmp	.LBB3_6
-.LBB3_5:
-	movl	%esi, %esi
-	movl	Te1(,%rsi,4), %esi
-.LBB3_6:                                # %.preheader11
-	xorl	%esi, %edi
-	xorl	-56(%rbp), %edx         # 4-byte Folded Reload
-	movl	%ecx, %esi
-	shrl	$8, %esi
-	andl	$255, %esi
-	jne	.LBB3_8
-# %bb.7:
-	movl	Te2(%rip), %esi
-	jmp	.LBB3_9
-.LBB3_8:
-	movl	%esi, %esi
-	movl	Te2(,%rsi,4), %esi
-.LBB3_9:                                # %.preheader
-	xorl	%esi, %edi
-	movl	%edx, %ebx
-	andl	$255, %ebx
-	jne	.LBB3_11
-# %bb.10:
-	movl	Te3(%rip), %r14d
-	jmp	.LBB3_12
-.LBB3_11:
-	movl	%ebx, %esi
-	movl	Te3(,%rsi,4), %r14d
-.LBB3_12:
-	movl	-64(%rbp), %ebx         # 4-byte Reload
-	movzbl	%bl, %r8d
-	movzbl	%bh, %esi
-	movq	%rsi, %r11
-	shrl	$16, %ebx
-	movzbl	%bl, %r9d
-	movl	%edi, %r10d
-	xorl	%r14d, %r10d
-	movq	-80(%rbp), %r15         # 8-byte Reload
-	xorl	16(%r15), %r10d
-	movl	%eax, %ebx
-	shrl	$24, %ebx
-	movzbl	%al, %edi
-	movzbl	%ah, %eax
-	movq	%rax, %r14
-	movl	Te0(,%rbx,4), %ebx
-	movl	%ecx, %eax
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	xorl	Te1(,%rax,4), %ebx
-	movzbl	%dh, %eax
-	xorl	Te2(,%rax,4), %ebx
-	xorl	Te3(,%r8,4), %ebx
-	xorl	20(%r15), %ebx
-	movl	%ecx, %eax
-	shrl	$24, %eax
-	movl	%edx, %esi
-	shrl	$16, %esi
-	movzbl	%sil, %esi
-	movl	Te0(,%rax,4), %eax
-	xorl	Te1(,%rsi,4), %eax
-	xorl	Te2(,%r11,4), %eax
-	xorl	Te3(,%rdi,4), %eax
-	xorl	24(%r15), %eax
-	shrl	$24, %edx
-	movl	Te0(,%rdx,4), %edx
-	xorl	Te1(,%r9,4), %edx
-	xorl	Te2(,%r14,4), %edx
-	movzbl	%cl, %ecx
-	xorl	Te3(,%rcx,4), %edx
-	xorl	28(%r15), %edx
-	movl	%r10d, %ecx
-	shrl	$24, %ecx
-	movl	%ebx, %r8d
-	movl	%ebx, %esi
-	shrl	$16, %esi
-	movzbl	%sil, %esi
-	movl	Te0(,%rcx,4), %r11d
-	xorl	Te1(,%rsi,4), %r11d
-	movzbl	%bl, %r9d
-	movzbl	%ah, %esi
-	xorl	Te2(,%rsi,4), %r11d
-	movzbl	%bh, %ecx
-	movq	%rcx, %r14
-	movzbl	%dl, %edi
-	xorl	Te3(,%rdi,4), %r11d
-	xorl	32(%r15), %r11d
-	shrl	$24, %r8d
-	movl	%eax, %ecx
-	movl	%eax, %edi
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	movl	Te0(,%r8,4), %ebx
-	xorl	Te1(,%rax,4), %ebx
-	movzbl	%cl, %r8d
-	movl	%r10d, %ecx
-	movzbl	%cl, %eax
-	movzbl	%ch, %esi
-	movq	%rsi, %r12
-	shrl	$16, %ecx
-	movzbl	%cl, %r10d
-	movzbl	%dh, %esi
-	xorl	Te2(,%rsi,4), %ebx
-	xorl	Te3(,%rax,4), %ebx
-	xorl	36(%r15), %ebx
-	shrl	$24, %edi
-	movl	%edx, %eax
-	shrl	$16, %eax
-	movzbl	%al, %esi
-	movl	Te0(,%rdi,4), %ecx
-	xorl	Te1(,%rsi,4), %ecx
-	xorl	Te2(,%r12,4), %ecx
-	xorl	Te3(,%r9,4), %ecx
-	xorl	40(%r15), %ecx
-	shrl	$24, %edx
-	movl	Te0(,%rdx,4), %edx
-	xorl	Te1(,%r10,4), %edx
-	xorl	Te2(,%r14,4), %edx
-	xorl	Te3(,%r8,4), %edx
-	xorl	44(%r15), %edx
-	movl	%r11d, %esi
-	shrl	$24, %esi
-	movl	%ebx, %r8d
-	movl	%ebx, %edi
-	shrl	$16, %edi
-	movzbl	%dil, %edi
-	movl	Te0(,%rsi,4), %eax
-	xorl	Te1(,%rdi,4), %eax
-	movzbl	%bl, %r9d
-	movzbl	%ch, %esi
-	xorl	Te2(,%rsi,4), %eax
-	movzbl	%bh, %esi
-	movq	%rsi, %r12
-	movzbl	%dl, %edi
-	xorl	Te3(,%rdi,4), %eax
-	xorl	48(%r15), %eax
-	movl	%eax, %r14d
-	shrl	$24, %r8d
-	movl	%ecx, %edi
-	movl	%ecx, %eax
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	movl	Te0(,%r8,4), %ebx
-	xorl	Te1(,%rax,4), %ebx
-	movzbl	%cl, %r8d
-	movl	%r11d, %ecx
-	movzbl	%cl, %eax
-	movzbl	%ch, %esi
-	movq	%rsi, %r11
-	shrl	$16, %ecx
-	movzbl	%cl, %r10d
-	movzbl	%dh, %esi
-	xorl	Te2(,%rsi,4), %ebx
-	xorl	Te3(,%rax,4), %ebx
-	xorl	52(%r15), %ebx
-	shrl	$24, %edi
-	movl	%edx, %eax
-	shrl	$16, %eax
-	movzbl	%al, %esi
-	movl	Te0(,%rdi,4), %ecx
-	xorl	Te1(,%rsi,4), %ecx
-	xorl	Te2(,%r11,4), %ecx
-	xorl	Te3(,%r9,4), %ecx
-	xorl	56(%r15), %ecx
-	shrl	$24, %edx
-	movl	Te0(,%rdx,4), %edx
-	xorl	Te1(,%r10,4), %edx
-	xorl	Te2(,%r12,4), %edx
-	xorl	Te3(,%r8,4), %edx
-	xorl	60(%r15), %edx
-	movl	%r14d, %eax
-	shrl	$24, %eax
-	movl	%ebx, %r8d
-	movl	%ebx, %esi
-	shrl	$16, %esi
-	movzbl	%sil, %esi
-	movl	Te0(,%rax,4), %eax
-	xorl	Te1(,%rsi,4), %eax
-	movzbl	%bl, %r9d
-	movzbl	%ch, %esi
-	xorl	Te2(,%rsi,4), %eax
-	movzbl	%bh, %esi
-	movq	%rsi, %r13
-	movzbl	%dl, %edi
-	xorl	Te3(,%rdi,4), %eax
-	xorl	64(%r15), %eax
-	movl	%eax, %r12d
-	shrl	$24, %r8d
-	movl	%ecx, %edi
-	movl	%ecx, %eax
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	movl	Te0(,%r8,4), %ebx
-	xorl	Te1(,%rax,4), %ebx
-	movzbl	%cl, %r8d
-	movl	%r14d, %eax
-	movzbl	%al, %r11d
-	movzbl	%ah, %ecx
-	shrl	$16, %eax
-	movzbl	%al, %r10d
-	movzbl	%dh, %esi
-	xorl	Te2(,%rsi,4), %ebx
-	xorl	Te3(,%r11,4), %ebx
-	xorl	68(%r15), %ebx
-	shrl	$24, %edi
-	movl	%edx, %eax
-	shrl	$16, %eax
-	movzbl	%al, %esi
-	movl	Te0(,%rdi,4), %eax
-	xorl	Te1(,%rsi,4), %eax
-	xorl	Te2(,%rcx,4), %eax
-	xorl	Te3(,%r9,4), %eax
-	xorl	72(%r15), %eax
-	shrl	$24, %edx
-	movl	Te0(,%rdx,4), %edx
-	xorl	Te1(,%r10,4), %edx
-	xorl	Te2(,%r13,4), %edx
-	xorl	Te3(,%r8,4), %edx
-	xorl	76(%r15), %edx
-	movl	%r12d, %ecx
-	shrl	$24, %ecx
-	movl	%ebx, %r8d
-	movl	%ebx, %esi
-	shrl	$16, %esi
-	movzbl	%sil, %esi
-	movl	Te0(,%rcx,4), %r11d
-	xorl	Te1(,%rsi,4), %r11d
-	movzbl	%bl, %r9d
-	movzbl	%ah, %ecx
-	xorl	Te2(,%rcx,4), %r11d
-	movzbl	%bh, %ecx
-	movq	%rcx, %r13
-	movzbl	%dl, %ecx
-	xorl	Te3(,%rcx,4), %r11d
-	xorl	80(%r15), %r11d
-	shrl	$24, %r8d
-	movl	%eax, %ecx
-	movl	%eax, %edi
-	shrl	$16, %edi
-	movzbl	%dil, %edi
-	movl	Te0(,%r8,4), %ebx
-	xorl	Te1(,%rdi,4), %ebx
-	movzbl	%al, %r8d
-	movl	%r12d, %eax
-	movzbl	%al, %r14d
-	movzbl	%ah, %esi
-	shrl	$16, %eax
-	movzbl	%al, %r10d
-	movzbl	%dh, %edi
-	xorl	Te2(,%rdi,4), %ebx
-	xorl	Te3(,%r14,4), %ebx
-	xorl	84(%r15), %ebx
-	shrl	$24, %ecx
-	movl	%edx, %eax
-	shrl	$16, %eax
-	movzbl	%al, %edi
-	movl	Te0(,%rcx,4), %ecx
-	xorl	Te1(,%rdi,4), %ecx
-	xorl	Te2(,%rsi,4), %ecx
-	xorl	Te3(,%r9,4), %ecx
-	xorl	88(%r15), %ecx
-	shrl	$24, %edx
-	movl	Te0(,%rdx,4), %edx
-	xorl	Te1(,%r10,4), %edx
-	xorl	Te2(,%r13,4), %edx
-	xorl	Te3(,%r8,4), %edx
-	xorl	92(%r15), %edx
-	movl	%r11d, %esi
-	shrl	$24, %esi
-	movl	%ebx, %r9d
-	movl	%ebx, %edi
-	shrl	$16, %edi
-	movzbl	%dil, %edi
-	movl	Te0(,%rsi,4), %r14d
-	xorl	Te1(,%rdi,4), %r14d
-	movzbl	%bl, %r8d
-	movzbl	%ch, %esi
-	xorl	Te2(,%rsi,4), %r14d
-	movzbl	%bh, %eax
-	movq	%rax, %r12
-	movzbl	%dl, %edi
-	xorl	Te3(,%rdi,4), %r14d
-	xorl	96(%r15), %r14d
-	shrl	$24, %r9d
-	movl	%ecx, %edi
-	movl	%ecx, %eax
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	movl	Te0(,%r9,4), %ebx
-	xorl	Te1(,%rax,4), %ebx
-	movzbl	%cl, %r9d
-	movl	%r11d, %ecx
-	movzbl	%cl, %eax
-	movzbl	%ch, %esi
-	shrl	$16, %ecx
-	movzbl	%cl, %r10d
-	movzbl	%dh, %ecx
-	xorl	Te2(,%rcx,4), %ebx
-	xorl	Te3(,%rax,4), %ebx
-	xorl	100(%r15), %ebx
-	movl	%ebx, %ecx
-	shrl	$24, %edi
-	movl	%edx, %eax
-	shrl	$16, %eax
-	movzbl	%al, %eax
-	movl	Te0(,%rdi,4), %ebx
-	xorl	Te1(,%rax,4), %ebx
-	xorl	Te2(,%rsi,4), %ebx
-	xorl	Te3(,%r8,4), %ebx
-	xorl	104(%r15), %ebx
-	shrl	$24, %edx
-	movl	Te0(,%rdx,4), %eax
-	xorl	Te1(,%r10,4), %eax
-	xorl	Te2(,%r12,4), %eax
-	xorl	Te3(,%r9,4), %eax
-	xorl	108(%r15), %eax
-	movl	%r14d, %edx
-	shrl	$24, %edx
-	movl	%ecx, %r8d
-	movl	%ecx, %esi
-	shrl	$16, %esi
-	movzbl	%sil, %esi
-	movl	Te0(,%rdx,4), %r12d
-	xorl	Te1(,%rsi,4), %r12d
-	movzbl	%cl, %r9d
-	movzbl	%bh, %esi
-	xorl	Te2(,%rsi,4), %r12d
-	movzbl	%ch, %ecx
-	movq	%rcx, %r11
-	movzbl	%al, %edi
-	xorl	Te3(,%rdi,4), %r12d
-	xorl	112(%r15), %r12d
-	shrl	$24, %r8d
-	movl	%ebx, %edi
-	movl	%ebx, %ecx
-	shrl	$16, %ecx
-	movzbl	%cl, %ecx
-	movl	Te0(,%r8,4), %edx
-	xorl	Te1(,%rcx,4), %edx
-	movzbl	%bl, %r8d
-	movl	%r14d, %ebx
-	movzbl	%bl, %ecx
-	movzbl	%bh, %esi
-	shrl	$16, %ebx
-	movzbl	%bl, %r10d
-	movzbl	%ah, %ebx
-	xorl	Te2(,%rbx,4), %edx
-	xorl	Te3(,%rcx,4), %edx
-	xorl	116(%r15), %edx
-	shrl	$24, %edi
-	movl	%eax, %ecx
-	shrl	$16, %ecx
-	movzbl	%cl, %ebx
-	movl	Te0(,%rdi,4), %ecx
-	xorl	Te1(,%rbx,4), %ecx
-	xorl	Te2(,%rsi,4), %ecx
-	xorl	Te3(,%r9,4), %ecx
-	xorl	120(%r15), %ecx
-	shrl	$24, %eax
-	movl	Te0(,%rax,4), %ebx
-	xorl	Te1(,%r10,4), %ebx
-	xorl	Te2(,%r11,4), %ebx
-	xorl	Te3(,%r8,4), %ebx
-	xorl	124(%r15), %ebx
-	movl	%r12d, %eax
-	shrl	$24, %eax
-	movl	%edx, %r9d
-	movl	%edx, %esi
-	shrl	$16, %esi
-	movzbl	%sil, %esi
-	movl	Te0(,%rax,4), %eax
-	xorl	Te1(,%rsi,4), %eax
-	movzbl	%dl, %esi
-	movq	%rsi, -64(%rbp)         # 8-byte Spill
-	movzbl	%ch, %esi
-	xorl	Te2(,%rsi,4), %eax
-	movzbl	%dh, %edx
-	movq	%rdx, -56(%rbp)         # 8-byte Spill
-	movzbl	%bl, %edx
-	xorl	Te3(,%rdx,4), %eax
-	movl	%ecx, %r11d
-	movzbl	%cl, %edx
-	movq	%rdx, -48(%rbp)         # 8-byte Spill
-	movl	%ecx, %esi
-	shrl	$24, %r9d
-	movl	%r12d, %ecx
-	movzbl	%cl, %edi
-	movzbl	%ch, %edx
-	movq	%rdx, %r8
-	shrl	$16, %ecx
-	movzbl	%cl, %r10d
-	movl	Te0(,%r9,4), %ecx
-	shrl	$16, %esi
-	movzbl	%sil, %esi
-	xorl	Te1(,%rsi,4), %ecx
-	movzbl	%bh, %esi
-	xorl	Te2(,%rsi,4), %ecx
-	xorl	Te3(,%rdi,4), %ecx
-	xorl	132(%r15), %ecx
-	shrl	$24, %r11d
-	movl	%ecx, %r9d
-	movzbl	%cl, %r12d
-	movzbl	%ch, %edx
-	movq	%rdx, %r13
-	movl	%ecx, %r14d
-	movl	Te0(,%r11,4), %ecx
-	movl	%ebx, %edx
-	shrl	$16, %edx
-	movzbl	%dl, %edx
-	xorl	Te1(,%rdx,4), %ecx
-	xorl	Te2(,%r8,4), %ecx
-	xorl	128(%r15), %eax
-	movq	-64(%rbp), %rdx         # 8-byte Reload
-	xorl	Te3(,%rdx,4), %ecx
-	xorl	136(%r15), %ecx
-	shrl	$24, %ebx
-	movl	Te0(,%rbx,4), %ebx
-	xorl	Te1(,%r10,4), %ebx
-	movq	-56(%rbp), %rdx         # 8-byte Reload
-	xorl	Te2(,%rdx,4), %ebx
-	movq	-48(%rbp), %rdx         # 8-byte Reload
-	xorl	Te3(,%rdx,4), %ebx
-	movl	%eax, %edx
-	shrl	$24, %edx
-	movzbl	%ch, %esi
-	movq	%rsi, %r11
-	movl	%ecx, %r10d
-	movzbl	%cl, %r8d
-	movl	Te0(,%rdx,4), %edi
-	shrl	$16, %r14d
-	movzbl	%r14b, %esi
-	xorl	Te1(,%rsi,4), %edi
-	xorl	140(%r15), %ebx
-	xorl	Te2(,%r11,4), %edi
-	shrl	$24, %r9d
-	shrl	$16, %ecx
-	movzbl	%cl, %ecx
-	movl	Te0(,%r9,4), %edx
-	xorl	Te1(,%rcx,4), %edx
-	movzbl	%bh, %ecx
-	xorl	Te2(,%rcx,4), %edx
-	movzbl	%al, %r9d
-	shrl	$24, %r10d
-	movl	%ebx, %ecx
-	shrl	$16, %ecx
-	movzbl	%cl, %esi
-	movl	Te0(,%r10,4), %ecx
-	xorl	Te1(,%rsi,4), %ecx
-	movzbl	%ah, %esi
-	shrl	$16, %eax
-	movzbl	%al, %r10d
-	xorl	Te2(,%rsi,4), %ecx
-	movzbl	%bl, %esi
-	shrl	$24, %ebx
-	movl	Te0(,%rbx,4), %eax
-	xorl	Te1(,%r10,4), %eax
-	xorl	Te2(,%r13,4), %eax
-	xorl	Te3(,%rsi,4), %edi
-	xorl	144(%r15), %edi
-	movl	%edi, %r14d
-	xorl	Te3(,%r9,4), %edx
-	xorl	148(%r15), %edx
-	movl	%edx, %ebx
-	xorl	Te3(,%r12,4), %ecx
-	xorl	152(%r15), %ecx
-	xorl	Te3(,%r8,4), %eax
-	xorl	156(%r15), %eax
-	movl	-72(%rbp), %r11d        # 4-byte Reload
-	cmpl	$11, %r11d
-	jl	.LBB3_13
-# %bb.14:
-	movl	%r14d, %edx
-	movl	%r14d, %esi
-	shrl	$24, %esi
-	movl	%ebx, %r12d
-	movl	%ebx, %edi
-	shrl	$16, %edi
-	movzbl	%dil, %edi
-	movl	Te0(,%rsi,4), %r9d
-	xorl	Te1(,%rdi,4), %r9d
-	movzbl	%bl, %esi
-	movq	%rsi, -64(%rbp)         # 8-byte Spill
-	movzbl	%ch, %esi
-	xorl	Te2(,%rsi,4), %r9d
-	movzbl	%bh, %esi
-	movq	%rsi, -56(%rbp)         # 8-byte Spill
-	movzbl	%al, %esi
-	xorl	Te3(,%rsi,4), %r9d
-	movl	%ecx, %r11d
-	movzbl	%cl, %r10d
-	shrl	$24, %r12d
-	movzbl	%dl, %esi
-	movzbl	%dh, %edi
-	shrl	$16, %edx
-	movzbl	%dl, %r15d
-	movl	Te0(,%r12,4), %edx
-	shrl	$16, %ecx
-	movzbl	%cl, %ecx
-	xorl	Te1(,%rcx,4), %edx
-	movzbl	%ah, %ecx
-	xorl	Te2(,%rcx,4), %edx
-	xorl	Te3(,%rsi,4), %edx
-	movq	-80(%rbp), %r13         # 8-byte Reload
-	xorl	164(%r13), %edx
-	shrl	$24, %r11d
-	movl	%edx, %r8d
-	movzbl	%dl, %ecx
-	movq	%rcx, -48(%rbp)         # 8-byte Spill
-	movzbl	%dh, %ecx
-	movq	%rcx, %r12
-	movl	%edx, %r14d
-	movl	Te0(,%r11,4), %edx
-	movl	-72(%rbp), %r11d        # 4-byte Reload
-	movl	%eax, %ebx
-	shrl	$16, %ebx
-	movzbl	%bl, %ebx
-	xorl	Te1(,%rbx,4), %edx
-	xorl	Te2(,%rdi,4), %edx
-	xorl	160(%r13), %r9d
-	movq	-64(%rbp), %rcx         # 8-byte Reload
-	xorl	Te3(,%rcx,4), %edx
-	xorl	168(%r13), %edx
-	shrl	$24, %eax
-	movl	Te0(,%rax,4), %eax
-	xorl	Te1(,%r15,4), %eax
-	movq	-56(%rbp), %rcx         # 8-byte Reload
-	xorl	Te2(,%rcx,4), %eax
-	xorl	Te3(,%r10,4), %eax
-	movl	%r9d, %ebx
-	movl	%r9d, %r15d
-	shrl	$24, %ebx
-	movzbl	%dh, %ecx
-	movl	%edx, %r10d
-	movzbl	%dl, %r9d
-	movl	%edx, %edi
-	movl	Te0(,%rbx,4), %edx
-	shrl	$16, %r14d
-	movzbl	%r14b, %ebx
-	xorl	Te1(,%rbx,4), %edx
-	xorl	172(%r13), %eax
-	xorl	Te2(,%rcx,4), %edx
-	shrl	$24, %r8d
-	shrl	$16, %edi
-	movzbl	%dil, %ecx
-	movl	Te0(,%r8,4), %ebx
-	xorl	Te1(,%rcx,4), %ebx
-	movzbl	%ah, %ecx
-	xorl	Te2(,%rcx,4), %ebx
-	movzbl	%r15b, %r8d
-	shrl	$24, %r10d
-	movl	%eax, %ecx
-	shrl	$16, %ecx
-	movzbl	%cl, %ecx
-	movl	Te0(,%r10,4), %edi
-	xorl	Te1(,%rcx,4), %edi
-	movl	%r15d, %ecx
-	movzbl	%ch, %esi
-	shrl	$16, %ecx
-	movzbl	%cl, %r10d
-	xorl	Te2(,%rsi,4), %edi
-	movzbl	%al, %ecx
-	shrl	$24, %eax
-	movl	Te0(,%rax,4), %eax
-	xorl	Te1(,%r10,4), %eax
-	xorl	Te2(,%r12,4), %eax
-	xorl	Te3(,%rcx,4), %edx
-	movl	%edi, %ecx
-	xorl	176(%r13), %edx
-	movl	%edx, %r14d
-	xorl	Te3(,%r8,4), %ebx
-	xorl	180(%r13), %ebx
-	movq	-48(%rbp), %rdx         # 8-byte Reload
-	xorl	Te3(,%rdx,4), %ecx
-	xorl	184(%r13), %ecx
-	xorl	Te3(,%r9,4), %eax
-	xorl	188(%r13), %eax
-	cmpl	$13, %r11d
-	movq	-88(%rbp), %r10         # 8-byte Reload
-	jl	.LBB3_15
-# %bb.16:
-	movl	%ebx, %r8d
-	movzbl	%bl, %r9d
-	movzbl	%bh, %edx
-	movq	%rdx, %r13
-	movl	%ebx, %edi
-	movl	%r14d, %edx
-	movl	%r14d, %ebx
-	shrl	$24, %ebx
-	shrl	$16, %edi
-	movzbl	%dil, %edi
-	movl	Te0(,%rbx,4), %r15d
-	xorl	Te1(,%rdi,4), %r15d
-	movzbl	%ch, %edi
-	xorl	Te2(,%rdi,4), %r15d
-	movzbl	%al, %edi
-	xorl	Te3(,%rdi,4), %r15d
-	shrl	$24, %r8d
-	movl	%ecx, %edi
-	movl	%ecx, %ebx
-	shrl	$16, %ecx
-	movzbl	%cl, %esi
-	movl	Te0(,%r8,4), %ecx
-	xorl	Te1(,%rsi,4), %ecx
-	movzbl	%bl, %r8d
-	movzbl	%dl, %r14d
-	movzbl	%dh, %ebx
-	shrl	$16, %edx
-	movzbl	%dl, %edx
-	movzbl	%ah, %esi
-	xorl	Te2(,%rsi,4), %ecx
-	movq	-80(%rbp), %r12         # 8-byte Reload
-	xorl	192(%r12), %r15d
-	xorl	Te3(,%r14,4), %ecx
-	xorl	196(%r12), %ecx
-	movl	%ecx, %r14d
-	shrl	$24, %edi
-	movl	%eax, %ecx
-	shrl	$16, %ecx
-	movzbl	%cl, %esi
-	movl	Te0(,%rdi,4), %ecx
-	xorl	Te1(,%rsi,4), %ecx
-	xorl	Te2(,%rbx,4), %ecx
-	xorl	Te3(,%r9,4), %ecx
-	xorl	200(%r12), %ecx
-	shrl	$24, %eax
-	movl	Te0(,%rax,4), %eax
-	xorl	Te1(,%rdx,4), %eax
-	xorl	Te2(,%r13,4), %eax
-	xorl	Te3(,%r8,4), %eax
-	xorl	204(%r12), %eax
-	movl	%r15d, %edx
-	shrl	$24, %edx
-	movl	%r14d, %ebx
-	movl	%r14d, %esi
-	movzbl	%bl, %r9d
-	movl	%r14d, %edi
-	shrl	$16, %edi
-	movzbl	%dil, %edi
-	movl	Te0(,%rdx,4), %r14d
-	xorl	Te1(,%rdi,4), %r14d
-	movzbl	%ch, %edi
-	xorl	Te2(,%rdi,4), %r14d
-	shrl	$24, %esi
-	movl	%ecx, %edi
-	shrl	$16, %edi
-	movzbl	%dil, %edi
-	movl	Te0(,%rsi,4), %edx
-	xorl	Te1(,%rdi,4), %edx
-	movzbl	%bh, %esi
-	movzbl	%ah, %edi
-	xorl	Te2(,%rdi,4), %edx
-	movl	%ecx, %edi
-	movzbl	%cl, %r8d
-	shrl	$24, %edi
-	movl	%eax, %ebx
-	shrl	$16, %ebx
-	movzbl	%bl, %ebx
-	movl	Te0(,%rdi,4), %ecx
-	xorl	Te1(,%rbx,4), %ecx
-	movl	%r15d, %ebx
-	movzbl	%bh, %edi
-	xorl	Te2(,%rdi,4), %ecx
-	movzbl	%bl, %r15d
-	shrl	$16, %ebx
-	movzbl	%bl, %ebx
-	movzbl	%al, %edi
-	shrl	$24, %eax
-	movl	Te0(,%rax,4), %eax
-	xorl	Te1(,%rbx,4), %eax
-	xorl	Te2(,%rsi,4), %eax
-	xorl	Te3(,%rdi,4), %r14d
-	xorl	208(%r12), %r14d
-	xorl	Te3(,%r15,4), %edx
-	xorl	212(%r12), %edx
-	movl	%edx, %ebx
-	xorl	Te3(,%r9,4), %ecx
-	xorl	216(%r12), %ecx
-	movl	%ecx, %r9d
-	xorl	Te3(,%r8,4), %eax
-	xorl	220(%r12), %eax
-	jmp	.LBB3_17
-.LBB3_13:
-	movl	%ecx, %r9d
-	movq	-88(%rbp), %r10         # 8-byte Reload
-	jmp	.LBB3_17
-.LBB3_15:
-	movl	%ecx, %r9d
-.LBB3_17:
-	shll	$2, %r11d
-	movslq	%r11d, %r8
-	movl	%r14d, %edx
-	movl	%r14d, %ecx
-	shrl	$24, %ecx
-	movzbl	Te4+3(,%rcx,4), %ecx
-	shll	$24, %ecx
-	movl	%ebx, %edi
-	movl	%ebx, %esi
-	shrl	$16, %edi
-	movzbl	%dil, %edi
-	movzbl	Te4+2(,%rdi,4), %edi
-	shll	$16, %edi
-	orl	%ecx, %edi
-	movl	%r9d, %ebx
-	movzbl	%bh, %ecx
-	movzbl	Te4+1(,%rcx,4), %ecx
-	shll	$8, %ecx
-	orl	%edi, %ecx
-	movzbl	%al, %edi
-	movzbl	Te4(,%rdi,4), %edi
-	orl	%ecx, %edi
-	movq	-80(%rbp), %r11         # 8-byte Reload
-	xorl	(%r11,%r8,4), %edi
-	bswapl	%edi
-	movl	%edi, (%r10)
-	movl	%esi, %ebx
-	movl	%esi, %ecx
-	shrl	$24, %ecx
-	movzbl	Te4+3(,%rcx,4), %ecx
-	shll	$24, %ecx
-	movl	%r9d, %edi
-	shrl	$16, %edi
-	movzbl	%dil, %edi
-	movzbl	Te4+2(,%rdi,4), %edi
-	shll	$16, %edi
-	orl	%ecx, %edi
-	movzbl	%ah, %ecx
-	movzbl	Te4+1(,%rcx,4), %ecx
-	shll	$8, %ecx
-	orl	%edi, %ecx
-	movzbl	%dl, %edi
-	movzbl	Te4(,%rdi,4), %edi
-	orl	%ecx, %edi
-	xorl	4(%r11,%r8,4), %edi
-	bswapl	%edi
-	movl	%edi, 4(%r10)
-	movl	%r9d, %ecx
-	shrl	$24, %ecx
-	movzbl	Te4+3(,%rcx,4), %ecx
-	shll	$24, %ecx
-	movl	%eax, %edi
-	shrl	$16, %edi
-	movzbl	%dil, %edi
-	movzbl	Te4+2(,%rdi,4), %edi
-	shll	$16, %edi
-	orl	%ecx, %edi
-	movzbl	%dh, %ecx
-	movzbl	Te4+1(,%rcx,4), %ecx
-	shll	$8, %ecx
-	orl	%edi, %ecx
-	movzbl	%bl, %edi
-	movzbl	Te4(,%rdi,4), %edi
-	orl	%ecx, %edi
-	xorl	8(%r11,%r8,4), %edi
-	bswapl	%edi
-	movl	%edi, 8(%r10)
-	shrl	$24, %eax
-	movzbl	Te4+3(,%rax,4), %eax
-	shrl	$16, %edx
-	movzbl	%dl, %ecx
-	movzbl	%bh, %edx
-	movzbl	%r9b, %edi
-	shll	$24, %eax
-	movzbl	Te4+2(,%rcx,4), %ecx
-	shll	$16, %ecx
-	orl	%eax, %ecx
-	movzbl	Te4+1(,%rdx,4), %eax
-	shll	$8, %eax
-	orl	%ecx, %eax
-	movzbl	Te4(,%rdi,4), %ecx
-	orl	%eax, %ecx
-	xorl	12(%r11,%r8,4), %ecx
-	bswapl	%ecx
-	movl	%ecx, 12(%r10)
 	popq	%rbx
-	popq	%r12
-	popq	%r13
 	popq	%r14
-	popq	%r15
 	popq	%rbp
 	.cfi_def_cfa %rsp, 8
 	retq
 .Lfunc_end3:
-	.size	rijndaelEncrypt, .Lfunc_end3-rijndaelEncrypt
+	.size	prepare_inputs, .Lfunc_end3-prepare_inputs
 	.cfi_endproc
                                         # -- End function
 	.globl	rijndaelKeySetupEnc     # -- Begin function rijndaelKeySetupEnc
@@ -1224,7 +395,7 @@ rijndaelKeySetupEnc:                    # @rijndaelKeySetupEnc
 	movl	%eax, 12(%rdi)
 	cmpl	$128, %edx
 	jne	.LBB4_2
-# %bb.1:                                # %.preheader
+# %bb.1:                                # %.loopexit
 	movl	12(%rdi), %eax
 	movq	%rax, %rcx
 	shrq	$14, %rcx
@@ -2111,42 +1282,6 @@ rijndaelKeySetupEnc:                    # @rijndaelKeySetupEnc
 	.size	rijndaelKeySetupEnc, .Lfunc_end4-rijndaelKeySetupEnc
 	.cfi_endproc
                                         # -- End function
-	.globl	prepare_inputs          # -- Begin function prepare_inputs
-	.p2align	4, 0x90
-	.type	prepare_inputs,@function
-prepare_inputs:                         # @prepare_inputs
-	.cfi_startproc
-# %bb.0:
-	pushq	%rbp
-	.cfi_def_cfa_offset 16
-	.cfi_offset %rbp, -16
-	movq	%rsp, %rbp
-	.cfi_def_cfa_register %rbp
-	pushq	%r14
-	pushq	%rbx
-	.cfi_offset %rbx, -32
-	.cfi_offset %r14, -24
-	movq	%rsi, %r14
-	movq	%rdi, %rbx
-	movl	$16, %esi
-	callq	randombytes
-	callq	randombit
-	movb	%al, (%r14)
-	testb	%al, %al
-	jne	.LBB5_2
-# %bb.1:
-	xorps	%xmm0, %xmm0
-	movups	%xmm0, (%rbx)
-.LBB5_2:
-	popq	%rbx
-	popq	%r14
-	popq	%rbp
-	.cfi_def_cfa %rsp, 8
-	retq
-.Lfunc_end5:
-	.size	prepare_inputs, .Lfunc_end5-prepare_inputs
-	.cfi_endproc
-                                        # -- End function
 	.globl	rijndaelKeySetupDec     # -- Begin function rijndaelKeySetupDec
 	.p2align	4, 0x90
 	.type	rijndaelKeySetupDec,@function
@@ -2166,13 +1301,13 @@ rijndaelKeySetupDec:                    # @rijndaelKeySetupDec
 	movl	%eax, %r10d
 	leal	(,%r10,4), %ecx
 	testl	%ecx, %ecx
-	jle	.LBB6_3
+	jle	.LBB5_3
 # %bb.1:                                # %.lr.ph8
 	movslq	%ecx, %rcx
 	addq	$-4, %rcx
 	xorl	%edx, %edx
 	.p2align	4, 0x90
-.LBB6_2:                                # =>This Inner Loop Header: Depth=1
+.LBB5_2:                                # =>This Inner Loop Header: Depth=1
 	movl	(%rbx,%rdx,4), %esi
 	movl	16(%rbx,%rcx,4), %edi
 	movl	%edi, (%rbx,%rdx,4)
@@ -2192,16 +1327,17 @@ rijndaelKeySetupDec:                    # @rijndaelKeySetupDec
 	addq	$4, %rdx
 	cmpq	%rcx, %rdx
 	leaq	-4(%rcx), %rcx
-	jl	.LBB6_2
-.LBB6_3:                                # %.preheader
+	jl	.LBB5_2
+.LBB5_3:                                # %.preheader
 	cmpl	$2, %r10d
-	jl	.LBB6_6
-# %bb.4:                                # %.lr.ph
+	jl	.LBB5_6
+# %bb.4:                                # %.lr.ph.preheader
 	addq	$28, %rbx
 	movl	%r10d, %r8d
 	addl	$-1, %r8d
 	.p2align	4, 0x90
-.LBB6_5:                                # =>This Inner Loop Header: Depth=1
+.LBB5_5:                                # %.lr.ph
+                                        # =>This Inner Loop Header: Depth=1
 	movl	-12(%rbx), %edx
 	movq	%rdx, %rsi
 	movzbl	%dh, %edi
@@ -2270,16 +1406,882 @@ rijndaelKeySetupDec:                    # @rijndaelKeySetupDec
 	movl	%ecx, (%rbx)
 	addq	$16, %rbx
 	addl	$-1, %r8d
-	jne	.LBB6_5
-.LBB6_6:
+	jne	.LBB5_5
+.LBB5_6:                                # %._crit_edge
 	movl	%r10d, %eax
 	addq	$8, %rsp
 	popq	%rbx
 	popq	%rbp
 	.cfi_def_cfa %rsp, 8
 	retq
+.Lfunc_end5:
+	.size	rijndaelKeySetupDec, .Lfunc_end5-rijndaelKeySetupDec
+	.cfi_endproc
+                                        # -- End function
+	.globl	rijndaelEncrypt         # -- Begin function rijndaelEncrypt
+	.p2align	4, 0x90
+	.type	rijndaelEncrypt,@function
+rijndaelEncrypt:                        # @rijndaelEncrypt
+	.cfi_startproc
+# %bb.0:
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset %rbp, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register %rbp
+	pushq	%r15
+	pushq	%r14
+	pushq	%r13
+	pushq	%r12
+	pushq	%rbx
+	.cfi_offset %rbx, -56
+	.cfi_offset %r12, -48
+	.cfi_offset %r13, -40
+	.cfi_offset %r14, -32
+	.cfi_offset %r15, -24
+	movq	%rcx, -88(%rbp)         # 8-byte Spill
+	movl	%esi, -72(%rbp)         # 4-byte Spill
+	movl	(%rdx), %ebx
+	bswapl	%ebx
+	xorl	(%rdi), %ebx
+	movzbl	4(%rdx), %eax
+	movzbl	5(%rdx), %r12d
+	shll	$16, %r12d
+	movzbl	6(%rdx), %esi
+	shll	$8, %esi
+	movzbl	9(%rdx), %r15d
+	shll	$16, %r15d
+	movzbl	10(%rdx), %r8d
+	shll	$8, %r8d
+	movzbl	13(%rdx), %r10d
+	shll	$16, %r10d
+	movzbl	14(%rdx), %r11d
+	shll	$8, %r11d
+	movl	%ebx, -64(%rbp)         # 4-byte Spill
+	shrl	$24, %ebx
+	movzbl	7(%rdx), %ecx
+	movl	%ecx, -48(%rbp)         # 4-byte Spill
+	movl	4(%rdi), %ecx
+	movl	%ecx, -68(%rbp)         # 4-byte Spill
+	movl	8(%rdi), %r9d
+	movzbl	8(%rdx), %ecx
+	movzbl	11(%rdx), %r13d
+	movzbl	15(%rdx), %r14d
+	movq	%rdi, -80(%rbp)         # 8-byte Spill
+	movl	12(%rdi), %edi
+	movzbl	12(%rdx), %edx
+	movl	%edi, -56(%rbp)         # 4-byte Spill
+	jne	.LBB6_2
+# %bb.1:
+	movl	Te0(%rip), %edi
+	jmp	.LBB6_3
+.LBB6_2:
+	movl	%ebx, %ebx
+	movl	Te0(,%rbx,4), %edi
+.LBB6_3:                                # %.preheader12
+	movl	-68(%rbp), %ebx         # 4-byte Reload
+	shll	$24, %eax
+	orl	%r12d, %eax
+	xorl	%esi, %eax
+	xorl	-48(%rbp), %eax         # 4-byte Folded Reload
+	xorl	%ebx, %eax
+	shll	$24, %ecx
+	orl	%r15d, %ecx
+	xorl	%r8d, %ecx
+	xorl	%r13d, %ecx
+	xorl	%r9d, %ecx
+	shll	$24, %edx
+	orl	%r10d, %edx
+	xorl	%r11d, %edx
+	xorl	%r14d, %edx
+	movl	%eax, %esi
+	shrl	$16, %esi
+	andl	$255, %esi
+	jne	.LBB6_5
+# %bb.4:
+	movl	Te1(%rip), %esi
+	jmp	.LBB6_6
+.LBB6_5:
+	movl	%esi, %esi
+	movl	Te1(,%rsi,4), %esi
+.LBB6_6:                                # %.preheader11
+	xorl	%esi, %edi
+	xorl	-56(%rbp), %edx         # 4-byte Folded Reload
+	movl	%ecx, %esi
+	shrl	$8, %esi
+	andl	$255, %esi
+	jne	.LBB6_8
+# %bb.7:
+	movl	Te2(%rip), %esi
+	jmp	.LBB6_9
+.LBB6_8:
+	movl	%esi, %esi
+	movl	Te2(,%rsi,4), %esi
+.LBB6_9:                                # %.preheader
+	xorl	%esi, %edi
+	movl	%edx, %ebx
+	andl	$255, %ebx
+	jne	.LBB6_11
+# %bb.10:
+	movl	Te3(%rip), %r14d
+	jmp	.LBB6_12
+.LBB6_11:
+	movl	%ebx, %esi
+	movl	Te3(,%rsi,4), %r14d
+.LBB6_12:
+	movl	-64(%rbp), %ebx         # 4-byte Reload
+	movzbl	%bl, %r8d
+	movzbl	%bh, %esi
+	movq	%rsi, %r11
+	shrl	$16, %ebx
+	movzbl	%bl, %r9d
+	movl	%edi, %r10d
+	xorl	%r14d, %r10d
+	movq	-80(%rbp), %r15         # 8-byte Reload
+	xorl	16(%r15), %r10d
+	movl	%eax, %ebx
+	shrl	$24, %ebx
+	movzbl	%al, %edi
+	movzbl	%ah, %eax
+	movq	%rax, %r14
+	movl	Te0(,%rbx,4), %ebx
+	movl	%ecx, %eax
+	shrl	$16, %eax
+	movzbl	%al, %eax
+	xorl	Te1(,%rax,4), %ebx
+	movzbl	%dh, %eax
+	xorl	Te2(,%rax,4), %ebx
+	xorl	Te3(,%r8,4), %ebx
+	xorl	20(%r15), %ebx
+	movl	%ecx, %eax
+	shrl	$24, %eax
+	movl	%edx, %esi
+	shrl	$16, %esi
+	movzbl	%sil, %esi
+	movl	Te0(,%rax,4), %eax
+	xorl	Te1(,%rsi,4), %eax
+	xorl	Te2(,%r11,4), %eax
+	xorl	Te3(,%rdi,4), %eax
+	xorl	24(%r15), %eax
+	shrl	$24, %edx
+	movl	Te0(,%rdx,4), %edx
+	xorl	Te1(,%r9,4), %edx
+	xorl	Te2(,%r14,4), %edx
+	movzbl	%cl, %ecx
+	xorl	Te3(,%rcx,4), %edx
+	xorl	28(%r15), %edx
+	movl	%r10d, %ecx
+	shrl	$24, %ecx
+	movl	%ebx, %r8d
+	movl	%ebx, %esi
+	shrl	$16, %esi
+	movzbl	%sil, %esi
+	movl	Te0(,%rcx,4), %r11d
+	xorl	Te1(,%rsi,4), %r11d
+	movzbl	%bl, %r9d
+	movzbl	%ah, %esi
+	xorl	Te2(,%rsi,4), %r11d
+	movzbl	%bh, %ecx
+	movq	%rcx, %r14
+	movzbl	%dl, %edi
+	xorl	Te3(,%rdi,4), %r11d
+	xorl	32(%r15), %r11d
+	shrl	$24, %r8d
+	movl	%eax, %ecx
+	movl	%eax, %edi
+	shrl	$16, %eax
+	movzbl	%al, %eax
+	movl	Te0(,%r8,4), %ebx
+	xorl	Te1(,%rax,4), %ebx
+	movzbl	%cl, %r8d
+	movl	%r10d, %ecx
+	movzbl	%cl, %eax
+	movzbl	%ch, %esi
+	movq	%rsi, %r12
+	shrl	$16, %ecx
+	movzbl	%cl, %r10d
+	movzbl	%dh, %esi
+	xorl	Te2(,%rsi,4), %ebx
+	xorl	Te3(,%rax,4), %ebx
+	xorl	36(%r15), %ebx
+	shrl	$24, %edi
+	movl	%edx, %eax
+	shrl	$16, %eax
+	movzbl	%al, %esi
+	movl	Te0(,%rdi,4), %ecx
+	xorl	Te1(,%rsi,4), %ecx
+	xorl	Te2(,%r12,4), %ecx
+	xorl	Te3(,%r9,4), %ecx
+	xorl	40(%r15), %ecx
+	shrl	$24, %edx
+	movl	Te0(,%rdx,4), %edx
+	xorl	Te1(,%r10,4), %edx
+	xorl	Te2(,%r14,4), %edx
+	xorl	Te3(,%r8,4), %edx
+	xorl	44(%r15), %edx
+	movl	%r11d, %esi
+	shrl	$24, %esi
+	movl	%ebx, %r8d
+	movl	%ebx, %edi
+	shrl	$16, %edi
+	movzbl	%dil, %edi
+	movl	Te0(,%rsi,4), %eax
+	xorl	Te1(,%rdi,4), %eax
+	movzbl	%bl, %r9d
+	movzbl	%ch, %esi
+	xorl	Te2(,%rsi,4), %eax
+	movzbl	%bh, %esi
+	movq	%rsi, %r12
+	movzbl	%dl, %edi
+	xorl	Te3(,%rdi,4), %eax
+	xorl	48(%r15), %eax
+	movl	%eax, %r14d
+	shrl	$24, %r8d
+	movl	%ecx, %edi
+	movl	%ecx, %eax
+	shrl	$16, %eax
+	movzbl	%al, %eax
+	movl	Te0(,%r8,4), %ebx
+	xorl	Te1(,%rax,4), %ebx
+	movzbl	%cl, %r8d
+	movl	%r11d, %ecx
+	movzbl	%cl, %eax
+	movzbl	%ch, %esi
+	movq	%rsi, %r11
+	shrl	$16, %ecx
+	movzbl	%cl, %r10d
+	movzbl	%dh, %esi
+	xorl	Te2(,%rsi,4), %ebx
+	xorl	Te3(,%rax,4), %ebx
+	xorl	52(%r15), %ebx
+	shrl	$24, %edi
+	movl	%edx, %eax
+	shrl	$16, %eax
+	movzbl	%al, %esi
+	movl	Te0(,%rdi,4), %ecx
+	xorl	Te1(,%rsi,4), %ecx
+	xorl	Te2(,%r11,4), %ecx
+	xorl	Te3(,%r9,4), %ecx
+	xorl	56(%r15), %ecx
+	shrl	$24, %edx
+	movl	Te0(,%rdx,4), %edx
+	xorl	Te1(,%r10,4), %edx
+	xorl	Te2(,%r12,4), %edx
+	xorl	Te3(,%r8,4), %edx
+	xorl	60(%r15), %edx
+	movl	%r14d, %eax
+	shrl	$24, %eax
+	movl	%ebx, %r8d
+	movl	%ebx, %esi
+	shrl	$16, %esi
+	movzbl	%sil, %esi
+	movl	Te0(,%rax,4), %eax
+	xorl	Te1(,%rsi,4), %eax
+	movzbl	%bl, %r9d
+	movzbl	%ch, %esi
+	xorl	Te2(,%rsi,4), %eax
+	movzbl	%bh, %esi
+	movq	%rsi, %r13
+	movzbl	%dl, %edi
+	xorl	Te3(,%rdi,4), %eax
+	xorl	64(%r15), %eax
+	movl	%eax, %r12d
+	shrl	$24, %r8d
+	movl	%ecx, %edi
+	movl	%ecx, %eax
+	shrl	$16, %eax
+	movzbl	%al, %eax
+	movl	Te0(,%r8,4), %ebx
+	xorl	Te1(,%rax,4), %ebx
+	movzbl	%cl, %r8d
+	movl	%r14d, %eax
+	movzbl	%al, %r11d
+	movzbl	%ah, %ecx
+	shrl	$16, %eax
+	movzbl	%al, %r10d
+	movzbl	%dh, %esi
+	xorl	Te2(,%rsi,4), %ebx
+	xorl	Te3(,%r11,4), %ebx
+	xorl	68(%r15), %ebx
+	shrl	$24, %edi
+	movl	%edx, %eax
+	shrl	$16, %eax
+	movzbl	%al, %esi
+	movl	Te0(,%rdi,4), %eax
+	xorl	Te1(,%rsi,4), %eax
+	xorl	Te2(,%rcx,4), %eax
+	xorl	Te3(,%r9,4), %eax
+	xorl	72(%r15), %eax
+	shrl	$24, %edx
+	movl	Te0(,%rdx,4), %edx
+	xorl	Te1(,%r10,4), %edx
+	xorl	Te2(,%r13,4), %edx
+	xorl	Te3(,%r8,4), %edx
+	xorl	76(%r15), %edx
+	movl	%r12d, %ecx
+	shrl	$24, %ecx
+	movl	%ebx, %r8d
+	movl	%ebx, %esi
+	shrl	$16, %esi
+	movzbl	%sil, %esi
+	movl	Te0(,%rcx,4), %r11d
+	xorl	Te1(,%rsi,4), %r11d
+	movzbl	%bl, %r9d
+	movzbl	%ah, %ecx
+	xorl	Te2(,%rcx,4), %r11d
+	movzbl	%bh, %ecx
+	movq	%rcx, %r13
+	movzbl	%dl, %ecx
+	xorl	Te3(,%rcx,4), %r11d
+	xorl	80(%r15), %r11d
+	shrl	$24, %r8d
+	movl	%eax, %ecx
+	movl	%eax, %edi
+	shrl	$16, %edi
+	movzbl	%dil, %edi
+	movl	Te0(,%r8,4), %ebx
+	xorl	Te1(,%rdi,4), %ebx
+	movzbl	%al, %r8d
+	movl	%r12d, %eax
+	movzbl	%al, %r14d
+	movzbl	%ah, %esi
+	shrl	$16, %eax
+	movzbl	%al, %r10d
+	movzbl	%dh, %edi
+	xorl	Te2(,%rdi,4), %ebx
+	xorl	Te3(,%r14,4), %ebx
+	xorl	84(%r15), %ebx
+	shrl	$24, %ecx
+	movl	%edx, %eax
+	shrl	$16, %eax
+	movzbl	%al, %edi
+	movl	Te0(,%rcx,4), %ecx
+	xorl	Te1(,%rdi,4), %ecx
+	xorl	Te2(,%rsi,4), %ecx
+	xorl	Te3(,%r9,4), %ecx
+	xorl	88(%r15), %ecx
+	shrl	$24, %edx
+	movl	Te0(,%rdx,4), %edx
+	xorl	Te1(,%r10,4), %edx
+	xorl	Te2(,%r13,4), %edx
+	xorl	Te3(,%r8,4), %edx
+	xorl	92(%r15), %edx
+	movl	%r11d, %esi
+	shrl	$24, %esi
+	movl	%ebx, %r9d
+	movl	%ebx, %edi
+	shrl	$16, %edi
+	movzbl	%dil, %edi
+	movl	Te0(,%rsi,4), %r14d
+	xorl	Te1(,%rdi,4), %r14d
+	movzbl	%bl, %r8d
+	movzbl	%ch, %esi
+	xorl	Te2(,%rsi,4), %r14d
+	movzbl	%bh, %eax
+	movq	%rax, %r12
+	movzbl	%dl, %edi
+	xorl	Te3(,%rdi,4), %r14d
+	xorl	96(%r15), %r14d
+	shrl	$24, %r9d
+	movl	%ecx, %edi
+	movl	%ecx, %eax
+	shrl	$16, %eax
+	movzbl	%al, %eax
+	movl	Te0(,%r9,4), %ebx
+	xorl	Te1(,%rax,4), %ebx
+	movzbl	%cl, %r9d
+	movl	%r11d, %ecx
+	movzbl	%cl, %eax
+	movzbl	%ch, %esi
+	shrl	$16, %ecx
+	movzbl	%cl, %r10d
+	movzbl	%dh, %ecx
+	xorl	Te2(,%rcx,4), %ebx
+	xorl	Te3(,%rax,4), %ebx
+	xorl	100(%r15), %ebx
+	movl	%ebx, %ecx
+	shrl	$24, %edi
+	movl	%edx, %eax
+	shrl	$16, %eax
+	movzbl	%al, %eax
+	movl	Te0(,%rdi,4), %ebx
+	xorl	Te1(,%rax,4), %ebx
+	xorl	Te2(,%rsi,4), %ebx
+	xorl	Te3(,%r8,4), %ebx
+	xorl	104(%r15), %ebx
+	shrl	$24, %edx
+	movl	Te0(,%rdx,4), %eax
+	xorl	Te1(,%r10,4), %eax
+	xorl	Te2(,%r12,4), %eax
+	xorl	Te3(,%r9,4), %eax
+	xorl	108(%r15), %eax
+	movl	%r14d, %edx
+	shrl	$24, %edx
+	movl	%ecx, %r8d
+	movl	%ecx, %esi
+	shrl	$16, %esi
+	movzbl	%sil, %esi
+	movl	Te0(,%rdx,4), %r12d
+	xorl	Te1(,%rsi,4), %r12d
+	movzbl	%cl, %r9d
+	movzbl	%bh, %esi
+	xorl	Te2(,%rsi,4), %r12d
+	movzbl	%ch, %ecx
+	movq	%rcx, %r11
+	movzbl	%al, %edi
+	xorl	Te3(,%rdi,4), %r12d
+	xorl	112(%r15), %r12d
+	shrl	$24, %r8d
+	movl	%ebx, %edi
+	movl	%ebx, %ecx
+	shrl	$16, %ecx
+	movzbl	%cl, %ecx
+	movl	Te0(,%r8,4), %edx
+	xorl	Te1(,%rcx,4), %edx
+	movzbl	%bl, %r8d
+	movl	%r14d, %ebx
+	movzbl	%bl, %ecx
+	movzbl	%bh, %esi
+	shrl	$16, %ebx
+	movzbl	%bl, %r10d
+	movzbl	%ah, %ebx
+	xorl	Te2(,%rbx,4), %edx
+	xorl	Te3(,%rcx,4), %edx
+	xorl	116(%r15), %edx
+	shrl	$24, %edi
+	movl	%eax, %ecx
+	shrl	$16, %ecx
+	movzbl	%cl, %ebx
+	movl	Te0(,%rdi,4), %ecx
+	xorl	Te1(,%rbx,4), %ecx
+	xorl	Te2(,%rsi,4), %ecx
+	xorl	Te3(,%r9,4), %ecx
+	xorl	120(%r15), %ecx
+	shrl	$24, %eax
+	movl	Te0(,%rax,4), %ebx
+	xorl	Te1(,%r10,4), %ebx
+	xorl	Te2(,%r11,4), %ebx
+	xorl	Te3(,%r8,4), %ebx
+	xorl	124(%r15), %ebx
+	movl	%r12d, %eax
+	shrl	$24, %eax
+	movl	%edx, %r9d
+	movl	%edx, %esi
+	shrl	$16, %esi
+	movzbl	%sil, %esi
+	movl	Te0(,%rax,4), %eax
+	xorl	Te1(,%rsi,4), %eax
+	movzbl	%dl, %esi
+	movq	%rsi, -64(%rbp)         # 8-byte Spill
+	movzbl	%ch, %esi
+	xorl	Te2(,%rsi,4), %eax
+	movzbl	%dh, %edx
+	movq	%rdx, -56(%rbp)         # 8-byte Spill
+	movzbl	%bl, %edx
+	xorl	Te3(,%rdx,4), %eax
+	movl	%ecx, %r11d
+	movzbl	%cl, %edx
+	movq	%rdx, -48(%rbp)         # 8-byte Spill
+	movl	%ecx, %esi
+	shrl	$24, %r9d
+	movl	%r12d, %ecx
+	movzbl	%cl, %edi
+	movzbl	%ch, %edx
+	movq	%rdx, %r8
+	shrl	$16, %ecx
+	movzbl	%cl, %r10d
+	movl	Te0(,%r9,4), %ecx
+	shrl	$16, %esi
+	movzbl	%sil, %esi
+	xorl	Te1(,%rsi,4), %ecx
+	movzbl	%bh, %esi
+	xorl	Te2(,%rsi,4), %ecx
+	xorl	Te3(,%rdi,4), %ecx
+	xorl	132(%r15), %ecx
+	shrl	$24, %r11d
+	movl	%ecx, %r9d
+	movzbl	%cl, %r12d
+	movzbl	%ch, %edx
+	movq	%rdx, %r13
+	movl	%ecx, %r14d
+	movl	Te0(,%r11,4), %ecx
+	movl	%ebx, %edx
+	shrl	$16, %edx
+	movzbl	%dl, %edx
+	xorl	Te1(,%rdx,4), %ecx
+	xorl	Te2(,%r8,4), %ecx
+	xorl	128(%r15), %eax
+	movq	-64(%rbp), %rdx         # 8-byte Reload
+	xorl	Te3(,%rdx,4), %ecx
+	xorl	136(%r15), %ecx
+	shrl	$24, %ebx
+	movl	Te0(,%rbx,4), %ebx
+	xorl	Te1(,%r10,4), %ebx
+	movq	-56(%rbp), %rdx         # 8-byte Reload
+	xorl	Te2(,%rdx,4), %ebx
+	movq	-48(%rbp), %rdx         # 8-byte Reload
+	xorl	Te3(,%rdx,4), %ebx
+	movl	%eax, %edx
+	shrl	$24, %edx
+	movzbl	%ch, %esi
+	movq	%rsi, %r11
+	movl	%ecx, %r10d
+	movzbl	%cl, %r8d
+	movl	Te0(,%rdx,4), %edi
+	shrl	$16, %r14d
+	movzbl	%r14b, %esi
+	xorl	Te1(,%rsi,4), %edi
+	xorl	140(%r15), %ebx
+	xorl	Te2(,%r11,4), %edi
+	shrl	$24, %r9d
+	shrl	$16, %ecx
+	movzbl	%cl, %ecx
+	movl	Te0(,%r9,4), %edx
+	xorl	Te1(,%rcx,4), %edx
+	movzbl	%bh, %ecx
+	xorl	Te2(,%rcx,4), %edx
+	movzbl	%al, %r9d
+	shrl	$24, %r10d
+	movl	%ebx, %ecx
+	shrl	$16, %ecx
+	movzbl	%cl, %esi
+	movl	Te0(,%r10,4), %ecx
+	xorl	Te1(,%rsi,4), %ecx
+	movzbl	%ah, %esi
+	shrl	$16, %eax
+	movzbl	%al, %r10d
+	xorl	Te2(,%rsi,4), %ecx
+	movzbl	%bl, %esi
+	shrl	$24, %ebx
+	movl	Te0(,%rbx,4), %eax
+	xorl	Te1(,%r10,4), %eax
+	xorl	Te2(,%r13,4), %eax
+	xorl	Te3(,%rsi,4), %edi
+	xorl	144(%r15), %edi
+	movl	%edi, %r14d
+	xorl	Te3(,%r9,4), %edx
+	xorl	148(%r15), %edx
+	movl	%edx, %ebx
+	xorl	Te3(,%r12,4), %ecx
+	xorl	152(%r15), %ecx
+	xorl	Te3(,%r8,4), %eax
+	xorl	156(%r15), %eax
+	movl	-72(%rbp), %r11d        # 4-byte Reload
+	cmpl	$11, %r11d
+	jl	.LBB6_13
+# %bb.14:
+	movl	%r14d, %edx
+	movl	%r14d, %esi
+	shrl	$24, %esi
+	movl	%ebx, %r12d
+	movl	%ebx, %edi
+	shrl	$16, %edi
+	movzbl	%dil, %edi
+	movl	Te0(,%rsi,4), %r9d
+	xorl	Te1(,%rdi,4), %r9d
+	movzbl	%bl, %esi
+	movq	%rsi, -64(%rbp)         # 8-byte Spill
+	movzbl	%ch, %esi
+	xorl	Te2(,%rsi,4), %r9d
+	movzbl	%bh, %esi
+	movq	%rsi, -56(%rbp)         # 8-byte Spill
+	movzbl	%al, %esi
+	xorl	Te3(,%rsi,4), %r9d
+	movl	%ecx, %r11d
+	movzbl	%cl, %r10d
+	shrl	$24, %r12d
+	movzbl	%dl, %esi
+	movzbl	%dh, %edi
+	shrl	$16, %edx
+	movzbl	%dl, %r15d
+	movl	Te0(,%r12,4), %edx
+	shrl	$16, %ecx
+	movzbl	%cl, %ecx
+	xorl	Te1(,%rcx,4), %edx
+	movzbl	%ah, %ecx
+	xorl	Te2(,%rcx,4), %edx
+	xorl	Te3(,%rsi,4), %edx
+	movq	-80(%rbp), %r13         # 8-byte Reload
+	xorl	164(%r13), %edx
+	shrl	$24, %r11d
+	movl	%edx, %r8d
+	movzbl	%dl, %ecx
+	movq	%rcx, -48(%rbp)         # 8-byte Spill
+	movzbl	%dh, %ecx
+	movq	%rcx, %r12
+	movl	%edx, %r14d
+	movl	Te0(,%r11,4), %edx
+	movl	-72(%rbp), %r11d        # 4-byte Reload
+	movl	%eax, %ebx
+	shrl	$16, %ebx
+	movzbl	%bl, %ebx
+	xorl	Te1(,%rbx,4), %edx
+	xorl	Te2(,%rdi,4), %edx
+	xorl	160(%r13), %r9d
+	movq	-64(%rbp), %rcx         # 8-byte Reload
+	xorl	Te3(,%rcx,4), %edx
+	xorl	168(%r13), %edx
+	shrl	$24, %eax
+	movl	Te0(,%rax,4), %eax
+	xorl	Te1(,%r15,4), %eax
+	movq	-56(%rbp), %rcx         # 8-byte Reload
+	xorl	Te2(,%rcx,4), %eax
+	xorl	Te3(,%r10,4), %eax
+	movl	%r9d, %ebx
+	movl	%r9d, %r15d
+	shrl	$24, %ebx
+	movzbl	%dh, %ecx
+	movl	%edx, %r10d
+	movzbl	%dl, %r9d
+	movl	%edx, %edi
+	movl	Te0(,%rbx,4), %edx
+	shrl	$16, %r14d
+	movzbl	%r14b, %ebx
+	xorl	Te1(,%rbx,4), %edx
+	xorl	172(%r13), %eax
+	xorl	Te2(,%rcx,4), %edx
+	shrl	$24, %r8d
+	shrl	$16, %edi
+	movzbl	%dil, %ecx
+	movl	Te0(,%r8,4), %ebx
+	xorl	Te1(,%rcx,4), %ebx
+	movzbl	%ah, %ecx
+	xorl	Te2(,%rcx,4), %ebx
+	movzbl	%r15b, %r8d
+	shrl	$24, %r10d
+	movl	%eax, %ecx
+	shrl	$16, %ecx
+	movzbl	%cl, %ecx
+	movl	Te0(,%r10,4), %edi
+	xorl	Te1(,%rcx,4), %edi
+	movl	%r15d, %ecx
+	movzbl	%ch, %esi
+	shrl	$16, %ecx
+	movzbl	%cl, %r10d
+	xorl	Te2(,%rsi,4), %edi
+	movzbl	%al, %ecx
+	shrl	$24, %eax
+	movl	Te0(,%rax,4), %eax
+	xorl	Te1(,%r10,4), %eax
+	xorl	Te2(,%r12,4), %eax
+	xorl	Te3(,%rcx,4), %edx
+	movl	%edi, %ecx
+	xorl	176(%r13), %edx
+	movl	%edx, %r14d
+	xorl	Te3(,%r8,4), %ebx
+	xorl	180(%r13), %ebx
+	movq	-48(%rbp), %rdx         # 8-byte Reload
+	xorl	Te3(,%rdx,4), %ecx
+	xorl	184(%r13), %ecx
+	xorl	Te3(,%r9,4), %eax
+	xorl	188(%r13), %eax
+	cmpl	$13, %r11d
+	movq	-88(%rbp), %r10         # 8-byte Reload
+	jl	.LBB6_15
+# %bb.16:
+	movl	%ebx, %r8d
+	movzbl	%bl, %r9d
+	movzbl	%bh, %edx
+	movq	%rdx, %r13
+	movl	%ebx, %edi
+	movl	%r14d, %edx
+	movl	%r14d, %ebx
+	shrl	$24, %ebx
+	shrl	$16, %edi
+	movzbl	%dil, %edi
+	movl	Te0(,%rbx,4), %r15d
+	xorl	Te1(,%rdi,4), %r15d
+	movzbl	%ch, %edi
+	xorl	Te2(,%rdi,4), %r15d
+	movzbl	%al, %edi
+	xorl	Te3(,%rdi,4), %r15d
+	shrl	$24, %r8d
+	movl	%ecx, %edi
+	movl	%ecx, %ebx
+	shrl	$16, %ecx
+	movzbl	%cl, %esi
+	movl	Te0(,%r8,4), %ecx
+	xorl	Te1(,%rsi,4), %ecx
+	movzbl	%bl, %r8d
+	movzbl	%dl, %r14d
+	movzbl	%dh, %ebx
+	shrl	$16, %edx
+	movzbl	%dl, %edx
+	movzbl	%ah, %esi
+	xorl	Te2(,%rsi,4), %ecx
+	movq	-80(%rbp), %r12         # 8-byte Reload
+	xorl	192(%r12), %r15d
+	xorl	Te3(,%r14,4), %ecx
+	xorl	196(%r12), %ecx
+	movl	%ecx, %r14d
+	shrl	$24, %edi
+	movl	%eax, %ecx
+	shrl	$16, %ecx
+	movzbl	%cl, %esi
+	movl	Te0(,%rdi,4), %ecx
+	xorl	Te1(,%rsi,4), %ecx
+	xorl	Te2(,%rbx,4), %ecx
+	xorl	Te3(,%r9,4), %ecx
+	xorl	200(%r12), %ecx
+	shrl	$24, %eax
+	movl	Te0(,%rax,4), %eax
+	xorl	Te1(,%rdx,4), %eax
+	xorl	Te2(,%r13,4), %eax
+	xorl	Te3(,%r8,4), %eax
+	xorl	204(%r12), %eax
+	movl	%r15d, %edx
+	shrl	$24, %edx
+	movl	%r14d, %ebx
+	movl	%r14d, %esi
+	movzbl	%bl, %r9d
+	movl	%r14d, %edi
+	shrl	$16, %edi
+	movzbl	%dil, %edi
+	movl	Te0(,%rdx,4), %r14d
+	xorl	Te1(,%rdi,4), %r14d
+	movzbl	%ch, %edi
+	xorl	Te2(,%rdi,4), %r14d
+	shrl	$24, %esi
+	movl	%ecx, %edi
+	shrl	$16, %edi
+	movzbl	%dil, %edi
+	movl	Te0(,%rsi,4), %edx
+	xorl	Te1(,%rdi,4), %edx
+	movzbl	%bh, %esi
+	movzbl	%ah, %edi
+	xorl	Te2(,%rdi,4), %edx
+	movl	%ecx, %edi
+	movzbl	%cl, %r8d
+	shrl	$24, %edi
+	movl	%eax, %ebx
+	shrl	$16, %ebx
+	movzbl	%bl, %ebx
+	movl	Te0(,%rdi,4), %ecx
+	xorl	Te1(,%rbx,4), %ecx
+	movl	%r15d, %ebx
+	movzbl	%bh, %edi
+	xorl	Te2(,%rdi,4), %ecx
+	movzbl	%bl, %r15d
+	shrl	$16, %ebx
+	movzbl	%bl, %ebx
+	movzbl	%al, %edi
+	shrl	$24, %eax
+	movl	Te0(,%rax,4), %eax
+	xorl	Te1(,%rbx,4), %eax
+	xorl	Te2(,%rsi,4), %eax
+	xorl	Te3(,%rdi,4), %r14d
+	xorl	208(%r12), %r14d
+	xorl	Te3(,%r15,4), %edx
+	xorl	212(%r12), %edx
+	movl	%edx, %ebx
+	xorl	Te3(,%r9,4), %ecx
+	xorl	216(%r12), %ecx
+	movl	%ecx, %r9d
+	xorl	Te3(,%r8,4), %eax
+	xorl	220(%r12), %eax
+	jmp	.LBB6_17
+.LBB6_13:
+	movl	%ecx, %r9d
+	movq	-88(%rbp), %r10         # 8-byte Reload
+	jmp	.LBB6_17
+.LBB6_15:
+	movl	%ecx, %r9d
+.LBB6_17:
+	shll	$2, %r11d
+	movslq	%r11d, %r8
+	movl	%r14d, %edx
+	movl	%r14d, %ecx
+	shrl	$24, %ecx
+	movzbl	Te4+3(,%rcx,4), %ecx
+	shll	$24, %ecx
+	movl	%ebx, %edi
+	movl	%ebx, %esi
+	shrl	$16, %edi
+	movzbl	%dil, %edi
+	movzbl	Te4+2(,%rdi,4), %edi
+	shll	$16, %edi
+	orl	%ecx, %edi
+	movl	%r9d, %ebx
+	movzbl	%bh, %ecx
+	movzbl	Te4+1(,%rcx,4), %ecx
+	shll	$8, %ecx
+	orl	%edi, %ecx
+	movzbl	%al, %edi
+	movzbl	Te4(,%rdi,4), %edi
+	orl	%ecx, %edi
+	movq	-80(%rbp), %r11         # 8-byte Reload
+	xorl	(%r11,%r8,4), %edi
+	bswapl	%edi
+	movl	%edi, (%r10)
+	movl	%esi, %ebx
+	movl	%esi, %ecx
+	shrl	$24, %ecx
+	movzbl	Te4+3(,%rcx,4), %ecx
+	shll	$24, %ecx
+	movl	%r9d, %edi
+	shrl	$16, %edi
+	movzbl	%dil, %edi
+	movzbl	Te4+2(,%rdi,4), %edi
+	shll	$16, %edi
+	orl	%ecx, %edi
+	movzbl	%ah, %ecx
+	movzbl	Te4+1(,%rcx,4), %ecx
+	shll	$8, %ecx
+	orl	%edi, %ecx
+	movzbl	%dl, %edi
+	movzbl	Te4(,%rdi,4), %edi
+	orl	%ecx, %edi
+	xorl	4(%r11,%r8,4), %edi
+	bswapl	%edi
+	movl	%edi, 4(%r10)
+	movl	%r9d, %ecx
+	shrl	$24, %ecx
+	movzbl	Te4+3(,%rcx,4), %ecx
+	shll	$24, %ecx
+	movl	%eax, %edi
+	shrl	$16, %edi
+	movzbl	%dil, %edi
+	movzbl	Te4+2(,%rdi,4), %edi
+	shll	$16, %edi
+	orl	%ecx, %edi
+	movzbl	%dh, %ecx
+	movzbl	Te4+1(,%rcx,4), %ecx
+	shll	$8, %ecx
+	orl	%edi, %ecx
+	movzbl	%bl, %edi
+	movzbl	Te4(,%rdi,4), %edi
+	orl	%ecx, %edi
+	xorl	8(%r11,%r8,4), %edi
+	bswapl	%edi
+	movl	%edi, 8(%r10)
+	shrl	$24, %eax
+	movzbl	Te4+3(,%rax,4), %eax
+	shrl	$16, %edx
+	movzbl	%dl, %ecx
+	movzbl	%bh, %edx
+	movzbl	%r9b, %edi
+	shll	$24, %eax
+	movzbl	Te4+2(,%rcx,4), %ecx
+	shll	$16, %ecx
+	orl	%eax, %ecx
+	movzbl	Te4+1(,%rdx,4), %eax
+	shll	$8, %eax
+	orl	%ecx, %eax
+	movzbl	Te4(,%rdi,4), %ecx
+	orl	%eax, %ecx
+	xorl	12(%r11,%r8,4), %ecx
+	bswapl	%ecx
+	movl	%ecx, 12(%r10)
+	popq	%rbx
+	popq	%r12
+	popq	%r13
+	popq	%r14
+	popq	%r15
+	popq	%rbp
+	.cfi_def_cfa %rsp, 8
+	retq
 .Lfunc_end6:
-	.size	rijndaelKeySetupDec, .Lfunc_end6-rijndaelKeySetupDec
+	.size	rijndaelEncrypt, .Lfunc_end6-rijndaelEncrypt
 	.cfi_endproc
                                         # -- End function
 	.globl	rijndaelDecrypt         # -- Begin function rijndaelDecrypt
@@ -3119,7 +3121,8 @@ randombytes:                            # @randombytes
 	jne	.LBB8_4
 	jmp	.LBB8_2
 	.p2align	4, 0x90
-.LBB8_3:                                #   in Loop: Header=BB8_2 Depth=1
+.LBB8_3:                                # %.lr.ph7
+                                        #   in Loop: Header=BB8_2 Depth=1
 	movl	$1, %edi
 	callq	sleep
 	movl	$.L.str.2, %edi
@@ -3201,7 +3204,7 @@ randombytes:                            # @randombytes
 	movl	%eax, randombytes.fd(%rip)
 	cmpl	$-1, %eax
 	je	.LBB8_3
-.LBB8_4:
+.LBB8_4:                                # %.loopexit
 	testq	%rbx, %rbx
 	setg	%r15b
 	jle	.LBB8_9
@@ -3328,7 +3331,7 @@ randombytes:                            # @randombytes
 	setg	%r15b
 	subq	%rax, %rbx
 	jg	.LBB8_5
-.LBB8_9:
+.LBB8_9:                                # %.outer._crit_edge
 	addq	$8, %rsp
 	popq	%rbx
 	popq	%r14
@@ -3338,7 +3341,7 @@ randombytes:                            # @randombytes
 	retq
 .LBB8_30:
 	.cfi_def_cfa %rbp, 16
-	movl	$.L.str.3, %edi
+	movl	$.L.str.11, %edi
 	movl	$.L.str.1, %esi
 	movl	$.L__PRETTY_FUNCTION__.randombytes, %ecx
 	movl	$14, %edx
@@ -3382,6 +3385,19 @@ randombit:                              # @randombit
 	.size	randombit, .Lfunc_end9-randombit
 	.cfi_endproc
                                         # -- End function
+	.type	.L__const.main.input_data,@object # @__const.main.input_data
+	.section	.rodata.cst16,"aM",@progbits,16
+	.p2align	4
+.L__const.main.input_data:
+	.ascii	".\261\311!#S\227\372\342\031\236e\231\366d\305"
+	.size	.L__const.main.input_data, 16
+
+	.type	.L.str,@object          # @.str
+	.section	.rodata.str1.1,"aMS",@progbits,1
+.L.str:
+	.asciz	"%d\n"
+	.size	.L.str, 4
+
 	.type	chunk_size,@object      # @chunk_size
 	.section	.rodata,"a",@progbits
 	.globl	chunk_size
@@ -3397,22 +3413,1316 @@ number_measurements:
 	.quad	1                       # 0x1
 	.size	number_measurements, 8
 
-	.type	.L__const.main.input_data,@object # @__const.main.input_data
-	.section	.rodata.cst16,"aM",@progbits,16
-	.p2align	4
-.L__const.main.input_data:
-	.ascii	".\261\311!#S\227\372\342\031\236e\231\366d\305"
-	.size	.L__const.main.input_data, 16
-
-	.type	.L.str,@object          # @.str
-	.section	.rodata.str1.1,"aMS",@progbits,1
-.L.str:
-	.asciz	"%d\n"
-	.size	.L.str, 4
-
 	.type	rk,@object              # @rk
 	.local	rk
 	.comm	rk,176,16
+	.type	Te4,@object             # @Te4
+	.data
+	.p2align	4
+Te4:
+	.long	1667457891              # 0x63636363
+	.long	2088533116              # 0x7c7c7c7c
+	.long	2004318071              # 0x77777777
+	.long	2071690107              # 0x7b7b7b7b
+	.long	4076008178              # 0xf2f2f2f2
+	.long	1802201963              # 0x6b6b6b6b
+	.long	1869573999              # 0x6f6f6f6f
+	.long	3318072773              # 0xc5c5c5c5
+	.long	808464432               # 0x30303030
+	.long	16843009                # 0x1010101
+	.long	1734829927              # 0x67676767
+	.long	724249387               # 0x2b2b2b2b
+	.long	4278124286              # 0xfefefefe
+	.long	3621246935              # 0xd7d7d7d7
+	.long	2880154539              # 0xabababab
+	.long	1987475062              # 0x76767676
+	.long	3402287818              # 0xcacacaca
+	.long	2189591170              # 0x82828282
+	.long	3385444809              # 0xc9c9c9c9
+	.long	2105376125              # 0x7d7d7d7d
+	.long	4210752250              # 0xfafafafa
+	.long	1499027801              # 0x59595959
+	.long	1195853639              # 0x47474747
+	.long	4042322160              # 0xf0f0f0f0
+	.long	2913840557              # 0xadadadad
+	.long	3570717908              # 0xd4d4d4d4
+	.long	2728567458              # 0xa2a2a2a2
+	.long	2947526575              # 0xafafafaf
+	.long	2627509404              # 0x9c9c9c9c
+	.long	2762253476              # 0xa4a4a4a4
+	.long	1920103026              # 0x72727272
+	.long	3233857728              # 0xc0c0c0c0
+	.long	3082270647              # 0xb7b7b7b7
+	.long	4261281277              # 0xfdfdfdfd
+	.long	2475922323              # 0x93939393
+	.long	640034342               # 0x26262626
+	.long	909522486               # 0x36363636
+	.long	1061109567              # 0x3f3f3f3f
+	.long	4160223223              # 0xf7f7f7f7
+	.long	3435973836              # 0xcccccccc
+	.long	875836468               # 0x34343434
+	.long	2779096485              # 0xa5a5a5a5
+	.long	3857049061              # 0xe5e5e5e5
+	.long	4059165169              # 0xf1f1f1f1
+	.long	1903260017              # 0x71717171
+	.long	3638089944              # 0xd8d8d8d8
+	.long	825307441               # 0x31313131
+	.long	353703189               # 0x15151515
+	.long	67372036                # 0x4040404
+	.long	3351758791              # 0xc7c7c7c7
+	.long	589505315               # 0x23232323
+	.long	3284386755              # 0xc3c3c3c3
+	.long	404232216               # 0x18181818
+	.long	2526451350              # 0x96969696
+	.long	84215045                # 0x5050505
+	.long	2593823386              # 0x9a9a9a9a
+	.long	117901063               # 0x7070707
+	.long	303174162               # 0x12121212
+	.long	2155905152              # 0x80808080
+	.long	3806520034              # 0xe2e2e2e2
+	.long	3958107115              # 0xebebebeb
+	.long	656877351               # 0x27272727
+	.long	2998055602              # 0xb2b2b2b2
+	.long	1970632053              # 0x75757575
+	.long	151587081               # 0x9090909
+	.long	2206434179              # 0x83838383
+	.long	741092396               # 0x2c2c2c2c
+	.long	437918234               # 0x1a1a1a1a
+	.long	454761243               # 0x1b1b1b1b
+	.long	1852730990              # 0x6e6e6e6e
+	.long	1515870810              # 0x5a5a5a5a
+	.long	2694881440              # 0xa0a0a0a0
+	.long	1381126738              # 0x52525252
+	.long	993737531               # 0x3b3b3b3b
+	.long	3604403926              # 0xd6d6d6d6
+	.long	3014898611              # 0xb3b3b3b3
+	.long	690563369               # 0x29292929
+	.long	3823363043              # 0xe3e3e3e3
+	.long	791621423               # 0x2f2f2f2f
+	.long	2223277188              # 0x84848484
+	.long	1397969747              # 0x53535353
+	.long	3520188881              # 0xd1d1d1d1
+	.long	0                       # 0x0
+	.long	3991793133              # 0xedededed
+	.long	538976288               # 0x20202020
+	.long	4244438268              # 0xfcfcfcfc
+	.long	2981212593              # 0xb1b1b1b1
+	.long	1532713819              # 0x5b5b5b5b
+	.long	1785358954              # 0x6a6a6a6a
+	.long	3419130827              # 0xcbcbcbcb
+	.long	3200171710              # 0xbebebebe
+	.long	960051513               # 0x39393939
+	.long	1246382666              # 0x4a4a4a4a
+	.long	1280068684              # 0x4c4c4c4c
+	.long	1482184792              # 0x58585858
+	.long	3486502863              # 0xcfcfcfcf
+	.long	3503345872              # 0xd0d0d0d0
+	.long	4025479151              # 0xefefefef
+	.long	2863311530              # 0xaaaaaaaa
+	.long	4227595259              # 0xfbfbfbfb
+	.long	1128481603              # 0x43434343
+	.long	1296911693              # 0x4d4d4d4d
+	.long	858993459               # 0x33333333
+	.long	2240120197              # 0x85858585
+	.long	1162167621              # 0x45454545
+	.long	4193909241              # 0xf9f9f9f9
+	.long	33686018                # 0x2020202
+	.long	2139062143              # 0x7f7f7f7f
+	.long	1347440720              # 0x50505050
+	.long	1010580540              # 0x3c3c3c3c
+	.long	2678038431              # 0x9f9f9f9f
+	.long	2829625512              # 0xa8a8a8a8
+	.long	1364283729              # 0x51515151
+	.long	2745410467              # 0xa3a3a3a3
+	.long	1077952576              # 0x40404040
+	.long	2408550287              # 0x8f8f8f8f
+	.long	2459079314              # 0x92929292
+	.long	2644352413              # 0x9d9d9d9d
+	.long	943208504               # 0x38383838
+	.long	4126537205              # 0xf5f5f5f5
+	.long	3166485692              # 0xbcbcbcbc
+	.long	3065427638              # 0xb6b6b6b6
+	.long	3671775962              # 0xdadadada
+	.long	555819297               # 0x21212121
+	.long	269488144               # 0x10101010
+	.long	4294967295              # 0xffffffff
+	.long	4092851187              # 0xf3f3f3f3
+	.long	3537031890              # 0xd2d2d2d2
+	.long	3452816845              # 0xcdcdcdcd
+	.long	202116108               # 0xc0c0c0c
+	.long	320017171               # 0x13131313
+	.long	3974950124              # 0xecececec
+	.long	1600085855              # 0x5f5f5f5f
+	.long	2543294359              # 0x97979797
+	.long	1145324612              # 0x44444444
+	.long	387389207               # 0x17171717
+	.long	3301229764              # 0xc4c4c4c4
+	.long	2812782503              # 0xa7a7a7a7
+	.long	2122219134              # 0x7e7e7e7e
+	.long	1027423549              # 0x3d3d3d3d
+	.long	1684300900              # 0x64646464
+	.long	1566399837              # 0x5d5d5d5d
+	.long	421075225               # 0x19191919
+	.long	1936946035              # 0x73737373
+	.long	1616928864              # 0x60606060
+	.long	2172748161              # 0x81818181
+	.long	1330597711              # 0x4f4f4f4f
+	.long	3705461980              # 0xdcdcdcdc
+	.long	572662306               # 0x22222222
+	.long	707406378               # 0x2a2a2a2a
+	.long	2425393296              # 0x90909090
+	.long	2290649224              # 0x88888888
+	.long	1179010630              # 0x46464646
+	.long	4008636142              # 0xeeeeeeee
+	.long	3099113656              # 0xb8b8b8b8
+	.long	336860180               # 0x14141414
+	.long	3739147998              # 0xdededede
+	.long	1583242846              # 0x5e5e5e5e
+	.long	185273099               # 0xb0b0b0b
+	.long	3688618971              # 0xdbdbdbdb
+	.long	3772834016              # 0xe0e0e0e0
+	.long	842150450               # 0x32323232
+	.long	976894522               # 0x3a3a3a3a
+	.long	168430090               # 0xa0a0a0a
+	.long	1229539657              # 0x49494949
+	.long	101058054               # 0x6060606
+	.long	606348324               # 0x24242424
+	.long	1549556828              # 0x5c5c5c5c
+	.long	3267543746              # 0xc2c2c2c2
+	.long	3553874899              # 0xd3d3d3d3
+	.long	2896997548              # 0xacacacac
+	.long	1650614882              # 0x62626262
+	.long	2442236305              # 0x91919191
+	.long	2509608341              # 0x95959595
+	.long	3840206052              # 0xe4e4e4e4
+	.long	2038004089              # 0x79797979
+	.long	3890735079              # 0xe7e7e7e7
+	.long	3368601800              # 0xc8c8c8c8
+	.long	926365495               # 0x37373737
+	.long	1835887981              # 0x6d6d6d6d
+	.long	2374864269              # 0x8d8d8d8d
+	.long	3587560917              # 0xd5d5d5d5
+	.long	1313754702              # 0x4e4e4e4e
+	.long	2846468521              # 0xa9a9a9a9
+	.long	1819044972              # 0x6c6c6c6c
+	.long	1448498774              # 0x56565656
+	.long	4109694196              # 0xf4f4f4f4
+	.long	3941264106              # 0xeaeaeaea
+	.long	1701143909              # 0x65656565
+	.long	2054847098              # 0x7a7a7a7a
+	.long	2930683566              # 0xaeaeaeae
+	.long	134744072               # 0x8080808
+	.long	3132799674              # 0xbabababa
+	.long	2021161080              # 0x78787878
+	.long	623191333               # 0x25252525
+	.long	774778414               # 0x2e2e2e2e
+	.long	471604252               # 0x1c1c1c1c
+	.long	2795939494              # 0xa6a6a6a6
+	.long	3031741620              # 0xb4b4b4b4
+	.long	3334915782              # 0xc6c6c6c6
+	.long	3907578088              # 0xe8e8e8e8
+	.long	3722304989              # 0xdddddddd
+	.long	1953789044              # 0x74747474
+	.long	522133279               # 0x1f1f1f1f
+	.long	1263225675              # 0x4b4b4b4b
+	.long	3183328701              # 0xbdbdbdbd
+	.long	2341178251              # 0x8b8b8b8b
+	.long	2324335242              # 0x8a8a8a8a
+	.long	1886417008              # 0x70707070
+	.long	1044266558              # 0x3e3e3e3e
+	.long	3048584629              # 0xb5b5b5b5
+	.long	1717986918              # 0x66666666
+	.long	1212696648              # 0x48484848
+	.long	50529027                # 0x3030303
+	.long	4143380214              # 0xf6f6f6f6
+	.long	235802126               # 0xe0e0e0e
+	.long	1633771873              # 0x61616161
+	.long	892679477               # 0x35353535
+	.long	1465341783              # 0x57575757
+	.long	3115956665              # 0xb9b9b9b9
+	.long	2256963206              # 0x86868686
+	.long	3250700737              # 0xc1c1c1c1
+	.long	488447261               # 0x1d1d1d1d
+	.long	2661195422              # 0x9e9e9e9e
+	.long	3789677025              # 0xe1e1e1e1
+	.long	4177066232              # 0xf8f8f8f8
+	.long	2560137368              # 0x98989898
+	.long	286331153               # 0x11111111
+	.long	1768515945              # 0x69696969
+	.long	3654932953              # 0xd9d9d9d9
+	.long	2391707278              # 0x8e8e8e8e
+	.long	2492765332              # 0x94949494
+	.long	2610666395              # 0x9b9b9b9b
+	.long	505290270               # 0x1e1e1e1e
+	.long	2273806215              # 0x87878787
+	.long	3924421097              # 0xe9e9e9e9
+	.long	3469659854              # 0xcececece
+	.long	1431655765              # 0x55555555
+	.long	673720360               # 0x28282828
+	.long	3755991007              # 0xdfdfdfdf
+	.long	2358021260              # 0x8c8c8c8c
+	.long	2711724449              # 0xa1a1a1a1
+	.long	2307492233              # 0x89898989
+	.long	218959117               # 0xd0d0d0d
+	.long	3217014719              # 0xbfbfbfbf
+	.long	3873892070              # 0xe6e6e6e6
+	.long	1111638594              # 0x42424242
+	.long	1751672936              # 0x68686868
+	.long	1094795585              # 0x41414141
+	.long	2576980377              # 0x99999999
+	.long	757935405               # 0x2d2d2d2d
+	.long	252645135               # 0xf0f0f0f
+	.long	2964369584              # 0xb0b0b0b0
+	.long	1414812756              # 0x54545454
+	.long	3149642683              # 0xbbbbbbbb
+	.long	370546198               # 0x16161616
+	.size	Te4, 1024
+
+	.type	Td0,@object             # @Td0
+	.section	.rodata,"a",@progbits
+	.p2align	4
+Td0:
+	.long	1374988112              # 0x51f4a750
+	.long	2118214995              # 0x7e416553
+	.long	437757123               # 0x1a17a4c3
+	.long	975658646               # 0x3a275e96
+	.long	1001089995              # 0x3bab6bcb
+	.long	530400753               # 0x1f9d45f1
+	.long	2902087851              # 0xacfa58ab
+	.long	1273168787              # 0x4be30393
+	.long	540080725               # 0x2030fa55
+	.long	2910219766              # 0xad766df6
+	.long	2295101073              # 0x88cc7691
+	.long	4110568485              # 0xf5024c25
+	.long	1340463100              # 0x4fe5d7fc
+	.long	3307916247              # 0xc52acbd7
+	.long	641025152               # 0x26354480
+	.long	3043140495              # 0xb562a38f
+	.long	3736164937              # 0xdeb15a49
+	.long	632953703               # 0x25ba1b67
+	.long	1172967064              # 0x45ea0e98
+	.long	1576976609              # 0x5dfec0e1
+	.long	3274667266              # 0xc32f7502
+	.long	2169303058              # 0x814cf012
+	.long	2370213795              # 0x8d4697a3
+	.long	1809054150              # 0x6bd3f9c6
+	.long	59727847                # 0x38f5fe7
+	.long	361929877               # 0x15929c95
+	.long	3211623147              # 0xbf6d7aeb
+	.long	2505202138              # 0x955259da
+	.long	3569255213              # 0xd4be832d
+	.long	1484005843              # 0x587421d3
+	.long	1239443753              # 0x49e06929
+	.long	2395588676              # 0x8ec9c844
+	.long	1975683434              # 0x75c2896a
+	.long	4102977912              # 0xf48e7978
+	.long	2572697195              # 0x99583e6b
+	.long	666464733               # 0x27b971dd
+	.long	3202437046              # 0xbee14fb6
+	.long	4035489047              # 0xf088ad17
+	.long	3374361702              # 0xc920ac66
+	.long	2110667444              # 0x7dce3ab4
+	.long	1675577880              # 0x63df4a18
+	.long	3843699074              # 0xe51a3182
+	.long	2538681184              # 0x97513360
+	.long	1649639237              # 0x62537f45
+	.long	2976151520              # 0xb16477e0
+	.long	3144396420              # 0xbb6bae84
+	.long	4269907996              # 0xfe81a01c
+	.long	4178062228              # 0xf9082b94
+	.long	1883793496              # 0x70486858
+	.long	2403728665              # 0x8f45fd19
+	.long	2497604743              # 0x94de6c87
+	.long	1383856311              # 0x527bf8b7
+	.long	2876494627              # 0xab73d323
+	.long	1917518562              # 0x724b02e2
+	.long	3810496343              # 0xe31f8f57
+	.long	1716890410              # 0x6655ab2a
+	.long	3001755655              # 0xb2eb2807
+	.long	800440835               # 0x2fb5c203
+	.long	2261089178              # 0x86c57b9a
+	.long	3543599269              # 0xd33708a5
+	.long	807962610               # 0x302887f2
+	.long	599762354               # 0x23bfa5b2
+	.long	33778362                # 0x2036aba
+	.long	3977675356              # 0xed16825c
+	.long	2328828971              # 0x8acf1c2b
+	.long	2809771154              # 0xa779b492
+	.long	4077384432              # 0xf307f2f0
+	.long	1315562145              # 0x4e69e2a1
+	.long	1708848333              # 0x65daf4cd
+	.long	101039829               # 0x605bed5
+	.long	3509871135              # 0xd134621f
+	.long	3299278474              # 0xc4a6fe8a
+	.long	875451293               # 0x342e539d
+	.long	2733856160              # 0xa2f355a0
+	.long	92987698                # 0x58ae132
+	.long	2767645557              # 0xa4f6eb75
+	.long	193195065               # 0xb83ec39
+	.long	1080094634              # 0x4060efaa
+	.long	1584504582              # 0x5e719f06
+	.long	3178106961              # 0xbd6e1051
+	.long	1042385657              # 0x3e218af9
+	.long	2531067453              # 0x96dd063d
+	.long	3711829422              # 0xdd3e05ae
+	.long	1306967366              # 0x4de6bd46
+	.long	2438237621              # 0x91548db5
+	.long	1908694277              # 0x71c45d05
+	.long	67556463                # 0x406d46f
+	.long	1615861247              # 0x605015ff
+	.long	429456164               # 0x1998fb24
+	.long	3602770327              # 0xd6bde997
+	.long	2302690252              # 0x894043cc
+	.long	1742315127              # 0x67d99e77
+	.long	2968011453              # 0xb0e842bd
+	.long	126454664               # 0x7898b88
+	.long	3877198648              # 0xe7195b38
+	.long	2043211483              # 0x79c8eedb
+	.long	2709260871              # 0xa17c0a47
+	.long	2084704233              # 0x7c420fe9
+	.long	4169408201              # 0xf8841ec9
+	.long	0                       # 0x0
+	.long	159417987               # 0x9808683
+	.long	841739592               # 0x322bed48
+	.long	504459436               # 0x1e1170ac
+	.long	1817866830              # 0x6c5a724e
+	.long	4245618683              # 0xfd0efffb
+	.long	260388950               # 0xf853856
+	.long	1034867998              # 0x3daed51e
+	.long	908933415               # 0x362d3927
+	.long	168810852               # 0xa0fd964
+	.long	1750902305              # 0x685ca621
+	.long	2606453969              # 0x9b5b54d1
+	.long	607530554               # 0x24362e3a
+	.long	202008497               # 0xc0a67b1
+	.long	2472011535              # 0x9357e70f
+	.long	3035535058              # 0xb4ee96d2
+	.long	463180190               # 0x1b9b919e
+	.long	2160117071              # 0x80c0c54f
+	.long	1641816226              # 0x61dc20a2
+	.long	1517767529              # 0x5a774b69
+	.long	470948374               # 0x1c121a16
+	.long	3801332234              # 0xe293ba0a
+	.long	3231722213              # 0xc0a02ae5
+	.long	1008918595              # 0x3c22e043
+	.long	303765277               # 0x121b171d
+	.long	235474187               # 0xe090d0b
+	.long	4069246893              # 0xf28bc7ad
+	.long	766945465               # 0x2db6a8b9
+	.long	337553864               # 0x141ea9c8
+	.long	1475418501              # 0x57f11985
+	.long	2943682380              # 0xaf75074c
+	.long	4003061179              # 0xee99ddbb
+	.long	2743034109              # 0xa37f60fd
+	.long	4144047775              # 0xf701269f
+	.long	1551037884              # 0x5c72f5bc
+	.long	1147550661              # 0x44663bc5
+	.long	1543208500              # 0x5bfb7e34
+	.long	2336434550              # 0x8b432976
+	.long	3408119516              # 0xcb23c6dc
+	.long	3069049960              # 0xb6edfc68
+	.long	3102011747              # 0xb8e4f163
+	.long	3610369226              # 0xd731dcca
+	.long	1113818384              # 0x42638510
+	.long	328671808               # 0x13972240
+	.long	2227573024              # 0x84c61120
+	.long	2236228733              # 0x854a247d
+	.long	3535486456              # 0xd2bb3df8
+	.long	2935566865              # 0xaef93211
+	.long	3341394285              # 0xc729a16d
+	.long	496906059               # 0x1d9e2f4b
+	.long	3702665459              # 0xdcb230f3
+	.long	226906860               # 0xd8652ec
+	.long	2009195472              # 0x77c1e3d0
+	.long	733156972               # 0x2bb3166c
+	.long	2842737049              # 0xa970b999
+	.long	294930682               # 0x119448fa
+	.long	1206477858              # 0x47e96422
+	.long	2835123396              # 0xa8fc8cc4
+	.long	2700099354              # 0xa0f03f1a
+	.long	1451044056              # 0x567d2cd8
+	.long	573804783               # 0x223390ef
+	.long	2269728455              # 0x87494ec7
+	.long	3644379585              # 0xd938d1c1
+	.long	2362090238              # 0x8ccaa2fe
+	.long	2564033334              # 0x98d40b36
+	.long	2801107407              # 0xa6f581cf
+	.long	2776292904              # 0xa57ade28
+	.long	3669462566              # 0xdab78e26
+	.long	1068351396              # 0x3fadbfa4
+	.long	742039012               # 0x2c3a9de4
+	.long	1350078989              # 0x5078920d
+	.long	1784663195              # 0x6a5fcc9b
+	.long	1417561698              # 0x547e4662
+	.long	4136440770              # 0xf68d13c2
+	.long	2430122216              # 0x90d8b8e8
+	.long	775550814               # 0x2e39f75e
+	.long	2193862645              # 0x82c3aff5
+	.long	2673705150              # 0x9f5d80be
+	.long	1775276924              # 0x69d0937c
+	.long	1876241833              # 0x6fd52da9
+	.long	3475313331              # 0xcf2512b3
+	.long	3366754619              # 0xc8ac993b
+	.long	270040487               # 0x10187da7
+	.long	3902563182              # 0xe89c636e
+	.long	3678124923              # 0xdb3bbb7b
+	.long	3441850377              # 0xcd267809
+	.long	1851332852              # 0x6e5918f4
+	.long	3969562369              # 0xec9ab701
+	.long	2203032232              # 0x834f9aa8
+	.long	3868552805              # 0xe6956e65
+	.long	2868897406              # 0xaaffe67e
+	.long	566021896               # 0x21bccf08
+	.long	4011190502              # 0xef15e8e6
+	.long	3135740889              # 0xbae79bd9
+	.long	1248802510              # 0x4a6f36ce
+	.long	3936291284              # 0xea9f09d4
+	.long	699432150               # 0x29b07cd6
+	.long	832877231               # 0x31a4b2af
+	.long	708780849               # 0x2a3f2331
+	.long	3332740144              # 0xc6a59430
+	.long	899835584               # 0x35a266c0
+	.long	1951317047              # 0x744ebc37
+	.long	4236429990              # 0xfc82caa6
+	.long	3767586992              # 0xe090d0b0
+	.long	866637845               # 0x33a7d815
+	.long	4043610186              # 0xf104984a
+	.long	1106041591              # 0x41ecdaf7
+	.long	2144161806              # 0x7fcd500e
+	.long	395441711               # 0x1791f62f
+	.long	1984812685              # 0x764dd68d
+	.long	1139781709              # 0x43efb04d
+	.long	3433712980              # 0xccaa4d54
+	.long	3835036895              # 0xe49604df
+	.long	2664543715              # 0x9ed1b5e3
+	.long	1282050075              # 0x4c6a881b
+	.long	3240894392              # 0xc12c1fb8
+	.long	1181045119              # 0x4665517f
+	.long	2640243204              # 0x9d5eea04
+	.long	25965917                # 0x18c355d
+	.long	4203181171              # 0xfa877473
+	.long	4211818798              # 0xfb0b412e
+	.long	3009879386              # 0xb3671d5a
+	.long	2463879762              # 0x92dbd252
+	.long	3910161971              # 0xe9105633
+	.long	1842759443              # 0x6dd64713
+	.long	2597806476              # 0x9ad7618c
+	.long	933301370               # 0x37a10c7a
+	.long	1509430414              # 0x59f8148e
+	.long	3943906441              # 0xeb133c89
+	.long	3467192302              # 0xcea927ee
+	.long	3076639029              # 0xb761c935
+	.long	3776767469              # 0xe11ce5ed
+	.long	2051518780              # 0x7a47b13c
+	.long	2631065433              # 0x9cd2df59
+	.long	1441952575              # 0x55f2733f
+	.long	404016761               # 0x1814ce79
+	.long	1942435775              # 0x73c737bf
+	.long	1408749034              # 0x53f7cdea
+	.long	1610459739              # 0x5ffdaa5b
+	.long	3745345300              # 0xdf3d6f14
+	.long	2017778566              # 0x7844db86
+	.long	3400528769              # 0xcaaff381
+	.long	3110650942              # 0xb968c43e
+	.long	941896748               # 0x3824342c
+	.long	3265478751              # 0xc2a3405f
+	.long	371049330               # 0x161dc372
+	.long	3168937228              # 0xbce2250c
+	.long	675039627               # 0x283c498b
+	.long	4279080257              # 0xff0d9541
+	.long	967311729               # 0x39a80171
+	.long	135050206               # 0x80cb3de
+	.long	3635733660              # 0xd8b4e49c
+	.long	1683407248              # 0x6456c190
+	.long	2076935265              # 0x7bcb8461
+	.long	3576870512              # 0xd532b670
+	.long	1215061108              # 0x486c5c74
+	.long	3501741890              # 0xd0b85742
+	.size	Td0, 1024
+
+	.type	Td1,@object             # @Td1
+	.p2align	4
+Td1:
+	.long	1347548327              # 0x5051f4a7
+	.long	1400783205              # 0x537e4165
+	.long	3273267108              # 0xc31a17a4
+	.long	2520393566              # 0x963a275e
+	.long	3409685355              # 0xcb3bab6b
+	.long	4045380933              # 0xf11f9d45
+	.long	2880240216              # 0xabacfa58
+	.long	2471224067              # 0x934be303
+	.long	1428173050              # 0x552030fa
+	.long	4138563181              # 0xf6ad766d
+	.long	2441661558              # 0x9188cc76
+	.long	636813900               # 0x25f5024c
+	.long	4233094615              # 0xfc4fe5d7
+	.long	3620022987              # 0xd7c52acb
+	.long	2149987652              # 0x80263544
+	.long	2411029155              # 0x8fb562a3
+	.long	1239331162              # 0x49deb15a
+	.long	1730525723              # 0x6725ba1b
+	.long	2554718734              # 0x9845ea0e
+	.long	3781033664              # 0xe15dfec0
+	.long	46346101                # 0x2c32f75
+	.long	310463728               # 0x12814cf0
+	.long	2743944855              # 0xa38d4697
+	.long	3328955385              # 0xc66bd3f9
+	.long	3875770207              # 0xe7038f5f
+	.long	2501218972              # 0x9515929c
+	.long	3955191162              # 0xebbf6d7a
+	.long	3667219033              # 0xda955259
+	.long	768917123               # 0x2dd4be83
+	.long	3545789473              # 0xd3587421
+	.long	692707433               # 0x2949e069
+	.long	1150208456              # 0x448ec9c8
+	.long	1786102409              # 0x6a75c289
+	.long	2029293177              # 0x78f48e79
+	.long	1805211710              # 0x6b99583e
+	.long	3710368113              # 0xdd27b971
+	.long	3065962831              # 0xb6bee14f
+	.long	401639597               # 0x17f088ad
+	.long	1724457132              # 0x66c920ac
+	.long	3028143674              # 0xb47dce3a
+	.long	409198410               # 0x1863df4a
+	.long	2196052529              # 0x82e51a31
+	.long	1620529459              # 0x60975133
+	.long	1164071807              # 0x4562537f
+	.long	3769721975              # 0xe0b16477
+	.long	2226875310              # 0x84bb6bae
+	.long	486441376               # 0x1cfe81a0
+	.long	2499348523              # 0x94f9082b
+	.long	1483753576              # 0x58704868
+	.long	428819965               # 0x198f45fd
+	.long	2274680428              # 0x8794de6c
+	.long	3075636216              # 0xb7527bf8
+	.long	598438867               # 0x23ab73d3
+	.long	3799141122              # 0xe2724b02
+	.long	1474502543              # 0x57e31f8f
+	.long	711349675               # 0x2a6655ab
+	.long	129166120               # 0x7b2eb28
+	.long	53458370                # 0x32fb5c2
+	.long	2592523643              # 0x9a86c57b
+	.long	2782082824              # 0xa5d33708
+	.long	4063242375              # 0xf2302887
+	.long	2988687269              # 0xb223bfa5
+	.long	3120694122              # 0xba02036a
+	.long	1559041666              # 0x5ced1682
+	.long	730517276               # 0x2b8acf1c
+	.long	2460449204              # 0x92a779b4
+	.long	4042459122              # 0xf0f307f2
+	.long	2706270690              # 0xa14e69e2
+	.long	3446004468              # 0xcd65daf4
+	.long	3573941694              # 0xd50605be
+	.long	533804130               # 0x1fd13462
+	.long	2328143614              # 0x8ac4a6fe
+	.long	2637442643              # 0x9d342e53
+	.long	2695033685              # 0xa0a2f355
+	.long	839224033               # 0x32058ae1
+	.long	1973745387              # 0x75a4f6eb
+	.long	957055980               # 0x390b83ec
+	.long	2856345839              # 0xaa4060ef
+	.long	106852767               # 0x65e719f
+	.long	1371368976              # 0x51bd6e10
+	.long	4181598602              # 0xf93e218a
+	.long	1033297158              # 0x3d96dd06
+	.long	2933734917              # 0xaedd3e05
+	.long	1179510461              # 0x464de6bd
+	.long	3046200461              # 0xb591548d
+	.long	91341917                # 0x571c45d
+	.long	1862534868              # 0x6f0406d4
+	.long	4284502037              # 0xff605015
+	.long	605657339               # 0x241998fb
+	.long	2547432937              # 0x97d6bde9
+	.long	3431546947              # 0xcc894043
+	.long	2003294622              # 0x7767d99e
+	.long	3182487618              # 0xbdb0e842
+	.long	2282195339              # 0x8807898b
+	.long	954669403               # 0x38e7195b
+	.long	3682191598              # 0xdb79c8ee
+	.long	1201765386              # 0x47a17c0a
+	.long	3917234703              # 0xe97c420f
+	.long	3388507166              # 0xc9f8841e
+	.long	0                       # 0x0
+	.long	2198438022              # 0x83098086
+	.long	1211247597              # 0x48322bed
+	.long	2887651696              # 0xac1e1170
+	.long	1315723890              # 0x4e6c5a72
+	.long	4227665663              # 0xfbfd0eff
+	.long	1443857720              # 0x560f8538
+	.long	507358933               # 0x1e3daed5
+	.long	657861945               # 0x27362d39
+	.long	1678381017              # 0x640a0fd9
+	.long	560487590               # 0x21685ca6
+	.long	3516619604              # 0xd19b5b54
+	.long	975451694               # 0x3a24362e
+	.long	2970356327              # 0xb10c0a67
+	.long	261314535               # 0xf9357e7
+	.long	3535072918              # 0xd2b4ee96
+	.long	2652609425              # 0x9e1b9b91
+	.long	1333838021              # 0x4f80c0c5
+	.long	2724322336              # 0xa261dc20
+	.long	1767536459              # 0x695a774b
+	.long	370938394               # 0x161c121a
+	.long	182621114               # 0xae293ba
+	.long	3854606378              # 0xe5c0a02a
+	.long	1128014560              # 0x433c22e0
+	.long	487725847               # 0x1d121b17
+	.long	185469197               # 0xb0e090d
+	.long	2918353863              # 0xadf28bc7
+	.long	3106780840              # 0xb92db6a8
+	.long	3356761769              # 0xc8141ea9
+	.long	2237133081              # 0x8557f119
+	.long	1286567175              # 0x4caf7507
+	.long	3152976349              # 0xbbee99dd
+	.long	4255350624              # 0xfda37f60
+	.long	2683765030              # 0x9ff70126
+	.long	3160175349              # 0xbc5c72f5
+	.long	3309594171              # 0xc544663b
+	.long	878443390               # 0x345bfb7e
+	.long	1988838185              # 0x768b4329
+	.long	3704300486              # 0xdccb23c6
+	.long	1756818940              # 0x68b6edfc
+	.long	1673061617              # 0x63b8e4f1
+	.long	3403100636              # 0xcad731dc
+	.long	272786309               # 0x10426385
+	.long	1075025698              # 0x40139722
+	.long	545572369               # 0x2084c611
+	.long	2105887268              # 0x7d854a24
+	.long	4174560061              # 0xf8d2bb3d
+	.long	296679730               # 0x11aef932
+	.long	1841768865              # 0x6dc729a1
+	.long	1260232239              # 0x4b1d9e2f
+	.long	4091327024              # 0xf3dcb230
+	.long	3960309330              # 0xec0d8652
+	.long	3497509347              # 0xd077c1e3
+	.long	1814803222              # 0x6c2bb316
+	.long	2578018489              # 0x99a970b9
+	.long	4195456072              # 0xfa119448
+	.long	575138148               # 0x2247e964
+	.long	3299409036              # 0xc4a8fc8c
+	.long	446754879               # 0x1aa0f03f
+	.long	3629546796              # 0xd8567d2c
+	.long	4011996048              # 0xef223390
+	.long	3347532110              # 0xc787494e
+	.long	3252238545              # 0xc1d938d1
+	.long	4270639778              # 0xfe8ccaa2
+	.long	915985419               # 0x3698d40b
+	.long	3483825537              # 0xcfa6f581
+	.long	681933534               # 0x28a57ade
+	.long	651868046               # 0x26dab78e
+	.long	2755636671              # 0xa43fadbf
+	.long	3828103837              # 0xe42c3a9d
+	.long	223377554               # 0xd507892
+	.long	2607439820              # 0x9b6a5fcc
+	.long	1649704518              # 0x62547e46
+	.long	3270937875              # 0xc2f68d13
+	.long	3901806776              # 0xe890d8b8
+	.long	1580087799              # 0x5e2e39f7
+	.long	4118987695              # 0xf582c3af
+	.long	3198115200              # 0xbe9f5d80
+	.long	2087309459              # 0x7c69d093
+	.long	2842678573              # 0xa96fd52d
+	.long	3016697106              # 0xb3cf2512
+	.long	1003007129              # 0x3bc8ac99
+	.long	2802849917              # 0xa710187d
+	.long	1860738147              # 0x6ee89c63
+	.long	2077965243              # 0x7bdb3bbb
+	.long	164439672               # 0x9cd2678
+	.long	4100872472              # 0xf46e5918
+	.long	32283319                # 0x1ec9ab7
+	.long	2827177882              # 0xa8834f9a
+	.long	1709610350              # 0x65e6956e
+	.long	2125135846              # 0x7eaaffe6
+	.long	136428751               # 0x821bccf
+	.long	3874428392              # 0xe6ef15e8
+	.long	3652904859              # 0xd9bae79b
+	.long	3460984630              # 0xce4a6f36
+	.long	3572145929              # 0xd4ea9f09
+	.long	3593056380              # 0xd629b07c
+	.long	2939266226              # 0xaf31a4b2
+	.long	824852259               # 0x312a3f23
+	.long	818324884               # 0x30c6a594
+	.long	3224740454              # 0xc035a266
+	.long	930369212               # 0x37744ebc
+	.long	2801566410              # 0xa6fc82ca
+	.long	2967507152              # 0xb0e090d0
+	.long	355706840               # 0x1533a7d8
+	.long	1257309336              # 0x4af10498
+	.long	4148292826              # 0xf741ecda
+	.long	243256656               # 0xe7fcd50
+	.long	790073846               # 0x2f1791f6
+	.long	2373340630              # 0x8d764dd6
+	.long	1296297904              # 0x4d43efb0
+	.long	1422699085              # 0x54ccaa4d
+	.long	3756299780              # 0xdfe49604
+	.long	3818836405              # 0xe39ed1b5
+	.long	457992840               # 0x1b4c6a88
+	.long	3099667487              # 0xb8c12c1f
+	.long	2135319889              # 0x7f466551
+	.long	77422314                # 0x49d5eea
+	.long	1560382517              # 0x5d018c35
+	.long	1945798516              # 0x73fa8774
+	.long	788204353               # 0x2efb0b41
+	.long	1521706781              # 0x5ab3671d
+	.long	1385356242              # 0x5292dbd2
+	.long	870912086               # 0x33e91056
+	.long	325965383               # 0x136dd647
+	.long	2358957921              # 0x8c9ad761
+	.long	2050466060              # 0x7a37a10c
+	.long	2388260884              # 0x8e59f814
+	.long	2313884476              # 0x89eb133c
+	.long	4006521127              # 0xeecea927
+	.long	901210569               # 0x35b761c9
+	.long	3990953189              # 0xede11ce5
+	.long	1014646705              # 0x3c7a47b1
+	.long	1503449823              # 0x599cd2df
+	.long	1062597235              # 0x3f55f273
+	.long	2031621326              # 0x791814ce
+	.long	3212035895              # 0xbf73c737
+	.long	3931371469              # 0xea53f7cd
+	.long	1533017514              # 0x5b5ffdaa
+	.long	350174575               # 0x14df3d6f
+	.long	2256028891              # 0x867844db
+	.long	2177544179              # 0x81caaff3
+	.long	1052338372              # 0x3eb968c4
+	.long	741876788               # 0x2c382434
+	.long	1606591296              # 0x5fc2a340
+	.long	1914052035              # 0x72161dc3
+	.long	213705253               # 0xcbce225
+	.long	2334669897              # 0x8b283c49
+	.long	1107234197              # 0x41ff0d95
+	.long	1899603969              # 0x7139a801
+	.long	3725069491              # 0xde080cb3
+	.long	2631447780              # 0x9cd8b4e4
+	.long	2422494913              # 0x906456c1
+	.long	1635502980              # 0x617bcb84
+	.long	1893020342              # 0x70d532b6
+	.long	1950903388              # 0x74486c5c
+	.long	1120974935              # 0x42d0b857
+	.size	Td1, 1024
+
+	.type	Td2,@object             # @Td2
+	.p2align	4
+Td2:
+	.long	2807058932              # 0xa75051f4
+	.long	1699970625              # 0x65537e41
+	.long	2764249623              # 0xa4c31a17
+	.long	1586903591              # 0x5e963a27
+	.long	1808481195              # 0x6bcb3bab
+	.long	1173430173              # 0x45f11f9d
+	.long	1487645946              # 0x58abacfa
+	.long	59984867                # 0x3934be3
+	.long	4199882800              # 0xfa552030
+	.long	1844882806              # 0x6df6ad76
+	.long	1989249228              # 0x769188cc
+	.long	1277555970              # 0x4c25f502
+	.long	3623636965              # 0xd7fc4fe5
+	.long	3419915562              # 0xcbd7c52a
+	.long	1149249077              # 0x44802635
+	.long	2744104290              # 0xa38fb562
+	.long	1514790577              # 0x5a49deb1
+	.long	459744698               # 0x1b6725ba
+	.long	244860394               # 0xe9845ea
+	.long	3235995134              # 0xc0e15dfe
+	.long	1963115311              # 0x7502c32f
+	.long	4027744588              # 0xf012814c
+	.long	2544078150              # 0x97a38d46
+	.long	4190530515              # 0xf9c66bd3
+	.long	1608975247              # 0x5fe7038f
+	.long	2627016082              # 0x9c951592
+	.long	2062270317              # 0x7aebbf6d
+	.long	1507497298              # 0x59da9552
+	.long	2200818878              # 0x832dd4be
+	.long	567498868               # 0x21d35874
+	.long	1764313568              # 0x692949e0
+	.long	3359936201              # 0xc8448ec9
+	.long	2305455554              # 0x896a75c2
+	.long	2037970062              # 0x7978f48e
+	.long	1047239000              # 0x3e6b9958
+	.long	1910319033              # 0x71dd27b9
+	.long	1337376481              # 0x4fb6bee1
+	.long	2904027272              # 0xad17f088
+	.long	2892417312              # 0xac66c920
+	.long	984907214               # 0x3ab47dce
+	.long	1243112415              # 0x4a1863df
+	.long	830661914               # 0x3182e51a
+	.long	861968209               # 0x33609751
+	.long	2135253587              # 0x7f456253
+	.long	2011214180              # 0x77e0b164
+	.long	2927934315              # 0xae84bb6b
+	.long	2686254721              # 0xa01cfe81
+	.long	731183368               # 0x2b94f908
+	.long	1750626376              # 0x68587048
+	.long	4246310725              # 0xfd198f45
+	.long	1820824798              # 0x6c8794de
+	.long	4172763771              # 0xf8b7527b
+	.long	3542330227              # 0xd323ab73
+	.long	48394827                # 0x2e2724b
+	.long	2404901663              # 0x8f57e31f
+	.long	2871682645              # 0xab2a6655
+	.long	671593195               # 0x2807b2eb
+	.long	3254988725              # 0xc2032fb5
+	.long	2073724613              # 0x7b9a86c5
+	.long	145085239               # 0x8a5d337
+	.long	2280796200              # 0x87f23028
+	.long	2779915199              # 0xa5b223bf
+	.long	1790575107              # 0x6aba0203
+	.long	2187128086              # 0x825ced16
+	.long	472615631               # 0x1c2b8acf
+	.long	3029510009              # 0xb492a779
+	.long	4075877127              # 0xf2f0f307
+	.long	3802222185              # 0xe2a14e69
+	.long	4107101658              # 0xf4cd65da
+	.long	3201631749              # 0xbed50605
+	.long	1646252340              # 0x621fd134
+	.long	4270507174              # 0xfe8ac4a6
+	.long	1402811438              # 0x539d342e
+	.long	1436590835              # 0x55a0a2f3
+	.long	3778151818              # 0xe132058a
+	.long	3950355702              # 0xeb75a4f6
+	.long	3963161475              # 0xec390b83
+	.long	4020912224              # 0xefaa4060
+	.long	2667994737              # 0x9f065e71
+	.long	273792366               # 0x1051bd6e
+	.long	2331590177              # 0x8af93e21
+	.long	104699613               # 0x63d96dd
+	.long	95345982                # 0x5aedd3e
+	.long	3175501286              # 0xbd464de6
+	.long	2377486676              # 0x8db59154
+	.long	1560637892              # 0x5d0571c4
+	.long	3564045318              # 0xd46f0406
+	.long	369057872               # 0x15ff6050
+	.long	4213447064              # 0xfb241998
+	.long	3919042237              # 0xe997d6bd
+	.long	1137477952              # 0x43cc8940
+	.long	2658625497              # 0x9e7767d9
+	.long	1119727848              # 0x42bdb0e8
+	.long	2340947849              # 0x8b880789
+	.long	1530455833              # 0x5b38e719
+	.long	4007360968              # 0xeedb79c8
+	.long	172466556               # 0xa47a17c
+	.long	266959938               # 0xfe97c42
+	.long	516552836               # 0x1ec9f884
+	.long	0                       # 0x0
+	.long	2256734592              # 0x86830980
+	.long	3980931627              # 0xed48322b
+	.long	1890328081              # 0x70ac1e11
+	.long	1917742170              # 0x724e6c5a
+	.long	4294704398              # 0xfffbfd0e
+	.long	945164165               # 0x38560f85
+	.long	3575528878              # 0xd51e3dae
+	.long	958871085               # 0x3927362d
+	.long	3647212047              # 0xd9640a0f
+	.long	2787207260              # 0xa621685c
+	.long	1423022939              # 0x54d19b5b
+	.long	775562294               # 0x2e3a2436
+	.long	1739656202              # 0x67b10c0a
+	.long	3876557655              # 0xe70f9357
+	.long	2530391278              # 0x96d2b4ee
+	.long	2443058075              # 0x919e1b9b
+	.long	3310321856              # 0xc54f80c0
+	.long	547512796               # 0x20a261dc
+	.long	1265195639              # 0x4b695a77
+	.long	437656594               # 0x1a161c12
+	.long	3121275539              # 0xba0ae293
+	.long	719700128               # 0x2ae5c0a0
+	.long	3762502690              # 0xe0433c22
+	.long	387781147               # 0x171d121b
+	.long	218828297               # 0xd0b0e09
+	.long	3350065803              # 0xc7adf28b
+	.long	2830708150              # 0xa8b92db6
+	.long	2848461854              # 0xa9c8141e
+	.long	428169201               # 0x198557f1
+	.long	122466165               # 0x74caf75
+	.long	3720081049              # 0xddbbee99
+	.long	1627235199              # 0x60fda37f
+	.long	648017665               # 0x269ff701
+	.long	4122762354              # 0xf5bc5c72
+	.long	1002783846              # 0x3bc54466
+	.long	2117360635              # 0x7e345bfb
+	.long	695634755               # 0x29768b43
+	.long	3336358691              # 0xc6dccb23
+	.long	4234721005              # 0xfc68b6ed
+	.long	4049844452              # 0xf163b8e4
+	.long	3704280881              # 0xdccad731
+	.long	2232435299              # 0x85104263
+	.long	574624663               # 0x22401397
+	.long	287343814               # 0x112084c6
+	.long	612205898               # 0x247d854a
+	.long	1039717051              # 0x3df8d2bb
+	.long	840019705               # 0x3211aef9
+	.long	2708326185              # 0xa16dc729
+	.long	793451934               # 0x2f4b1d9e
+	.long	821288114               # 0x30f3dcb2
+	.long	1391201670              # 0x52ec0d86
+	.long	3822090177              # 0xe3d077c1
+	.long	376187827               # 0x166c2bb3
+	.long	3113855344              # 0xb999a970
+	.long	1224348052              # 0x48fa1194
+	.long	1679968233              # 0x642247e9
+	.long	2361698556              # 0x8cc4a8fc
+	.long	1058709744              # 0x3f1aa0f0
+	.long	752375421               # 0x2cd8567d
+	.long	2431590963              # 0x90ef2233
+	.long	1321699145              # 0x4ec78749
+	.long	3519142200              # 0xd1c1d938
+	.long	2734591178              # 0xa2fe8cca
+	.long	188127444               # 0xb3698d4
+	.long	2177869557              # 0x81cfa6f5
+	.long	3727205754              # 0xde28a57a
+	.long	2384911031              # 0x8e26dab7
+	.long	3215212461              # 0xbfa43fad
+	.long	2648976442              # 0x9de42c3a
+	.long	2450346104              # 0x920d5078
+	.long	3432737375              # 0xcc9b6a5f
+	.long	1180849278              # 0x4662547e
+	.long	331544205               # 0x13c2f68d
+	.long	3102249176              # 0xb8e890d8
+	.long	4150144569              # 0xf75e2e39
+	.long	2952102595              # 0xaff582c3
+	.long	2159976285              # 0x80be9f5d
+	.long	2474404304              # 0x937c69d0
+	.long	766078933               # 0x2da96fd5
+	.long	313773861               # 0x12b3cf25
+	.long	2570832044              # 0x993bc8ac
+	.long	2108100632              # 0x7da71018
+	.long	1668212892              # 0x636ee89c
+	.long	3145456443              # 0xbb7bdb3b
+	.long	2013908262              # 0x7809cd26
+	.long	418672217               # 0x18f46e59
+	.long	3070356634              # 0xb701ec9a
+	.long	2594734927              # 0x9aa8834f
+	.long	1852171925              # 0x6e65e695
+	.long	3867060991              # 0xe67eaaff
+	.long	3473416636              # 0xcf0821bc
+	.long	3907448597              # 0xe8e6ef15
+	.long	2614737639              # 0x9bd9bae7
+	.long	919489135               # 0x36ce4a6f
+	.long	164948639               # 0x9d4ea9f
+	.long	2094410160              # 0x7cd629b0
+	.long	2997825956              # 0xb2af31a4
+	.long	590424639               # 0x23312a3f
+	.long	2486224549              # 0x9430c6a5
+	.long	1723872674              # 0x66c035a2
+	.long	3157750862              # 0xbc37744e
+	.long	3399941250              # 0xcaa6fc82
+	.long	3501252752              # 0xd0b0e090
+	.long	3625268135              # 0xd81533a7
+	.long	2555048196              # 0x984af104
+	.long	3673637356              # 0xdaf741ec
+	.long	1343127501              # 0x500e7fcd
+	.long	4130281361              # 0xf62f1791
+	.long	3599595085              # 0xd68d764d
+	.long	2957853679              # 0xb04d43ef
+	.long	1297403050              # 0x4d54ccaa
+	.long	81781910                # 0x4dfe496
+	.long	3051593425              # 0xb5e39ed1
+	.long	2283490410              # 0x881b4c6a
+	.long	532201772               # 0x1fb8c12c
+	.long	1367295589              # 0x517f4665
+	.long	3926170974              # 0xea049d5e
+	.long	895287692               # 0x355d018c
+	.long	1953757831              # 0x7473fa87
+	.long	1093597963              # 0x412efb0b
+	.long	492483431               # 0x1d5ab367
+	.long	3528626907              # 0xd25292db
+	.long	1446242576              # 0x5633e910
+	.long	1192455638              # 0x47136dd6
+	.long	1636604631              # 0x618c9ad7
+	.long	209336225               # 0xc7a37a1
+	.long	344873464               # 0x148e59f8
+	.long	1015671571              # 0x3c89eb13
+	.long	669961897               # 0x27eecea9
+	.long	3375740769              # 0xc935b761
+	.long	3857572124              # 0xe5ede11c
+	.long	2973530695              # 0xb13c7a47
+	.long	3747192018              # 0xdf599cd2
+	.long	1933530610              # 0x733f55f2
+	.long	3464042516              # 0xce791814
+	.long	935293895               # 0x37bf73c7
+	.long	3454686199              # 0xcdea53f7
+	.long	2858115069              # 0xaa5b5ffd
+	.long	1863638845              # 0x6f14df3d
+	.long	3683022916              # 0xdb867844
+	.long	4085369519              # 0xf381caaf
+	.long	3292445032              # 0xc43eb968
+	.long	875313188               # 0x342c3824
+	.long	1080017571              # 0x405fc2a3
+	.long	3279033885              # 0xc372161d
+	.long	621591778               # 0x250cbce2
+	.long	1233856572              # 0x498b283c
+	.long	2504130317              # 0x9541ff0d
+	.long	24197544                # 0x17139a8
+	.long	3017672716              # 0xb3de080c
+	.long	3835484340              # 0xe49cd8b4
+	.long	3247465558              # 0xc1906456
+	.long	2220981195              # 0x84617bcb
+	.long	3060847922              # 0xb670d532
+	.long	1551124588              # 0x5c74486c
+	.long	1463996600              # 0x5742d0b8
+	.size	Td2, 1024
+
+	.type	Td3,@object             # @Td3
+	.p2align	4
+Td3:
+	.long	4104605777              # 0xf4a75051
+	.long	1097159550              # 0x4165537e
+	.long	396673818               # 0x17a4c31a
+	.long	660510266               # 0x275e963a
+	.long	2875968315              # 0xab6bcb3b
+	.long	2638606623              # 0x9d45f11f
+	.long	4200115116              # 0xfa58abac
+	.long	3808662347              # 0xe303934b
+	.long	821712160               # 0x30fa5520
+	.long	1986918061              # 0x766df6ad
+	.long	3430322568              # 0xcc769188
+	.long	38544885                # 0x24c25f5
+	.long	3856137295              # 0xe5d7fc4f
+	.long	718002117               # 0x2acbd7c5
+	.long	893681702               # 0x35448026
+	.long	1654886325              # 0x62a38fb5
+	.long	2975484382              # 0xb15a49de
+	.long	3122358053              # 0xba1b6725
+	.long	3926825029              # 0xea0e9845
+	.long	4274053469              # 0xfec0e15d
+	.long	796197571               # 0x2f7502c3
+	.long	1290801793              # 0x4cf01281
+	.long	1184342925              # 0x4697a38d
+	.long	3556361835              # 0xd3f9c66b
+	.long	2405426947              # 0x8f5fe703
+	.long	2459735317              # 0x929c9515
+	.long	1836772287              # 0x6d7aebbf
+	.long	1381620373              # 0x5259da95
+	.long	3196267988              # 0xbe832dd4
+	.long	1948373848              # 0x7421d358
+	.long	3764988233              # 0xe0692949
+	.long	3385345166              # 0xc9c8448e
+	.long	3263785589              # 0xc2896a75
+	.long	2390325492              # 0x8e7978f4
+	.long	1480485785              # 0x583e6b99
+	.long	3111247143              # 0xb971dd27
+	.long	3780097726              # 0xe14fb6be
+	.long	2293045232              # 0x88ad17f0
+	.long	548169417               # 0x20ac66c9
+	.long	3459953789              # 0xce3ab47d
+	.long	3746175075              # 0xdf4a1863
+	.long	439452389               # 0x1a3182e5
+	.long	1362321559              # 0x51336097
+	.long	1400849762              # 0x537f4562
+	.long	1685577905              # 0x6477e0b1
+	.long	1806599355              # 0x6bae84bb
+	.long	2174754046              # 0x81a01cfe
+	.long	137073913               # 0x82b94f9
+	.long	1214797936              # 0x48685870
+	.long	1174215055              # 0x45fd198f
+	.long	3731654548              # 0xde6c8794
+	.long	2079897426              # 0x7bf8b752
+	.long	1943217067              # 0x73d323ab
+	.long	1258480242              # 0x4b02e272
+	.long	529487843               # 0x1f8f57e3
+	.long	1437280870              # 0x55ab2a66
+	.long	3945269170              # 0xeb2807b2
+	.long	3049390895              # 0xb5c2032f
+	.long	3313212038              # 0xc57b9a86
+	.long	923313619               # 0x3708a5d3
+	.long	679998000               # 0x2887f230
+	.long	3215307299              # 0xbfa5b223
+	.long	57326082                # 0x36aba02
+	.long	377642221               # 0x16825ced
+	.long	3474729866              # 0xcf1c2b8a
+	.long	2041877159              # 0x79b492a7
+	.long	133361907               # 0x7f2f0f3
+	.long	1776460110              # 0x69e2a14e
+	.long	3673476453              # 0xdaf4cd65
+	.long	96392454                # 0x5bed506
+	.long	878845905               # 0x34621fd1
+	.long	2801699524              # 0xa6fe8ac4
+	.long	777231668               # 0x2e539d34
+	.long	4082475170              # 0xf355a0a2
+	.long	2330014213              # 0x8ae13205
+	.long	4142626212              # 0xf6eb75a4
+	.long	2213296395              # 0x83ec390b
+	.long	1626319424              # 0x60efaa40
+	.long	1906247262              # 0x719f065e
+	.long	1846563261              # 0x6e1051bd
+	.long	562755902               # 0x218af93e
+	.long	3708173718              # 0xdd063d96
+	.long	1040559837              # 0x3e05aedd
+	.long	3871163981              # 0xe6bd464d
+	.long	1418573201              # 0x548db591
+	.long	3294430577              # 0xc45d0571
+	.long	114585348               # 0x6d46f04
+	.long	1343618912              # 0x5015ff60
+	.long	2566595609              # 0x98fb2419
+	.long	3186202582              # 0xbde997d6
+	.long	1078185097              # 0x4043cc89
+	.long	3651041127              # 0xd99e7767
+	.long	3896688048              # 0xe842bdb0
+	.long	2307622919              # 0x898b8807
+	.long	425408743               # 0x195b38e7
+	.long	3371096953              # 0xc8eedb79
+	.long	2081048481              # 0x7c0a47a1
+	.long	1108339068              # 0x420fe97c
+	.long	2216610296              # 0x841ec9f8
+	.long	0                       # 0x0
+	.long	2156299017              # 0x80868309
+	.long	736970802               # 0x2bed4832
+	.long	292596766               # 0x1170ac1e
+	.long	1517440620              # 0x5a724e6c
+	.long	251657213               # 0xefffbfd
+	.long	2235061775              # 0x8538560f
+	.long	2933202493              # 0xaed51e3d
+	.long	758720310               # 0x2d392736
+	.long	265905162               # 0xfd9640a
+	.long	1554391400              # 0x5ca62168
+	.long	1532285339              # 0x5b54d19b
+	.long	908999204               # 0x362e3a24
+	.long	174567692               # 0xa67b10c
+	.long	1474760595              # 0x57e70f93
+	.long	4002861748              # 0xee96d2b4
+	.long	2610011675              # 0x9b919e1b
+	.long	3234156416              # 0xc0c54f80
+	.long	3693126241              # 0xdc20a261
+	.long	2001430874              # 0x774b695a
+	.long	303699484               # 0x121a161c
+	.long	2478443234              # 0x93ba0ae2
+	.long	2687165888              # 0xa02ae5c0
+	.long	585122620               # 0x22e0433c
+	.long	454499602               # 0x1b171d12
+	.long	151849742               # 0x90d0b0e
+	.long	2345119218              # 0x8bc7adf2
+	.long	3064510765              # 0xb6a8b92d
+	.long	514443284               # 0x1ea9c814
+	.long	4044981591              # 0xf1198557
+	.long	1963412655              # 0x75074caf
+	.long	2581445614              # 0x99ddbbee
+	.long	2137062819              # 0x7f60fda3
+	.long	19308535                # 0x1269ff7
+	.long	1928707164              # 0x72f5bc5c
+	.long	1715193156              # 0x663bc544
+	.long	4219352155              # 0xfb7e345b
+	.long	1126790795              # 0x4329768b
+	.long	600235211               # 0x23c6dccb
+	.long	3992742070              # 0xedfc68b6
+	.long	3841024952              # 0xe4f163b8
+	.long	836553431               # 0x31dccad7
+	.long	1669664834              # 0x63851042
+	.long	2535604243              # 0x97224013
+	.long	3323011204              # 0xc6112084
+	.long	1243905413              # 0x4a247d85
+	.long	3141400786              # 0xbb3df8d2
+	.long	4180808110              # 0xf93211ae
+	.long	698445255               # 0x29a16dc7
+	.long	2653899549              # 0x9e2f4b1d
+	.long	2989552604              # 0xb230f3dc
+	.long	2253581325              # 0x8652ec0d
+	.long	3252932727              # 0xc1e3d077
+	.long	3004591147              # 0xb3166c2b
+	.long	1891211689              # 0x70b999a9
+	.long	2487810577              # 0x9448fa11
+	.long	3915653703              # 0xe9642247
+	.long	4237083816              # 0xfc8cc4a8
+	.long	4030667424              # 0xf03f1aa0
+	.long	2100090966              # 0x7d2cd856
+	.long	865136418               # 0x3390ef22
+	.long	1229899655              # 0x494ec787
+	.long	953270745               # 0x38d1c1d9
+	.long	3399679628              # 0xcaa2fe8c
+	.long	3557504664              # 0xd40b3698
+	.long	4118925222              # 0xf581cfa6
+	.long	2061379749              # 0x7ade28a5
+	.long	3079546586              # 0xb78e26da
+	.long	2915017791              # 0xadbfa43f
+	.long	983426092               # 0x3a9de42c
+	.long	2022837584              # 0x78920d50
+	.long	1607244650              # 0x5fcc9b6a
+	.long	2118541908              # 0x7e466254
+	.long	2366882550              # 0x8d13c2f6
+	.long	3635996816              # 0xd8b8e890
+	.long	972512814               # 0x39f75e2e
+	.long	3283088770              # 0xc3aff582
+	.long	1568718495              # 0x5d80be9f
+	.long	3499326569              # 0xd0937c69
+	.long	3576539503              # 0xd52da96f
+	.long	621982671               # 0x2512b3cf
+	.long	2895723464              # 0xac993bc8
+	.long	410887952               # 0x187da710
+	.long	2623762152              # 0x9c636ee8
+	.long	1002142683              # 0x3bbb7bdb
+	.long	645401037               # 0x267809cd
+	.long	1494807662              # 0x5918f46e
+	.long	2595684844              # 0x9ab701ec
+	.long	1335535747              # 0x4f9aa883
+	.long	2507040230              # 0x956e65e6
+	.long	4293295786              # 0xffe67eaa
+	.long	3167684641              # 0xbccf0821
+	.long	367585007               # 0x15e8e6ef
+	.long	3885750714              # 0xe79bd9ba
+	.long	1865862730              # 0x6f36ce4a
+	.long	2668221674              # 0x9f09d4ea
+	.long	2960971305              # 0xb07cd629
+	.long	2763173681              # 0xa4b2af31
+	.long	1059270954              # 0x3f23312a
+	.long	2777952454              # 0xa59430c6
+	.long	2724642869              # 0xa266c035
+	.long	1320957812              # 0x4ebc3774
+	.long	2194319100              # 0x82caa6fc
+	.long	2429595872              # 0x90d0b0e0
+	.long	2815956275              # 0xa7d81533
+	.long	77089521                # 0x4984af1
+	.long	3973773121              # 0xecdaf741
+	.long	3444575871              # 0xcd500e7f
+	.long	2448830231              # 0x91f62f17
+	.long	1305906550              # 0x4dd68d76
+	.long	4021308739              # 0xefb04d43
+	.long	2857194700              # 0xaa4d54cc
+	.long	2516901860              # 0x9604dfe4
+	.long	3518358430              # 0xd1b5e39e
+	.long	1787304780              # 0x6a881b4c
+	.long	740276417               # 0x2c1fb8c1
+	.long	1699839814              # 0x65517f46
+	.long	1592394909              # 0x5eea049d
+	.long	2352307457              # 0x8c355d01
+	.long	2272556026              # 0x877473fa
+	.long	188821243               # 0xb412efb
+	.long	1729977011              # 0x671d5ab3
+	.long	3687994002              # 0xdbd25292
+	.long	274084841               # 0x105633e9
+	.long	3594982253              # 0xd647136d
+	.long	3613494426              # 0xd7618c9a
+	.long	2701949495              # 0xa10c7a37
+	.long	4162096729              # 0xf8148e59
+	.long	322734571               # 0x133c89eb
+	.long	2837966542              # 0xa927eece
+	.long	1640576439              # 0x61c935b7
+	.long	484830689               # 0x1ce5ede1
+	.long	1202797690              # 0x47b13c7a
+	.long	3537852828              # 0xd2df599c
+	.long	4067639125              # 0xf2733f55
+	.long	349075736               # 0x14ce7918
+	.long	3342319475              # 0xc737bf73
+	.long	4157467219              # 0xf7cdea53
+	.long	4255800159              # 0xfdaa5b5f
+	.long	1030690015              # 0x3d6f14df
+	.long	1155237496              # 0x44db8678
+	.long	2951971274              # 0xaff381ca
+	.long	1757691577              # 0x68c43eb9
+	.long	607398968               # 0x24342c38
+	.long	2738905026              # 0xa3405fc2
+	.long	499347990               # 0x1dc37216
+	.long	3794078908              # 0xe2250cbc
+	.long	1011452712              # 0x3c498b28
+	.long	227885567               # 0xd9541ff
+	.long	2818666809              # 0xa8017139
+	.long	213114376               # 0xcb3de08
+	.long	3034881240              # 0xb4e49cd8
+	.long	1455525988              # 0x56c19064
+	.long	3414450555              # 0xcb84617b
+	.long	850817237               # 0x32b670d5
+	.long	1817998408              # 0x6c5c7448
+	.long	3092726480              # 0xb85742d0
+	.size	Td3, 1024
+
 	.type	Te0,@object             # @Te0
 	.data
 	.p2align	4
@@ -4458,1328 +5768,8 @@ Te3:
 	.long	370555436               # 0x16163a2c
 	.size	Te3, 1024
 
-	.type	Te4,@object             # @Te4
-	.p2align	4
-Te4:
-	.long	1667457891              # 0x63636363
-	.long	2088533116              # 0x7c7c7c7c
-	.long	2004318071              # 0x77777777
-	.long	2071690107              # 0x7b7b7b7b
-	.long	4076008178              # 0xf2f2f2f2
-	.long	1802201963              # 0x6b6b6b6b
-	.long	1869573999              # 0x6f6f6f6f
-	.long	3318072773              # 0xc5c5c5c5
-	.long	808464432               # 0x30303030
-	.long	16843009                # 0x1010101
-	.long	1734829927              # 0x67676767
-	.long	724249387               # 0x2b2b2b2b
-	.long	4278124286              # 0xfefefefe
-	.long	3621246935              # 0xd7d7d7d7
-	.long	2880154539              # 0xabababab
-	.long	1987475062              # 0x76767676
-	.long	3402287818              # 0xcacacaca
-	.long	2189591170              # 0x82828282
-	.long	3385444809              # 0xc9c9c9c9
-	.long	2105376125              # 0x7d7d7d7d
-	.long	4210752250              # 0xfafafafa
-	.long	1499027801              # 0x59595959
-	.long	1195853639              # 0x47474747
-	.long	4042322160              # 0xf0f0f0f0
-	.long	2913840557              # 0xadadadad
-	.long	3570717908              # 0xd4d4d4d4
-	.long	2728567458              # 0xa2a2a2a2
-	.long	2947526575              # 0xafafafaf
-	.long	2627509404              # 0x9c9c9c9c
-	.long	2762253476              # 0xa4a4a4a4
-	.long	1920103026              # 0x72727272
-	.long	3233857728              # 0xc0c0c0c0
-	.long	3082270647              # 0xb7b7b7b7
-	.long	4261281277              # 0xfdfdfdfd
-	.long	2475922323              # 0x93939393
-	.long	640034342               # 0x26262626
-	.long	909522486               # 0x36363636
-	.long	1061109567              # 0x3f3f3f3f
-	.long	4160223223              # 0xf7f7f7f7
-	.long	3435973836              # 0xcccccccc
-	.long	875836468               # 0x34343434
-	.long	2779096485              # 0xa5a5a5a5
-	.long	3857049061              # 0xe5e5e5e5
-	.long	4059165169              # 0xf1f1f1f1
-	.long	1903260017              # 0x71717171
-	.long	3638089944              # 0xd8d8d8d8
-	.long	825307441               # 0x31313131
-	.long	353703189               # 0x15151515
-	.long	67372036                # 0x4040404
-	.long	3351758791              # 0xc7c7c7c7
-	.long	589505315               # 0x23232323
-	.long	3284386755              # 0xc3c3c3c3
-	.long	404232216               # 0x18181818
-	.long	2526451350              # 0x96969696
-	.long	84215045                # 0x5050505
-	.long	2593823386              # 0x9a9a9a9a
-	.long	117901063               # 0x7070707
-	.long	303174162               # 0x12121212
-	.long	2155905152              # 0x80808080
-	.long	3806520034              # 0xe2e2e2e2
-	.long	3958107115              # 0xebebebeb
-	.long	656877351               # 0x27272727
-	.long	2998055602              # 0xb2b2b2b2
-	.long	1970632053              # 0x75757575
-	.long	151587081               # 0x9090909
-	.long	2206434179              # 0x83838383
-	.long	741092396               # 0x2c2c2c2c
-	.long	437918234               # 0x1a1a1a1a
-	.long	454761243               # 0x1b1b1b1b
-	.long	1852730990              # 0x6e6e6e6e
-	.long	1515870810              # 0x5a5a5a5a
-	.long	2694881440              # 0xa0a0a0a0
-	.long	1381126738              # 0x52525252
-	.long	993737531               # 0x3b3b3b3b
-	.long	3604403926              # 0xd6d6d6d6
-	.long	3014898611              # 0xb3b3b3b3
-	.long	690563369               # 0x29292929
-	.long	3823363043              # 0xe3e3e3e3
-	.long	791621423               # 0x2f2f2f2f
-	.long	2223277188              # 0x84848484
-	.long	1397969747              # 0x53535353
-	.long	3520188881              # 0xd1d1d1d1
-	.long	0                       # 0x0
-	.long	3991793133              # 0xedededed
-	.long	538976288               # 0x20202020
-	.long	4244438268              # 0xfcfcfcfc
-	.long	2981212593              # 0xb1b1b1b1
-	.long	1532713819              # 0x5b5b5b5b
-	.long	1785358954              # 0x6a6a6a6a
-	.long	3419130827              # 0xcbcbcbcb
-	.long	3200171710              # 0xbebebebe
-	.long	960051513               # 0x39393939
-	.long	1246382666              # 0x4a4a4a4a
-	.long	1280068684              # 0x4c4c4c4c
-	.long	1482184792              # 0x58585858
-	.long	3486502863              # 0xcfcfcfcf
-	.long	3503345872              # 0xd0d0d0d0
-	.long	4025479151              # 0xefefefef
-	.long	2863311530              # 0xaaaaaaaa
-	.long	4227595259              # 0xfbfbfbfb
-	.long	1128481603              # 0x43434343
-	.long	1296911693              # 0x4d4d4d4d
-	.long	858993459               # 0x33333333
-	.long	2240120197              # 0x85858585
-	.long	1162167621              # 0x45454545
-	.long	4193909241              # 0xf9f9f9f9
-	.long	33686018                # 0x2020202
-	.long	2139062143              # 0x7f7f7f7f
-	.long	1347440720              # 0x50505050
-	.long	1010580540              # 0x3c3c3c3c
-	.long	2678038431              # 0x9f9f9f9f
-	.long	2829625512              # 0xa8a8a8a8
-	.long	1364283729              # 0x51515151
-	.long	2745410467              # 0xa3a3a3a3
-	.long	1077952576              # 0x40404040
-	.long	2408550287              # 0x8f8f8f8f
-	.long	2459079314              # 0x92929292
-	.long	2644352413              # 0x9d9d9d9d
-	.long	943208504               # 0x38383838
-	.long	4126537205              # 0xf5f5f5f5
-	.long	3166485692              # 0xbcbcbcbc
-	.long	3065427638              # 0xb6b6b6b6
-	.long	3671775962              # 0xdadadada
-	.long	555819297               # 0x21212121
-	.long	269488144               # 0x10101010
-	.long	4294967295              # 0xffffffff
-	.long	4092851187              # 0xf3f3f3f3
-	.long	3537031890              # 0xd2d2d2d2
-	.long	3452816845              # 0xcdcdcdcd
-	.long	202116108               # 0xc0c0c0c
-	.long	320017171               # 0x13131313
-	.long	3974950124              # 0xecececec
-	.long	1600085855              # 0x5f5f5f5f
-	.long	2543294359              # 0x97979797
-	.long	1145324612              # 0x44444444
-	.long	387389207               # 0x17171717
-	.long	3301229764              # 0xc4c4c4c4
-	.long	2812782503              # 0xa7a7a7a7
-	.long	2122219134              # 0x7e7e7e7e
-	.long	1027423549              # 0x3d3d3d3d
-	.long	1684300900              # 0x64646464
-	.long	1566399837              # 0x5d5d5d5d
-	.long	421075225               # 0x19191919
-	.long	1936946035              # 0x73737373
-	.long	1616928864              # 0x60606060
-	.long	2172748161              # 0x81818181
-	.long	1330597711              # 0x4f4f4f4f
-	.long	3705461980              # 0xdcdcdcdc
-	.long	572662306               # 0x22222222
-	.long	707406378               # 0x2a2a2a2a
-	.long	2425393296              # 0x90909090
-	.long	2290649224              # 0x88888888
-	.long	1179010630              # 0x46464646
-	.long	4008636142              # 0xeeeeeeee
-	.long	3099113656              # 0xb8b8b8b8
-	.long	336860180               # 0x14141414
-	.long	3739147998              # 0xdededede
-	.long	1583242846              # 0x5e5e5e5e
-	.long	185273099               # 0xb0b0b0b
-	.long	3688618971              # 0xdbdbdbdb
-	.long	3772834016              # 0xe0e0e0e0
-	.long	842150450               # 0x32323232
-	.long	976894522               # 0x3a3a3a3a
-	.long	168430090               # 0xa0a0a0a
-	.long	1229539657              # 0x49494949
-	.long	101058054               # 0x6060606
-	.long	606348324               # 0x24242424
-	.long	1549556828              # 0x5c5c5c5c
-	.long	3267543746              # 0xc2c2c2c2
-	.long	3553874899              # 0xd3d3d3d3
-	.long	2896997548              # 0xacacacac
-	.long	1650614882              # 0x62626262
-	.long	2442236305              # 0x91919191
-	.long	2509608341              # 0x95959595
-	.long	3840206052              # 0xe4e4e4e4
-	.long	2038004089              # 0x79797979
-	.long	3890735079              # 0xe7e7e7e7
-	.long	3368601800              # 0xc8c8c8c8
-	.long	926365495               # 0x37373737
-	.long	1835887981              # 0x6d6d6d6d
-	.long	2374864269              # 0x8d8d8d8d
-	.long	3587560917              # 0xd5d5d5d5
-	.long	1313754702              # 0x4e4e4e4e
-	.long	2846468521              # 0xa9a9a9a9
-	.long	1819044972              # 0x6c6c6c6c
-	.long	1448498774              # 0x56565656
-	.long	4109694196              # 0xf4f4f4f4
-	.long	3941264106              # 0xeaeaeaea
-	.long	1701143909              # 0x65656565
-	.long	2054847098              # 0x7a7a7a7a
-	.long	2930683566              # 0xaeaeaeae
-	.long	134744072               # 0x8080808
-	.long	3132799674              # 0xbabababa
-	.long	2021161080              # 0x78787878
-	.long	623191333               # 0x25252525
-	.long	774778414               # 0x2e2e2e2e
-	.long	471604252               # 0x1c1c1c1c
-	.long	2795939494              # 0xa6a6a6a6
-	.long	3031741620              # 0xb4b4b4b4
-	.long	3334915782              # 0xc6c6c6c6
-	.long	3907578088              # 0xe8e8e8e8
-	.long	3722304989              # 0xdddddddd
-	.long	1953789044              # 0x74747474
-	.long	522133279               # 0x1f1f1f1f
-	.long	1263225675              # 0x4b4b4b4b
-	.long	3183328701              # 0xbdbdbdbd
-	.long	2341178251              # 0x8b8b8b8b
-	.long	2324335242              # 0x8a8a8a8a
-	.long	1886417008              # 0x70707070
-	.long	1044266558              # 0x3e3e3e3e
-	.long	3048584629              # 0xb5b5b5b5
-	.long	1717986918              # 0x66666666
-	.long	1212696648              # 0x48484848
-	.long	50529027                # 0x3030303
-	.long	4143380214              # 0xf6f6f6f6
-	.long	235802126               # 0xe0e0e0e
-	.long	1633771873              # 0x61616161
-	.long	892679477               # 0x35353535
-	.long	1465341783              # 0x57575757
-	.long	3115956665              # 0xb9b9b9b9
-	.long	2256963206              # 0x86868686
-	.long	3250700737              # 0xc1c1c1c1
-	.long	488447261               # 0x1d1d1d1d
-	.long	2661195422              # 0x9e9e9e9e
-	.long	3789677025              # 0xe1e1e1e1
-	.long	4177066232              # 0xf8f8f8f8
-	.long	2560137368              # 0x98989898
-	.long	286331153               # 0x11111111
-	.long	1768515945              # 0x69696969
-	.long	3654932953              # 0xd9d9d9d9
-	.long	2391707278              # 0x8e8e8e8e
-	.long	2492765332              # 0x94949494
-	.long	2610666395              # 0x9b9b9b9b
-	.long	505290270               # 0x1e1e1e1e
-	.long	2273806215              # 0x87878787
-	.long	3924421097              # 0xe9e9e9e9
-	.long	3469659854              # 0xcececece
-	.long	1431655765              # 0x55555555
-	.long	673720360               # 0x28282828
-	.long	3755991007              # 0xdfdfdfdf
-	.long	2358021260              # 0x8c8c8c8c
-	.long	2711724449              # 0xa1a1a1a1
-	.long	2307492233              # 0x89898989
-	.long	218959117               # 0xd0d0d0d
-	.long	3217014719              # 0xbfbfbfbf
-	.long	3873892070              # 0xe6e6e6e6
-	.long	1111638594              # 0x42424242
-	.long	1751672936              # 0x68686868
-	.long	1094795585              # 0x41414141
-	.long	2576980377              # 0x99999999
-	.long	757935405               # 0x2d2d2d2d
-	.long	252645135               # 0xf0f0f0f
-	.long	2964369584              # 0xb0b0b0b0
-	.long	1414812756              # 0x54545454
-	.long	3149642683              # 0xbbbbbbbb
-	.long	370546198               # 0x16161616
-	.size	Te4, 1024
-
-	.type	rcon,@object            # @rcon
-	.section	.rodata,"a",@progbits
-	.p2align	4
-rcon:
-	.long	16777216                # 0x1000000
-	.long	33554432                # 0x2000000
-	.long	67108864                # 0x4000000
-	.long	134217728               # 0x8000000
-	.long	268435456               # 0x10000000
-	.long	536870912               # 0x20000000
-	.long	1073741824              # 0x40000000
-	.long	2147483648              # 0x80000000
-	.long	452984832               # 0x1b000000
-	.long	905969664               # 0x36000000
-	.size	rcon, 40
-
-	.type	Td0,@object             # @Td0
-	.p2align	4
-Td0:
-	.long	1374988112              # 0x51f4a750
-	.long	2118214995              # 0x7e416553
-	.long	437757123               # 0x1a17a4c3
-	.long	975658646               # 0x3a275e96
-	.long	1001089995              # 0x3bab6bcb
-	.long	530400753               # 0x1f9d45f1
-	.long	2902087851              # 0xacfa58ab
-	.long	1273168787              # 0x4be30393
-	.long	540080725               # 0x2030fa55
-	.long	2910219766              # 0xad766df6
-	.long	2295101073              # 0x88cc7691
-	.long	4110568485              # 0xf5024c25
-	.long	1340463100              # 0x4fe5d7fc
-	.long	3307916247              # 0xc52acbd7
-	.long	641025152               # 0x26354480
-	.long	3043140495              # 0xb562a38f
-	.long	3736164937              # 0xdeb15a49
-	.long	632953703               # 0x25ba1b67
-	.long	1172967064              # 0x45ea0e98
-	.long	1576976609              # 0x5dfec0e1
-	.long	3274667266              # 0xc32f7502
-	.long	2169303058              # 0x814cf012
-	.long	2370213795              # 0x8d4697a3
-	.long	1809054150              # 0x6bd3f9c6
-	.long	59727847                # 0x38f5fe7
-	.long	361929877               # 0x15929c95
-	.long	3211623147              # 0xbf6d7aeb
-	.long	2505202138              # 0x955259da
-	.long	3569255213              # 0xd4be832d
-	.long	1484005843              # 0x587421d3
-	.long	1239443753              # 0x49e06929
-	.long	2395588676              # 0x8ec9c844
-	.long	1975683434              # 0x75c2896a
-	.long	4102977912              # 0xf48e7978
-	.long	2572697195              # 0x99583e6b
-	.long	666464733               # 0x27b971dd
-	.long	3202437046              # 0xbee14fb6
-	.long	4035489047              # 0xf088ad17
-	.long	3374361702              # 0xc920ac66
-	.long	2110667444              # 0x7dce3ab4
-	.long	1675577880              # 0x63df4a18
-	.long	3843699074              # 0xe51a3182
-	.long	2538681184              # 0x97513360
-	.long	1649639237              # 0x62537f45
-	.long	2976151520              # 0xb16477e0
-	.long	3144396420              # 0xbb6bae84
-	.long	4269907996              # 0xfe81a01c
-	.long	4178062228              # 0xf9082b94
-	.long	1883793496              # 0x70486858
-	.long	2403728665              # 0x8f45fd19
-	.long	2497604743              # 0x94de6c87
-	.long	1383856311              # 0x527bf8b7
-	.long	2876494627              # 0xab73d323
-	.long	1917518562              # 0x724b02e2
-	.long	3810496343              # 0xe31f8f57
-	.long	1716890410              # 0x6655ab2a
-	.long	3001755655              # 0xb2eb2807
-	.long	800440835               # 0x2fb5c203
-	.long	2261089178              # 0x86c57b9a
-	.long	3543599269              # 0xd33708a5
-	.long	807962610               # 0x302887f2
-	.long	599762354               # 0x23bfa5b2
-	.long	33778362                # 0x2036aba
-	.long	3977675356              # 0xed16825c
-	.long	2328828971              # 0x8acf1c2b
-	.long	2809771154              # 0xa779b492
-	.long	4077384432              # 0xf307f2f0
-	.long	1315562145              # 0x4e69e2a1
-	.long	1708848333              # 0x65daf4cd
-	.long	101039829               # 0x605bed5
-	.long	3509871135              # 0xd134621f
-	.long	3299278474              # 0xc4a6fe8a
-	.long	875451293               # 0x342e539d
-	.long	2733856160              # 0xa2f355a0
-	.long	92987698                # 0x58ae132
-	.long	2767645557              # 0xa4f6eb75
-	.long	193195065               # 0xb83ec39
-	.long	1080094634              # 0x4060efaa
-	.long	1584504582              # 0x5e719f06
-	.long	3178106961              # 0xbd6e1051
-	.long	1042385657              # 0x3e218af9
-	.long	2531067453              # 0x96dd063d
-	.long	3711829422              # 0xdd3e05ae
-	.long	1306967366              # 0x4de6bd46
-	.long	2438237621              # 0x91548db5
-	.long	1908694277              # 0x71c45d05
-	.long	67556463                # 0x406d46f
-	.long	1615861247              # 0x605015ff
-	.long	429456164               # 0x1998fb24
-	.long	3602770327              # 0xd6bde997
-	.long	2302690252              # 0x894043cc
-	.long	1742315127              # 0x67d99e77
-	.long	2968011453              # 0xb0e842bd
-	.long	126454664               # 0x7898b88
-	.long	3877198648              # 0xe7195b38
-	.long	2043211483              # 0x79c8eedb
-	.long	2709260871              # 0xa17c0a47
-	.long	2084704233              # 0x7c420fe9
-	.long	4169408201              # 0xf8841ec9
-	.long	0                       # 0x0
-	.long	159417987               # 0x9808683
-	.long	841739592               # 0x322bed48
-	.long	504459436               # 0x1e1170ac
-	.long	1817866830              # 0x6c5a724e
-	.long	4245618683              # 0xfd0efffb
-	.long	260388950               # 0xf853856
-	.long	1034867998              # 0x3daed51e
-	.long	908933415               # 0x362d3927
-	.long	168810852               # 0xa0fd964
-	.long	1750902305              # 0x685ca621
-	.long	2606453969              # 0x9b5b54d1
-	.long	607530554               # 0x24362e3a
-	.long	202008497               # 0xc0a67b1
-	.long	2472011535              # 0x9357e70f
-	.long	3035535058              # 0xb4ee96d2
-	.long	463180190               # 0x1b9b919e
-	.long	2160117071              # 0x80c0c54f
-	.long	1641816226              # 0x61dc20a2
-	.long	1517767529              # 0x5a774b69
-	.long	470948374               # 0x1c121a16
-	.long	3801332234              # 0xe293ba0a
-	.long	3231722213              # 0xc0a02ae5
-	.long	1008918595              # 0x3c22e043
-	.long	303765277               # 0x121b171d
-	.long	235474187               # 0xe090d0b
-	.long	4069246893              # 0xf28bc7ad
-	.long	766945465               # 0x2db6a8b9
-	.long	337553864               # 0x141ea9c8
-	.long	1475418501              # 0x57f11985
-	.long	2943682380              # 0xaf75074c
-	.long	4003061179              # 0xee99ddbb
-	.long	2743034109              # 0xa37f60fd
-	.long	4144047775              # 0xf701269f
-	.long	1551037884              # 0x5c72f5bc
-	.long	1147550661              # 0x44663bc5
-	.long	1543208500              # 0x5bfb7e34
-	.long	2336434550              # 0x8b432976
-	.long	3408119516              # 0xcb23c6dc
-	.long	3069049960              # 0xb6edfc68
-	.long	3102011747              # 0xb8e4f163
-	.long	3610369226              # 0xd731dcca
-	.long	1113818384              # 0x42638510
-	.long	328671808               # 0x13972240
-	.long	2227573024              # 0x84c61120
-	.long	2236228733              # 0x854a247d
-	.long	3535486456              # 0xd2bb3df8
-	.long	2935566865              # 0xaef93211
-	.long	3341394285              # 0xc729a16d
-	.long	496906059               # 0x1d9e2f4b
-	.long	3702665459              # 0xdcb230f3
-	.long	226906860               # 0xd8652ec
-	.long	2009195472              # 0x77c1e3d0
-	.long	733156972               # 0x2bb3166c
-	.long	2842737049              # 0xa970b999
-	.long	294930682               # 0x119448fa
-	.long	1206477858              # 0x47e96422
-	.long	2835123396              # 0xa8fc8cc4
-	.long	2700099354              # 0xa0f03f1a
-	.long	1451044056              # 0x567d2cd8
-	.long	573804783               # 0x223390ef
-	.long	2269728455              # 0x87494ec7
-	.long	3644379585              # 0xd938d1c1
-	.long	2362090238              # 0x8ccaa2fe
-	.long	2564033334              # 0x98d40b36
-	.long	2801107407              # 0xa6f581cf
-	.long	2776292904              # 0xa57ade28
-	.long	3669462566              # 0xdab78e26
-	.long	1068351396              # 0x3fadbfa4
-	.long	742039012               # 0x2c3a9de4
-	.long	1350078989              # 0x5078920d
-	.long	1784663195              # 0x6a5fcc9b
-	.long	1417561698              # 0x547e4662
-	.long	4136440770              # 0xf68d13c2
-	.long	2430122216              # 0x90d8b8e8
-	.long	775550814               # 0x2e39f75e
-	.long	2193862645              # 0x82c3aff5
-	.long	2673705150              # 0x9f5d80be
-	.long	1775276924              # 0x69d0937c
-	.long	1876241833              # 0x6fd52da9
-	.long	3475313331              # 0xcf2512b3
-	.long	3366754619              # 0xc8ac993b
-	.long	270040487               # 0x10187da7
-	.long	3902563182              # 0xe89c636e
-	.long	3678124923              # 0xdb3bbb7b
-	.long	3441850377              # 0xcd267809
-	.long	1851332852              # 0x6e5918f4
-	.long	3969562369              # 0xec9ab701
-	.long	2203032232              # 0x834f9aa8
-	.long	3868552805              # 0xe6956e65
-	.long	2868897406              # 0xaaffe67e
-	.long	566021896               # 0x21bccf08
-	.long	4011190502              # 0xef15e8e6
-	.long	3135740889              # 0xbae79bd9
-	.long	1248802510              # 0x4a6f36ce
-	.long	3936291284              # 0xea9f09d4
-	.long	699432150               # 0x29b07cd6
-	.long	832877231               # 0x31a4b2af
-	.long	708780849               # 0x2a3f2331
-	.long	3332740144              # 0xc6a59430
-	.long	899835584               # 0x35a266c0
-	.long	1951317047              # 0x744ebc37
-	.long	4236429990              # 0xfc82caa6
-	.long	3767586992              # 0xe090d0b0
-	.long	866637845               # 0x33a7d815
-	.long	4043610186              # 0xf104984a
-	.long	1106041591              # 0x41ecdaf7
-	.long	2144161806              # 0x7fcd500e
-	.long	395441711               # 0x1791f62f
-	.long	1984812685              # 0x764dd68d
-	.long	1139781709              # 0x43efb04d
-	.long	3433712980              # 0xccaa4d54
-	.long	3835036895              # 0xe49604df
-	.long	2664543715              # 0x9ed1b5e3
-	.long	1282050075              # 0x4c6a881b
-	.long	3240894392              # 0xc12c1fb8
-	.long	1181045119              # 0x4665517f
-	.long	2640243204              # 0x9d5eea04
-	.long	25965917                # 0x18c355d
-	.long	4203181171              # 0xfa877473
-	.long	4211818798              # 0xfb0b412e
-	.long	3009879386              # 0xb3671d5a
-	.long	2463879762              # 0x92dbd252
-	.long	3910161971              # 0xe9105633
-	.long	1842759443              # 0x6dd64713
-	.long	2597806476              # 0x9ad7618c
-	.long	933301370               # 0x37a10c7a
-	.long	1509430414              # 0x59f8148e
-	.long	3943906441              # 0xeb133c89
-	.long	3467192302              # 0xcea927ee
-	.long	3076639029              # 0xb761c935
-	.long	3776767469              # 0xe11ce5ed
-	.long	2051518780              # 0x7a47b13c
-	.long	2631065433              # 0x9cd2df59
-	.long	1441952575              # 0x55f2733f
-	.long	404016761               # 0x1814ce79
-	.long	1942435775              # 0x73c737bf
-	.long	1408749034              # 0x53f7cdea
-	.long	1610459739              # 0x5ffdaa5b
-	.long	3745345300              # 0xdf3d6f14
-	.long	2017778566              # 0x7844db86
-	.long	3400528769              # 0xcaaff381
-	.long	3110650942              # 0xb968c43e
-	.long	941896748               # 0x3824342c
-	.long	3265478751              # 0xc2a3405f
-	.long	371049330               # 0x161dc372
-	.long	3168937228              # 0xbce2250c
-	.long	675039627               # 0x283c498b
-	.long	4279080257              # 0xff0d9541
-	.long	967311729               # 0x39a80171
-	.long	135050206               # 0x80cb3de
-	.long	3635733660              # 0xd8b4e49c
-	.long	1683407248              # 0x6456c190
-	.long	2076935265              # 0x7bcb8461
-	.long	3576870512              # 0xd532b670
-	.long	1215061108              # 0x486c5c74
-	.long	3501741890              # 0xd0b85742
-	.size	Td0, 1024
-
-	.type	Td1,@object             # @Td1
-	.p2align	4
-Td1:
-	.long	1347548327              # 0x5051f4a7
-	.long	1400783205              # 0x537e4165
-	.long	3273267108              # 0xc31a17a4
-	.long	2520393566              # 0x963a275e
-	.long	3409685355              # 0xcb3bab6b
-	.long	4045380933              # 0xf11f9d45
-	.long	2880240216              # 0xabacfa58
-	.long	2471224067              # 0x934be303
-	.long	1428173050              # 0x552030fa
-	.long	4138563181              # 0xf6ad766d
-	.long	2441661558              # 0x9188cc76
-	.long	636813900               # 0x25f5024c
-	.long	4233094615              # 0xfc4fe5d7
-	.long	3620022987              # 0xd7c52acb
-	.long	2149987652              # 0x80263544
-	.long	2411029155              # 0x8fb562a3
-	.long	1239331162              # 0x49deb15a
-	.long	1730525723              # 0x6725ba1b
-	.long	2554718734              # 0x9845ea0e
-	.long	3781033664              # 0xe15dfec0
-	.long	46346101                # 0x2c32f75
-	.long	310463728               # 0x12814cf0
-	.long	2743944855              # 0xa38d4697
-	.long	3328955385              # 0xc66bd3f9
-	.long	3875770207              # 0xe7038f5f
-	.long	2501218972              # 0x9515929c
-	.long	3955191162              # 0xebbf6d7a
-	.long	3667219033              # 0xda955259
-	.long	768917123               # 0x2dd4be83
-	.long	3545789473              # 0xd3587421
-	.long	692707433               # 0x2949e069
-	.long	1150208456              # 0x448ec9c8
-	.long	1786102409              # 0x6a75c289
-	.long	2029293177              # 0x78f48e79
-	.long	1805211710              # 0x6b99583e
-	.long	3710368113              # 0xdd27b971
-	.long	3065962831              # 0xb6bee14f
-	.long	401639597               # 0x17f088ad
-	.long	1724457132              # 0x66c920ac
-	.long	3028143674              # 0xb47dce3a
-	.long	409198410               # 0x1863df4a
-	.long	2196052529              # 0x82e51a31
-	.long	1620529459              # 0x60975133
-	.long	1164071807              # 0x4562537f
-	.long	3769721975              # 0xe0b16477
-	.long	2226875310              # 0x84bb6bae
-	.long	486441376               # 0x1cfe81a0
-	.long	2499348523              # 0x94f9082b
-	.long	1483753576              # 0x58704868
-	.long	428819965               # 0x198f45fd
-	.long	2274680428              # 0x8794de6c
-	.long	3075636216              # 0xb7527bf8
-	.long	598438867               # 0x23ab73d3
-	.long	3799141122              # 0xe2724b02
-	.long	1474502543              # 0x57e31f8f
-	.long	711349675               # 0x2a6655ab
-	.long	129166120               # 0x7b2eb28
-	.long	53458370                # 0x32fb5c2
-	.long	2592523643              # 0x9a86c57b
-	.long	2782082824              # 0xa5d33708
-	.long	4063242375              # 0xf2302887
-	.long	2988687269              # 0xb223bfa5
-	.long	3120694122              # 0xba02036a
-	.long	1559041666              # 0x5ced1682
-	.long	730517276               # 0x2b8acf1c
-	.long	2460449204              # 0x92a779b4
-	.long	4042459122              # 0xf0f307f2
-	.long	2706270690              # 0xa14e69e2
-	.long	3446004468              # 0xcd65daf4
-	.long	3573941694              # 0xd50605be
-	.long	533804130               # 0x1fd13462
-	.long	2328143614              # 0x8ac4a6fe
-	.long	2637442643              # 0x9d342e53
-	.long	2695033685              # 0xa0a2f355
-	.long	839224033               # 0x32058ae1
-	.long	1973745387              # 0x75a4f6eb
-	.long	957055980               # 0x390b83ec
-	.long	2856345839              # 0xaa4060ef
-	.long	106852767               # 0x65e719f
-	.long	1371368976              # 0x51bd6e10
-	.long	4181598602              # 0xf93e218a
-	.long	1033297158              # 0x3d96dd06
-	.long	2933734917              # 0xaedd3e05
-	.long	1179510461              # 0x464de6bd
-	.long	3046200461              # 0xb591548d
-	.long	91341917                # 0x571c45d
-	.long	1862534868              # 0x6f0406d4
-	.long	4284502037              # 0xff605015
-	.long	605657339               # 0x241998fb
-	.long	2547432937              # 0x97d6bde9
-	.long	3431546947              # 0xcc894043
-	.long	2003294622              # 0x7767d99e
-	.long	3182487618              # 0xbdb0e842
-	.long	2282195339              # 0x8807898b
-	.long	954669403               # 0x38e7195b
-	.long	3682191598              # 0xdb79c8ee
-	.long	1201765386              # 0x47a17c0a
-	.long	3917234703              # 0xe97c420f
-	.long	3388507166              # 0xc9f8841e
-	.long	0                       # 0x0
-	.long	2198438022              # 0x83098086
-	.long	1211247597              # 0x48322bed
-	.long	2887651696              # 0xac1e1170
-	.long	1315723890              # 0x4e6c5a72
-	.long	4227665663              # 0xfbfd0eff
-	.long	1443857720              # 0x560f8538
-	.long	507358933               # 0x1e3daed5
-	.long	657861945               # 0x27362d39
-	.long	1678381017              # 0x640a0fd9
-	.long	560487590               # 0x21685ca6
-	.long	3516619604              # 0xd19b5b54
-	.long	975451694               # 0x3a24362e
-	.long	2970356327              # 0xb10c0a67
-	.long	261314535               # 0xf9357e7
-	.long	3535072918              # 0xd2b4ee96
-	.long	2652609425              # 0x9e1b9b91
-	.long	1333838021              # 0x4f80c0c5
-	.long	2724322336              # 0xa261dc20
-	.long	1767536459              # 0x695a774b
-	.long	370938394               # 0x161c121a
-	.long	182621114               # 0xae293ba
-	.long	3854606378              # 0xe5c0a02a
-	.long	1128014560              # 0x433c22e0
-	.long	487725847               # 0x1d121b17
-	.long	185469197               # 0xb0e090d
-	.long	2918353863              # 0xadf28bc7
-	.long	3106780840              # 0xb92db6a8
-	.long	3356761769              # 0xc8141ea9
-	.long	2237133081              # 0x8557f119
-	.long	1286567175              # 0x4caf7507
-	.long	3152976349              # 0xbbee99dd
-	.long	4255350624              # 0xfda37f60
-	.long	2683765030              # 0x9ff70126
-	.long	3160175349              # 0xbc5c72f5
-	.long	3309594171              # 0xc544663b
-	.long	878443390               # 0x345bfb7e
-	.long	1988838185              # 0x768b4329
-	.long	3704300486              # 0xdccb23c6
-	.long	1756818940              # 0x68b6edfc
-	.long	1673061617              # 0x63b8e4f1
-	.long	3403100636              # 0xcad731dc
-	.long	272786309               # 0x10426385
-	.long	1075025698              # 0x40139722
-	.long	545572369               # 0x2084c611
-	.long	2105887268              # 0x7d854a24
-	.long	4174560061              # 0xf8d2bb3d
-	.long	296679730               # 0x11aef932
-	.long	1841768865              # 0x6dc729a1
-	.long	1260232239              # 0x4b1d9e2f
-	.long	4091327024              # 0xf3dcb230
-	.long	3960309330              # 0xec0d8652
-	.long	3497509347              # 0xd077c1e3
-	.long	1814803222              # 0x6c2bb316
-	.long	2578018489              # 0x99a970b9
-	.long	4195456072              # 0xfa119448
-	.long	575138148               # 0x2247e964
-	.long	3299409036              # 0xc4a8fc8c
-	.long	446754879               # 0x1aa0f03f
-	.long	3629546796              # 0xd8567d2c
-	.long	4011996048              # 0xef223390
-	.long	3347532110              # 0xc787494e
-	.long	3252238545              # 0xc1d938d1
-	.long	4270639778              # 0xfe8ccaa2
-	.long	915985419               # 0x3698d40b
-	.long	3483825537              # 0xcfa6f581
-	.long	681933534               # 0x28a57ade
-	.long	651868046               # 0x26dab78e
-	.long	2755636671              # 0xa43fadbf
-	.long	3828103837              # 0xe42c3a9d
-	.long	223377554               # 0xd507892
-	.long	2607439820              # 0x9b6a5fcc
-	.long	1649704518              # 0x62547e46
-	.long	3270937875              # 0xc2f68d13
-	.long	3901806776              # 0xe890d8b8
-	.long	1580087799              # 0x5e2e39f7
-	.long	4118987695              # 0xf582c3af
-	.long	3198115200              # 0xbe9f5d80
-	.long	2087309459              # 0x7c69d093
-	.long	2842678573              # 0xa96fd52d
-	.long	3016697106              # 0xb3cf2512
-	.long	1003007129              # 0x3bc8ac99
-	.long	2802849917              # 0xa710187d
-	.long	1860738147              # 0x6ee89c63
-	.long	2077965243              # 0x7bdb3bbb
-	.long	164439672               # 0x9cd2678
-	.long	4100872472              # 0xf46e5918
-	.long	32283319                # 0x1ec9ab7
-	.long	2827177882              # 0xa8834f9a
-	.long	1709610350              # 0x65e6956e
-	.long	2125135846              # 0x7eaaffe6
-	.long	136428751               # 0x821bccf
-	.long	3874428392              # 0xe6ef15e8
-	.long	3652904859              # 0xd9bae79b
-	.long	3460984630              # 0xce4a6f36
-	.long	3572145929              # 0xd4ea9f09
-	.long	3593056380              # 0xd629b07c
-	.long	2939266226              # 0xaf31a4b2
-	.long	824852259               # 0x312a3f23
-	.long	818324884               # 0x30c6a594
-	.long	3224740454              # 0xc035a266
-	.long	930369212               # 0x37744ebc
-	.long	2801566410              # 0xa6fc82ca
-	.long	2967507152              # 0xb0e090d0
-	.long	355706840               # 0x1533a7d8
-	.long	1257309336              # 0x4af10498
-	.long	4148292826              # 0xf741ecda
-	.long	243256656               # 0xe7fcd50
-	.long	790073846               # 0x2f1791f6
-	.long	2373340630              # 0x8d764dd6
-	.long	1296297904              # 0x4d43efb0
-	.long	1422699085              # 0x54ccaa4d
-	.long	3756299780              # 0xdfe49604
-	.long	3818836405              # 0xe39ed1b5
-	.long	457992840               # 0x1b4c6a88
-	.long	3099667487              # 0xb8c12c1f
-	.long	2135319889              # 0x7f466551
-	.long	77422314                # 0x49d5eea
-	.long	1560382517              # 0x5d018c35
-	.long	1945798516              # 0x73fa8774
-	.long	788204353               # 0x2efb0b41
-	.long	1521706781              # 0x5ab3671d
-	.long	1385356242              # 0x5292dbd2
-	.long	870912086               # 0x33e91056
-	.long	325965383               # 0x136dd647
-	.long	2358957921              # 0x8c9ad761
-	.long	2050466060              # 0x7a37a10c
-	.long	2388260884              # 0x8e59f814
-	.long	2313884476              # 0x89eb133c
-	.long	4006521127              # 0xeecea927
-	.long	901210569               # 0x35b761c9
-	.long	3990953189              # 0xede11ce5
-	.long	1014646705              # 0x3c7a47b1
-	.long	1503449823              # 0x599cd2df
-	.long	1062597235              # 0x3f55f273
-	.long	2031621326              # 0x791814ce
-	.long	3212035895              # 0xbf73c737
-	.long	3931371469              # 0xea53f7cd
-	.long	1533017514              # 0x5b5ffdaa
-	.long	350174575               # 0x14df3d6f
-	.long	2256028891              # 0x867844db
-	.long	2177544179              # 0x81caaff3
-	.long	1052338372              # 0x3eb968c4
-	.long	741876788               # 0x2c382434
-	.long	1606591296              # 0x5fc2a340
-	.long	1914052035              # 0x72161dc3
-	.long	213705253               # 0xcbce225
-	.long	2334669897              # 0x8b283c49
-	.long	1107234197              # 0x41ff0d95
-	.long	1899603969              # 0x7139a801
-	.long	3725069491              # 0xde080cb3
-	.long	2631447780              # 0x9cd8b4e4
-	.long	2422494913              # 0x906456c1
-	.long	1635502980              # 0x617bcb84
-	.long	1893020342              # 0x70d532b6
-	.long	1950903388              # 0x74486c5c
-	.long	1120974935              # 0x42d0b857
-	.size	Td1, 1024
-
-	.type	Td2,@object             # @Td2
-	.p2align	4
-Td2:
-	.long	2807058932              # 0xa75051f4
-	.long	1699970625              # 0x65537e41
-	.long	2764249623              # 0xa4c31a17
-	.long	1586903591              # 0x5e963a27
-	.long	1808481195              # 0x6bcb3bab
-	.long	1173430173              # 0x45f11f9d
-	.long	1487645946              # 0x58abacfa
-	.long	59984867                # 0x3934be3
-	.long	4199882800              # 0xfa552030
-	.long	1844882806              # 0x6df6ad76
-	.long	1989249228              # 0x769188cc
-	.long	1277555970              # 0x4c25f502
-	.long	3623636965              # 0xd7fc4fe5
-	.long	3419915562              # 0xcbd7c52a
-	.long	1149249077              # 0x44802635
-	.long	2744104290              # 0xa38fb562
-	.long	1514790577              # 0x5a49deb1
-	.long	459744698               # 0x1b6725ba
-	.long	244860394               # 0xe9845ea
-	.long	3235995134              # 0xc0e15dfe
-	.long	1963115311              # 0x7502c32f
-	.long	4027744588              # 0xf012814c
-	.long	2544078150              # 0x97a38d46
-	.long	4190530515              # 0xf9c66bd3
-	.long	1608975247              # 0x5fe7038f
-	.long	2627016082              # 0x9c951592
-	.long	2062270317              # 0x7aebbf6d
-	.long	1507497298              # 0x59da9552
-	.long	2200818878              # 0x832dd4be
-	.long	567498868               # 0x21d35874
-	.long	1764313568              # 0x692949e0
-	.long	3359936201              # 0xc8448ec9
-	.long	2305455554              # 0x896a75c2
-	.long	2037970062              # 0x7978f48e
-	.long	1047239000              # 0x3e6b9958
-	.long	1910319033              # 0x71dd27b9
-	.long	1337376481              # 0x4fb6bee1
-	.long	2904027272              # 0xad17f088
-	.long	2892417312              # 0xac66c920
-	.long	984907214               # 0x3ab47dce
-	.long	1243112415              # 0x4a1863df
-	.long	830661914               # 0x3182e51a
-	.long	861968209               # 0x33609751
-	.long	2135253587              # 0x7f456253
-	.long	2011214180              # 0x77e0b164
-	.long	2927934315              # 0xae84bb6b
-	.long	2686254721              # 0xa01cfe81
-	.long	731183368               # 0x2b94f908
-	.long	1750626376              # 0x68587048
-	.long	4246310725              # 0xfd198f45
-	.long	1820824798              # 0x6c8794de
-	.long	4172763771              # 0xf8b7527b
-	.long	3542330227              # 0xd323ab73
-	.long	48394827                # 0x2e2724b
-	.long	2404901663              # 0x8f57e31f
-	.long	2871682645              # 0xab2a6655
-	.long	671593195               # 0x2807b2eb
-	.long	3254988725              # 0xc2032fb5
-	.long	2073724613              # 0x7b9a86c5
-	.long	145085239               # 0x8a5d337
-	.long	2280796200              # 0x87f23028
-	.long	2779915199              # 0xa5b223bf
-	.long	1790575107              # 0x6aba0203
-	.long	2187128086              # 0x825ced16
-	.long	472615631               # 0x1c2b8acf
-	.long	3029510009              # 0xb492a779
-	.long	4075877127              # 0xf2f0f307
-	.long	3802222185              # 0xe2a14e69
-	.long	4107101658              # 0xf4cd65da
-	.long	3201631749              # 0xbed50605
-	.long	1646252340              # 0x621fd134
-	.long	4270507174              # 0xfe8ac4a6
-	.long	1402811438              # 0x539d342e
-	.long	1436590835              # 0x55a0a2f3
-	.long	3778151818              # 0xe132058a
-	.long	3950355702              # 0xeb75a4f6
-	.long	3963161475              # 0xec390b83
-	.long	4020912224              # 0xefaa4060
-	.long	2667994737              # 0x9f065e71
-	.long	273792366               # 0x1051bd6e
-	.long	2331590177              # 0x8af93e21
-	.long	104699613               # 0x63d96dd
-	.long	95345982                # 0x5aedd3e
-	.long	3175501286              # 0xbd464de6
-	.long	2377486676              # 0x8db59154
-	.long	1560637892              # 0x5d0571c4
-	.long	3564045318              # 0xd46f0406
-	.long	369057872               # 0x15ff6050
-	.long	4213447064              # 0xfb241998
-	.long	3919042237              # 0xe997d6bd
-	.long	1137477952              # 0x43cc8940
-	.long	2658625497              # 0x9e7767d9
-	.long	1119727848              # 0x42bdb0e8
-	.long	2340947849              # 0x8b880789
-	.long	1530455833              # 0x5b38e719
-	.long	4007360968              # 0xeedb79c8
-	.long	172466556               # 0xa47a17c
-	.long	266959938               # 0xfe97c42
-	.long	516552836               # 0x1ec9f884
-	.long	0                       # 0x0
-	.long	2256734592              # 0x86830980
-	.long	3980931627              # 0xed48322b
-	.long	1890328081              # 0x70ac1e11
-	.long	1917742170              # 0x724e6c5a
-	.long	4294704398              # 0xfffbfd0e
-	.long	945164165               # 0x38560f85
-	.long	3575528878              # 0xd51e3dae
-	.long	958871085               # 0x3927362d
-	.long	3647212047              # 0xd9640a0f
-	.long	2787207260              # 0xa621685c
-	.long	1423022939              # 0x54d19b5b
-	.long	775562294               # 0x2e3a2436
-	.long	1739656202              # 0x67b10c0a
-	.long	3876557655              # 0xe70f9357
-	.long	2530391278              # 0x96d2b4ee
-	.long	2443058075              # 0x919e1b9b
-	.long	3310321856              # 0xc54f80c0
-	.long	547512796               # 0x20a261dc
-	.long	1265195639              # 0x4b695a77
-	.long	437656594               # 0x1a161c12
-	.long	3121275539              # 0xba0ae293
-	.long	719700128               # 0x2ae5c0a0
-	.long	3762502690              # 0xe0433c22
-	.long	387781147               # 0x171d121b
-	.long	218828297               # 0xd0b0e09
-	.long	3350065803              # 0xc7adf28b
-	.long	2830708150              # 0xa8b92db6
-	.long	2848461854              # 0xa9c8141e
-	.long	428169201               # 0x198557f1
-	.long	122466165               # 0x74caf75
-	.long	3720081049              # 0xddbbee99
-	.long	1627235199              # 0x60fda37f
-	.long	648017665               # 0x269ff701
-	.long	4122762354              # 0xf5bc5c72
-	.long	1002783846              # 0x3bc54466
-	.long	2117360635              # 0x7e345bfb
-	.long	695634755               # 0x29768b43
-	.long	3336358691              # 0xc6dccb23
-	.long	4234721005              # 0xfc68b6ed
-	.long	4049844452              # 0xf163b8e4
-	.long	3704280881              # 0xdccad731
-	.long	2232435299              # 0x85104263
-	.long	574624663               # 0x22401397
-	.long	287343814               # 0x112084c6
-	.long	612205898               # 0x247d854a
-	.long	1039717051              # 0x3df8d2bb
-	.long	840019705               # 0x3211aef9
-	.long	2708326185              # 0xa16dc729
-	.long	793451934               # 0x2f4b1d9e
-	.long	821288114               # 0x30f3dcb2
-	.long	1391201670              # 0x52ec0d86
-	.long	3822090177              # 0xe3d077c1
-	.long	376187827               # 0x166c2bb3
-	.long	3113855344              # 0xb999a970
-	.long	1224348052              # 0x48fa1194
-	.long	1679968233              # 0x642247e9
-	.long	2361698556              # 0x8cc4a8fc
-	.long	1058709744              # 0x3f1aa0f0
-	.long	752375421               # 0x2cd8567d
-	.long	2431590963              # 0x90ef2233
-	.long	1321699145              # 0x4ec78749
-	.long	3519142200              # 0xd1c1d938
-	.long	2734591178              # 0xa2fe8cca
-	.long	188127444               # 0xb3698d4
-	.long	2177869557              # 0x81cfa6f5
-	.long	3727205754              # 0xde28a57a
-	.long	2384911031              # 0x8e26dab7
-	.long	3215212461              # 0xbfa43fad
-	.long	2648976442              # 0x9de42c3a
-	.long	2450346104              # 0x920d5078
-	.long	3432737375              # 0xcc9b6a5f
-	.long	1180849278              # 0x4662547e
-	.long	331544205               # 0x13c2f68d
-	.long	3102249176              # 0xb8e890d8
-	.long	4150144569              # 0xf75e2e39
-	.long	2952102595              # 0xaff582c3
-	.long	2159976285              # 0x80be9f5d
-	.long	2474404304              # 0x937c69d0
-	.long	766078933               # 0x2da96fd5
-	.long	313773861               # 0x12b3cf25
-	.long	2570832044              # 0x993bc8ac
-	.long	2108100632              # 0x7da71018
-	.long	1668212892              # 0x636ee89c
-	.long	3145456443              # 0xbb7bdb3b
-	.long	2013908262              # 0x7809cd26
-	.long	418672217               # 0x18f46e59
-	.long	3070356634              # 0xb701ec9a
-	.long	2594734927              # 0x9aa8834f
-	.long	1852171925              # 0x6e65e695
-	.long	3867060991              # 0xe67eaaff
-	.long	3473416636              # 0xcf0821bc
-	.long	3907448597              # 0xe8e6ef15
-	.long	2614737639              # 0x9bd9bae7
-	.long	919489135               # 0x36ce4a6f
-	.long	164948639               # 0x9d4ea9f
-	.long	2094410160              # 0x7cd629b0
-	.long	2997825956              # 0xb2af31a4
-	.long	590424639               # 0x23312a3f
-	.long	2486224549              # 0x9430c6a5
-	.long	1723872674              # 0x66c035a2
-	.long	3157750862              # 0xbc37744e
-	.long	3399941250              # 0xcaa6fc82
-	.long	3501252752              # 0xd0b0e090
-	.long	3625268135              # 0xd81533a7
-	.long	2555048196              # 0x984af104
-	.long	3673637356              # 0xdaf741ec
-	.long	1343127501              # 0x500e7fcd
-	.long	4130281361              # 0xf62f1791
-	.long	3599595085              # 0xd68d764d
-	.long	2957853679              # 0xb04d43ef
-	.long	1297403050              # 0x4d54ccaa
-	.long	81781910                # 0x4dfe496
-	.long	3051593425              # 0xb5e39ed1
-	.long	2283490410              # 0x881b4c6a
-	.long	532201772               # 0x1fb8c12c
-	.long	1367295589              # 0x517f4665
-	.long	3926170974              # 0xea049d5e
-	.long	895287692               # 0x355d018c
-	.long	1953757831              # 0x7473fa87
-	.long	1093597963              # 0x412efb0b
-	.long	492483431               # 0x1d5ab367
-	.long	3528626907              # 0xd25292db
-	.long	1446242576              # 0x5633e910
-	.long	1192455638              # 0x47136dd6
-	.long	1636604631              # 0x618c9ad7
-	.long	209336225               # 0xc7a37a1
-	.long	344873464               # 0x148e59f8
-	.long	1015671571              # 0x3c89eb13
-	.long	669961897               # 0x27eecea9
-	.long	3375740769              # 0xc935b761
-	.long	3857572124              # 0xe5ede11c
-	.long	2973530695              # 0xb13c7a47
-	.long	3747192018              # 0xdf599cd2
-	.long	1933530610              # 0x733f55f2
-	.long	3464042516              # 0xce791814
-	.long	935293895               # 0x37bf73c7
-	.long	3454686199              # 0xcdea53f7
-	.long	2858115069              # 0xaa5b5ffd
-	.long	1863638845              # 0x6f14df3d
-	.long	3683022916              # 0xdb867844
-	.long	4085369519              # 0xf381caaf
-	.long	3292445032              # 0xc43eb968
-	.long	875313188               # 0x342c3824
-	.long	1080017571              # 0x405fc2a3
-	.long	3279033885              # 0xc372161d
-	.long	621591778               # 0x250cbce2
-	.long	1233856572              # 0x498b283c
-	.long	2504130317              # 0x9541ff0d
-	.long	24197544                # 0x17139a8
-	.long	3017672716              # 0xb3de080c
-	.long	3835484340              # 0xe49cd8b4
-	.long	3247465558              # 0xc1906456
-	.long	2220981195              # 0x84617bcb
-	.long	3060847922              # 0xb670d532
-	.long	1551124588              # 0x5c74486c
-	.long	1463996600              # 0x5742d0b8
-	.size	Td2, 1024
-
-	.type	Td3,@object             # @Td3
-	.p2align	4
-Td3:
-	.long	4104605777              # 0xf4a75051
-	.long	1097159550              # 0x4165537e
-	.long	396673818               # 0x17a4c31a
-	.long	660510266               # 0x275e963a
-	.long	2875968315              # 0xab6bcb3b
-	.long	2638606623              # 0x9d45f11f
-	.long	4200115116              # 0xfa58abac
-	.long	3808662347              # 0xe303934b
-	.long	821712160               # 0x30fa5520
-	.long	1986918061              # 0x766df6ad
-	.long	3430322568              # 0xcc769188
-	.long	38544885                # 0x24c25f5
-	.long	3856137295              # 0xe5d7fc4f
-	.long	718002117               # 0x2acbd7c5
-	.long	893681702               # 0x35448026
-	.long	1654886325              # 0x62a38fb5
-	.long	2975484382              # 0xb15a49de
-	.long	3122358053              # 0xba1b6725
-	.long	3926825029              # 0xea0e9845
-	.long	4274053469              # 0xfec0e15d
-	.long	796197571               # 0x2f7502c3
-	.long	1290801793              # 0x4cf01281
-	.long	1184342925              # 0x4697a38d
-	.long	3556361835              # 0xd3f9c66b
-	.long	2405426947              # 0x8f5fe703
-	.long	2459735317              # 0x929c9515
-	.long	1836772287              # 0x6d7aebbf
-	.long	1381620373              # 0x5259da95
-	.long	3196267988              # 0xbe832dd4
-	.long	1948373848              # 0x7421d358
-	.long	3764988233              # 0xe0692949
-	.long	3385345166              # 0xc9c8448e
-	.long	3263785589              # 0xc2896a75
-	.long	2390325492              # 0x8e7978f4
-	.long	1480485785              # 0x583e6b99
-	.long	3111247143              # 0xb971dd27
-	.long	3780097726              # 0xe14fb6be
-	.long	2293045232              # 0x88ad17f0
-	.long	548169417               # 0x20ac66c9
-	.long	3459953789              # 0xce3ab47d
-	.long	3746175075              # 0xdf4a1863
-	.long	439452389               # 0x1a3182e5
-	.long	1362321559              # 0x51336097
-	.long	1400849762              # 0x537f4562
-	.long	1685577905              # 0x6477e0b1
-	.long	1806599355              # 0x6bae84bb
-	.long	2174754046              # 0x81a01cfe
-	.long	137073913               # 0x82b94f9
-	.long	1214797936              # 0x48685870
-	.long	1174215055              # 0x45fd198f
-	.long	3731654548              # 0xde6c8794
-	.long	2079897426              # 0x7bf8b752
-	.long	1943217067              # 0x73d323ab
-	.long	1258480242              # 0x4b02e272
-	.long	529487843               # 0x1f8f57e3
-	.long	1437280870              # 0x55ab2a66
-	.long	3945269170              # 0xeb2807b2
-	.long	3049390895              # 0xb5c2032f
-	.long	3313212038              # 0xc57b9a86
-	.long	923313619               # 0x3708a5d3
-	.long	679998000               # 0x2887f230
-	.long	3215307299              # 0xbfa5b223
-	.long	57326082                # 0x36aba02
-	.long	377642221               # 0x16825ced
-	.long	3474729866              # 0xcf1c2b8a
-	.long	2041877159              # 0x79b492a7
-	.long	133361907               # 0x7f2f0f3
-	.long	1776460110              # 0x69e2a14e
-	.long	3673476453              # 0xdaf4cd65
-	.long	96392454                # 0x5bed506
-	.long	878845905               # 0x34621fd1
-	.long	2801699524              # 0xa6fe8ac4
-	.long	777231668               # 0x2e539d34
-	.long	4082475170              # 0xf355a0a2
-	.long	2330014213              # 0x8ae13205
-	.long	4142626212              # 0xf6eb75a4
-	.long	2213296395              # 0x83ec390b
-	.long	1626319424              # 0x60efaa40
-	.long	1906247262              # 0x719f065e
-	.long	1846563261              # 0x6e1051bd
-	.long	562755902               # 0x218af93e
-	.long	3708173718              # 0xdd063d96
-	.long	1040559837              # 0x3e05aedd
-	.long	3871163981              # 0xe6bd464d
-	.long	1418573201              # 0x548db591
-	.long	3294430577              # 0xc45d0571
-	.long	114585348               # 0x6d46f04
-	.long	1343618912              # 0x5015ff60
-	.long	2566595609              # 0x98fb2419
-	.long	3186202582              # 0xbde997d6
-	.long	1078185097              # 0x4043cc89
-	.long	3651041127              # 0xd99e7767
-	.long	3896688048              # 0xe842bdb0
-	.long	2307622919              # 0x898b8807
-	.long	425408743               # 0x195b38e7
-	.long	3371096953              # 0xc8eedb79
-	.long	2081048481              # 0x7c0a47a1
-	.long	1108339068              # 0x420fe97c
-	.long	2216610296              # 0x841ec9f8
-	.long	0                       # 0x0
-	.long	2156299017              # 0x80868309
-	.long	736970802               # 0x2bed4832
-	.long	292596766               # 0x1170ac1e
-	.long	1517440620              # 0x5a724e6c
-	.long	251657213               # 0xefffbfd
-	.long	2235061775              # 0x8538560f
-	.long	2933202493              # 0xaed51e3d
-	.long	758720310               # 0x2d392736
-	.long	265905162               # 0xfd9640a
-	.long	1554391400              # 0x5ca62168
-	.long	1532285339              # 0x5b54d19b
-	.long	908999204               # 0x362e3a24
-	.long	174567692               # 0xa67b10c
-	.long	1474760595              # 0x57e70f93
-	.long	4002861748              # 0xee96d2b4
-	.long	2610011675              # 0x9b919e1b
-	.long	3234156416              # 0xc0c54f80
-	.long	3693126241              # 0xdc20a261
-	.long	2001430874              # 0x774b695a
-	.long	303699484               # 0x121a161c
-	.long	2478443234              # 0x93ba0ae2
-	.long	2687165888              # 0xa02ae5c0
-	.long	585122620               # 0x22e0433c
-	.long	454499602               # 0x1b171d12
-	.long	151849742               # 0x90d0b0e
-	.long	2345119218              # 0x8bc7adf2
-	.long	3064510765              # 0xb6a8b92d
-	.long	514443284               # 0x1ea9c814
-	.long	4044981591              # 0xf1198557
-	.long	1963412655              # 0x75074caf
-	.long	2581445614              # 0x99ddbbee
-	.long	2137062819              # 0x7f60fda3
-	.long	19308535                # 0x1269ff7
-	.long	1928707164              # 0x72f5bc5c
-	.long	1715193156              # 0x663bc544
-	.long	4219352155              # 0xfb7e345b
-	.long	1126790795              # 0x4329768b
-	.long	600235211               # 0x23c6dccb
-	.long	3992742070              # 0xedfc68b6
-	.long	3841024952              # 0xe4f163b8
-	.long	836553431               # 0x31dccad7
-	.long	1669664834              # 0x63851042
-	.long	2535604243              # 0x97224013
-	.long	3323011204              # 0xc6112084
-	.long	1243905413              # 0x4a247d85
-	.long	3141400786              # 0xbb3df8d2
-	.long	4180808110              # 0xf93211ae
-	.long	698445255               # 0x29a16dc7
-	.long	2653899549              # 0x9e2f4b1d
-	.long	2989552604              # 0xb230f3dc
-	.long	2253581325              # 0x8652ec0d
-	.long	3252932727              # 0xc1e3d077
-	.long	3004591147              # 0xb3166c2b
-	.long	1891211689              # 0x70b999a9
-	.long	2487810577              # 0x9448fa11
-	.long	3915653703              # 0xe9642247
-	.long	4237083816              # 0xfc8cc4a8
-	.long	4030667424              # 0xf03f1aa0
-	.long	2100090966              # 0x7d2cd856
-	.long	865136418               # 0x3390ef22
-	.long	1229899655              # 0x494ec787
-	.long	953270745               # 0x38d1c1d9
-	.long	3399679628              # 0xcaa2fe8c
-	.long	3557504664              # 0xd40b3698
-	.long	4118925222              # 0xf581cfa6
-	.long	2061379749              # 0x7ade28a5
-	.long	3079546586              # 0xb78e26da
-	.long	2915017791              # 0xadbfa43f
-	.long	983426092               # 0x3a9de42c
-	.long	2022837584              # 0x78920d50
-	.long	1607244650              # 0x5fcc9b6a
-	.long	2118541908              # 0x7e466254
-	.long	2366882550              # 0x8d13c2f6
-	.long	3635996816              # 0xd8b8e890
-	.long	972512814               # 0x39f75e2e
-	.long	3283088770              # 0xc3aff582
-	.long	1568718495              # 0x5d80be9f
-	.long	3499326569              # 0xd0937c69
-	.long	3576539503              # 0xd52da96f
-	.long	621982671               # 0x2512b3cf
-	.long	2895723464              # 0xac993bc8
-	.long	410887952               # 0x187da710
-	.long	2623762152              # 0x9c636ee8
-	.long	1002142683              # 0x3bbb7bdb
-	.long	645401037               # 0x267809cd
-	.long	1494807662              # 0x5918f46e
-	.long	2595684844              # 0x9ab701ec
-	.long	1335535747              # 0x4f9aa883
-	.long	2507040230              # 0x956e65e6
-	.long	4293295786              # 0xffe67eaa
-	.long	3167684641              # 0xbccf0821
-	.long	367585007               # 0x15e8e6ef
-	.long	3885750714              # 0xe79bd9ba
-	.long	1865862730              # 0x6f36ce4a
-	.long	2668221674              # 0x9f09d4ea
-	.long	2960971305              # 0xb07cd629
-	.long	2763173681              # 0xa4b2af31
-	.long	1059270954              # 0x3f23312a
-	.long	2777952454              # 0xa59430c6
-	.long	2724642869              # 0xa266c035
-	.long	1320957812              # 0x4ebc3774
-	.long	2194319100              # 0x82caa6fc
-	.long	2429595872              # 0x90d0b0e0
-	.long	2815956275              # 0xa7d81533
-	.long	77089521                # 0x4984af1
-	.long	3973773121              # 0xecdaf741
-	.long	3444575871              # 0xcd500e7f
-	.long	2448830231              # 0x91f62f17
-	.long	1305906550              # 0x4dd68d76
-	.long	4021308739              # 0xefb04d43
-	.long	2857194700              # 0xaa4d54cc
-	.long	2516901860              # 0x9604dfe4
-	.long	3518358430              # 0xd1b5e39e
-	.long	1787304780              # 0x6a881b4c
-	.long	740276417               # 0x2c1fb8c1
-	.long	1699839814              # 0x65517f46
-	.long	1592394909              # 0x5eea049d
-	.long	2352307457              # 0x8c355d01
-	.long	2272556026              # 0x877473fa
-	.long	188821243               # 0xb412efb
-	.long	1729977011              # 0x671d5ab3
-	.long	3687994002              # 0xdbd25292
-	.long	274084841               # 0x105633e9
-	.long	3594982253              # 0xd647136d
-	.long	3613494426              # 0xd7618c9a
-	.long	2701949495              # 0xa10c7a37
-	.long	4162096729              # 0xf8148e59
-	.long	322734571               # 0x133c89eb
-	.long	2837966542              # 0xa927eece
-	.long	1640576439              # 0x61c935b7
-	.long	484830689               # 0x1ce5ede1
-	.long	1202797690              # 0x47b13c7a
-	.long	3537852828              # 0xd2df599c
-	.long	4067639125              # 0xf2733f55
-	.long	349075736               # 0x14ce7918
-	.long	3342319475              # 0xc737bf73
-	.long	4157467219              # 0xf7cdea53
-	.long	4255800159              # 0xfdaa5b5f
-	.long	1030690015              # 0x3d6f14df
-	.long	1155237496              # 0x44db8678
-	.long	2951971274              # 0xaff381ca
-	.long	1757691577              # 0x68c43eb9
-	.long	607398968               # 0x24342c38
-	.long	2738905026              # 0xa3405fc2
-	.long	499347990               # 0x1dc37216
-	.long	3794078908              # 0xe2250cbc
-	.long	1011452712              # 0x3c498b28
-	.long	227885567               # 0xd9541ff
-	.long	2818666809              # 0xa8017139
-	.long	213114376               # 0xcb3de08
-	.long	3034881240              # 0xb4e49cd8
-	.long	1455525988              # 0x56c19064
-	.long	3414450555              # 0xcb84617b
-	.long	850817237               # 0x32b670d5
-	.long	1817998408              # 0x6c5c7448
-	.long	3092726480              # 0xb85742d0
-	.size	Td3, 1024
-
 	.type	Td4,@object             # @Td4
+	.section	.rodata,"a",@progbits
 	.p2align	4
 Td4:
 	.long	1381126738              # 0x52525252
@@ -6040,11 +6030,11 @@ Td4:
 	.long	2105376125              # 0x7d7d7d7d
 	.size	Td4, 1024
 
-	.type	.L.str.3,@object        # @.str.3
+	.type	.L.str.11,@object       # @.str.11
 	.section	.rodata.str1.1,"aMS",@progbits,1
-.L.str.3:
+.L.str.11:
 	.asciz	"xlen >= 0"
-	.size	.L.str.3, 10
+	.size	.L.str.11, 10
 
 	.type	.L.str.1,@object        # @.str.1
 .L.str.1:

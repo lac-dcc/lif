@@ -44,7 +44,7 @@ namespace cond {
 /// B)}, where Out(Bp) is the outgoing condition of Bp.
 struct Incoming {
     /// Let Out(Bp) = x and predicate(Bp, B) = p. Then, Cond = x & p.
-    llvm::Instruction *Cond;
+    llvm::Value *Cond;
     /// The predecessor basic block from where the condition comes.
     llvm::BasicBlock *From;
 };
@@ -54,10 +54,10 @@ using InMap =
     llvm::DenseMap<llvm::BasicBlock *, llvm::SmallVector<Incoming, 8>>;
 
 /// A map between a basic block and its outgoing condition.
-using OutMap = llvm::DenseMap<llvm::BasicBlock *, llvm::Instruction *>;
+using OutMap = llvm::DenseMap<llvm::BasicBlock *, llvm::Value *>;
 
-/// Allocates a variable for each basic block in \p F representing their
-/// outgoing conditions.
+/// Allocates a variable for each basic block (that is not an exit block) in \p
+/// F representing their outgoing conditions.
 ///
 /// The actual computation of the outgoing condition is not done here. This
 /// function only reserves a name for the out variable. The size of each basic
@@ -82,9 +82,8 @@ bindIn(llvm::BasicBlock &BB, const OutMap OutM);
 /// to compute the outgoing condition.
 ///
 /// \returns the set of instructions generated.
-std::vector<llvm::Value *>
-bindOut(llvm::BasicBlock &BB, llvm::Value *OutPtr,
-        const llvm::SmallVectorImpl<llvm::Value *> &InV);
+std::vector<llvm::Value *> bindOut(llvm::BasicBlock &BB, llvm::Value *OutPtr,
+                                   const llvm::SmallVectorImpl<Incoming> &InV);
 
 /// Traverses the basic blocks of \p F, binding the proper incoming and outgoing
 /// conditions to them.
@@ -98,7 +97,7 @@ bindOut(llvm::BasicBlock &BB, llvm::Value *OutPtr,
 std::pair<InMap, std::vector<llvm::Value *>> bind(llvm::Function &F,
                                                   const OutMap OutM);
 
-/// Fold a list of incoming conds. (\p InV) into a single value / by applying
+/// Fold a list of incoming conds. (\p InV) into a single value by applying
 /// the | (or) operator.
 ///
 /// This method requries #incoming conds > 0.

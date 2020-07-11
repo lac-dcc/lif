@@ -14,62 +14,15 @@ main:                                   # @main
 	subq	$272, %rsp              # imm = 0x110
 	movq	%fs:40, %rax
 	movq	%rax, -8(%rbp)
-	movabsq	$4294967296, %rax       # imm = 0x100000000
-	movq	%rax, -272(%rbp)
-	movl	$0, -144(%rbp)
-	movabsq	$8589934593, %rax       # imm = 0x200000001
-	movq	%rax, -140(%rbp)
-	movabsq	$12884901890, %rax      # imm = 0x300000002
-	movq	%rax, -264(%rbp)
-	movabsq	$17179869187, %rax      # imm = 0x400000003
-	movq	%rax, -132(%rbp)
-	movabsq	$21474836484, %rax      # imm = 0x500000004
-	movq	%rax, -256(%rbp)
-	movabsq	$25769803781, %rax      # imm = 0x600000005
-	movq	%rax, -124(%rbp)
-	movabsq	$30064771078, %rax      # imm = 0x700000006
-	movq	%rax, -248(%rbp)
-	movabsq	$34359738375, %rax      # imm = 0x800000007
-	movq	%rax, -116(%rbp)
-	movabsq	$38654705672, %rax      # imm = 0x900000008
-	movq	%rax, -240(%rbp)
-	movabsq	$42949672969, %rax      # imm = 0xA00000009
-	movq	%rax, -108(%rbp)
-	movabsq	$47244640266, %rax      # imm = 0xB0000000A
-	movq	%rax, -232(%rbp)
-	movabsq	$51539607563, %rax      # imm = 0xC0000000B
-	movq	%rax, -100(%rbp)
-	movabsq	$55834574860, %rax      # imm = 0xD0000000C
-	movq	%rax, -224(%rbp)
-	movabsq	$60129542157, %rax      # imm = 0xE0000000D
-	movq	%rax, -92(%rbp)
-	movabsq	$64424509454, %rax      # imm = 0xF0000000E
-	movq	%rax, -216(%rbp)
-	movl	$15, -84(%rbp)
-	movabsq	$73014444048, %rax      # imm = 0x1100000010
-	movq	%rax, -208(%rbp)
-	movq	%rax, -80(%rbp)
-	movabsq	$81604378642, %rax      # imm = 0x1300000012
-	movq	%rax, -200(%rbp)
-	movq	%rax, -72(%rbp)
-	movabsq	$90194313236, %rax      # imm = 0x1500000014
-	movq	%rax, -192(%rbp)
-	movq	%rax, -64(%rbp)
-	movabsq	$98784247830, %rax      # imm = 0x1700000016
-	movq	%rax, -184(%rbp)
-	movq	%rax, -56(%rbp)
-	movabsq	$107374182424, %rax     # imm = 0x1900000018
-	movq	%rax, -176(%rbp)
-	movq	%rax, -48(%rbp)
-	movabsq	$115964117018, %rax     # imm = 0x1B0000001A
-	movq	%rax, -168(%rbp)
-	movq	%rax, -40(%rbp)
-	movabsq	$124554051612, %rax     # imm = 0x1D0000001C
-	movq	%rax, -160(%rbp)
-	movq	%rax, -32(%rbp)
-	movabsq	$133143986206, %rax     # imm = 0x1F0000001E
-	movq	%rax, -152(%rbp)
-	movq	%rax, -24(%rbp)
+	xorl	%eax, %eax
+	.p2align	4, 0x90
+.LBB0_1:                                # =>This Inner Loop Header: Depth=1
+	movl	%eax, -272(%rbp,%rax,4)
+	movl	%eax, -144(%rbp,%rax,4)
+	addq	$1, %rax
+	cmpq	$32, %rax
+	jne	.LBB0_1
+# %bb.2:
 	leaq	-144(%rbp), %rdi
 	leaq	-272(%rbp), %rdx
 	movl	$32, %esi
@@ -81,14 +34,14 @@ main:                                   # @main
 	callq	printf
 	movq	%fs:40, %rax
 	cmpq	-8(%rbp), %rax
-	jne	.LBB0_2
-# %bb.1:                                # %SP_return
+	jne	.LBB0_4
+# %bb.3:                                # %SP_return
 	xorl	%eax, %eax
 	addq	$272, %rsp              # imm = 0x110
 	popq	%rbp
 	.cfi_def_cfa %rsp, 8
 	retq
-.LBB0_2:                                # %CallStackCheckFailBlk
+.LBB0_4:                                # %CallStackCheckFailBlk
 	.cfi_def_cfa %rbp, 16
 	callq	__stack_chk_fail
 .Lfunc_end0:
@@ -107,8 +60,7 @@ comp:                                   # @comp
 	pushq	%r12
 	pushq	%rbx
 	movq	%rcx, %r15
-	movq	%rdx, %r11
-	movq	%rsi, %r14
+	movq	%rdx, %r14
 	movl	(%rdi), %eax
 	movl	(%rdx), %ebp
 	movl	%eax, %r8d
@@ -132,10 +84,9 @@ comp:                                   # @comp
 	setne	-10(%rsp)               # 1-byte Folded Spill
 	xorl	%ebp, %ebx
 	leaq	8(%rdi), %r10
-	leaq	8(%r11), %r9
+	leaq	8(%r14), %r9
 	orl	%r8d, %ebx
-	sete	%al
-	movb	%al, -11(%rsp)          # 1-byte Spill
+	sete	%r8b
 	movq	%rdx, %rbx
 	cmoveq	%r10, %rbx
 	movq	%rdx, %rbp
@@ -146,13 +97,13 @@ comp:                                   # @comp
 	cmpq	$2, %rcx
 	cmovgq	%r9, %rbp
 	cmpl	(%rbp), %ebx
-	setne	-56(%rsp)               # 1-byte Folded Spill
-	sete	%cl
-	andb	%al, %cl
+	setne	%r11b
+	sete	%al
+	andb	%r8b, %al
 	leaq	12(%rdi), %r9
-	leaq	12(%r11), %r8
-	testb	%cl, %cl
-	movb	%cl, -12(%rsp)          # 1-byte Spill
+	leaq	12(%r14), %r8
+	testb	%al, %al
+	movb	%al, -12(%rsp)          # 1-byte Spill
 	movq	%rdx, %rbx
 	cmovneq	%r9, %rbx
 	movq	%rdx, %rbp
@@ -160,16 +111,16 @@ comp:                                   # @comp
 	cmpq	$3, %rsi
 	cmovgq	%r9, %rbx
 	movl	(%rbx), %ebx
-	cmpq	$3, %r15
+	cmpq	$3, %rcx
 	cmovgq	%r8, %rbp
 	cmpl	(%rbp), %ebx
-	setne	-57(%rsp)               # 1-byte Folded Spill
-	sete	%al
-	andb	%cl, %al
+	setne	-11(%rsp)               # 1-byte Folded Spill
+	sete	%cl
+	andb	%al, %cl
 	leaq	16(%rdi), %r9
-	leaq	16(%r11), %r8
-	testb	%al, %al
-	movb	%al, -13(%rsp)          # 1-byte Spill
+	leaq	16(%r14), %r8
+	testb	%cl, %cl
+	movb	%cl, -14(%rsp)          # 1-byte Spill
 	movq	%rdx, %rbx
 	cmovneq	%r9, %rbx
 	movq	%rdx, %rbp
@@ -180,13 +131,13 @@ comp:                                   # @comp
 	cmpq	$4, %r15
 	cmovgq	%r8, %rbp
 	cmpl	(%rbp), %ebx
-	setne	-58(%rsp)               # 1-byte Folded Spill
-	sete	%cl
-	andb	%al, %cl
+	setne	-13(%rsp)               # 1-byte Folded Spill
+	sete	%al
+	andb	%cl, %al
 	leaq	20(%rdi), %r9
-	leaq	20(%r11), %r8
-	testb	%cl, %cl
-	movb	%cl, -14(%rsp)          # 1-byte Spill
+	leaq	20(%r14), %r8
+	testb	%al, %al
+	movb	%al, -16(%rsp)          # 1-byte Spill
 	movq	%rdx, %rbx
 	cmovneq	%r9, %rbx
 	movq	%rdx, %rbp
@@ -197,13 +148,13 @@ comp:                                   # @comp
 	cmpq	$5, %r15
 	cmovgq	%r8, %rbp
 	cmpl	(%rbp), %ebx
-	setne	-59(%rsp)               # 1-byte Folded Spill
-	sete	%al
-	andb	%cl, %al
+	setne	-15(%rsp)               # 1-byte Folded Spill
+	sete	%cl
+	andb	%al, %cl
 	leaq	24(%rdi), %r9
-	leaq	24(%r11), %r8
-	testb	%al, %al
-	movb	%al, -15(%rsp)          # 1-byte Spill
+	leaq	24(%r14), %r8
+	testb	%cl, %cl
+	movb	%cl, -18(%rsp)          # 1-byte Spill
 	movq	%rdx, %rbx
 	cmovneq	%r9, %rbx
 	movq	%rdx, %rbp
@@ -214,13 +165,13 @@ comp:                                   # @comp
 	cmpq	$6, %r15
 	cmovgq	%r8, %rbp
 	cmpl	(%rbp), %ebx
-	setne	-60(%rsp)               # 1-byte Folded Spill
-	sete	%cl
-	andb	%al, %cl
+	setne	-17(%rsp)               # 1-byte Folded Spill
+	sete	%al
+	andb	%cl, %al
 	leaq	28(%rdi), %r9
-	leaq	28(%r11), %r8
-	testb	%cl, %cl
-	movb	%cl, -16(%rsp)          # 1-byte Spill
+	leaq	28(%r14), %r8
+	testb	%al, %al
+	movb	%al, -20(%rsp)          # 1-byte Spill
 	movq	%rdx, %rbx
 	cmovneq	%r9, %rbx
 	movq	%rdx, %rbp
@@ -231,32 +182,32 @@ comp:                                   # @comp
 	cmpq	$7, %r15
 	cmovgq	%r8, %rbp
 	cmpl	(%rbp), %ebx
-	setne	-61(%rsp)               # 1-byte Folded Spill
-	sete	%al
-	andb	%cl, %al
-	leaq	32(%rdi), %r8
-	testb	%al, %al
-	movb	%al, -17(%rsp)          # 1-byte Spill
-	movq	%rdx, %rbx
-	cmovneq	%r8, %rbx
-	leaq	32(%r11), %r9
-	movq	%rdx, %rbp
-	cmovneq	%r9, %rbp
-	cmpq	$8, %rsi
-	cmovgq	%r8, %rbx
-	cmpq	$8, %r15
-	cmovgq	%r9, %rbp
-	movl	(%rbx), %ebx
-	cmpl	(%rbp), %ebx
-	setne	-62(%rsp)               # 1-byte Folded Spill
+	setne	-19(%rsp)               # 1-byte Folded Spill
 	sete	%cl
 	andb	%al, %cl
-	leaq	36(%rdi), %r8
+	leaq	32(%rdi), %r9
+	leaq	32(%r14), %r8
 	testb	%cl, %cl
-	movb	%cl, -18(%rsp)          # 1-byte Spill
+	movb	%cl, -22(%rsp)          # 1-byte Spill
+	movq	%rdx, %rbx
+	cmovneq	%r9, %rbx
+	movq	%rdx, %rbp
+	cmovneq	%r8, %rbp
+	cmpq	$8, %rsi
+	cmovgq	%r9, %rbx
+	movl	(%rbx), %ebx
+	cmpq	$8, %r15
+	cmovgq	%r8, %rbp
+	cmpl	(%rbp), %ebx
+	setne	-21(%rsp)               # 1-byte Folded Spill
+	sete	%al
+	andb	%cl, %al
+	leaq	36(%rdi), %r8
+	testb	%al, %al
+	movb	%al, -24(%rsp)          # 1-byte Spill
 	movq	%rdx, %rbx
 	cmovneq	%r8, %rbx
-	leaq	36(%r11), %r9
+	leaq	36(%r14), %r9
 	movq	%rdx, %rbp
 	cmovneq	%r9, %rbp
 	cmpq	$9, %rsi
@@ -265,32 +216,32 @@ comp:                                   # @comp
 	cmovgq	%r9, %rbp
 	movl	(%rbx), %ebx
 	cmpl	(%rbp), %ebx
-	setne	-53(%rsp)               # 1-byte Folded Spill
+	setne	-23(%rsp)               # 1-byte Folded Spill
+	sete	%cl
+	andb	%al, %cl
+	leaq	40(%rdi), %r8
+	testb	%cl, %cl
+	movb	%cl, -26(%rsp)          # 1-byte Spill
+	movq	%rdx, %rbx
+	cmovneq	%r8, %rbx
+	leaq	40(%r14), %r9
+	movq	%rdx, %rbp
+	cmovneq	%r9, %rbp
+	cmpq	$10, %rsi
+	cmovgq	%r8, %rbx
+	cmpq	$10, %r15
+	cmovgq	%r9, %rbp
+	movl	(%rbx), %ebx
+	cmpl	(%rbp), %ebx
+	setne	-25(%rsp)               # 1-byte Folded Spill
 	sete	%al
 	andb	%cl, %al
 	testb	%al, %al
-	movb	%al, -19(%rsp)          # 1-byte Spill
-	leaq	40(%rdi), %r9
-	movq	%rdx, %rbx
-	cmovneq	%r9, %rbx
-	leaq	40(%r11), %r8
-	movq	%rdx, %rbp
-	cmovneq	%r8, %rbp
-	cmpq	$10, %rsi
-	cmovgq	%r9, %rbx
-	cmpq	$10, %r15
-	cmovgq	%r8, %rbp
-	movl	(%rbx), %ebx
-	cmpl	(%rbp), %ebx
-	setne	-63(%rsp)               # 1-byte Folded Spill
-	sete	%cl
-	andb	%al, %cl
-	testb	%cl, %cl
-	movb	%cl, -20(%rsp)          # 1-byte Spill
+	movb	%al, -28(%rsp)          # 1-byte Spill
 	leaq	44(%rdi), %r9
 	movq	%rdx, %rbx
 	cmovneq	%r9, %rbx
-	leaq	44(%r11), %r8
+	leaq	44(%r14), %r8
 	movq	%rdx, %rbp
 	cmovneq	%r8, %rbp
 	cmpq	$11, %rsi
@@ -299,15 +250,15 @@ comp:                                   # @comp
 	cmovgq	%r8, %rbp
 	movl	(%rbx), %ebx
 	cmpl	(%rbp), %ebx
-	setne	-54(%rsp)               # 1-byte Folded Spill
-	sete	%al
-	andb	%cl, %al
-	testb	%al, %al
-	movb	%al, -21(%rsp)          # 1-byte Spill
+	setne	-27(%rsp)               # 1-byte Folded Spill
+	sete	%cl
+	andb	%al, %cl
+	testb	%cl, %cl
+	movb	%cl, -30(%rsp)          # 1-byte Spill
 	leaq	48(%rdi), %r9
 	movq	%rdx, %rbx
 	cmovneq	%r9, %rbx
-	leaq	48(%r11), %r8
+	leaq	48(%r14), %r8
 	movq	%rdx, %rbp
 	cmovneq	%r8, %rbp
 	cmpq	$12, %rsi
@@ -316,15 +267,15 @@ comp:                                   # @comp
 	cmovgq	%r8, %rbp
 	movl	(%rbx), %ebx
 	cmpl	(%rbp), %ebx
-	setne	-64(%rsp)               # 1-byte Folded Spill
-	sete	%cl
-	andb	%al, %cl
-	testb	%cl, %cl
-	movb	%cl, -22(%rsp)          # 1-byte Spill
+	setne	-29(%rsp)               # 1-byte Folded Spill
+	sete	%al
+	andb	%cl, %al
+	testb	%al, %al
+	movb	%al, -32(%rsp)          # 1-byte Spill
 	leaq	52(%rdi), %r9
 	movq	%rdx, %rbx
 	cmovneq	%r9, %rbx
-	leaq	52(%r11), %r8
+	leaq	52(%r14), %r8
 	movq	%rdx, %rbp
 	cmovneq	%r8, %rbp
 	cmpq	$13, %rsi
@@ -333,15 +284,15 @@ comp:                                   # @comp
 	cmovgq	%r8, %rbp
 	movl	(%rbx), %ebx
 	cmpl	(%rbp), %ebx
-	setne	-65(%rsp)               # 1-byte Folded Spill
-	sete	%al
-	andb	%cl, %al
-	testb	%al, %al
-	movb	%al, -23(%rsp)          # 1-byte Spill
+	setne	-31(%rsp)               # 1-byte Folded Spill
+	sete	%cl
+	andb	%al, %cl
+	testb	%cl, %cl
+	movb	%cl, -33(%rsp)          # 1-byte Spill
 	leaq	56(%rdi), %r9
 	movq	%rdx, %rbx
 	cmovneq	%r9, %rbx
-	leaq	56(%r11), %r8
+	leaq	56(%r14), %r8
 	movq	%rdx, %rbp
 	cmovneq	%r8, %rbp
 	cmpq	$14, %rsi
@@ -350,15 +301,15 @@ comp:                                   # @comp
 	cmovgq	%r8, %rbp
 	movl	(%rbx), %ebx
 	cmpl	(%rbp), %ebx
-	setne	-66(%rsp)               # 1-byte Folded Spill
-	sete	%cl
-	andb	%al, %cl
-	testb	%cl, %cl
-	movb	%cl, -24(%rsp)          # 1-byte Spill
+	setne	-52(%rsp)               # 1-byte Folded Spill
+	sete	%al
+	andb	%cl, %al
+	testb	%al, %al
+	movb	%al, -34(%rsp)          # 1-byte Spill
 	leaq	60(%rdi), %r9
 	movq	%rdx, %rbx
 	cmovneq	%r9, %rbx
-	leaq	60(%r11), %r8
+	leaq	60(%r14), %r8
 	movq	%rdx, %rbp
 	cmovneq	%r8, %rbp
 	cmpq	$15, %rsi
@@ -367,15 +318,15 @@ comp:                                   # @comp
 	cmovgq	%r8, %rbp
 	movl	(%rbx), %ebx
 	cmpl	(%rbp), %ebx
-	setne	-67(%rsp)               # 1-byte Folded Spill
-	sete	%al
-	andb	%cl, %al
-	testb	%al, %al
-	movb	%al, -25(%rsp)          # 1-byte Spill
+	setne	-53(%rsp)               # 1-byte Folded Spill
+	sete	%cl
+	andb	%al, %cl
+	testb	%cl, %cl
+	movb	%cl, -35(%rsp)          # 1-byte Spill
 	leaq	64(%rdi), %r9
 	movq	%rdx, %rbx
 	cmovneq	%r9, %rbx
-	leaq	64(%r11), %r8
+	leaq	64(%r14), %r8
 	movq	%rdx, %rbp
 	cmovneq	%r8, %rbp
 	cmpq	$16, %rsi
@@ -384,15 +335,15 @@ comp:                                   # @comp
 	cmovgq	%r8, %rbp
 	movl	(%rbx), %ebx
 	cmpl	(%rbp), %ebx
-	setne	-68(%rsp)               # 1-byte Folded Spill
-	sete	%cl
-	andb	%al, %cl
-	testb	%cl, %cl
-	movb	%cl, -27(%rsp)          # 1-byte Spill
+	setne	-54(%rsp)               # 1-byte Folded Spill
+	sete	%al
+	andb	%cl, %al
+	testb	%al, %al
+	movb	%al, -36(%rsp)          # 1-byte Spill
 	leaq	68(%rdi), %r9
 	movq	%rdx, %rbx
 	cmovneq	%r9, %rbx
-	leaq	68(%r11), %r8
+	leaq	68(%r14), %r8
 	movq	%rdx, %rbp
 	cmovneq	%r8, %rbp
 	cmpq	$17, %rsi
@@ -401,15 +352,15 @@ comp:                                   # @comp
 	cmovgq	%r8, %rbp
 	movl	(%rbx), %ebx
 	cmpl	(%rbp), %ebx
-	setne	-26(%rsp)               # 1-byte Folded Spill
-	sete	%al
-	andb	%cl, %al
-	testb	%al, %al
-	movb	%al, -29(%rsp)          # 1-byte Spill
+	setne	-55(%rsp)               # 1-byte Folded Spill
+	sete	%cl
+	andb	%al, %cl
+	testb	%cl, %cl
+	movb	%cl, -38(%rsp)          # 1-byte Spill
 	leaq	72(%rdi), %r9
 	movq	%rdx, %rbx
 	cmovneq	%r9, %rbx
-	leaq	72(%r11), %r8
+	leaq	72(%r14), %r8
 	movq	%rdx, %rbp
 	cmovneq	%r8, %rbp
 	cmpq	$18, %rsi
@@ -418,15 +369,15 @@ comp:                                   # @comp
 	cmovgq	%r8, %rbp
 	movl	(%rbx), %ebx
 	cmpl	(%rbp), %ebx
-	setne	-28(%rsp)               # 1-byte Folded Spill
-	sete	%cl
-	andb	%al, %cl
-	testb	%cl, %cl
-	movb	%cl, -31(%rsp)          # 1-byte Spill
+	setne	-37(%rsp)               # 1-byte Folded Spill
+	sete	%al
+	andb	%cl, %al
+	testb	%al, %al
+	movb	%al, -39(%rsp)          # 1-byte Spill
 	leaq	76(%rdi), %r9
 	movq	%rdx, %rbx
 	cmovneq	%r9, %rbx
-	leaq	76(%r11), %r8
+	leaq	76(%r14), %r8
 	movq	%rdx, %rbp
 	cmovneq	%r8, %rbp
 	cmpq	$19, %rsi
@@ -435,15 +386,15 @@ comp:                                   # @comp
 	cmovgq	%r8, %rbp
 	movl	(%rbx), %ebx
 	cmpl	(%rbp), %ebx
-	setne	-30(%rsp)               # 1-byte Folded Spill
-	sete	%al
-	andb	%cl, %al
-	testb	%al, %al
-	movb	%al, -33(%rsp)          # 1-byte Spill
+	setne	-65(%rsp)               # 1-byte Folded Spill
+	sete	%cl
+	andb	%al, %cl
+	testb	%cl, %cl
+	movb	%cl, -40(%rsp)          # 1-byte Spill
 	leaq	80(%rdi), %r9
 	movq	%rdx, %rbx
 	cmovneq	%r9, %rbx
-	leaq	80(%r11), %r8
+	leaq	80(%r14), %r8
 	movq	%rdx, %rbp
 	cmovneq	%r8, %rbp
 	cmpq	$20, %rsi
@@ -452,15 +403,15 @@ comp:                                   # @comp
 	cmovgq	%r8, %rbp
 	movl	(%rbx), %ebx
 	cmpl	(%rbp), %ebx
-	setne	-32(%rsp)               # 1-byte Folded Spill
-	sete	%cl
-	andb	%al, %cl
-	testb	%cl, %cl
-	movb	%cl, -35(%rsp)          # 1-byte Spill
+	setne	-56(%rsp)               # 1-byte Folded Spill
+	sete	%al
+	andb	%cl, %al
+	testb	%al, %al
+	movb	%al, -41(%rsp)          # 1-byte Spill
 	leaq	84(%rdi), %r9
 	movq	%rdx, %rbx
 	cmovneq	%r9, %rbx
-	leaq	84(%r11), %r8
+	leaq	84(%r14), %r8
 	movq	%rdx, %rbp
 	cmovneq	%r8, %rbp
 	cmpq	$21, %rsi
@@ -469,15 +420,15 @@ comp:                                   # @comp
 	cmovgq	%r8, %rbp
 	movl	(%rbx), %ebx
 	cmpl	(%rbp), %ebx
-	setne	-34(%rsp)               # 1-byte Folded Spill
-	sete	%al
-	andb	%cl, %al
-	testb	%al, %al
-	movb	%al, -37(%rsp)          # 1-byte Spill
+	setne	-57(%rsp)               # 1-byte Folded Spill
+	sete	%cl
+	andb	%al, %cl
+	testb	%cl, %cl
+	movb	%cl, -42(%rsp)          # 1-byte Spill
 	leaq	88(%rdi), %r9
 	movq	%rdx, %rbx
 	cmovneq	%r9, %rbx
-	leaq	88(%r11), %r8
+	leaq	88(%r14), %r8
 	movq	%rdx, %rbp
 	cmovneq	%r8, %rbp
 	cmpq	$22, %rsi
@@ -486,15 +437,15 @@ comp:                                   # @comp
 	cmovgq	%r8, %rbp
 	movl	(%rbx), %ebx
 	cmpl	(%rbp), %ebx
-	setne	-36(%rsp)               # 1-byte Folded Spill
-	sete	%cl
-	andb	%al, %cl
-	testb	%cl, %cl
-	movb	%cl, -39(%rsp)          # 1-byte Spill
+	setne	-58(%rsp)               # 1-byte Folded Spill
+	sete	%al
+	andb	%cl, %al
+	testb	%al, %al
+	movb	%al, -43(%rsp)          # 1-byte Spill
 	leaq	92(%rdi), %r9
 	movq	%rdx, %rbx
 	cmovneq	%r9, %rbx
-	leaq	92(%r11), %r8
+	leaq	92(%r14), %r8
 	movq	%rdx, %rbp
 	cmovneq	%r8, %rbp
 	cmpq	$23, %rsi
@@ -503,15 +454,15 @@ comp:                                   # @comp
 	cmovgq	%r8, %rbp
 	movl	(%rbx), %ebx
 	cmpl	(%rbp), %ebx
-	setne	-38(%rsp)               # 1-byte Folded Spill
-	sete	%al
-	andb	%cl, %al
-	testb	%al, %al
-	movb	%al, -41(%rsp)          # 1-byte Spill
+	setne	-59(%rsp)               # 1-byte Folded Spill
+	sete	%cl
+	andb	%al, %cl
+	testb	%cl, %cl
+	movb	%cl, -44(%rsp)          # 1-byte Spill
 	leaq	96(%rdi), %r9
 	movq	%rdx, %rbx
 	cmovneq	%r9, %rbx
-	leaq	96(%r11), %r8
+	leaq	96(%r14), %r8
 	movq	%rdx, %rbp
 	cmovneq	%r8, %rbp
 	cmpq	$24, %rsi
@@ -520,15 +471,15 @@ comp:                                   # @comp
 	cmovgq	%r8, %rbp
 	movl	(%rbx), %ebx
 	cmpl	(%rbp), %ebx
-	setne	-40(%rsp)               # 1-byte Folded Spill
-	sete	%cl
-	andb	%al, %cl
-	testb	%cl, %cl
-	movb	%cl, -43(%rsp)          # 1-byte Spill
+	setne	-66(%rsp)               # 1-byte Folded Spill
+	sete	%al
+	andb	%cl, %al
+	testb	%al, %al
+	movb	%al, -45(%rsp)          # 1-byte Spill
 	leaq	100(%rdi), %r9
 	movq	%rdx, %rbx
 	cmovneq	%r9, %rbx
-	leaq	100(%r11), %r8
+	leaq	100(%r14), %r8
 	movq	%rdx, %rbp
 	cmovneq	%r8, %rbp
 	cmpq	$25, %rsi
@@ -537,15 +488,15 @@ comp:                                   # @comp
 	cmovgq	%r8, %rbp
 	movl	(%rbx), %ebx
 	cmpl	(%rbp), %ebx
-	setne	-42(%rsp)               # 1-byte Folded Spill
-	sete	%al
-	andb	%cl, %al
-	testb	%al, %al
-	movb	%al, -45(%rsp)          # 1-byte Spill
+	setne	-60(%rsp)               # 1-byte Folded Spill
+	sete	%cl
+	andb	%al, %cl
+	testb	%cl, %cl
+	movb	%cl, -46(%rsp)          # 1-byte Spill
 	leaq	104(%rdi), %r8
 	movq	%rdx, %r10
 	cmovneq	%r8, %r10
-	leaq	104(%r11), %r9
+	leaq	104(%r14), %r9
 	movq	%rdx, %rbx
 	cmovneq	%r9, %rbx
 	cmpq	$26, %rsi
@@ -554,15 +505,15 @@ comp:                                   # @comp
 	cmovgq	%r9, %rbx
 	movl	(%r10), %ebp
 	cmpl	(%rbx), %ebp
-	setne	-44(%rsp)               # 1-byte Folded Spill
-	sete	%cl
-	andb	%al, %cl
-	testb	%cl, %cl
-	movb	%cl, -47(%rsp)          # 1-byte Spill
+	setne	-61(%rsp)               # 1-byte Folded Spill
+	sete	%al
+	andb	%cl, %al
+	testb	%al, %al
+	movb	%al, -47(%rsp)          # 1-byte Spill
 	leaq	108(%rdi), %r8
 	movq	%rdx, %r10
 	cmovneq	%r8, %r10
-	leaq	108(%r11), %r9
+	leaq	108(%r14), %r9
 	movq	%rdx, %rbp
 	cmovneq	%r9, %rbp
 	cmpq	$27, %rsi
@@ -571,15 +522,15 @@ comp:                                   # @comp
 	cmovgq	%r9, %rbp
 	movl	(%r10), %ebx
 	cmpl	(%rbp), %ebx
-	setne	-46(%rsp)               # 1-byte Folded Spill
-	sete	%al
-	andb	%cl, %al
-	testb	%al, %al
-	movb	%al, -49(%rsp)          # 1-byte Spill
+	setne	-62(%rsp)               # 1-byte Folded Spill
+	sete	%cl
+	andb	%al, %cl
+	testb	%cl, %cl
+	movb	%cl, -49(%rsp)          # 1-byte Spill
 	leaq	112(%rdi), %r9
 	movq	%rdx, %rbx
 	cmovneq	%r9, %rbx
-	leaq	112(%r11), %r8
+	leaq	112(%r14), %r8
 	movq	%rdx, %rbp
 	cmovneq	%r8, %rbp
 	cmpq	$28, %rsi
@@ -588,161 +539,145 @@ comp:                                   # @comp
 	cmovgq	%r8, %rbp
 	movl	(%rbx), %ebx
 	cmpl	(%rbp), %ebx
-	setne	-48(%rsp)               # 1-byte Folded Spill
-	sete	%cl
-	andb	%al, %cl
-	testb	%cl, %cl
-	movb	%cl, -51(%rsp)          # 1-byte Spill
-	leaq	116(%rdi), %r8
-	movq	%rdx, %rbx
-	cmovneq	%r8, %rbx
-	leaq	116(%r11), %r9
-	movq	%rdx, %rax
-	cmovneq	%r9, %rax
-	cmpq	$29, %rsi
-	cmovgq	%r8, %rbx
-	cmpq	$29, %r15
-	cmovgq	%r9, %rax
-	movl	(%rbx), %ebx
-	cmpl	(%rax), %ebx
-	setne	-50(%rsp)               # 1-byte Folded Spill
-	sete	%r13b
-	andb	%cl, %r13b
-	testb	%r13b, %r13b
-	leaq	120(%rdi), %r9
-	movq	%rdx, %rax
-	cmovneq	%r9, %rax
-	leaq	120(%r11), %rsi
-	movq	%rdx, %rcx
-	cmovneq	%rsi, %rcx
-	cmpq	$30, %r14
-	cmovgq	%r9, %rax
-	cmpq	$30, %r15
-	cmovgq	%rsi, %rcx
-	movl	(%rax), %eax
-	cmpl	(%rcx), %eax
-	setne	-55(%rsp)               # 1-byte Folded Spill
+	setne	-63(%rsp)               # 1-byte Folded Spill
 	sete	%al
-	andb	%r13b, %al
-	movb	%al, -52(%rsp)          # 1-byte Spill
-	addq	$124, %rdi
-	addq	$124, %r11
+	andb	%cl, %al
 	testb	%al, %al
+	movl	%eax, %ecx
+	movb	%al, -51(%rsp)          # 1-byte Spill
+	leaq	116(%rdi), %rbp
+	movq	%rdx, %rbx
+	cmovneq	%rbp, %rbx
+	leaq	116(%r14), %r8
+	movq	%rdx, %rax
+	cmovneq	%r8, %rax
+	cmpq	$29, %rsi
+	cmovgq	%rbp, %rbx
+	cmpq	$29, %r15
+	cmovgq	%r8, %rax
+	movl	(%rbx), %ebp
+	cmpl	(%rax), %ebp
+	setne	-50(%rsp)               # 1-byte Folded Spill
+	sete	%r8b
+	andb	%cl, %r8b
+	testb	%r8b, %r8b
+	leaq	120(%rdi), %rax
+	movq	%rdx, %rbx
+	cmovneq	%rax, %rbx
+	leaq	120(%r14), %rbp
+	movq	%rdx, %rcx
+	cmovneq	%rbp, %rcx
+	cmpq	$30, %rsi
+	cmovgq	%rax, %rbx
+	cmpq	$30, %r15
+	cmovgq	%rbp, %rcx
+	movl	(%rbx), %eax
+	cmpl	(%rcx), %eax
+	setne	-64(%rsp)               # 1-byte Folded Spill
+	sete	%al
+	addq	$124, %rdi
+	addq	$124, %r14
+	testb	%al, %r8b
 	movq	%rdx, %rax
 	cmovneq	%rdi, %rax
-	cmovneq	%r11, %rdx
-	cmpq	$31, %r14
+	cmovneq	%r14, %rdx
+	cmpq	$31, %rsi
 	cmovgq	%rdi, %rax
 	cmpq	$31, %r15
-	cmovgq	%r11, %rdx
+	cmovgq	%r14, %rdx
 	movl	(%rax), %eax
 	cmpl	(%rdx), %eax
-	setne	%al
-	movb	-56(%rsp), %cl          # 1-byte Reload
-	andb	-11(%rsp), %cl          # 1-byte Folded Reload
-	movb	%cl, -56(%rsp)          # 1-byte Spill
-	movb	-57(%rsp), %cl          # 1-byte Reload
+	sete	-48(%rsp)               # 1-byte Folded Spill
+	movb	-11(%rsp), %cl          # 1-byte Reload
 	andb	-12(%rsp), %cl          # 1-byte Folded Reload
-	movb	%cl, -57(%rsp)          # 1-byte Spill
-	movb	-58(%rsp), %cl          # 1-byte Reload
-	andb	-13(%rsp), %cl          # 1-byte Folded Reload
-	movb	%cl, -58(%rsp)          # 1-byte Spill
-	movb	-59(%rsp), %cl          # 1-byte Reload
-	andb	-14(%rsp), %cl          # 1-byte Folded Reload
-	movb	%cl, -59(%rsp)          # 1-byte Spill
-	movb	-60(%rsp), %cl          # 1-byte Reload
-	andb	-15(%rsp), %cl          # 1-byte Folded Reload
-	movb	%cl, -60(%rsp)          # 1-byte Spill
-	movb	-61(%rsp), %cl          # 1-byte Reload
-	andb	-16(%rsp), %cl          # 1-byte Folded Reload
-	movb	%cl, -61(%rsp)          # 1-byte Spill
-	movb	-62(%rsp), %cl          # 1-byte Reload
-	andb	-17(%rsp), %cl          # 1-byte Folded Reload
-	movb	%cl, -62(%rsp)          # 1-byte Spill
-	movb	-18(%rsp), %cl          # 1-byte Reload
-	andb	%cl, -53(%rsp)          # 1-byte Folded Spill
-	movb	-63(%rsp), %cl          # 1-byte Reload
-	andb	-19(%rsp), %cl          # 1-byte Folded Reload
-	movb	%cl, -63(%rsp)          # 1-byte Spill
-	movb	-20(%rsp), %cl          # 1-byte Reload
-	andb	%cl, -54(%rsp)          # 1-byte Folded Spill
-	movb	-64(%rsp), %cl          # 1-byte Reload
-	andb	-21(%rsp), %cl          # 1-byte Folded Reload
-	movb	%cl, -64(%rsp)          # 1-byte Spill
-	movb	-65(%rsp), %cl          # 1-byte Reload
-	andb	-22(%rsp), %cl          # 1-byte Folded Reload
-	movb	%cl, -65(%rsp)          # 1-byte Spill
-	movb	-66(%rsp), %cl          # 1-byte Reload
-	andb	-23(%rsp), %cl          # 1-byte Folded Reload
-	movb	%cl, -66(%rsp)          # 1-byte Spill
-	movb	-67(%rsp), %cl          # 1-byte Reload
-	andb	-24(%rsp), %cl          # 1-byte Folded Reload
-	movb	%cl, -67(%rsp)          # 1-byte Spill
-	movb	-68(%rsp), %cl          # 1-byte Reload
-	andb	-25(%rsp), %cl          # 1-byte Folded Reload
-	movb	%cl, -68(%rsp)          # 1-byte Spill
-	movb	-26(%rsp), %r12b        # 1-byte Reload
-	andb	-27(%rsp), %r12b        # 1-byte Folded Reload
-	movb	-28(%rsp), %r15b        # 1-byte Reload
-	andb	-29(%rsp), %r15b        # 1-byte Folded Reload
-	movb	-30(%rsp), %r14b        # 1-byte Reload
-	andb	-31(%rsp), %r14b        # 1-byte Folded Reload
-	movb	-32(%rsp), %bpl         # 1-byte Reload
-	andb	-33(%rsp), %bpl         # 1-byte Folded Reload
-	movb	-34(%rsp), %bl          # 1-byte Reload
-	andb	-35(%rsp), %bl          # 1-byte Folded Reload
-	movb	-36(%rsp), %r11b        # 1-byte Reload
-	andb	-37(%rsp), %r11b        # 1-byte Folded Reload
-	movb	-38(%rsp), %r10b        # 1-byte Reload
-	andb	-39(%rsp), %r10b        # 1-byte Folded Reload
-	movb	-40(%rsp), %r9b         # 1-byte Reload
-	andb	-41(%rsp), %r9b         # 1-byte Folded Reload
-	movb	-42(%rsp), %r8b         # 1-byte Reload
-	andb	-43(%rsp), %r8b         # 1-byte Folded Reload
-	movb	-44(%rsp), %dil         # 1-byte Reload
-	andb	-45(%rsp), %dil         # 1-byte Folded Reload
-	movb	-46(%rsp), %sil         # 1-byte Reload
-	andb	-47(%rsp), %sil         # 1-byte Folded Reload
-	movb	-48(%rsp), %dl          # 1-byte Reload
-	andb	-49(%rsp), %dl          # 1-byte Folded Reload
-	movb	-50(%rsp), %cl          # 1-byte Reload
-	andb	-51(%rsp), %cl          # 1-byte Folded Reload
-	andb	%r13b, -55(%rsp)        # 1-byte Folded Spill
-	andb	-52(%rsp), %al          # 1-byte Folded Reload
-	orb	%cl, %al
-	orb	%dl, %al
-	orb	%sil, %al
-	orb	%dil, %al
-	orb	%r8b, %al
-	orb	%r9b, %al
-	orb	%r10b, %al
-	orb	%r11b, %al
-	orb	%bl, %al
-	orb	%bpl, %al
-	orb	%r14b, %al
-	orb	%r15b, %al
-	orb	%r12b, %al
-	orb	-68(%rsp), %al          # 1-byte Folded Reload
-	orb	-67(%rsp), %al          # 1-byte Folded Reload
-	orb	-66(%rsp), %al          # 1-byte Folded Reload
-	orb	-65(%rsp), %al          # 1-byte Folded Reload
-	orb	-64(%rsp), %al          # 1-byte Folded Reload
-	orb	-54(%rsp), %al          # 1-byte Folded Reload
-	orb	-63(%rsp), %al          # 1-byte Folded Reload
-	orb	-53(%rsp), %al          # 1-byte Folded Reload
-	orb	-62(%rsp), %al          # 1-byte Folded Reload
-	orb	-61(%rsp), %al          # 1-byte Folded Reload
-	orb	-60(%rsp), %al          # 1-byte Folded Reload
-	orb	-59(%rsp), %al          # 1-byte Folded Reload
-	orb	-58(%rsp), %al          # 1-byte Folded Reload
-	orb	-57(%rsp), %al          # 1-byte Folded Reload
-	orb	-56(%rsp), %al          # 1-byte Folded Reload
-	orb	-9(%rsp), %al           # 1-byte Folded Reload
-	orb	-10(%rsp), %al          # 1-byte Folded Reload
-	orb	-55(%rsp), %al          # 1-byte Folded Reload
-	notb	%al
-	movzbl	%al, %eax
-	andl	$1, %eax
+	movb	-13(%rsp), %dl          # 1-byte Reload
+	andb	-14(%rsp), %dl          # 1-byte Folded Reload
+	movb	-15(%rsp), %bl          # 1-byte Reload
+	andb	-16(%rsp), %bl          # 1-byte Folded Reload
+	movb	-17(%rsp), %r12b        # 1-byte Reload
+	andb	-18(%rsp), %r12b        # 1-byte Folded Reload
+	movb	-19(%rsp), %dil         # 1-byte Reload
+	andb	-20(%rsp), %dil         # 1-byte Folded Reload
+	movb	-21(%rsp), %r14b        # 1-byte Reload
+	andb	-22(%rsp), %r14b        # 1-byte Folded Reload
+	movb	-23(%rsp), %r15b        # 1-byte Reload
+	andb	-24(%rsp), %r15b        # 1-byte Folded Reload
+	movb	-25(%rsp), %sil         # 1-byte Reload
+	andb	-26(%rsp), %sil         # 1-byte Folded Reload
+	movb	-27(%rsp), %r9b         # 1-byte Reload
+	andb	-28(%rsp), %r9b         # 1-byte Folded Reload
+	movb	-29(%rsp), %r10b        # 1-byte Reload
+	andb	-30(%rsp), %r10b        # 1-byte Folded Reload
+	movb	-31(%rsp), %bpl         # 1-byte Reload
+	andb	-32(%rsp), %bpl         # 1-byte Folded Reload
+	movb	-33(%rsp), %r13b        # 1-byte Reload
+	andb	%r13b, -52(%rsp)        # 1-byte Folded Spill
+	movb	-34(%rsp), %al          # 1-byte Reload
+	andb	%al, -53(%rsp)          # 1-byte Folded Spill
+	movb	-35(%rsp), %al          # 1-byte Reload
+	andb	%al, -54(%rsp)          # 1-byte Folded Spill
+	movb	-36(%rsp), %al          # 1-byte Reload
+	andb	%al, -55(%rsp)          # 1-byte Folded Spill
+	movb	-37(%rsp), %r13b        # 1-byte Reload
+	andb	-38(%rsp), %r13b        # 1-byte Folded Reload
+	movb	-65(%rsp), %al          # 1-byte Reload
+	andb	-39(%rsp), %al          # 1-byte Folded Reload
+	movb	%al, -65(%rsp)          # 1-byte Spill
+	movb	-40(%rsp), %al          # 1-byte Reload
+	andb	%al, -56(%rsp)          # 1-byte Folded Spill
+	movb	-41(%rsp), %al          # 1-byte Reload
+	andb	%al, -57(%rsp)          # 1-byte Folded Spill
+	movb	-42(%rsp), %al          # 1-byte Reload
+	andb	%al, -58(%rsp)          # 1-byte Folded Spill
+	movb	-43(%rsp), %al          # 1-byte Reload
+	andb	%al, -59(%rsp)          # 1-byte Folded Spill
+	movb	-66(%rsp), %al          # 1-byte Reload
+	andb	-44(%rsp), %al          # 1-byte Folded Reload
+	movb	%al, -66(%rsp)          # 1-byte Spill
+	movb	-45(%rsp), %al          # 1-byte Reload
+	andb	%al, -60(%rsp)          # 1-byte Folded Spill
+	movb	-46(%rsp), %al          # 1-byte Reload
+	andb	%al, -61(%rsp)          # 1-byte Folded Spill
+	movb	-47(%rsp), %al          # 1-byte Reload
+	andb	%al, -62(%rsp)          # 1-byte Folded Spill
+	movb	-49(%rsp), %al          # 1-byte Reload
+	andb	%al, -63(%rsp)          # 1-byte Folded Spill
+	movb	-50(%rsp), %al          # 1-byte Reload
+	andb	-51(%rsp), %al          # 1-byte Folded Reload
+	andb	%r8b, -64(%rsp)         # 1-byte Folded Spill
+	orb	-10(%rsp), %r11b        # 1-byte Folded Reload
+	orb	%cl, %r11b
+	orb	%dl, %r11b
+	orb	%bl, %r11b
+	orb	%r12b, %r11b
+	orb	%dil, %r11b
+	orb	%r14b, %r11b
+	orb	%r15b, %r11b
+	orb	%sil, %r11b
+	orb	%r9b, %r11b
+	orb	%r10b, %r11b
+	orb	%bpl, %r11b
+	orb	-52(%rsp), %r11b        # 1-byte Folded Reload
+	orb	-53(%rsp), %r11b        # 1-byte Folded Reload
+	orb	-54(%rsp), %r11b        # 1-byte Folded Reload
+	orb	-55(%rsp), %r11b        # 1-byte Folded Reload
+	orb	%r13b, %r11b
+	orb	-65(%rsp), %r11b        # 1-byte Folded Reload
+	orb	-56(%rsp), %r11b        # 1-byte Folded Reload
+	orb	-57(%rsp), %r11b        # 1-byte Folded Reload
+	orb	-58(%rsp), %r11b        # 1-byte Folded Reload
+	orb	-59(%rsp), %r11b        # 1-byte Folded Reload
+	orb	-66(%rsp), %r11b        # 1-byte Folded Reload
+	orb	-60(%rsp), %r11b        # 1-byte Folded Reload
+	orb	-61(%rsp), %r11b        # 1-byte Folded Reload
+	orb	-62(%rsp), %r11b        # 1-byte Folded Reload
+	orb	-63(%rsp), %r11b        # 1-byte Folded Reload
+	orb	%al, %r11b
+	orb	-64(%rsp), %r11b        # 1-byte Folded Reload
+	orb	-9(%rsp), %r11b         # 1-byte Folded Reload
+	xorb	$1, %r11b
+	andb	-48(%rsp), %r11b        # 1-byte Folded Reload
+	movzbl	%r11b, %eax
 	popq	%rbx
 	popq	%r12
 	popq	%r13

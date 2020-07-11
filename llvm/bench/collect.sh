@@ -7,7 +7,7 @@ source cachegrind.sh
 collect::all() {
     local -n benchs_ref=$1
     for bench in ${benchs_ref[@]}; do
-        echo "Running cachegrind on ${bench}"
+        echo "Collecting data from ${bench}"
         cachegrind::run "$bench"
         cachegrind::filter "$bench"
         echo "Generated cachegrind CSV file: ${bench}/results/cachegrind.csv"

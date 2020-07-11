@@ -6,7 +6,12 @@ source build.sh
 source collect.sh
 
 # Array of benchmarks to be transformed & analyzed.
-declare -a benchs=("comp" "mu" "dudect-examples/aes32")
+declare -a benchs=(
+    "comp"
+    "mu" 
+    "dudect-examples/aes32"
+    "dudect-examples/donnabad"
+)
 
 while [ $# -gt 0 ]; do
     case $1 in
