@@ -37,6 +37,7 @@
 #include <llvm/IR/PassManager.h>
 #include <llvm/IRReader/IRReader.h>
 #include <llvm/Passes/PassBuilder.h>
+#include <llvm/Passes/StandardInstrumentations.h>
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/SourceMgr.h>
 #include <llvm/Support/raw_ostream.h>
@@ -116,7 +117,11 @@ void runIsochronousPass(Module &M) {
     SmallVector<StringRef, 32> FNames;
     StringRef(Names.getValue()).split(FNames, ",", -1, false);
 
-    PassBuilder PB;
+    PassInstrumentationCallbacks PIC;
+    StandardInstrumentations SI;
+    SI.registerCallbacks(PIC);
+
+    PassBuilder PB(nullptr, PipelineTuningOptions(), None, &PIC);
     LoopAnalysisManager LAM;
     FunctionAnalysisManager FAM;
     CGSCCAnalysisManager CGAM;
