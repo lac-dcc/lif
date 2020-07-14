@@ -18,6 +18,6 @@ int main() {
         243, 92, 179, 227, 122, 41, 79, 45, 245, 137, 163, 64, 61, 53, 119, 164
     };
 
-    printf("%d\n", do_one_computation(input_data, 0 /* nothing */));
+    printf("%d\n", do_one_computation(input_data));
     return 0;
 }

@@ -7,7 +7,6 @@ target triple = "x86_64-pc-linux-gnu"
 @.str = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
 @chunk_size = dso_local constant i64 32, align 8
 @number_measurements = dso_local constant i64 1, align 8
-@__const.do_one_computation.secret = private unnamed_addr constant <{ i8, i8, i8, [29 x i8] }> <{ i8 1, i8 2, i8 3, [29 x i8] zeroinitializer }>, align 16
 @__const.do_one_computation.basepoint = private unnamed_addr constant <{ i8, [31 x i8] }> <{ i8 9, [31 x i8] zeroinitializer }>, align 16
 @.str.9 = private unnamed_addr constant [10 x i8] c"xlen >= 0\00", align 1
 @.str.1 = private unnamed_addr constant [42 x i8] c"dudect-examples/donnabad/sources/random.c\00", align 1
@@ -24,7 +23,7 @@ define dso_local i32 @main() #0 {
   %3 = bitcast [32 x i8]* %2 to i8*
   call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 16 %3, i8* align 16 getelementptr inbounds ([32 x i8], [32 x i8]* @__const.main.input_data, i32 0, i32 0), i64 32, i1 false)
   %4 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
-  %5 = call zeroext i8 @do_one_computation(i8* %4, i32 0)
+  %5 = call zeroext i8 @do_one_computation(i8* %4)
   %6 = zext i8 %5 to i32
   %7 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i64 0, i64 0), i32 %6)
   ret i32 0
@@ -36,68 +35,65 @@ declare void @llvm.memcpy.p0i8.p0i8.i64(i8* noalias nocapture writeonly, i8* noa
 declare i32 @printf(i8*, ...) #2
 
 ; Function Attrs: noinline nounwind sspstrong uwtable
-define dso_local zeroext i8 @do_one_computation(i8* %0, i32 %1) #0 {
+define dso_local zeroext i8 @do_one_computation(i8* %0) #0 {
+  %2 = alloca [32 x i8], align 16
   %3 = alloca [32 x i8], align 16
-  %4 = alloca [32 x i8], align 16
-  %5 = alloca [32 x i8], align 16
-  %6 = bitcast [32 x i8]* %3 to i8*
-  call void @llvm.memset.p0i8.i64(i8* align 16 %6, i8 0, i64 32, i1 false)
-  %7 = bitcast [32 x i8]* %4 to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 16 %7, i8* align 16 getelementptr inbounds (<{ i8, i8, i8, [29 x i8] }>, <{ i8, i8, i8, [29 x i8] }>* @__const.do_one_computation.secret, i32 0, i32 0), i64 32, i1 false)
-  %8 = bitcast [32 x i8]* %5 to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 16 %8, i8* align 16 getelementptr inbounds (<{ i8, [31 x i8] }>, <{ i8, [31 x i8] }>* @__const.do_one_computation.basepoint, i32 0, i32 0), i64 32, i1 false)
-  %9 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  %10 = getelementptr inbounds [32 x i8], [32 x i8]* %5, i64 0, i64 0
-  %11 = call i32 @curve25519_donna(i8* %9, i8* %0, i8* %10)
-  %12 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %12, i64 32, i1 false)
-  %13 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  %14 = getelementptr inbounds [32 x i8], [32 x i8]* %5, i64 0, i64 0
-  %15 = call i32 @curve25519_donna(i8* %13, i8* %0, i8* %14)
-  %16 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %16, i64 32, i1 false)
-  %17 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  %18 = getelementptr inbounds [32 x i8], [32 x i8]* %5, i64 0, i64 0
-  %19 = call i32 @curve25519_donna(i8* %17, i8* %0, i8* %18)
-  %20 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %20, i64 32, i1 false)
-  %21 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  %22 = getelementptr inbounds [32 x i8], [32 x i8]* %5, i64 0, i64 0
-  %23 = call i32 @curve25519_donna(i8* %21, i8* %0, i8* %22)
-  %24 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %24, i64 32, i1 false)
-  %25 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  %26 = getelementptr inbounds [32 x i8], [32 x i8]* %5, i64 0, i64 0
-  %27 = call i32 @curve25519_donna(i8* %25, i8* %0, i8* %26)
-  %28 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %28, i64 32, i1 false)
-  %29 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  %30 = getelementptr inbounds [32 x i8], [32 x i8]* %5, i64 0, i64 0
-  %31 = call i32 @curve25519_donna(i8* %29, i8* %0, i8* %30)
-  %32 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %32, i64 32, i1 false)
-  %33 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  %34 = getelementptr inbounds [32 x i8], [32 x i8]* %5, i64 0, i64 0
-  %35 = call i32 @curve25519_donna(i8* %33, i8* %0, i8* %34)
-  %36 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %36, i64 32, i1 false)
-  %37 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  %38 = getelementptr inbounds [32 x i8], [32 x i8]* %5, i64 0, i64 0
-  %39 = call i32 @curve25519_donna(i8* %37, i8* %0, i8* %38)
-  %40 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %40, i64 32, i1 false)
-  %41 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  %42 = getelementptr inbounds [32 x i8], [32 x i8]* %5, i64 0, i64 0
-  %43 = call i32 @curve25519_donna(i8* %41, i8* %0, i8* %42)
-  %44 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %44, i64 32, i1 false)
-  %45 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  %46 = load i8, i8* %45, align 16
-  %47 = zext i8 %46 to i32
-  %48 = zext i8 0 to i32
-  %49 = xor i32 %48, %47
-  %50 = trunc i32 %49 to i8
-  ret i8 %50
+  %4 = bitcast [32 x i8]* %2 to i8*
+  call void @llvm.memset.p0i8.i64(i8* align 16 %4, i8 0, i64 32, i1 false)
+  %5 = bitcast [32 x i8]* %3 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 16 %5, i8* align 16 getelementptr inbounds (<{ i8, [31 x i8] }>, <{ i8, [31 x i8] }>* @__const.do_one_computation.basepoint, i32 0, i32 0), i64 32, i1 false)
+  %6 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  %7 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
+  %8 = call i32 @curve25519_donna(i8* %6, i8* %0, i8* %7)
+  %9 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %9, i64 32, i1 false)
+  %10 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  %11 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
+  %12 = call i32 @curve25519_donna(i8* %10, i8* %0, i8* %11)
+  %13 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %13, i64 32, i1 false)
+  %14 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  %15 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
+  %16 = call i32 @curve25519_donna(i8* %14, i8* %0, i8* %15)
+  %17 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %17, i64 32, i1 false)
+  %18 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  %19 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
+  %20 = call i32 @curve25519_donna(i8* %18, i8* %0, i8* %19)
+  %21 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %21, i64 32, i1 false)
+  %22 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  %23 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
+  %24 = call i32 @curve25519_donna(i8* %22, i8* %0, i8* %23)
+  %25 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %25, i64 32, i1 false)
+  %26 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  %27 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
+  %28 = call i32 @curve25519_donna(i8* %26, i8* %0, i8* %27)
+  %29 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %29, i64 32, i1 false)
+  %30 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  %31 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
+  %32 = call i32 @curve25519_donna(i8* %30, i8* %0, i8* %31)
+  %33 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %33, i64 32, i1 false)
+  %34 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  %35 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
+  %36 = call i32 @curve25519_donna(i8* %34, i8* %0, i8* %35)
+  %37 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %37, i64 32, i1 false)
+  %38 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  %39 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
+  %40 = call i32 @curve25519_donna(i8* %38, i8* %0, i8* %39)
+  %41 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %41, i64 32, i1 false)
+  %42 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  %43 = load i8, i8* %42, align 16
+  %44 = zext i8 %43 to i32
+  %45 = zext i8 0 to i32
+  %46 = xor i32 %45, %44
+  %47 = trunc i32 %46 to i8
+  ret i8 %47
 }
 
 ; Function Attrs: argmemonly nounwind willreturn

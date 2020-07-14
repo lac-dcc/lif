@@ -1,5 +1,5 @@
 Src,Fn,Type,Ir,I1mr,ILmr,Dr,D1mr,DLmr,Dw,D1mw,DLmw
-main1.c,comp,orig,101,11,11,66,9,9,1,0,0
+main1.c,comp,orig,101,11,11,66,10,10,1,0,0
 main1.c,comp,orig-opt,101,11,11,66,10,10,1,0,0
 main1.c,comp,invar,644,70,70,127,61,61,68,30,30
 main1.c,comp,invar-opt,632,71,71,144,42,42,66,20,20

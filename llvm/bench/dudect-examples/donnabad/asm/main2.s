@@ -21,7 +21,6 @@ main:                                   # @main
 	movaps	.L__const.main.input_data(%rip), %xmm0
 	movaps	%xmm0, -48(%rbp)
 	leaq	-48(%rbp), %rdi
-	xorl	%esi, %esi
 	callq	do_one_computation
 	movzbl	%al, %esi
 	movl	$.L.str, %edi
@@ -57,7 +56,7 @@ do_one_computation:                     # @do_one_computation
 	pushq	%r15
 	pushq	%r14
 	pushq	%rbx
-	subq	$104, %rsp
+	subq	$72, %rsp
 	.cfi_offset %rbx, -40
 	.cfi_offset %r14, -32
 	.cfi_offset %r15, -24
@@ -67,16 +66,12 @@ do_one_computation:                     # @do_one_computation
 	xorps	%xmm0, %xmm0
 	movaps	%xmm0, -64(%rbp)
 	movaps	%xmm0, -48(%rbp)
-	movaps	.L__const.do_one_computation.secret(%rip), %xmm0
-	movaps	%xmm0, -96(%rbp)
-	movaps	.L__const.do_one_computation.secret+16(%rip), %xmm0
-	movaps	%xmm0, -80(%rbp)
 	movaps	.L__const.do_one_computation.basepoint(%rip), %xmm0
-	movaps	%xmm0, -128(%rbp)
+	movaps	%xmm0, -96(%rbp)
 	movaps	.L__const.do_one_computation.basepoint+16(%rip), %xmm0
-	movaps	%xmm0, -112(%rbp)
+	movaps	%xmm0, -80(%rbp)
 	leaq	-64(%rbp), %r15
-	leaq	-128(%rbp), %r14
+	leaq	-96(%rbp), %r14
 	movq	%r15, %rdi
 	movq	%rbx, %rsi
 	movq	%r14, %rdx
@@ -154,7 +149,7 @@ do_one_computation:                     # @do_one_computation
 	cmpq	-32(%rbp), %rcx
 	jne	.LBB1_2
 # %bb.1:                                # %SP_return
-	addq	$104, %rsp
+	addq	$72, %rsp
 	popq	%rbx
 	popq	%r14
 	popq	%r15
@@ -13505,17 +13500,8 @@ number_measurements:
 	.quad	1                       # 0x1
 	.size	number_measurements, 8
 
-	.type	.L__const.do_one_computation.secret,@object # @__const.do_one_computation.secret
-	.section	.rodata.cst32,"aM",@progbits,32
-	.p2align	4
-.L__const.do_one_computation.secret:
-	.byte	1                       # 0x1
-	.byte	2                       # 0x2
-	.byte	3                       # 0x3
-	.zero	29
-	.size	.L__const.do_one_computation.secret, 32
-
 	.type	.L__const.do_one_computation.basepoint,@object # @__const.do_one_computation.basepoint
+	.section	.rodata.cst32,"aM",@progbits,32
 	.p2align	4
 .L__const.do_one_computation.basepoint:
 	.byte	9                       # 0x9

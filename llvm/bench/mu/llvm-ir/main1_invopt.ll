@@ -28,7 +28,7 @@ declare void @llvm.memset.p0i8.i64(i8* nocapture writeonly, i8, i64, i1 immarg) 
 declare i32 @printf(i8* nocapture readonly, ...) local_unnamed_addr #2
 
 ; Function Attrs: nofree norecurse nounwind
-define void @mu(i32* %0, i64 %len.) local_unnamed_addr #3 {
+define void @mu(i32* %0, i64 %N) local_unnamed_addr #3 {
   %2 = load i32, i32* %0, align 4
   %3 = getelementptr inbounds i32, i32* %0, i64 1
   %4 = load i32, i32* %3, align 4

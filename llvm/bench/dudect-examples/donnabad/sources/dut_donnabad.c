@@ -10,9 +10,9 @@ const size_t chunk_size = 32;
 /* const size_t number_measurements = 1e3; // per test */
 const size_t number_measurements = 1;
 
-uint8_t do_one_computation(uint8_t *data, int _) {
+uint8_t do_one_computation(uint8_t *data) {
   uint8_t out[32] = {0};
-  const uint8_t secret[32] = {1,2,3};
+  /* const uint8_t secret[32] = {1,2,3}; */
   uint8_t ret = 0;
   const uint8_t basepoint[32] = {9};
   curve25519_donna(out, data, basepoint); memcpy(data, out, 32);

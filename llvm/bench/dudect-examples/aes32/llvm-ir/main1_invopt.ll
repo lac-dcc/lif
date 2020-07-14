@@ -43,7 +43,7 @@ declare void @llvm.memcpy.p0i8.p0i8.i64(i8* noalias nocapture writeonly, i8* noa
 declare i32 @printf(i8* nocapture readonly, ...) local_unnamed_addr #2
 
 ; Function Attrs: nounwind
-define i8 @do_one_computation(i8* nocapture readonly %0, i64 %len., i32 %1) local_unnamed_addr #3 {
+define i8 @do_one_computation(i8* nocapture readonly %0, i64 %N, i32 %1) local_unnamed_addr #3 {
   %3 = alloca [16 x i8], align 16
   %4 = alloca [16 x i8], align 16
   %5 = getelementptr inbounds [16 x i8], [16 x i8]* %3, i64 0, i64 0
@@ -127,7 +127,7 @@ define dso_local void @init_dut() local_unnamed_addr #0 {
   ret void
 }
 
-define void @prepare_inputs(i8* nocapture %0, i64 %len., i8* nocapture %1, i64 %len.1) local_unnamed_addr {
+define void @prepare_inputs(i8* nocapture %0, i64 %N, i8* nocapture %1, i64 %N1) local_unnamed_addr {
   call void @randombytes(i8* %0, i64 undef, i64 16)
   %3 = call zeroext i8 @randombit()
   store i8 %3, i8* %1, align 1
@@ -143,7 +143,7 @@ define void @prepare_inputs(i8* nocapture %0, i64 %len., i8* nocapture %1, i64 %
 }
 
 ; Function Attrs: nofree norecurse nounwind
-define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* readonly %1, i64 %len.1, i32 %2) local_unnamed_addr #4 {
+define i32 @rijndaelKeySetupEnc(i32* %0, i64 %N, i8* readonly %1, i64 %N1, i32 %2) local_unnamed_addr #4 {
 .preheader8:
   %3 = load i8, i8* %1, align 1
   %4 = zext i8 %3 to i32
@@ -227,7 +227,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* readonly %1, i64 %len.1,
   %shadow.sroa.0 = alloca i32, align 8
   %78 = xor i1 %77, true
   %79 = getelementptr inbounds i8, i8* %1, i64 16
-  %80 = icmp sgt i64 %len.1, 0
+  %80 = icmp sgt i64 %N1, 0
   %safe.357 = or i1 %80, %78
   %shadow.sroa.0.0.sroa_cast2053 = bitcast i32* %shadow.sroa.0 to i8*
   %select.ptr.358 = select i1 %safe.357, i8* %79, i8* %shadow.sroa.0.0.sroa_cast2053
@@ -235,7 +235,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* readonly %1, i64 %len.1,
   %82 = zext i8 %81 to i32
   %83 = shl nuw i32 %82, 24
   %84 = getelementptr inbounds i8, i8* %1, i64 17
-  %85 = icmp sgt i64 %len.1, 1
+  %85 = icmp sgt i64 %N1, 1
   %safe.359 = or i1 %85, %78
   %shadow.sroa.0.0.sroa_cast2052 = bitcast i32* %shadow.sroa.0 to i8*
   %select.ptr.360 = select i1 %safe.359, i8* %84, i8* %shadow.sroa.0.0.sroa_cast2052
@@ -244,7 +244,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* readonly %1, i64 %len.1,
   %88 = shl nuw nsw i32 %87, 16
   %89 = or i32 %88, %83
   %90 = getelementptr inbounds i8, i8* %1, i64 18
-  %91 = icmp sgt i64 %len.1, 2
+  %91 = icmp sgt i64 %N1, 2
   %safe.361 = or i1 %91, %78
   %shadow.sroa.0.0.sroa_cast2051 = bitcast i32* %shadow.sroa.0 to i8*
   %select.ptr.362 = select i1 %safe.361, i8* %90, i8* %shadow.sroa.0.0.sroa_cast2051
@@ -253,7 +253,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* readonly %1, i64 %len.1,
   %94 = shl nuw nsw i32 %93, 8
   %95 = or i32 %89, %94
   %96 = getelementptr inbounds i8, i8* %1, i64 19
-  %97 = icmp sgt i64 %len.1, 3
+  %97 = icmp sgt i64 %N1, 3
   %safe.363 = or i1 %97, %78
   %shadow.sroa.0.0.sroa_cast2050 = bitcast i32* %shadow.sroa.0 to i8*
   %select.ptr.364 = select i1 %safe.363, i8* %96, i8* %shadow.sroa.0.0.sroa_cast2050
@@ -261,7 +261,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* readonly %1, i64 %len.1,
   %99 = zext i8 %98 to i32
   %100 = or i32 %95, %99
   %101 = getelementptr inbounds i32, i32* %0, i64 4
-  %102 = icmp sgt i64 %len., 4
+  %102 = icmp sgt i64 %N, 4
   %safe.365 = or i1 %102, %78
   %select.ptr.366 = select i1 %safe.365, i32* %101, i32* %shadow.sroa.0
   %103 = load i32, i32* %101, align 4
@@ -294,7 +294,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* readonly %1, i64 %len.1,
   %120 = zext i8 %119 to i32
   %121 = or i32 %117, %120
   %122 = getelementptr inbounds i32, i32* %0, i64 5
-  %123 = icmp sgt i64 %len., 5
+  %123 = icmp sgt i64 %N, 5
   %safe.376 = or i1 %123, %78
   %select.ptr.377 = select i1 %safe.376, i32* %122, i32* %shadow.sroa.0
   %124 = load i32, i32* %122, align 4
@@ -334,7 +334,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* readonly %1, i64 %len.1,
   %143 = zext i8 %142 to i32
   %144 = or i32 %140, %143
   %145 = getelementptr inbounds i32, i32* %0, i64 6
-  %146 = icmp sgt i64 %len., 6
+  %146 = icmp sgt i64 %N, 6
   %safe.771 = or i1 %146, %in.9
   %select.ptr.772 = select i1 %safe.771, i32* %145, i32* %shadow.sroa.0
   %147 = load i32, i32* %145, align 4
@@ -367,7 +367,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* readonly %1, i64 %len.1,
   %164 = zext i8 %163 to i32
   %165 = or i32 %161, %164
   %166 = getelementptr inbounds i32, i32* %0, i64 7
-  %167 = icmp sgt i64 %len., 7
+  %167 = icmp sgt i64 %N, 7
   %safe.782 = or i1 %167, %in.9
   %select.ptr.783 = select i1 %safe.782, i32* %166, i32* %shadow.sroa.0
   %168 = load i32, i32* %166, align 4
@@ -406,46 +406,46 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* readonly %1, i64 %len.1,
   %197 = xor i32 %196, %188
   %198 = xor i32 %197, %193
   %199 = getelementptr inbounds i32, i32* %0, i64 8
-  %200 = icmp sgt i64 %len., 8
+  %200 = icmp sgt i64 %N, 8
   %safe.795 = or i1 %200, %169
   %select.ptr.796 = select i1 %safe.795, i32* %199, i32* %shadow.sroa.0
   %201 = load i32, i32* %199, align 4
   %select.val.797 = select i1 %169, i32 %198, i32 %201
   store i32 %select.val.797, i32* %select.ptr.796, align 4
-  %202 = icmp sgt i64 %len., 1
+  %202 = icmp sgt i64 %N, 1
   %safe.798 = or i1 %202, %169
   %.val = load i32, i32* %38, align 4
   %shadow.sroa.0.0.shadow.sroa.0.0.shadow.sroa.0.val = load i32, i32* %shadow.sroa.0, align 8
   %203 = select i1 %safe.798, i32 %.val, i32 %shadow.sroa.0.0.shadow.sroa.0.0.shadow.sroa.0.val
   %204 = xor i32 %203, %198
   %205 = getelementptr inbounds i32, i32* %0, i64 9
-  %206 = icmp sgt i64 %len., 9
+  %206 = icmp sgt i64 %N, 9
   %safe.802 = or i1 %206, %169
   %select.ptr.803 = select i1 %safe.802, i32* %205, i32* %shadow.sroa.0
   %207 = load i32, i32* %205, align 4
   %select.val.804 = select i1 %169, i32 %204, i32 %207
   store i32 %select.val.804, i32* %select.ptr.803, align 4
-  %208 = icmp sgt i64 %len., 2
+  %208 = icmp sgt i64 %N, 2
   %safe.805 = or i1 %208, %169
   %.val1843 = load i32, i32* %57, align 4
   %shadow.sroa.0.0.shadow.sroa.0.0.shadow.sroa.0.val1844 = load i32, i32* %shadow.sroa.0, align 8
   %209 = select i1 %safe.805, i32 %.val1843, i32 %shadow.sroa.0.0.shadow.sroa.0.0.shadow.sroa.0.val1844
   %210 = xor i32 %209, %204
   %211 = getelementptr inbounds i32, i32* %0, i64 10
-  %212 = icmp sgt i64 %len., 10
+  %212 = icmp sgt i64 %N, 10
   %safe.809 = or i1 %212, %169
   %select.ptr.810 = select i1 %safe.809, i32* %211, i32* %shadow.sroa.0
   %213 = load i32, i32* %211, align 4
   %select.val.811 = select i1 %169, i32 %210, i32 %213
   store i32 %select.val.811, i32* %select.ptr.810, align 4
-  %214 = icmp sgt i64 %len., 3
+  %214 = icmp sgt i64 %N, 3
   %safe.812 = or i1 %214, %169
   %.val1845 = load i32, i32* %76, align 4
   %shadow.sroa.0.0.shadow.sroa.0.0.shadow.sroa.0.val1846 = load i32, i32* %shadow.sroa.0, align 8
   %215 = select i1 %safe.812, i32 %.val1845, i32 %shadow.sroa.0.0.shadow.sroa.0.0.shadow.sroa.0.val1846
   %216 = xor i32 %215, %210
   %217 = getelementptr inbounds i32, i32* %0, i64 11
-  %218 = icmp sgt i64 %len., 11
+  %218 = icmp sgt i64 %N, 11
   %safe.816 = or i1 %218, %169
   %select.ptr.817 = select i1 %safe.816, i32* %217, i32* %shadow.sroa.0
   %219 = load i32, i32* %217, align 4
@@ -482,7 +482,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* readonly %1, i64 %len.1,
   %245 = and i32 %244, 255
   %246 = xor i32 %240, %245
   %247 = getelementptr inbounds i32, i32* %0, i64 12
-  %248 = icmp sgt i64 %len., 12
+  %248 = icmp sgt i64 %N, 12
   %safe.831 = or i1 %248, %169
   %select.ptr.832 = select i1 %safe.831, i32* %247, i32* %shadow.sroa.0
   %249 = load i32, i32* %247, align 4
@@ -494,7 +494,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* readonly %1, i64 %len.1,
   %250 = select i1 %safe.834, i32 %.val1849, i32 %shadow.sroa.0.0.shadow.sroa.0.0.shadow.sroa.0.val1850
   %251 = xor i32 %250, %246
   %252 = getelementptr inbounds i32, i32* %0, i64 13
-  %253 = icmp sgt i64 %len., 13
+  %253 = icmp sgt i64 %N, 13
   %safe.838 = or i1 %253, %169
   %select.ptr.839 = select i1 %safe.838, i32* %252, i32* %shadow.sroa.0
   %254 = load i32, i32* %252, align 4
@@ -506,7 +506,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* readonly %1, i64 %len.1,
   %255 = select i1 %safe.841, i32 %.val1851, i32 %shadow.sroa.0.0.shadow.sroa.0.0.shadow.sroa.0.val1852
   %256 = xor i32 %255, %251
   %257 = getelementptr inbounds i32, i32* %0, i64 14
-  %258 = icmp sgt i64 %len., 14
+  %258 = icmp sgt i64 %N, 14
   %safe.845 = or i1 %258, %169
   %select.ptr.846 = select i1 %safe.845, i32* %257, i32* %shadow.sroa.0
   %259 = load i32, i32* %257, align 4
@@ -515,7 +515,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* readonly %1, i64 %len.1,
   %260 = load i32, i32* %select.ptr.786, align 4
   %261 = xor i32 %260, %256
   %262 = getelementptr inbounds i32, i32* %0, i64 15
-  %263 = icmp sgt i64 %len., 15
+  %263 = icmp sgt i64 %N, 15
   %safe.852 = or i1 %263, %169
   %select.ptr.853 = select i1 %safe.852, i32* %262, i32* %shadow.sroa.0
   %264 = load i32, i32* %262, align 4
@@ -2338,8 +2338,8 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* readonly %1, i64 %len.1,
 }
 
 ; Function Attrs: nofree norecurse nounwind
-define i32 @rijndaelKeySetupDec(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) local_unnamed_addr #4 {
-  %4 = call i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2)
+define i32 @rijndaelKeySetupDec(i32* %0, i64 %N, i8* %1, i64 %N1, i32 %2) local_unnamed_addr #4 {
+  %4 = call i32 @rijndaelKeySetupEnc(i32* %0, i64 %N, i8* %1, i64 %N1, i32 %2)
   %5 = icmp sgt i32 %4, 0
   br i1 %5, label %.lr.ph8, label %.preheader
 
@@ -2569,7 +2569,7 @@ define i32 @rijndaelKeySetupDec(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
 }
 
 ; Function Attrs: nofree norecurse nounwind
-define void @rijndaelEncrypt(i32* readonly %0, i64 %len., i32 %1, i8* nocapture readonly %2, i64 %len.1, i8* nocapture %3, i64 %len.2) local_unnamed_addr #4 {
+define void @rijndaelEncrypt(i32* readonly %0, i64 %N, i32 %1, i8* nocapture readonly %2, i64 %N1, i8* nocapture %3, i64 %N2) local_unnamed_addr #4 {
 .preheader12:
   %4 = load i8, i8* %2, align 1
   %5 = zext i8 %4 to i32
@@ -3549,7 +3549,7 @@ define void @rijndaelEncrypt(i32* readonly %0, i64 %len., i32 %1, i8* nocapture 
   %974 = load i32, i32* %973, align 4
   %975 = xor i32 %970, %974
   %976 = getelementptr inbounds i32, i32* %0, i64 40
-  %977 = icmp sgt i64 %len., 40
+  %977 = icmp sgt i64 %N, 40
   %safe.378 = or i1 %977, %954
   %select.ptr.379 = select i1 %safe.378, i32* %976, i32* %shadow.sroa.0
   %978 = load i32, i32* %select.ptr.379, align 4
@@ -3576,7 +3576,7 @@ define void @rijndaelEncrypt(i32* readonly %0, i64 %len., i32 %1, i8* nocapture 
   %999 = load i32, i32* %998, align 4
   %1000 = xor i32 %995, %999
   %1001 = getelementptr inbounds i32, i32* %0, i64 41
-  %1002 = icmp sgt i64 %len., 41
+  %1002 = icmp sgt i64 %N, 41
   %safe.388 = or i1 %1002, %954
   %select.ptr.389 = select i1 %safe.388, i32* %1001, i32* %shadow.sroa.0
   %1003 = load i32, i32* %select.ptr.389, align 4
@@ -3603,7 +3603,7 @@ define void @rijndaelEncrypt(i32* readonly %0, i64 %len., i32 %1, i8* nocapture 
   %1024 = load i32, i32* %1023, align 4
   %1025 = xor i32 %1020, %1024
   %1026 = getelementptr inbounds i32, i32* %0, i64 42
-  %1027 = icmp sgt i64 %len., 42
+  %1027 = icmp sgt i64 %N, 42
   %safe.398 = or i1 %1027, %954
   %select.ptr.399 = select i1 %safe.398, i32* %1026, i32* %shadow.sroa.0
   %1028 = load i32, i32* %select.ptr.399, align 4
@@ -3630,7 +3630,7 @@ define void @rijndaelEncrypt(i32* readonly %0, i64 %len., i32 %1, i8* nocapture 
   %1049 = load i32, i32* %1048, align 4
   %1050 = xor i32 %1045, %1049
   %1051 = getelementptr inbounds i32, i32* %0, i64 43
-  %1052 = icmp sgt i64 %len., 43
+  %1052 = icmp sgt i64 %N, 43
   %safe.408 = or i1 %1052, %954
   %select.ptr.409 = select i1 %safe.408, i32* %1051, i32* %shadow.sroa.0
   %1053 = load i32, i32* %select.ptr.409, align 4
@@ -3657,7 +3657,7 @@ define void @rijndaelEncrypt(i32* readonly %0, i64 %len., i32 %1, i8* nocapture 
   %1074 = load i32, i32* %1073, align 4
   %1075 = xor i32 %1070, %1074
   %1076 = getelementptr inbounds i32, i32* %0, i64 44
-  %1077 = icmp sgt i64 %len., 44
+  %1077 = icmp sgt i64 %N, 44
   %safe.418 = or i1 %1077, %954
   %select.ptr.419 = select i1 %safe.418, i32* %1076, i32* %shadow.sroa.0
   %1078 = load i32, i32* %select.ptr.419, align 4
@@ -3684,7 +3684,7 @@ define void @rijndaelEncrypt(i32* readonly %0, i64 %len., i32 %1, i8* nocapture 
   %1099 = load i32, i32* %1098, align 4
   %1100 = xor i32 %1095, %1099
   %1101 = getelementptr inbounds i32, i32* %0, i64 45
-  %1102 = icmp sgt i64 %len., 45
+  %1102 = icmp sgt i64 %N, 45
   %safe.428 = or i1 %1102, %954
   %select.ptr.429 = select i1 %safe.428, i32* %1101, i32* %shadow.sroa.0
   %1103 = load i32, i32* %select.ptr.429, align 4
@@ -3711,7 +3711,7 @@ define void @rijndaelEncrypt(i32* readonly %0, i64 %len., i32 %1, i8* nocapture 
   %1124 = load i32, i32* %1123, align 4
   %1125 = xor i32 %1120, %1124
   %1126 = getelementptr inbounds i32, i32* %0, i64 46
-  %1127 = icmp sgt i64 %len., 46
+  %1127 = icmp sgt i64 %N, 46
   %safe.438 = or i1 %1127, %954
   %select.ptr.439 = select i1 %safe.438, i32* %1126, i32* %shadow.sroa.0
   %1128 = load i32, i32* %select.ptr.439, align 4
@@ -3738,7 +3738,7 @@ define void @rijndaelEncrypt(i32* readonly %0, i64 %len., i32 %1, i8* nocapture 
   %1149 = load i32, i32* %1148, align 4
   %1150 = xor i32 %1145, %1149
   %1151 = getelementptr inbounds i32, i32* %0, i64 47
-  %1152 = icmp sgt i64 %len., 47
+  %1152 = icmp sgt i64 %N, 47
   %safe.448 = or i1 %1152, %954
   %select.ptr.449 = select i1 %safe.448, i32* %1151, i32* %shadow.sroa.0
   %1153 = load i32, i32* %select.ptr.449, align 4
@@ -3766,7 +3766,7 @@ define void @rijndaelEncrypt(i32* readonly %0, i64 %len., i32 %1, i8* nocapture 
   %1175 = load i32, i32* %1174, align 4
   %1176 = xor i32 %1171, %1175
   %1177 = getelementptr inbounds i32, i32* %0, i64 48
-  %1178 = icmp sgt i64 %len., 48
+  %1178 = icmp sgt i64 %N, 48
   %safe.458 = or i1 %1178, %1155
   %select.ptr.459 = select i1 %safe.458, i32* %1177, i32* %shadow.sroa.0
   %1179 = load i32, i32* %select.ptr.459, align 4
@@ -3793,7 +3793,7 @@ define void @rijndaelEncrypt(i32* readonly %0, i64 %len., i32 %1, i8* nocapture 
   %1200 = load i32, i32* %1199, align 4
   %1201 = xor i32 %1196, %1200
   %1202 = getelementptr inbounds i32, i32* %0, i64 49
-  %1203 = icmp sgt i64 %len., 49
+  %1203 = icmp sgt i64 %N, 49
   %safe.468 = or i1 %1203, %1155
   %select.ptr.469 = select i1 %safe.468, i32* %1202, i32* %shadow.sroa.0
   %1204 = load i32, i32* %select.ptr.469, align 4
@@ -3820,7 +3820,7 @@ define void @rijndaelEncrypt(i32* readonly %0, i64 %len., i32 %1, i8* nocapture 
   %1225 = load i32, i32* %1224, align 4
   %1226 = xor i32 %1221, %1225
   %1227 = getelementptr inbounds i32, i32* %0, i64 50
-  %1228 = icmp sgt i64 %len., 50
+  %1228 = icmp sgt i64 %N, 50
   %safe.478 = or i1 %1228, %1155
   %select.ptr.479 = select i1 %safe.478, i32* %1227, i32* %shadow.sroa.0
   %1229 = load i32, i32* %select.ptr.479, align 4
@@ -3847,7 +3847,7 @@ define void @rijndaelEncrypt(i32* readonly %0, i64 %len., i32 %1, i8* nocapture 
   %1250 = load i32, i32* %1249, align 4
   %1251 = xor i32 %1246, %1250
   %1252 = getelementptr inbounds i32, i32* %0, i64 51
-  %1253 = icmp sgt i64 %len., 51
+  %1253 = icmp sgt i64 %N, 51
   %safe.488 = or i1 %1253, %1155
   %select.ptr.489 = select i1 %safe.488, i32* %1252, i32* %shadow.sroa.0
   %1254 = load i32, i32* %select.ptr.489, align 4
@@ -3874,7 +3874,7 @@ define void @rijndaelEncrypt(i32* readonly %0, i64 %len., i32 %1, i8* nocapture 
   %1275 = load i32, i32* %1274, align 4
   %1276 = xor i32 %1271, %1275
   %1277 = getelementptr inbounds i32, i32* %0, i64 52
-  %1278 = icmp sgt i64 %len., 52
+  %1278 = icmp sgt i64 %N, 52
   %safe.498 = or i1 %1278, %1155
   %select.ptr.499 = select i1 %safe.498, i32* %1277, i32* %shadow.sroa.0
   %1279 = load i32, i32* %select.ptr.499, align 4
@@ -3901,7 +3901,7 @@ define void @rijndaelEncrypt(i32* readonly %0, i64 %len., i32 %1, i8* nocapture 
   %1300 = load i32, i32* %1299, align 4
   %1301 = xor i32 %1296, %1300
   %1302 = getelementptr inbounds i32, i32* %0, i64 53
-  %1303 = icmp sgt i64 %len., 53
+  %1303 = icmp sgt i64 %N, 53
   %safe.508 = or i1 %1303, %1155
   %select.ptr.509 = select i1 %safe.508, i32* %1302, i32* %shadow.sroa.0
   %1304 = load i32, i32* %select.ptr.509, align 4
@@ -3928,7 +3928,7 @@ define void @rijndaelEncrypt(i32* readonly %0, i64 %len., i32 %1, i8* nocapture 
   %1325 = load i32, i32* %1324, align 4
   %1326 = xor i32 %1321, %1325
   %1327 = getelementptr inbounds i32, i32* %0, i64 54
-  %1328 = icmp sgt i64 %len., 54
+  %1328 = icmp sgt i64 %N, 54
   %safe.518 = or i1 %1328, %1155
   %select.ptr.519 = select i1 %safe.518, i32* %1327, i32* %shadow.sroa.0
   %1329 = load i32, i32* %select.ptr.519, align 4
@@ -3955,7 +3955,7 @@ define void @rijndaelEncrypt(i32* readonly %0, i64 %len., i32 %1, i8* nocapture 
   %1350 = load i32, i32* %1349, align 4
   %1351 = xor i32 %1346, %1350
   %1352 = getelementptr inbounds i32, i32* %0, i64 55
-  %1353 = icmp sgt i64 %len., 55
+  %1353 = icmp sgt i64 %N, 55
   %safe.528 = or i1 %1353, %1155
   %select.ptr.529 = select i1 %safe.528, i32* %1352, i32* %shadow.sroa.0
   %1354 = load i32, i32* %select.ptr.529, align 4
@@ -4146,7 +4146,7 @@ define void @rijndaelEncrypt(i32* readonly %0, i64 %len., i32 %1, i8* nocapture 
 }
 
 ; Function Attrs: nofree norecurse nounwind
-define void @rijndaelDecrypt(i32* readonly %0, i64 %len., i32 %1, i8* nocapture readonly %2, i64 %len.1, i8* nocapture %3, i64 %len.2) local_unnamed_addr #4 {
+define void @rijndaelDecrypt(i32* readonly %0, i64 %N, i32 %1, i8* nocapture readonly %2, i64 %N1, i8* nocapture %3, i64 %N2) local_unnamed_addr #4 {
   %5 = load i8, i8* %2, align 1
   %6 = zext i8 %5 to i32
   %7 = shl nuw i32 %6, 24
@@ -5668,7 +5668,7 @@ define void @rijndaelDecrypt(i32* readonly %0, i64 %len., i32 %1, i8* nocapture 
   ret void
 }
 
-define void @randombytes(i8* nocapture %0, i64 %len., i64 %1) local_unnamed_addr {
+define void @randombytes(i8* nocapture %0, i64 %N, i64 %1) local_unnamed_addr {
   %3 = icmp sgt i64 %1, -1
   br i1 %3, label %5, label %4
 

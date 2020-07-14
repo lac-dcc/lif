@@ -19,7 +19,7 @@ define dso_local i32 @main() local_unnamed_addr #0 {
   %1 = alloca [32 x i8], align 16
   %2 = getelementptr inbounds [32 x i8], [32 x i8]* %1, i64 0, i64 0
   call void @llvm.memcpy.p0i8.p0i8.i64(i8* nonnull align 16 dereferenceable(32) %2, i8* nonnull align 16 dereferenceable(32) getelementptr inbounds ([32 x i8], [32 x i8]* @__const.main.input_data, i64 0, i64 0), i64 32, i1 false)
-  %3 = call zeroext i8 @do_one_computation(i8* nonnull %2, i32 undef)
+  %3 = call zeroext i8 @do_one_computation(i8* nonnull %2)
   %4 = zext i8 %3 to i32
   %5 = call i32 (i8*, ...) @printf(i8* nonnull dereferenceable(1) getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i64 0, i64 0), i32 %4)
   ret i32 0
@@ -32,33 +32,33 @@ declare void @llvm.memcpy.p0i8.p0i8.i64(i8* noalias nocapture writeonly, i8* noa
 declare i32 @printf(i8* nocapture readonly, ...) local_unnamed_addr #2
 
 ; Function Attrs: noinline nounwind sspstrong uwtable
-define dso_local zeroext i8 @do_one_computation(i8* %0, i32 %1) local_unnamed_addr #0 {
+define dso_local zeroext i8 @do_one_computation(i8* %0) local_unnamed_addr #0 {
+  %2 = alloca [32 x i8], align 16
   %3 = alloca [32 x i8], align 16
-  %4 = alloca [32 x i8], align 16
+  %4 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  call void @llvm.memset.p0i8.i64(i8* nonnull align 16 dereferenceable(32) %4, i8 0, i64 32, i1 false)
   %5 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  call void @llvm.memset.p0i8.i64(i8* nonnull align 16 dereferenceable(32) %5, i8 0, i64 32, i1 false)
-  %6 = getelementptr inbounds [32 x i8], [32 x i8]* %4, i64 0, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* nonnull align 16 dereferenceable(32) %6, i8* nonnull align 16 dereferenceable(32) getelementptr inbounds (<{ i8, [31 x i8] }>, <{ i8, [31 x i8] }>* @__const.do_one_computation.basepoint, i64 0, i32 0), i64 32, i1 false)
-  %7 = call i32 @curve25519_donna(i8* nonnull %5, i8* %0, i8* nonnull %6)
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* nonnull align 1 dereferenceable(32) %0, i8* nonnull align 16 dereferenceable(32) %5, i64 32, i1 false)
-  %8 = call i32 @curve25519_donna(i8* nonnull %5, i8* %0, i8* nonnull %6)
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* nonnull align 1 dereferenceable(32) %0, i8* nonnull align 16 dereferenceable(32) %5, i64 32, i1 false)
-  %9 = call i32 @curve25519_donna(i8* nonnull %5, i8* %0, i8* nonnull %6)
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* nonnull align 1 dereferenceable(32) %0, i8* nonnull align 16 dereferenceable(32) %5, i64 32, i1 false)
-  %10 = call i32 @curve25519_donna(i8* nonnull %5, i8* %0, i8* nonnull %6)
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* nonnull align 1 dereferenceable(32) %0, i8* nonnull align 16 dereferenceable(32) %5, i64 32, i1 false)
-  %11 = call i32 @curve25519_donna(i8* nonnull %5, i8* %0, i8* nonnull %6)
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* nonnull align 1 dereferenceable(32) %0, i8* nonnull align 16 dereferenceable(32) %5, i64 32, i1 false)
-  %12 = call i32 @curve25519_donna(i8* nonnull %5, i8* %0, i8* nonnull %6)
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* nonnull align 1 dereferenceable(32) %0, i8* nonnull align 16 dereferenceable(32) %5, i64 32, i1 false)
-  %13 = call i32 @curve25519_donna(i8* nonnull %5, i8* %0, i8* nonnull %6)
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* nonnull align 1 dereferenceable(32) %0, i8* nonnull align 16 dereferenceable(32) %5, i64 32, i1 false)
-  %14 = call i32 @curve25519_donna(i8* nonnull %5, i8* %0, i8* nonnull %6)
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* nonnull align 1 dereferenceable(32) %0, i8* nonnull align 16 dereferenceable(32) %5, i64 32, i1 false)
-  %15 = call i32 @curve25519_donna(i8* nonnull %5, i8* %0, i8* nonnull %6)
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* nonnull align 1 dereferenceable(32) %0, i8* nonnull align 16 dereferenceable(32) %5, i64 32, i1 false)
-  %16 = load i8, i8* %5, align 16
-  ret i8 %16
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* nonnull align 16 dereferenceable(32) %5, i8* nonnull align 16 dereferenceable(32) getelementptr inbounds (<{ i8, [31 x i8] }>, <{ i8, [31 x i8] }>* @__const.do_one_computation.basepoint, i64 0, i32 0), i64 32, i1 false)
+  %6 = call i32 @curve25519_donna(i8* nonnull %4, i8* %0, i8* nonnull %5)
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* nonnull align 1 dereferenceable(32) %0, i8* nonnull align 16 dereferenceable(32) %4, i64 32, i1 false)
+  %7 = call i32 @curve25519_donna(i8* nonnull %4, i8* %0, i8* nonnull %5)
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* nonnull align 1 dereferenceable(32) %0, i8* nonnull align 16 dereferenceable(32) %4, i64 32, i1 false)
+  %8 = call i32 @curve25519_donna(i8* nonnull %4, i8* %0, i8* nonnull %5)
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* nonnull align 1 dereferenceable(32) %0, i8* nonnull align 16 dereferenceable(32) %4, i64 32, i1 false)
+  %9 = call i32 @curve25519_donna(i8* nonnull %4, i8* %0, i8* nonnull %5)
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* nonnull align 1 dereferenceable(32) %0, i8* nonnull align 16 dereferenceable(32) %4, i64 32, i1 false)
+  %10 = call i32 @curve25519_donna(i8* nonnull %4, i8* %0, i8* nonnull %5)
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* nonnull align 1 dereferenceable(32) %0, i8* nonnull align 16 dereferenceable(32) %4, i64 32, i1 false)
+  %11 = call i32 @curve25519_donna(i8* nonnull %4, i8* %0, i8* nonnull %5)
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* nonnull align 1 dereferenceable(32) %0, i8* nonnull align 16 dereferenceable(32) %4, i64 32, i1 false)
+  %12 = call i32 @curve25519_donna(i8* nonnull %4, i8* %0, i8* nonnull %5)
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* nonnull align 1 dereferenceable(32) %0, i8* nonnull align 16 dereferenceable(32) %4, i64 32, i1 false)
+  %13 = call i32 @curve25519_donna(i8* nonnull %4, i8* %0, i8* nonnull %5)
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* nonnull align 1 dereferenceable(32) %0, i8* nonnull align 16 dereferenceable(32) %4, i64 32, i1 false)
+  %14 = call i32 @curve25519_donna(i8* nonnull %4, i8* %0, i8* nonnull %5)
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* nonnull align 1 dereferenceable(32) %0, i8* nonnull align 16 dereferenceable(32) %4, i64 32, i1 false)
+  %15 = load i8, i8* %4, align 16
+  ret i8 %15
 }
 
 ; Function Attrs: argmemonly nounwind willreturn

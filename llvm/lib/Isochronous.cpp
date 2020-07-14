@@ -362,7 +362,7 @@ void prepareModule(Module &M, SmallVectorImpl<FuncWrapper *> &Fns,
             // If Arg is a pointer, we add a new int64 argument.
             if (isa<PointerType>(Arg.getType())) {
                 ArgTypes.push_back(IntegerType::getInt64Ty(Ctx));
-                ArgNames.push_back("len." + Arg.getName());
+                ArgNames.push_back("N" + Arg.getName());
                 Idx++;
                 NumPtrArgs++;
             }
@@ -448,15 +448,27 @@ void prepareModule(Module &M, SmallVectorImpl<FuncWrapper *> &Fns,
     // passing the length of each ptr arg.
     for (auto F : Modified) {
         while (!F->use_empty()) {
-            CallSite CS(F->user_back());
-            assert(CS.getCalledFunction() == F);
+            auto NewF = Replace[F];
+            auto U = F->user_back();
+            CallSite CS(U);
 
+            // If CS is not a call, then probably it is storing F's address so
+            // it can be used as an indirect call somewhere. This is hard to
+            // track and even hard to fix, so we currently does not support.
+            // We just replace the use of F by NewF so we can move to the next
+            // user.
+            if (!CS.isCall()) {
+                U->replaceUsesOfWith(F, NewF);
+                errs() << "Warning: cannot handle possible indirect calls to "
+                       << NewF->getName() << "!\n";
+                continue;
+            }
+
+            assert(CS.getCalledFunction() == F);
             SmallVector<Value *, 16> Args;
             CallInst *Call = cast<CallInst>(CS.getInstruction());
 
-            auto NewF = Replace[F];
             size_t Idx = 0;
-
             for (Use &Arg : CS.args()) {
                 Args.push_back(Arg);
                 Idx++;

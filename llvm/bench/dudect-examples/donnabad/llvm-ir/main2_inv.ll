@@ -7,7 +7,6 @@ target triple = "x86_64-pc-linux-gnu"
 @.str = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
 @chunk_size = dso_local constant i64 32, align 8
 @number_measurements = dso_local constant i64 1, align 8
-@__const.do_one_computation.secret = private unnamed_addr constant <{ i8, i8, i8, [29 x i8] }> <{ i8 1, i8 2, i8 3, [29 x i8] zeroinitializer }>, align 16
 @__const.do_one_computation.basepoint = private unnamed_addr constant <{ i8, [31 x i8] }> <{ i8 9, [31 x i8] zeroinitializer }>, align 16
 @.str.9 = private unnamed_addr constant [10 x i8] c"xlen >= 0\00", align 1
 @.str.1 = private unnamed_addr constant [42 x i8] c"dudect-examples/donnabad/sources/random.c\00", align 1
@@ -25,7 +24,7 @@ define dso_local i32 @main() #0 {
   call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 16 %3, i8* align 16 getelementptr inbounds ([32 x i8], [32 x i8]* @__const.main.input_data, i32 0, i32 0), i64 32, i1 false)
   %4 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
   %5 = sext i8 32 to i64
-  %6 = call i8 @do_one_computation(i8* %4, i64 %5, i32 0)
+  %6 = call i8 @do_one_computation(i8* %4, i64 %5)
   %7 = zext i8 %6 to i32
   %8 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i64 0, i64 0), i32 %7)
   ret i32 0
@@ -36,86 +35,83 @@ declare void @llvm.memcpy.p0i8.p0i8.i64(i8* noalias nocapture writeonly, i8* noa
 
 declare i32 @printf(i8*, ...) #2
 
-define i8 @do_one_computation(i8* %0, i64 %len., i32 %1) {
+define i8 @do_one_computation(i8* %0, i64 %N) {
+  %2 = alloca [32 x i8], align 16
   %3 = alloca [32 x i8], align 16
-  %4 = alloca [32 x i8], align 16
-  %5 = alloca [32 x i8], align 16
-  %6 = bitcast [32 x i8]* %3 to i8*
-  call void @llvm.memset.p0i8.i64(i8* align 16 %6, i8 0, i64 32, i1 false)
-  %7 = bitcast [32 x i8]* %4 to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 16 %7, i8* align 16 getelementptr inbounds (<{ i8, i8, i8, [29 x i8] }>, <{ i8, i8, i8, [29 x i8] }>* @__const.do_one_computation.secret, i32 0, i32 0), i64 32, i1 false)
-  %8 = bitcast [32 x i8]* %5 to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 16 %8, i8* align 16 getelementptr inbounds (<{ i8, [31 x i8] }>, <{ i8, [31 x i8] }>* @__const.do_one_computation.basepoint, i32 0, i32 0), i64 32, i1 false)
-  %9 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  %10 = getelementptr inbounds [32 x i8], [32 x i8]* %5, i64 0, i64 0
-  %11 = sext i8 32 to i64
-  %12 = sext i8 32 to i64
-  %13 = call i32 @curve25519_donna(i8* %9, i64 %11, i8* %0, i64 %len., i8* %10, i64 %12)
-  %14 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %14, i64 32, i1 false)
-  %15 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  %16 = getelementptr inbounds [32 x i8], [32 x i8]* %5, i64 0, i64 0
-  %17 = sext i8 32 to i64
-  %18 = sext i8 32 to i64
-  %19 = call i32 @curve25519_donna(i8* %15, i64 %17, i8* %0, i64 %len., i8* %16, i64 %18)
-  %20 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %20, i64 32, i1 false)
-  %21 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  %22 = getelementptr inbounds [32 x i8], [32 x i8]* %5, i64 0, i64 0
-  %23 = sext i8 32 to i64
-  %24 = sext i8 32 to i64
-  %25 = call i32 @curve25519_donna(i8* %21, i64 %23, i8* %0, i64 %len., i8* %22, i64 %24)
-  %26 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %26, i64 32, i1 false)
-  %27 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  %28 = getelementptr inbounds [32 x i8], [32 x i8]* %5, i64 0, i64 0
-  %29 = sext i8 32 to i64
-  %30 = sext i8 32 to i64
-  %31 = call i32 @curve25519_donna(i8* %27, i64 %29, i8* %0, i64 %len., i8* %28, i64 %30)
-  %32 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %32, i64 32, i1 false)
-  %33 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  %34 = getelementptr inbounds [32 x i8], [32 x i8]* %5, i64 0, i64 0
-  %35 = sext i8 32 to i64
-  %36 = sext i8 32 to i64
-  %37 = call i32 @curve25519_donna(i8* %33, i64 %35, i8* %0, i64 %len., i8* %34, i64 %36)
-  %38 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %38, i64 32, i1 false)
-  %39 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  %40 = getelementptr inbounds [32 x i8], [32 x i8]* %5, i64 0, i64 0
-  %41 = sext i8 32 to i64
-  %42 = sext i8 32 to i64
-  %43 = call i32 @curve25519_donna(i8* %39, i64 %41, i8* %0, i64 %len., i8* %40, i64 %42)
-  %44 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %44, i64 32, i1 false)
-  %45 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  %46 = getelementptr inbounds [32 x i8], [32 x i8]* %5, i64 0, i64 0
-  %47 = sext i8 32 to i64
-  %48 = sext i8 32 to i64
-  %49 = call i32 @curve25519_donna(i8* %45, i64 %47, i8* %0, i64 %len., i8* %46, i64 %48)
-  %50 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %50, i64 32, i1 false)
-  %51 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  %52 = getelementptr inbounds [32 x i8], [32 x i8]* %5, i64 0, i64 0
-  %53 = sext i8 32 to i64
-  %54 = sext i8 32 to i64
-  %55 = call i32 @curve25519_donna(i8* %51, i64 %53, i8* %0, i64 %len., i8* %52, i64 %54)
-  %56 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %56, i64 32, i1 false)
-  %57 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  %58 = getelementptr inbounds [32 x i8], [32 x i8]* %5, i64 0, i64 0
-  %59 = sext i8 32 to i64
-  %60 = sext i8 32 to i64
-  %61 = call i32 @curve25519_donna(i8* %57, i64 %59, i8* %0, i64 %len., i8* %58, i64 %60)
-  %62 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %62, i64 32, i1 false)
-  %63 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
-  %64 = load i8, i8* %63, align 16
-  %65 = zext i8 %64 to i32
-  %66 = zext i8 0 to i32
-  %67 = xor i32 %66, %65
-  %68 = trunc i32 %67 to i8
-  ret i8 %68
+  %4 = bitcast [32 x i8]* %2 to i8*
+  call void @llvm.memset.p0i8.i64(i8* align 16 %4, i8 0, i64 32, i1 false)
+  %5 = bitcast [32 x i8]* %3 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 16 %5, i8* align 16 getelementptr inbounds (<{ i8, [31 x i8] }>, <{ i8, [31 x i8] }>* @__const.do_one_computation.basepoint, i32 0, i32 0), i64 32, i1 false)
+  %6 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  %7 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
+  %8 = sext i8 32 to i64
+  %9 = sext i8 32 to i64
+  %10 = call i32 @curve25519_donna(i8* %6, i64 %8, i8* %0, i64 %N, i8* %7, i64 %9)
+  %11 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %11, i64 32, i1 false)
+  %12 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  %13 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
+  %14 = sext i8 32 to i64
+  %15 = sext i8 32 to i64
+  %16 = call i32 @curve25519_donna(i8* %12, i64 %14, i8* %0, i64 %N, i8* %13, i64 %15)
+  %17 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %17, i64 32, i1 false)
+  %18 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  %19 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
+  %20 = sext i8 32 to i64
+  %21 = sext i8 32 to i64
+  %22 = call i32 @curve25519_donna(i8* %18, i64 %20, i8* %0, i64 %N, i8* %19, i64 %21)
+  %23 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %23, i64 32, i1 false)
+  %24 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  %25 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
+  %26 = sext i8 32 to i64
+  %27 = sext i8 32 to i64
+  %28 = call i32 @curve25519_donna(i8* %24, i64 %26, i8* %0, i64 %N, i8* %25, i64 %27)
+  %29 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %29, i64 32, i1 false)
+  %30 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  %31 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
+  %32 = sext i8 32 to i64
+  %33 = sext i8 32 to i64
+  %34 = call i32 @curve25519_donna(i8* %30, i64 %32, i8* %0, i64 %N, i8* %31, i64 %33)
+  %35 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %35, i64 32, i1 false)
+  %36 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  %37 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
+  %38 = sext i8 32 to i64
+  %39 = sext i8 32 to i64
+  %40 = call i32 @curve25519_donna(i8* %36, i64 %38, i8* %0, i64 %N, i8* %37, i64 %39)
+  %41 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %41, i64 32, i1 false)
+  %42 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  %43 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
+  %44 = sext i8 32 to i64
+  %45 = sext i8 32 to i64
+  %46 = call i32 @curve25519_donna(i8* %42, i64 %44, i8* %0, i64 %N, i8* %43, i64 %45)
+  %47 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %47, i64 32, i1 false)
+  %48 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  %49 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
+  %50 = sext i8 32 to i64
+  %51 = sext i8 32 to i64
+  %52 = call i32 @curve25519_donna(i8* %48, i64 %50, i8* %0, i64 %N, i8* %49, i64 %51)
+  %53 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %53, i64 32, i1 false)
+  %54 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  %55 = getelementptr inbounds [32 x i8], [32 x i8]* %3, i64 0, i64 0
+  %56 = sext i8 32 to i64
+  %57 = sext i8 32 to i64
+  %58 = call i32 @curve25519_donna(i8* %54, i64 %56, i8* %0, i64 %N, i8* %55, i64 %57)
+  %59 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %0, i8* align 16 %59, i64 32, i1 false)
+  %60 = getelementptr inbounds [32 x i8], [32 x i8]* %2, i64 0, i64 0
+  %61 = load i8, i8* %60, align 16
+  %62 = zext i8 %61 to i32
+  %63 = zext i8 0 to i32
+  %64 = xor i32 %63, %62
+  %65 = trunc i32 %64 to i8
+  ret i8 %65
 }
 
 ; Function Attrs: argmemonly nounwind willreturn
@@ -126,8 +122,8 @@ define dso_local void @init_dut() #0 {
   ret void
 }
 
-define void @prepare_inputs(i8* %0, i64 %len., i8* %1, i64 %len.1) {
-  call void @randombytes(i8* %0, i64 %len., i64 32)
+define void @prepare_inputs(i8* %0, i64 %N, i8* %1, i64 %N1) {
+  call void @randombytes(i8* %0, i64 %N, i64 32)
   %3 = call zeroext i8 @randombit()
   store i8 %3, i8* %1, align 1
   %4 = load i8, i8* %1, align 1
@@ -143,7 +139,7 @@ define void @prepare_inputs(i8* %0, i64 %len., i8* %1, i64 %len.1) {
   ret void
 }
 
-define i32 @curve25519_donna(i8* %0, i64 %len., i8* %1, i64 %len.1, i8* %2, i64 %len.2) {
+define i32 @curve25519_donna(i8* %0, i64 %N, i8* %1, i64 %N1, i8* %2, i64 %N2) {
   %out. = alloca i1
   store i1 true, i1* %out.
   %4 = alloca [10 x i64], align 16
@@ -297,7 +293,7 @@ define i32 @curve25519_donna(i8* %0, i64 %len., i8* %1, i64 %len.1, i8* %2, i64 
   %118 = trunc i32 %117 to i8
   store i8 %118, i8* %114, align 1
   %119 = getelementptr inbounds [10 x i64], [10 x i64]* %4, i64 0, i64 0
-  call void @fexpand(i64* %119, i64 10, i8* %2, i64 %len.2, i1 true)
+  call void @fexpand(i64* %119, i64 10, i8* %2, i64 %N2, i1 true)
   %120 = getelementptr inbounds [10 x i64], [10 x i64]* %5, i64 0, i64 0
   %121 = getelementptr inbounds [11 x i64], [11 x i64]* %6, i64 0, i64 0
   %122 = getelementptr inbounds [32 x i8], [32 x i8]* %8, i64 0, i64 0
@@ -312,18 +308,18 @@ define i32 @curve25519_donna(i8* %0, i64 %len., i8* %1, i64 %len.1, i8* %2, i64 
   %129 = getelementptr inbounds [10 x i64], [10 x i64]* %7, i64 0, i64 0
   call void @fmul(i64* %127, i64 11, i64* %128, i64 10, i64* %129, i64 10, i1 true)
   %130 = getelementptr inbounds [11 x i64], [11 x i64]* %6, i64 0, i64 0
-  call void @fcontract(i8* %0, i64 %len., i64* %130, i64 11, i1 true)
+  call void @fcontract(i8* %0, i64 %N, i64* %130, i64 11, i1 true)
   %shadow = alloca i64
   ret i32 0
 }
 
-define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond) {
+define internal void @fexpand(i64* %0, i64 %N, i8* %1, i64 %N1, i1 %.cond) {
   %shadow = alloca i64
   %out. = alloca i1
   store i1 %.cond, i1* %out.
   %3 = getelementptr inbounds i8, i8* %1, i64 0
   %4 = load i1, i1* %out.
-  %5 = icmp slt i64 0, %len.1
+  %5 = icmp slt i64 0, %N1
   %6 = bitcast i64* %shadow to i8*
   %safe. = or i1 %4, %5
   %select.ptr. = select i1 %safe., i8* %3, i8* %6
@@ -331,7 +327,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %8 = zext i8 %7 to i64
   %9 = getelementptr inbounds i8, i8* %1, i64 1
   %10 = load i1, i1* %out.
-  %11 = icmp slt i64 1, %len.1
+  %11 = icmp slt i64 1, %N1
   %12 = bitcast i64* %shadow to i8*
   %safe.2 = or i1 %10, %11
   %select.ptr.3 = select i1 %safe.2, i8* %9, i8* %12
@@ -341,7 +337,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %16 = or i64 %8, %15
   %17 = getelementptr inbounds i8, i8* %1, i64 2
   %18 = load i1, i1* %out.
-  %19 = icmp slt i64 2, %len.1
+  %19 = icmp slt i64 2, %N1
   %20 = bitcast i64* %shadow to i8*
   %safe.4 = or i1 %18, %19
   %select.ptr.5 = select i1 %safe.4, i8* %17, i8* %20
@@ -351,7 +347,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %24 = or i64 %16, %23
   %25 = getelementptr inbounds i8, i8* %1, i64 3
   %26 = load i1, i1* %out.
-  %27 = icmp slt i64 3, %len.1
+  %27 = icmp slt i64 3, %N1
   %28 = bitcast i64* %shadow to i8*
   %safe.6 = or i1 %26, %27
   %select.ptr.7 = select i1 %safe.6, i8* %25, i8* %28
@@ -363,7 +359,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %34 = and i64 %33, 67108863
   %35 = getelementptr inbounds i64, i64* %0, i64 0
   %36 = load i1, i1* %out.
-  %37 = icmp slt i64 0, %len.
+  %37 = icmp slt i64 0, %N
   %38 = bitcast i64* %shadow to i64*
   %safe.8 = or i1 %36, %37
   %select.ptr.9 = select i1 %safe.8, i64* %35, i64* %38
@@ -372,7 +368,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   store i64 %select.val., i64* %select.ptr.9, align 8
   %40 = getelementptr inbounds i8, i8* %1, i64 3
   %41 = load i1, i1* %out.
-  %42 = icmp slt i64 3, %len.1
+  %42 = icmp slt i64 3, %N1
   %43 = bitcast i64* %shadow to i8*
   %safe.10 = or i1 %41, %42
   %select.ptr.11 = select i1 %safe.10, i8* %40, i8* %43
@@ -380,7 +376,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %45 = zext i8 %44 to i64
   %46 = getelementptr inbounds i8, i8* %1, i64 4
   %47 = load i1, i1* %out.
-  %48 = icmp slt i64 4, %len.1
+  %48 = icmp slt i64 4, %N1
   %49 = bitcast i64* %shadow to i8*
   %safe.12 = or i1 %47, %48
   %select.ptr.13 = select i1 %safe.12, i8* %46, i8* %49
@@ -390,7 +386,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %53 = or i64 %45, %52
   %54 = getelementptr inbounds i8, i8* %1, i64 5
   %55 = load i1, i1* %out.
-  %56 = icmp slt i64 5, %len.1
+  %56 = icmp slt i64 5, %N1
   %57 = bitcast i64* %shadow to i8*
   %safe.14 = or i1 %55, %56
   %select.ptr.15 = select i1 %safe.14, i8* %54, i8* %57
@@ -400,7 +396,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %61 = or i64 %53, %60
   %62 = getelementptr inbounds i8, i8* %1, i64 6
   %63 = load i1, i1* %out.
-  %64 = icmp slt i64 6, %len.1
+  %64 = icmp slt i64 6, %N1
   %65 = bitcast i64* %shadow to i8*
   %safe.16 = or i1 %63, %64
   %select.ptr.17 = select i1 %safe.16, i8* %62, i8* %65
@@ -412,7 +408,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %71 = and i64 %70, 33554431
   %72 = getelementptr inbounds i64, i64* %0, i64 1
   %73 = load i1, i1* %out.
-  %74 = icmp slt i64 1, %len.
+  %74 = icmp slt i64 1, %N
   %75 = bitcast i64* %shadow to i64*
   %safe.18 = or i1 %73, %74
   %select.ptr.19 = select i1 %safe.18, i64* %72, i64* %75
@@ -421,7 +417,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   store i64 %select.val.20, i64* %select.ptr.19, align 8
   %77 = getelementptr inbounds i8, i8* %1, i64 6
   %78 = load i1, i1* %out.
-  %79 = icmp slt i64 6, %len.1
+  %79 = icmp slt i64 6, %N1
   %80 = bitcast i64* %shadow to i8*
   %safe.21 = or i1 %78, %79
   %select.ptr.22 = select i1 %safe.21, i8* %77, i8* %80
@@ -429,7 +425,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %82 = zext i8 %81 to i64
   %83 = getelementptr inbounds i8, i8* %1, i64 7
   %84 = load i1, i1* %out.
-  %85 = icmp slt i64 7, %len.1
+  %85 = icmp slt i64 7, %N1
   %86 = bitcast i64* %shadow to i8*
   %safe.23 = or i1 %84, %85
   %select.ptr.24 = select i1 %safe.23, i8* %83, i8* %86
@@ -439,7 +435,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %90 = or i64 %82, %89
   %91 = getelementptr inbounds i8, i8* %1, i64 8
   %92 = load i1, i1* %out.
-  %93 = icmp slt i64 8, %len.1
+  %93 = icmp slt i64 8, %N1
   %94 = bitcast i64* %shadow to i8*
   %safe.25 = or i1 %92, %93
   %select.ptr.26 = select i1 %safe.25, i8* %91, i8* %94
@@ -449,7 +445,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %98 = or i64 %90, %97
   %99 = getelementptr inbounds i8, i8* %1, i64 9
   %100 = load i1, i1* %out.
-  %101 = icmp slt i64 9, %len.1
+  %101 = icmp slt i64 9, %N1
   %102 = bitcast i64* %shadow to i8*
   %safe.27 = or i1 %100, %101
   %select.ptr.28 = select i1 %safe.27, i8* %99, i8* %102
@@ -461,7 +457,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %108 = and i64 %107, 67108863
   %109 = getelementptr inbounds i64, i64* %0, i64 2
   %110 = load i1, i1* %out.
-  %111 = icmp slt i64 2, %len.
+  %111 = icmp slt i64 2, %N
   %112 = bitcast i64* %shadow to i64*
   %safe.29 = or i1 %110, %111
   %select.ptr.30 = select i1 %safe.29, i64* %109, i64* %112
@@ -470,7 +466,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   store i64 %select.val.31, i64* %select.ptr.30, align 8
   %114 = getelementptr inbounds i8, i8* %1, i64 9
   %115 = load i1, i1* %out.
-  %116 = icmp slt i64 9, %len.1
+  %116 = icmp slt i64 9, %N1
   %117 = bitcast i64* %shadow to i8*
   %safe.32 = or i1 %115, %116
   %select.ptr.33 = select i1 %safe.32, i8* %114, i8* %117
@@ -478,7 +474,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %119 = zext i8 %118 to i64
   %120 = getelementptr inbounds i8, i8* %1, i64 10
   %121 = load i1, i1* %out.
-  %122 = icmp slt i64 10, %len.1
+  %122 = icmp slt i64 10, %N1
   %123 = bitcast i64* %shadow to i8*
   %safe.34 = or i1 %121, %122
   %select.ptr.35 = select i1 %safe.34, i8* %120, i8* %123
@@ -488,7 +484,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %127 = or i64 %119, %126
   %128 = getelementptr inbounds i8, i8* %1, i64 11
   %129 = load i1, i1* %out.
-  %130 = icmp slt i64 11, %len.1
+  %130 = icmp slt i64 11, %N1
   %131 = bitcast i64* %shadow to i8*
   %safe.36 = or i1 %129, %130
   %select.ptr.37 = select i1 %safe.36, i8* %128, i8* %131
@@ -498,7 +494,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %135 = or i64 %127, %134
   %136 = getelementptr inbounds i8, i8* %1, i64 12
   %137 = load i1, i1* %out.
-  %138 = icmp slt i64 12, %len.1
+  %138 = icmp slt i64 12, %N1
   %139 = bitcast i64* %shadow to i8*
   %safe.38 = or i1 %137, %138
   %select.ptr.39 = select i1 %safe.38, i8* %136, i8* %139
@@ -510,7 +506,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %145 = and i64 %144, 33554431
   %146 = getelementptr inbounds i64, i64* %0, i64 3
   %147 = load i1, i1* %out.
-  %148 = icmp slt i64 3, %len.
+  %148 = icmp slt i64 3, %N
   %149 = bitcast i64* %shadow to i64*
   %safe.40 = or i1 %147, %148
   %select.ptr.41 = select i1 %safe.40, i64* %146, i64* %149
@@ -519,7 +515,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   store i64 %select.val.42, i64* %select.ptr.41, align 8
   %151 = getelementptr inbounds i8, i8* %1, i64 12
   %152 = load i1, i1* %out.
-  %153 = icmp slt i64 12, %len.1
+  %153 = icmp slt i64 12, %N1
   %154 = bitcast i64* %shadow to i8*
   %safe.43 = or i1 %152, %153
   %select.ptr.44 = select i1 %safe.43, i8* %151, i8* %154
@@ -527,7 +523,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %156 = zext i8 %155 to i64
   %157 = getelementptr inbounds i8, i8* %1, i64 13
   %158 = load i1, i1* %out.
-  %159 = icmp slt i64 13, %len.1
+  %159 = icmp slt i64 13, %N1
   %160 = bitcast i64* %shadow to i8*
   %safe.45 = or i1 %158, %159
   %select.ptr.46 = select i1 %safe.45, i8* %157, i8* %160
@@ -537,7 +533,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %164 = or i64 %156, %163
   %165 = getelementptr inbounds i8, i8* %1, i64 14
   %166 = load i1, i1* %out.
-  %167 = icmp slt i64 14, %len.1
+  %167 = icmp slt i64 14, %N1
   %168 = bitcast i64* %shadow to i8*
   %safe.47 = or i1 %166, %167
   %select.ptr.48 = select i1 %safe.47, i8* %165, i8* %168
@@ -547,7 +543,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %172 = or i64 %164, %171
   %173 = getelementptr inbounds i8, i8* %1, i64 15
   %174 = load i1, i1* %out.
-  %175 = icmp slt i64 15, %len.1
+  %175 = icmp slt i64 15, %N1
   %176 = bitcast i64* %shadow to i8*
   %safe.49 = or i1 %174, %175
   %select.ptr.50 = select i1 %safe.49, i8* %173, i8* %176
@@ -559,7 +555,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %182 = and i64 %181, 67108863
   %183 = getelementptr inbounds i64, i64* %0, i64 4
   %184 = load i1, i1* %out.
-  %185 = icmp slt i64 4, %len.
+  %185 = icmp slt i64 4, %N
   %186 = bitcast i64* %shadow to i64*
   %safe.51 = or i1 %184, %185
   %select.ptr.52 = select i1 %safe.51, i64* %183, i64* %186
@@ -568,7 +564,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   store i64 %select.val.53, i64* %select.ptr.52, align 8
   %188 = getelementptr inbounds i8, i8* %1, i64 16
   %189 = load i1, i1* %out.
-  %190 = icmp slt i64 16, %len.1
+  %190 = icmp slt i64 16, %N1
   %191 = bitcast i64* %shadow to i8*
   %safe.54 = or i1 %189, %190
   %select.ptr.55 = select i1 %safe.54, i8* %188, i8* %191
@@ -576,7 +572,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %193 = zext i8 %192 to i64
   %194 = getelementptr inbounds i8, i8* %1, i64 17
   %195 = load i1, i1* %out.
-  %196 = icmp slt i64 17, %len.1
+  %196 = icmp slt i64 17, %N1
   %197 = bitcast i64* %shadow to i8*
   %safe.56 = or i1 %195, %196
   %select.ptr.57 = select i1 %safe.56, i8* %194, i8* %197
@@ -586,7 +582,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %201 = or i64 %193, %200
   %202 = getelementptr inbounds i8, i8* %1, i64 18
   %203 = load i1, i1* %out.
-  %204 = icmp slt i64 18, %len.1
+  %204 = icmp slt i64 18, %N1
   %205 = bitcast i64* %shadow to i8*
   %safe.58 = or i1 %203, %204
   %select.ptr.59 = select i1 %safe.58, i8* %202, i8* %205
@@ -596,7 +592,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %209 = or i64 %201, %208
   %210 = getelementptr inbounds i8, i8* %1, i64 19
   %211 = load i1, i1* %out.
-  %212 = icmp slt i64 19, %len.1
+  %212 = icmp slt i64 19, %N1
   %213 = bitcast i64* %shadow to i8*
   %safe.60 = or i1 %211, %212
   %select.ptr.61 = select i1 %safe.60, i8* %210, i8* %213
@@ -608,7 +604,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %219 = and i64 %218, 33554431
   %220 = getelementptr inbounds i64, i64* %0, i64 5
   %221 = load i1, i1* %out.
-  %222 = icmp slt i64 5, %len.
+  %222 = icmp slt i64 5, %N
   %223 = bitcast i64* %shadow to i64*
   %safe.62 = or i1 %221, %222
   %select.ptr.63 = select i1 %safe.62, i64* %220, i64* %223
@@ -617,7 +613,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   store i64 %select.val.64, i64* %select.ptr.63, align 8
   %225 = getelementptr inbounds i8, i8* %1, i64 19
   %226 = load i1, i1* %out.
-  %227 = icmp slt i64 19, %len.1
+  %227 = icmp slt i64 19, %N1
   %228 = bitcast i64* %shadow to i8*
   %safe.65 = or i1 %226, %227
   %select.ptr.66 = select i1 %safe.65, i8* %225, i8* %228
@@ -625,7 +621,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %230 = zext i8 %229 to i64
   %231 = getelementptr inbounds i8, i8* %1, i64 20
   %232 = load i1, i1* %out.
-  %233 = icmp slt i64 20, %len.1
+  %233 = icmp slt i64 20, %N1
   %234 = bitcast i64* %shadow to i8*
   %safe.67 = or i1 %232, %233
   %select.ptr.68 = select i1 %safe.67, i8* %231, i8* %234
@@ -635,7 +631,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %238 = or i64 %230, %237
   %239 = getelementptr inbounds i8, i8* %1, i64 21
   %240 = load i1, i1* %out.
-  %241 = icmp slt i64 21, %len.1
+  %241 = icmp slt i64 21, %N1
   %242 = bitcast i64* %shadow to i8*
   %safe.69 = or i1 %240, %241
   %select.ptr.70 = select i1 %safe.69, i8* %239, i8* %242
@@ -645,7 +641,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %246 = or i64 %238, %245
   %247 = getelementptr inbounds i8, i8* %1, i64 22
   %248 = load i1, i1* %out.
-  %249 = icmp slt i64 22, %len.1
+  %249 = icmp slt i64 22, %N1
   %250 = bitcast i64* %shadow to i8*
   %safe.71 = or i1 %248, %249
   %select.ptr.72 = select i1 %safe.71, i8* %247, i8* %250
@@ -657,7 +653,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %256 = and i64 %255, 67108863
   %257 = getelementptr inbounds i64, i64* %0, i64 6
   %258 = load i1, i1* %out.
-  %259 = icmp slt i64 6, %len.
+  %259 = icmp slt i64 6, %N
   %260 = bitcast i64* %shadow to i64*
   %safe.73 = or i1 %258, %259
   %select.ptr.74 = select i1 %safe.73, i64* %257, i64* %260
@@ -666,7 +662,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   store i64 %select.val.75, i64* %select.ptr.74, align 8
   %262 = getelementptr inbounds i8, i8* %1, i64 22
   %263 = load i1, i1* %out.
-  %264 = icmp slt i64 22, %len.1
+  %264 = icmp slt i64 22, %N1
   %265 = bitcast i64* %shadow to i8*
   %safe.76 = or i1 %263, %264
   %select.ptr.77 = select i1 %safe.76, i8* %262, i8* %265
@@ -674,7 +670,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %267 = zext i8 %266 to i64
   %268 = getelementptr inbounds i8, i8* %1, i64 23
   %269 = load i1, i1* %out.
-  %270 = icmp slt i64 23, %len.1
+  %270 = icmp slt i64 23, %N1
   %271 = bitcast i64* %shadow to i8*
   %safe.78 = or i1 %269, %270
   %select.ptr.79 = select i1 %safe.78, i8* %268, i8* %271
@@ -684,7 +680,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %275 = or i64 %267, %274
   %276 = getelementptr inbounds i8, i8* %1, i64 24
   %277 = load i1, i1* %out.
-  %278 = icmp slt i64 24, %len.1
+  %278 = icmp slt i64 24, %N1
   %279 = bitcast i64* %shadow to i8*
   %safe.80 = or i1 %277, %278
   %select.ptr.81 = select i1 %safe.80, i8* %276, i8* %279
@@ -694,7 +690,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %283 = or i64 %275, %282
   %284 = getelementptr inbounds i8, i8* %1, i64 25
   %285 = load i1, i1* %out.
-  %286 = icmp slt i64 25, %len.1
+  %286 = icmp slt i64 25, %N1
   %287 = bitcast i64* %shadow to i8*
   %safe.82 = or i1 %285, %286
   %select.ptr.83 = select i1 %safe.82, i8* %284, i8* %287
@@ -706,7 +702,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %293 = and i64 %292, 33554431
   %294 = getelementptr inbounds i64, i64* %0, i64 7
   %295 = load i1, i1* %out.
-  %296 = icmp slt i64 7, %len.
+  %296 = icmp slt i64 7, %N
   %297 = bitcast i64* %shadow to i64*
   %safe.84 = or i1 %295, %296
   %select.ptr.85 = select i1 %safe.84, i64* %294, i64* %297
@@ -715,7 +711,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   store i64 %select.val.86, i64* %select.ptr.85, align 8
   %299 = getelementptr inbounds i8, i8* %1, i64 25
   %300 = load i1, i1* %out.
-  %301 = icmp slt i64 25, %len.1
+  %301 = icmp slt i64 25, %N1
   %302 = bitcast i64* %shadow to i8*
   %safe.87 = or i1 %300, %301
   %select.ptr.88 = select i1 %safe.87, i8* %299, i8* %302
@@ -723,7 +719,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %304 = zext i8 %303 to i64
   %305 = getelementptr inbounds i8, i8* %1, i64 26
   %306 = load i1, i1* %out.
-  %307 = icmp slt i64 26, %len.1
+  %307 = icmp slt i64 26, %N1
   %308 = bitcast i64* %shadow to i8*
   %safe.89 = or i1 %306, %307
   %select.ptr.90 = select i1 %safe.89, i8* %305, i8* %308
@@ -733,7 +729,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %312 = or i64 %304, %311
   %313 = getelementptr inbounds i8, i8* %1, i64 27
   %314 = load i1, i1* %out.
-  %315 = icmp slt i64 27, %len.1
+  %315 = icmp slt i64 27, %N1
   %316 = bitcast i64* %shadow to i8*
   %safe.91 = or i1 %314, %315
   %select.ptr.92 = select i1 %safe.91, i8* %313, i8* %316
@@ -743,7 +739,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %320 = or i64 %312, %319
   %321 = getelementptr inbounds i8, i8* %1, i64 28
   %322 = load i1, i1* %out.
-  %323 = icmp slt i64 28, %len.1
+  %323 = icmp slt i64 28, %N1
   %324 = bitcast i64* %shadow to i8*
   %safe.93 = or i1 %322, %323
   %select.ptr.94 = select i1 %safe.93, i8* %321, i8* %324
@@ -755,7 +751,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %330 = and i64 %329, 67108863
   %331 = getelementptr inbounds i64, i64* %0, i64 8
   %332 = load i1, i1* %out.
-  %333 = icmp slt i64 8, %len.
+  %333 = icmp slt i64 8, %N
   %334 = bitcast i64* %shadow to i64*
   %safe.95 = or i1 %332, %333
   %select.ptr.96 = select i1 %safe.95, i64* %331, i64* %334
@@ -764,7 +760,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   store i64 %select.val.97, i64* %select.ptr.96, align 8
   %336 = getelementptr inbounds i8, i8* %1, i64 28
   %337 = load i1, i1* %out.
-  %338 = icmp slt i64 28, %len.1
+  %338 = icmp slt i64 28, %N1
   %339 = bitcast i64* %shadow to i8*
   %safe.98 = or i1 %337, %338
   %select.ptr.99 = select i1 %safe.98, i8* %336, i8* %339
@@ -772,7 +768,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %341 = zext i8 %340 to i64
   %342 = getelementptr inbounds i8, i8* %1, i64 29
   %343 = load i1, i1* %out.
-  %344 = icmp slt i64 29, %len.1
+  %344 = icmp slt i64 29, %N1
   %345 = bitcast i64* %shadow to i8*
   %safe.100 = or i1 %343, %344
   %select.ptr.101 = select i1 %safe.100, i8* %342, i8* %345
@@ -782,7 +778,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %349 = or i64 %341, %348
   %350 = getelementptr inbounds i8, i8* %1, i64 30
   %351 = load i1, i1* %out.
-  %352 = icmp slt i64 30, %len.1
+  %352 = icmp slt i64 30, %N1
   %353 = bitcast i64* %shadow to i8*
   %safe.102 = or i1 %351, %352
   %select.ptr.103 = select i1 %safe.102, i8* %350, i8* %353
@@ -792,7 +788,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %357 = or i64 %349, %356
   %358 = getelementptr inbounds i8, i8* %1, i64 31
   %359 = load i1, i1* %out.
-  %360 = icmp slt i64 31, %len.1
+  %360 = icmp slt i64 31, %N1
   %361 = bitcast i64* %shadow to i8*
   %safe.104 = or i1 %359, %360
   %select.ptr.105 = select i1 %safe.104, i8* %358, i8* %361
@@ -804,7 +800,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   %367 = and i64 %366, 33554431
   %368 = getelementptr inbounds i64, i64* %0, i64 9
   %369 = load i1, i1* %out.
-  %370 = icmp slt i64 9, %len.
+  %370 = icmp slt i64 9, %N
   %371 = bitcast i64* %shadow to i64*
   %safe.106 = or i1 %369, %370
   %select.ptr.107 = select i1 %safe.106, i64* %368, i64* %371
@@ -814,7 +810,7 @@ define internal void @fexpand(i64* %0, i64 %len., i8* %1, i64 %len.1, i1 %.cond)
   ret void
 }
 
-define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64 %len.2, i64* %3, i64 %len.3, i1 %.cond) {
+define internal void @cmult(i64* %0, i64 %N, i64* %1, i64 %N1, i8* %2, i64 %N2, i64* %3, i64 %N3, i1 %.cond) {
   %shadow = alloca i64
   %out. = alloca i1
   store i1 %.cond, i1* %out.
@@ -899,7 +895,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 8 %57, i8* align 8 %58, i64 80, i1 false)
   %59 = getelementptr inbounds i8, i8* %2, i64 31
   %60 = load i1, i1* %out.
-  %61 = icmp slt i64 31, %len.2
+  %61 = icmp slt i64 31, %N2
   %62 = bitcast i64* %shadow to i8*
   %safe.13 = or i1 %60, %61
   %select.ptr.14 = select i1 %safe.13, i8* %59, i8* %62
@@ -909,7 +905,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %66 = sext i32 %65 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %66, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %66, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %66, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %66, i1 %.cond)
   %67 = zext i8 %63 to i32
@@ -920,7 +916,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %72 = sext i32 %71 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %72, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %72, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %72, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %72, i1 %.cond)
   %73 = zext i8 %69 to i32
@@ -931,7 +927,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %78 = sext i32 %77 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %78, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %78, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %78, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %78, i1 %.cond)
   %79 = zext i8 %75 to i32
@@ -942,7 +938,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %84 = sext i32 %83 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %84, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %84, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %84, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %84, i1 %.cond)
   %85 = zext i8 %81 to i32
@@ -953,7 +949,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %90 = sext i32 %89 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %90, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %90, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %90, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %90, i1 %.cond)
   %91 = zext i8 %87 to i32
@@ -964,7 +960,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %96 = sext i32 %95 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %96, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %96, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %96, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %96, i1 %.cond)
   %97 = zext i8 %93 to i32
@@ -975,7 +971,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %102 = sext i32 %101 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %102, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %102, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %102, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %102, i1 %.cond)
   %103 = zext i8 %99 to i32
@@ -986,13 +982,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %108 = sext i32 %107 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %108, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %108, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %108, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %108, i1 %.cond)
   %109 = zext i8 %105 to i32
   %110 = getelementptr inbounds i8, i8* %2, i64 30
   %111 = load i1, i1* %out.
-  %112 = icmp slt i64 30, %len.2
+  %112 = icmp slt i64 30, %N2
   %113 = bitcast i64* %shadow to i8*
   %safe.15 = or i1 %111, %112
   %select.ptr.16 = select i1 %safe.15, i8* %110, i8* %113
@@ -1002,7 +998,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %117 = sext i32 %116 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %117, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %117, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %117, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %117, i1 %.cond)
   %118 = zext i8 %114 to i32
@@ -1013,7 +1009,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %123 = sext i32 %122 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %123, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %123, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %123, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %123, i1 %.cond)
   %124 = zext i8 %120 to i32
@@ -1024,7 +1020,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %129 = sext i32 %128 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %129, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %129, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %129, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %129, i1 %.cond)
   %130 = zext i8 %126 to i32
@@ -1035,7 +1031,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %135 = sext i32 %134 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %135, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %135, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %135, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %135, i1 %.cond)
   %136 = zext i8 %132 to i32
@@ -1046,7 +1042,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %141 = sext i32 %140 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %141, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %141, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %141, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %141, i1 %.cond)
   %142 = zext i8 %138 to i32
@@ -1057,7 +1053,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %147 = sext i32 %146 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %147, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %147, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %147, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %147, i1 %.cond)
   %148 = zext i8 %144 to i32
@@ -1068,7 +1064,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %153 = sext i32 %152 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %153, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %153, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %153, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %153, i1 %.cond)
   %154 = zext i8 %150 to i32
@@ -1079,13 +1075,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %159 = sext i32 %158 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %159, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %159, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %159, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %159, i1 %.cond)
   %160 = zext i8 %156 to i32
   %161 = getelementptr inbounds i8, i8* %2, i64 29
   %162 = load i1, i1* %out.
-  %163 = icmp slt i64 29, %len.2
+  %163 = icmp slt i64 29, %N2
   %164 = bitcast i64* %shadow to i8*
   %safe.17 = or i1 %162, %163
   %select.ptr.18 = select i1 %safe.17, i8* %161, i8* %164
@@ -1095,7 +1091,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %168 = sext i32 %167 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %168, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %168, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %168, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %168, i1 %.cond)
   %169 = zext i8 %165 to i32
@@ -1106,7 +1102,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %174 = sext i32 %173 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %174, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %174, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %174, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %174, i1 %.cond)
   %175 = zext i8 %171 to i32
@@ -1117,7 +1113,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %180 = sext i32 %179 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %180, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %180, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %180, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %180, i1 %.cond)
   %181 = zext i8 %177 to i32
@@ -1128,7 +1124,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %186 = sext i32 %185 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %186, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %186, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %186, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %186, i1 %.cond)
   %187 = zext i8 %183 to i32
@@ -1139,7 +1135,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %192 = sext i32 %191 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %192, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %192, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %192, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %192, i1 %.cond)
   %193 = zext i8 %189 to i32
@@ -1150,7 +1146,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %198 = sext i32 %197 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %198, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %198, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %198, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %198, i1 %.cond)
   %199 = zext i8 %195 to i32
@@ -1161,7 +1157,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %204 = sext i32 %203 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %204, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %204, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %204, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %204, i1 %.cond)
   %205 = zext i8 %201 to i32
@@ -1172,13 +1168,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %210 = sext i32 %209 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %210, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %210, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %210, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %210, i1 %.cond)
   %211 = zext i8 %207 to i32
   %212 = getelementptr inbounds i8, i8* %2, i64 28
   %213 = load i1, i1* %out.
-  %214 = icmp slt i64 28, %len.2
+  %214 = icmp slt i64 28, %N2
   %215 = bitcast i64* %shadow to i8*
   %safe.19 = or i1 %213, %214
   %select.ptr.20 = select i1 %safe.19, i8* %212, i8* %215
@@ -1188,7 +1184,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %219 = sext i32 %218 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %219, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %219, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %219, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %219, i1 %.cond)
   %220 = zext i8 %216 to i32
@@ -1199,7 +1195,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %225 = sext i32 %224 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %225, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %225, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %225, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %225, i1 %.cond)
   %226 = zext i8 %222 to i32
@@ -1210,7 +1206,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %231 = sext i32 %230 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %231, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %231, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %231, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %231, i1 %.cond)
   %232 = zext i8 %228 to i32
@@ -1221,7 +1217,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %237 = sext i32 %236 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %237, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %237, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %237, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %237, i1 %.cond)
   %238 = zext i8 %234 to i32
@@ -1232,7 +1228,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %243 = sext i32 %242 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %243, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %243, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %243, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %243, i1 %.cond)
   %244 = zext i8 %240 to i32
@@ -1243,7 +1239,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %249 = sext i32 %248 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %249, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %249, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %249, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %249, i1 %.cond)
   %250 = zext i8 %246 to i32
@@ -1254,7 +1250,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %255 = sext i32 %254 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %255, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %255, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %255, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %255, i1 %.cond)
   %256 = zext i8 %252 to i32
@@ -1265,13 +1261,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %261 = sext i32 %260 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %261, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %261, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %261, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %261, i1 %.cond)
   %262 = zext i8 %258 to i32
   %263 = getelementptr inbounds i8, i8* %2, i64 27
   %264 = load i1, i1* %out.
-  %265 = icmp slt i64 27, %len.2
+  %265 = icmp slt i64 27, %N2
   %266 = bitcast i64* %shadow to i8*
   %safe.21 = or i1 %264, %265
   %select.ptr.22 = select i1 %safe.21, i8* %263, i8* %266
@@ -1281,7 +1277,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %270 = sext i32 %269 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %270, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %270, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %270, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %270, i1 %.cond)
   %271 = zext i8 %267 to i32
@@ -1292,7 +1288,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %276 = sext i32 %275 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %276, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %276, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %276, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %276, i1 %.cond)
   %277 = zext i8 %273 to i32
@@ -1303,7 +1299,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %282 = sext i32 %281 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %282, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %282, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %282, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %282, i1 %.cond)
   %283 = zext i8 %279 to i32
@@ -1314,7 +1310,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %288 = sext i32 %287 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %288, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %288, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %288, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %288, i1 %.cond)
   %289 = zext i8 %285 to i32
@@ -1325,7 +1321,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %294 = sext i32 %293 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %294, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %294, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %294, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %294, i1 %.cond)
   %295 = zext i8 %291 to i32
@@ -1336,7 +1332,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %300 = sext i32 %299 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %300, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %300, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %300, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %300, i1 %.cond)
   %301 = zext i8 %297 to i32
@@ -1347,7 +1343,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %306 = sext i32 %305 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %306, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %306, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %306, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %306, i1 %.cond)
   %307 = zext i8 %303 to i32
@@ -1358,13 +1354,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %312 = sext i32 %311 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %312, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %312, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %312, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %312, i1 %.cond)
   %313 = zext i8 %309 to i32
   %314 = getelementptr inbounds i8, i8* %2, i64 26
   %315 = load i1, i1* %out.
-  %316 = icmp slt i64 26, %len.2
+  %316 = icmp slt i64 26, %N2
   %317 = bitcast i64* %shadow to i8*
   %safe.23 = or i1 %315, %316
   %select.ptr.24 = select i1 %safe.23, i8* %314, i8* %317
@@ -1374,7 +1370,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %321 = sext i32 %320 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %321, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %321, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %321, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %321, i1 %.cond)
   %322 = zext i8 %318 to i32
@@ -1385,7 +1381,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %327 = sext i32 %326 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %327, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %327, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %327, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %327, i1 %.cond)
   %328 = zext i8 %324 to i32
@@ -1396,7 +1392,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %333 = sext i32 %332 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %333, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %333, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %333, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %333, i1 %.cond)
   %334 = zext i8 %330 to i32
@@ -1407,7 +1403,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %339 = sext i32 %338 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %339, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %339, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %339, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %339, i1 %.cond)
   %340 = zext i8 %336 to i32
@@ -1418,7 +1414,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %345 = sext i32 %344 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %345, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %345, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %345, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %345, i1 %.cond)
   %346 = zext i8 %342 to i32
@@ -1429,7 +1425,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %351 = sext i32 %350 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %351, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %351, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %351, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %351, i1 %.cond)
   %352 = zext i8 %348 to i32
@@ -1440,7 +1436,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %357 = sext i32 %356 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %357, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %357, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %357, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %357, i1 %.cond)
   %358 = zext i8 %354 to i32
@@ -1451,13 +1447,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %363 = sext i32 %362 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %363, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %363, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %363, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %363, i1 %.cond)
   %364 = zext i8 %360 to i32
   %365 = getelementptr inbounds i8, i8* %2, i64 25
   %366 = load i1, i1* %out.
-  %367 = icmp slt i64 25, %len.2
+  %367 = icmp slt i64 25, %N2
   %368 = bitcast i64* %shadow to i8*
   %safe.25 = or i1 %366, %367
   %select.ptr.26 = select i1 %safe.25, i8* %365, i8* %368
@@ -1467,7 +1463,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %372 = sext i32 %371 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %372, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %372, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %372, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %372, i1 %.cond)
   %373 = zext i8 %369 to i32
@@ -1478,7 +1474,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %378 = sext i32 %377 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %378, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %378, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %378, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %378, i1 %.cond)
   %379 = zext i8 %375 to i32
@@ -1489,7 +1485,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %384 = sext i32 %383 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %384, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %384, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %384, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %384, i1 %.cond)
   %385 = zext i8 %381 to i32
@@ -1500,7 +1496,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %390 = sext i32 %389 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %390, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %390, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %390, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %390, i1 %.cond)
   %391 = zext i8 %387 to i32
@@ -1511,7 +1507,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %396 = sext i32 %395 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %396, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %396, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %396, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %396, i1 %.cond)
   %397 = zext i8 %393 to i32
@@ -1522,7 +1518,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %402 = sext i32 %401 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %402, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %402, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %402, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %402, i1 %.cond)
   %403 = zext i8 %399 to i32
@@ -1533,7 +1529,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %408 = sext i32 %407 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %408, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %408, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %408, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %408, i1 %.cond)
   %409 = zext i8 %405 to i32
@@ -1544,13 +1540,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %414 = sext i32 %413 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %414, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %414, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %414, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %414, i1 %.cond)
   %415 = zext i8 %411 to i32
   %416 = getelementptr inbounds i8, i8* %2, i64 24
   %417 = load i1, i1* %out.
-  %418 = icmp slt i64 24, %len.2
+  %418 = icmp slt i64 24, %N2
   %419 = bitcast i64* %shadow to i8*
   %safe.27 = or i1 %417, %418
   %select.ptr.28 = select i1 %safe.27, i8* %416, i8* %419
@@ -1560,7 +1556,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %423 = sext i32 %422 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %423, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %423, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %423, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %423, i1 %.cond)
   %424 = zext i8 %420 to i32
@@ -1571,7 +1567,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %429 = sext i32 %428 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %429, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %429, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %429, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %429, i1 %.cond)
   %430 = zext i8 %426 to i32
@@ -1582,7 +1578,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %435 = sext i32 %434 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %435, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %435, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %435, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %435, i1 %.cond)
   %436 = zext i8 %432 to i32
@@ -1593,7 +1589,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %441 = sext i32 %440 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %441, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %441, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %441, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %441, i1 %.cond)
   %442 = zext i8 %438 to i32
@@ -1604,7 +1600,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %447 = sext i32 %446 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %447, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %447, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %447, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %447, i1 %.cond)
   %448 = zext i8 %444 to i32
@@ -1615,7 +1611,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %453 = sext i32 %452 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %453, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %453, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %453, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %453, i1 %.cond)
   %454 = zext i8 %450 to i32
@@ -1626,7 +1622,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %459 = sext i32 %458 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %459, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %459, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %459, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %459, i1 %.cond)
   %460 = zext i8 %456 to i32
@@ -1637,13 +1633,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %465 = sext i32 %464 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %465, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %465, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %465, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %465, i1 %.cond)
   %466 = zext i8 %462 to i32
   %467 = getelementptr inbounds i8, i8* %2, i64 23
   %468 = load i1, i1* %out.
-  %469 = icmp slt i64 23, %len.2
+  %469 = icmp slt i64 23, %N2
   %470 = bitcast i64* %shadow to i8*
   %safe.29 = or i1 %468, %469
   %select.ptr.30 = select i1 %safe.29, i8* %467, i8* %470
@@ -1653,7 +1649,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %474 = sext i32 %473 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %474, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %474, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %474, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %474, i1 %.cond)
   %475 = zext i8 %471 to i32
@@ -1664,7 +1660,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %480 = sext i32 %479 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %480, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %480, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %480, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %480, i1 %.cond)
   %481 = zext i8 %477 to i32
@@ -1675,7 +1671,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %486 = sext i32 %485 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %486, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %486, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %486, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %486, i1 %.cond)
   %487 = zext i8 %483 to i32
@@ -1686,7 +1682,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %492 = sext i32 %491 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %492, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %492, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %492, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %492, i1 %.cond)
   %493 = zext i8 %489 to i32
@@ -1697,7 +1693,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %498 = sext i32 %497 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %498, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %498, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %498, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %498, i1 %.cond)
   %499 = zext i8 %495 to i32
@@ -1708,7 +1704,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %504 = sext i32 %503 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %504, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %504, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %504, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %504, i1 %.cond)
   %505 = zext i8 %501 to i32
@@ -1719,7 +1715,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %510 = sext i32 %509 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %510, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %510, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %510, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %510, i1 %.cond)
   %511 = zext i8 %507 to i32
@@ -1730,13 +1726,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %516 = sext i32 %515 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %516, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %516, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %516, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %516, i1 %.cond)
   %517 = zext i8 %513 to i32
   %518 = getelementptr inbounds i8, i8* %2, i64 22
   %519 = load i1, i1* %out.
-  %520 = icmp slt i64 22, %len.2
+  %520 = icmp slt i64 22, %N2
   %521 = bitcast i64* %shadow to i8*
   %safe.31 = or i1 %519, %520
   %select.ptr.32 = select i1 %safe.31, i8* %518, i8* %521
@@ -1746,7 +1742,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %525 = sext i32 %524 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %525, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %525, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %525, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %525, i1 %.cond)
   %526 = zext i8 %522 to i32
@@ -1757,7 +1753,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %531 = sext i32 %530 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %531, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %531, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %531, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %531, i1 %.cond)
   %532 = zext i8 %528 to i32
@@ -1768,7 +1764,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %537 = sext i32 %536 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %537, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %537, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %537, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %537, i1 %.cond)
   %538 = zext i8 %534 to i32
@@ -1779,7 +1775,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %543 = sext i32 %542 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %543, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %543, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %543, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %543, i1 %.cond)
   %544 = zext i8 %540 to i32
@@ -1790,7 +1786,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %549 = sext i32 %548 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %549, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %549, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %549, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %549, i1 %.cond)
   %550 = zext i8 %546 to i32
@@ -1801,7 +1797,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %555 = sext i32 %554 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %555, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %555, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %555, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %555, i1 %.cond)
   %556 = zext i8 %552 to i32
@@ -1812,7 +1808,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %561 = sext i32 %560 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %561, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %561, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %561, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %561, i1 %.cond)
   %562 = zext i8 %558 to i32
@@ -1823,13 +1819,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %567 = sext i32 %566 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %567, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %567, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %567, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %567, i1 %.cond)
   %568 = zext i8 %564 to i32
   %569 = getelementptr inbounds i8, i8* %2, i64 21
   %570 = load i1, i1* %out.
-  %571 = icmp slt i64 21, %len.2
+  %571 = icmp slt i64 21, %N2
   %572 = bitcast i64* %shadow to i8*
   %safe.33 = or i1 %570, %571
   %select.ptr.34 = select i1 %safe.33, i8* %569, i8* %572
@@ -1839,7 +1835,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %576 = sext i32 %575 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %576, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %576, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %576, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %576, i1 %.cond)
   %577 = zext i8 %573 to i32
@@ -1850,7 +1846,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %582 = sext i32 %581 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %582, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %582, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %582, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %582, i1 %.cond)
   %583 = zext i8 %579 to i32
@@ -1861,7 +1857,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %588 = sext i32 %587 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %588, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %588, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %588, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %588, i1 %.cond)
   %589 = zext i8 %585 to i32
@@ -1872,7 +1868,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %594 = sext i32 %593 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %594, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %594, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %594, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %594, i1 %.cond)
   %595 = zext i8 %591 to i32
@@ -1883,7 +1879,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %600 = sext i32 %599 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %600, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %600, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %600, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %600, i1 %.cond)
   %601 = zext i8 %597 to i32
@@ -1894,7 +1890,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %606 = sext i32 %605 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %606, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %606, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %606, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %606, i1 %.cond)
   %607 = zext i8 %603 to i32
@@ -1905,7 +1901,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %612 = sext i32 %611 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %612, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %612, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %612, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %612, i1 %.cond)
   %613 = zext i8 %609 to i32
@@ -1916,13 +1912,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %618 = sext i32 %617 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %618, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %618, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %618, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %618, i1 %.cond)
   %619 = zext i8 %615 to i32
   %620 = getelementptr inbounds i8, i8* %2, i64 20
   %621 = load i1, i1* %out.
-  %622 = icmp slt i64 20, %len.2
+  %622 = icmp slt i64 20, %N2
   %623 = bitcast i64* %shadow to i8*
   %safe.35 = or i1 %621, %622
   %select.ptr.36 = select i1 %safe.35, i8* %620, i8* %623
@@ -1932,7 +1928,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %627 = sext i32 %626 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %627, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %627, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %627, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %627, i1 %.cond)
   %628 = zext i8 %624 to i32
@@ -1943,7 +1939,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %633 = sext i32 %632 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %633, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %633, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %633, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %633, i1 %.cond)
   %634 = zext i8 %630 to i32
@@ -1954,7 +1950,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %639 = sext i32 %638 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %639, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %639, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %639, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %639, i1 %.cond)
   %640 = zext i8 %636 to i32
@@ -1965,7 +1961,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %645 = sext i32 %644 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %645, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %645, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %645, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %645, i1 %.cond)
   %646 = zext i8 %642 to i32
@@ -1976,7 +1972,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %651 = sext i32 %650 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %651, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %651, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %651, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %651, i1 %.cond)
   %652 = zext i8 %648 to i32
@@ -1987,7 +1983,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %657 = sext i32 %656 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %657, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %657, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %657, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %657, i1 %.cond)
   %658 = zext i8 %654 to i32
@@ -1998,7 +1994,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %663 = sext i32 %662 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %663, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %663, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %663, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %663, i1 %.cond)
   %664 = zext i8 %660 to i32
@@ -2009,13 +2005,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %669 = sext i32 %668 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %669, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %669, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %669, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %669, i1 %.cond)
   %670 = zext i8 %666 to i32
   %671 = getelementptr inbounds i8, i8* %2, i64 19
   %672 = load i1, i1* %out.
-  %673 = icmp slt i64 19, %len.2
+  %673 = icmp slt i64 19, %N2
   %674 = bitcast i64* %shadow to i8*
   %safe.37 = or i1 %672, %673
   %select.ptr.38 = select i1 %safe.37, i8* %671, i8* %674
@@ -2025,7 +2021,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %678 = sext i32 %677 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %678, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %678, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %678, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %678, i1 %.cond)
   %679 = zext i8 %675 to i32
@@ -2036,7 +2032,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %684 = sext i32 %683 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %684, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %684, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %684, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %684, i1 %.cond)
   %685 = zext i8 %681 to i32
@@ -2047,7 +2043,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %690 = sext i32 %689 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %690, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %690, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %690, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %690, i1 %.cond)
   %691 = zext i8 %687 to i32
@@ -2058,7 +2054,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %696 = sext i32 %695 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %696, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %696, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %696, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %696, i1 %.cond)
   %697 = zext i8 %693 to i32
@@ -2069,7 +2065,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %702 = sext i32 %701 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %702, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %702, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %702, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %702, i1 %.cond)
   %703 = zext i8 %699 to i32
@@ -2080,7 +2076,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %708 = sext i32 %707 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %708, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %708, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %708, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %708, i1 %.cond)
   %709 = zext i8 %705 to i32
@@ -2091,7 +2087,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %714 = sext i32 %713 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %714, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %714, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %714, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %714, i1 %.cond)
   %715 = zext i8 %711 to i32
@@ -2102,13 +2098,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %720 = sext i32 %719 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %720, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %720, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %720, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %720, i1 %.cond)
   %721 = zext i8 %717 to i32
   %722 = getelementptr inbounds i8, i8* %2, i64 18
   %723 = load i1, i1* %out.
-  %724 = icmp slt i64 18, %len.2
+  %724 = icmp slt i64 18, %N2
   %725 = bitcast i64* %shadow to i8*
   %safe.39 = or i1 %723, %724
   %select.ptr.40 = select i1 %safe.39, i8* %722, i8* %725
@@ -2118,7 +2114,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %729 = sext i32 %728 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %729, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %729, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %729, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %729, i1 %.cond)
   %730 = zext i8 %726 to i32
@@ -2129,7 +2125,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %735 = sext i32 %734 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %735, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %735, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %735, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %735, i1 %.cond)
   %736 = zext i8 %732 to i32
@@ -2140,7 +2136,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %741 = sext i32 %740 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %741, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %741, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %741, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %741, i1 %.cond)
   %742 = zext i8 %738 to i32
@@ -2151,7 +2147,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %747 = sext i32 %746 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %747, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %747, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %747, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %747, i1 %.cond)
   %748 = zext i8 %744 to i32
@@ -2162,7 +2158,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %753 = sext i32 %752 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %753, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %753, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %753, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %753, i1 %.cond)
   %754 = zext i8 %750 to i32
@@ -2173,7 +2169,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %759 = sext i32 %758 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %759, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %759, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %759, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %759, i1 %.cond)
   %760 = zext i8 %756 to i32
@@ -2184,7 +2180,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %765 = sext i32 %764 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %765, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %765, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %765, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %765, i1 %.cond)
   %766 = zext i8 %762 to i32
@@ -2195,13 +2191,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %771 = sext i32 %770 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %771, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %771, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %771, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %771, i1 %.cond)
   %772 = zext i8 %768 to i32
   %773 = getelementptr inbounds i8, i8* %2, i64 17
   %774 = load i1, i1* %out.
-  %775 = icmp slt i64 17, %len.2
+  %775 = icmp slt i64 17, %N2
   %776 = bitcast i64* %shadow to i8*
   %safe.41 = or i1 %774, %775
   %select.ptr.42 = select i1 %safe.41, i8* %773, i8* %776
@@ -2211,7 +2207,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %780 = sext i32 %779 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %780, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %780, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %780, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %780, i1 %.cond)
   %781 = zext i8 %777 to i32
@@ -2222,7 +2218,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %786 = sext i32 %785 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %786, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %786, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %786, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %786, i1 %.cond)
   %787 = zext i8 %783 to i32
@@ -2233,7 +2229,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %792 = sext i32 %791 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %792, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %792, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %792, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %792, i1 %.cond)
   %793 = zext i8 %789 to i32
@@ -2244,7 +2240,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %798 = sext i32 %797 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %798, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %798, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %798, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %798, i1 %.cond)
   %799 = zext i8 %795 to i32
@@ -2255,7 +2251,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %804 = sext i32 %803 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %804, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %804, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %804, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %804, i1 %.cond)
   %805 = zext i8 %801 to i32
@@ -2266,7 +2262,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %810 = sext i32 %809 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %810, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %810, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %810, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %810, i1 %.cond)
   %811 = zext i8 %807 to i32
@@ -2277,7 +2273,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %816 = sext i32 %815 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %816, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %816, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %816, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %816, i1 %.cond)
   %817 = zext i8 %813 to i32
@@ -2288,13 +2284,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %822 = sext i32 %821 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %822, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %822, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %822, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %822, i1 %.cond)
   %823 = zext i8 %819 to i32
   %824 = getelementptr inbounds i8, i8* %2, i64 16
   %825 = load i1, i1* %out.
-  %826 = icmp slt i64 16, %len.2
+  %826 = icmp slt i64 16, %N2
   %827 = bitcast i64* %shadow to i8*
   %safe.43 = or i1 %825, %826
   %select.ptr.44 = select i1 %safe.43, i8* %824, i8* %827
@@ -2304,7 +2300,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %831 = sext i32 %830 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %831, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %831, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %831, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %831, i1 %.cond)
   %832 = zext i8 %828 to i32
@@ -2315,7 +2311,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %837 = sext i32 %836 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %837, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %837, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %837, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %837, i1 %.cond)
   %838 = zext i8 %834 to i32
@@ -2326,7 +2322,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %843 = sext i32 %842 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %843, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %843, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %843, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %843, i1 %.cond)
   %844 = zext i8 %840 to i32
@@ -2337,7 +2333,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %849 = sext i32 %848 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %849, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %849, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %849, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %849, i1 %.cond)
   %850 = zext i8 %846 to i32
@@ -2348,7 +2344,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %855 = sext i32 %854 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %855, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %855, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %855, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %855, i1 %.cond)
   %856 = zext i8 %852 to i32
@@ -2359,7 +2355,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %861 = sext i32 %860 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %861, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %861, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %861, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %861, i1 %.cond)
   %862 = zext i8 %858 to i32
@@ -2370,7 +2366,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %867 = sext i32 %866 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %867, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %867, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %867, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %867, i1 %.cond)
   %868 = zext i8 %864 to i32
@@ -2381,13 +2377,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %873 = sext i32 %872 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %873, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %873, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %873, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %873, i1 %.cond)
   %874 = zext i8 %870 to i32
   %875 = getelementptr inbounds i8, i8* %2, i64 15
   %876 = load i1, i1* %out.
-  %877 = icmp slt i64 15, %len.2
+  %877 = icmp slt i64 15, %N2
   %878 = bitcast i64* %shadow to i8*
   %safe.45 = or i1 %876, %877
   %select.ptr.46 = select i1 %safe.45, i8* %875, i8* %878
@@ -2397,7 +2393,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %882 = sext i32 %881 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %882, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %882, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %882, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %882, i1 %.cond)
   %883 = zext i8 %879 to i32
@@ -2408,7 +2404,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %888 = sext i32 %887 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %888, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %888, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %888, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %888, i1 %.cond)
   %889 = zext i8 %885 to i32
@@ -2419,7 +2415,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %894 = sext i32 %893 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %894, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %894, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %894, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %894, i1 %.cond)
   %895 = zext i8 %891 to i32
@@ -2430,7 +2426,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %900 = sext i32 %899 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %900, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %900, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %900, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %900, i1 %.cond)
   %901 = zext i8 %897 to i32
@@ -2441,7 +2437,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %906 = sext i32 %905 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %906, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %906, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %906, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %906, i1 %.cond)
   %907 = zext i8 %903 to i32
@@ -2452,7 +2448,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %912 = sext i32 %911 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %912, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %912, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %912, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %912, i1 %.cond)
   %913 = zext i8 %909 to i32
@@ -2463,7 +2459,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %918 = sext i32 %917 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %918, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %918, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %918, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %918, i1 %.cond)
   %919 = zext i8 %915 to i32
@@ -2474,13 +2470,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %924 = sext i32 %923 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %924, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %924, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %924, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %924, i1 %.cond)
   %925 = zext i8 %921 to i32
   %926 = getelementptr inbounds i8, i8* %2, i64 14
   %927 = load i1, i1* %out.
-  %928 = icmp slt i64 14, %len.2
+  %928 = icmp slt i64 14, %N2
   %929 = bitcast i64* %shadow to i8*
   %safe.47 = or i1 %927, %928
   %select.ptr.48 = select i1 %safe.47, i8* %926, i8* %929
@@ -2490,7 +2486,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %933 = sext i32 %932 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %933, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %933, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %933, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %933, i1 %.cond)
   %934 = zext i8 %930 to i32
@@ -2501,7 +2497,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %939 = sext i32 %938 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %939, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %939, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %939, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %939, i1 %.cond)
   %940 = zext i8 %936 to i32
@@ -2512,7 +2508,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %945 = sext i32 %944 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %945, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %945, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %945, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %945, i1 %.cond)
   %946 = zext i8 %942 to i32
@@ -2523,7 +2519,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %951 = sext i32 %950 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %951, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %951, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %951, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %951, i1 %.cond)
   %952 = zext i8 %948 to i32
@@ -2534,7 +2530,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %957 = sext i32 %956 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %957, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %957, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %957, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %957, i1 %.cond)
   %958 = zext i8 %954 to i32
@@ -2545,7 +2541,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %963 = sext i32 %962 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %963, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %963, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %963, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %963, i1 %.cond)
   %964 = zext i8 %960 to i32
@@ -2556,7 +2552,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %969 = sext i32 %968 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %969, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %969, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %969, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %969, i1 %.cond)
   %970 = zext i8 %966 to i32
@@ -2567,13 +2563,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %975 = sext i32 %974 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %975, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %975, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %975, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %975, i1 %.cond)
   %976 = zext i8 %972 to i32
   %977 = getelementptr inbounds i8, i8* %2, i64 13
   %978 = load i1, i1* %out.
-  %979 = icmp slt i64 13, %len.2
+  %979 = icmp slt i64 13, %N2
   %980 = bitcast i64* %shadow to i8*
   %safe.49 = or i1 %978, %979
   %select.ptr.50 = select i1 %safe.49, i8* %977, i8* %980
@@ -2583,7 +2579,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %984 = sext i32 %983 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %984, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %984, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %984, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %984, i1 %.cond)
   %985 = zext i8 %981 to i32
@@ -2594,7 +2590,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %990 = sext i32 %989 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %990, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %990, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %990, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %990, i1 %.cond)
   %991 = zext i8 %987 to i32
@@ -2605,7 +2601,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %996 = sext i32 %995 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %996, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %996, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %996, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %996, i1 %.cond)
   %997 = zext i8 %993 to i32
@@ -2616,7 +2612,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1002 = sext i32 %1001 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1002, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1002, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1002, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1002, i1 %.cond)
   %1003 = zext i8 %999 to i32
@@ -2627,7 +2623,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1008 = sext i32 %1007 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1008, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1008, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1008, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1008, i1 %.cond)
   %1009 = zext i8 %1005 to i32
@@ -2638,7 +2634,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1014 = sext i32 %1013 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1014, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1014, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1014, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1014, i1 %.cond)
   %1015 = zext i8 %1011 to i32
@@ -2649,7 +2645,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1020 = sext i32 %1019 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1020, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1020, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1020, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1020, i1 %.cond)
   %1021 = zext i8 %1017 to i32
@@ -2660,13 +2656,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1026 = sext i32 %1025 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1026, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1026, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1026, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1026, i1 %.cond)
   %1027 = zext i8 %1023 to i32
   %1028 = getelementptr inbounds i8, i8* %2, i64 12
   %1029 = load i1, i1* %out.
-  %1030 = icmp slt i64 12, %len.2
+  %1030 = icmp slt i64 12, %N2
   %1031 = bitcast i64* %shadow to i8*
   %safe.51 = or i1 %1029, %1030
   %select.ptr.52 = select i1 %safe.51, i8* %1028, i8* %1031
@@ -2676,7 +2672,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1035 = sext i32 %1034 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1035, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1035, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1035, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1035, i1 %.cond)
   %1036 = zext i8 %1032 to i32
@@ -2687,7 +2683,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1041 = sext i32 %1040 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1041, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1041, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1041, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1041, i1 %.cond)
   %1042 = zext i8 %1038 to i32
@@ -2698,7 +2694,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1047 = sext i32 %1046 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1047, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1047, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1047, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1047, i1 %.cond)
   %1048 = zext i8 %1044 to i32
@@ -2709,7 +2705,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1053 = sext i32 %1052 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1053, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1053, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1053, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1053, i1 %.cond)
   %1054 = zext i8 %1050 to i32
@@ -2720,7 +2716,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1059 = sext i32 %1058 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1059, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1059, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1059, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1059, i1 %.cond)
   %1060 = zext i8 %1056 to i32
@@ -2731,7 +2727,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1065 = sext i32 %1064 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1065, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1065, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1065, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1065, i1 %.cond)
   %1066 = zext i8 %1062 to i32
@@ -2742,7 +2738,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1071 = sext i32 %1070 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1071, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1071, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1071, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1071, i1 %.cond)
   %1072 = zext i8 %1068 to i32
@@ -2753,13 +2749,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1077 = sext i32 %1076 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1077, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1077, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1077, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1077, i1 %.cond)
   %1078 = zext i8 %1074 to i32
   %1079 = getelementptr inbounds i8, i8* %2, i64 11
   %1080 = load i1, i1* %out.
-  %1081 = icmp slt i64 11, %len.2
+  %1081 = icmp slt i64 11, %N2
   %1082 = bitcast i64* %shadow to i8*
   %safe.53 = or i1 %1080, %1081
   %select.ptr.54 = select i1 %safe.53, i8* %1079, i8* %1082
@@ -2769,7 +2765,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1086 = sext i32 %1085 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1086, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1086, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1086, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1086, i1 %.cond)
   %1087 = zext i8 %1083 to i32
@@ -2780,7 +2776,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1092 = sext i32 %1091 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1092, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1092, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1092, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1092, i1 %.cond)
   %1093 = zext i8 %1089 to i32
@@ -2791,7 +2787,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1098 = sext i32 %1097 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1098, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1098, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1098, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1098, i1 %.cond)
   %1099 = zext i8 %1095 to i32
@@ -2802,7 +2798,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1104 = sext i32 %1103 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1104, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1104, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1104, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1104, i1 %.cond)
   %1105 = zext i8 %1101 to i32
@@ -2813,7 +2809,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1110 = sext i32 %1109 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1110, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1110, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1110, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1110, i1 %.cond)
   %1111 = zext i8 %1107 to i32
@@ -2824,7 +2820,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1116 = sext i32 %1115 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1116, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1116, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1116, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1116, i1 %.cond)
   %1117 = zext i8 %1113 to i32
@@ -2835,7 +2831,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1122 = sext i32 %1121 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1122, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1122, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1122, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1122, i1 %.cond)
   %1123 = zext i8 %1119 to i32
@@ -2846,13 +2842,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1128 = sext i32 %1127 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1128, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1128, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1128, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1128, i1 %.cond)
   %1129 = zext i8 %1125 to i32
   %1130 = getelementptr inbounds i8, i8* %2, i64 10
   %1131 = load i1, i1* %out.
-  %1132 = icmp slt i64 10, %len.2
+  %1132 = icmp slt i64 10, %N2
   %1133 = bitcast i64* %shadow to i8*
   %safe.55 = or i1 %1131, %1132
   %select.ptr.56 = select i1 %safe.55, i8* %1130, i8* %1133
@@ -2862,7 +2858,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1137 = sext i32 %1136 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1137, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1137, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1137, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1137, i1 %.cond)
   %1138 = zext i8 %1134 to i32
@@ -2873,7 +2869,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1143 = sext i32 %1142 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1143, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1143, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1143, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1143, i1 %.cond)
   %1144 = zext i8 %1140 to i32
@@ -2884,7 +2880,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1149 = sext i32 %1148 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1149, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1149, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1149, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1149, i1 %.cond)
   %1150 = zext i8 %1146 to i32
@@ -2895,7 +2891,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1155 = sext i32 %1154 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1155, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1155, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1155, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1155, i1 %.cond)
   %1156 = zext i8 %1152 to i32
@@ -2906,7 +2902,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1161 = sext i32 %1160 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1161, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1161, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1161, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1161, i1 %.cond)
   %1162 = zext i8 %1158 to i32
@@ -2917,7 +2913,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1167 = sext i32 %1166 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1167, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1167, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1167, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1167, i1 %.cond)
   %1168 = zext i8 %1164 to i32
@@ -2928,7 +2924,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1173 = sext i32 %1172 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1173, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1173, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1173, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1173, i1 %.cond)
   %1174 = zext i8 %1170 to i32
@@ -2939,13 +2935,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1179 = sext i32 %1178 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1179, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1179, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1179, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1179, i1 %.cond)
   %1180 = zext i8 %1176 to i32
   %1181 = getelementptr inbounds i8, i8* %2, i64 9
   %1182 = load i1, i1* %out.
-  %1183 = icmp slt i64 9, %len.2
+  %1183 = icmp slt i64 9, %N2
   %1184 = bitcast i64* %shadow to i8*
   %safe.57 = or i1 %1182, %1183
   %select.ptr.58 = select i1 %safe.57, i8* %1181, i8* %1184
@@ -2955,7 +2951,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1188 = sext i32 %1187 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1188, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1188, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1188, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1188, i1 %.cond)
   %1189 = zext i8 %1185 to i32
@@ -2966,7 +2962,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1194 = sext i32 %1193 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1194, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1194, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1194, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1194, i1 %.cond)
   %1195 = zext i8 %1191 to i32
@@ -2977,7 +2973,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1200 = sext i32 %1199 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1200, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1200, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1200, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1200, i1 %.cond)
   %1201 = zext i8 %1197 to i32
@@ -2988,7 +2984,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1206 = sext i32 %1205 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1206, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1206, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1206, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1206, i1 %.cond)
   %1207 = zext i8 %1203 to i32
@@ -2999,7 +2995,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1212 = sext i32 %1211 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1212, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1212, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1212, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1212, i1 %.cond)
   %1213 = zext i8 %1209 to i32
@@ -3010,7 +3006,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1218 = sext i32 %1217 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1218, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1218, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1218, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1218, i1 %.cond)
   %1219 = zext i8 %1215 to i32
@@ -3021,7 +3017,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1224 = sext i32 %1223 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1224, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1224, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1224, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1224, i1 %.cond)
   %1225 = zext i8 %1221 to i32
@@ -3032,13 +3028,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1230 = sext i32 %1229 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1230, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1230, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1230, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1230, i1 %.cond)
   %1231 = zext i8 %1227 to i32
   %1232 = getelementptr inbounds i8, i8* %2, i64 8
   %1233 = load i1, i1* %out.
-  %1234 = icmp slt i64 8, %len.2
+  %1234 = icmp slt i64 8, %N2
   %1235 = bitcast i64* %shadow to i8*
   %safe.59 = or i1 %1233, %1234
   %select.ptr.60 = select i1 %safe.59, i8* %1232, i8* %1235
@@ -3048,7 +3044,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1239 = sext i32 %1238 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1239, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1239, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1239, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1239, i1 %.cond)
   %1240 = zext i8 %1236 to i32
@@ -3059,7 +3055,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1245 = sext i32 %1244 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1245, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1245, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1245, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1245, i1 %.cond)
   %1246 = zext i8 %1242 to i32
@@ -3070,7 +3066,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1251 = sext i32 %1250 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1251, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1251, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1251, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1251, i1 %.cond)
   %1252 = zext i8 %1248 to i32
@@ -3081,7 +3077,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1257 = sext i32 %1256 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1257, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1257, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1257, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1257, i1 %.cond)
   %1258 = zext i8 %1254 to i32
@@ -3092,7 +3088,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1263 = sext i32 %1262 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1263, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1263, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1263, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1263, i1 %.cond)
   %1264 = zext i8 %1260 to i32
@@ -3103,7 +3099,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1269 = sext i32 %1268 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1269, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1269, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1269, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1269, i1 %.cond)
   %1270 = zext i8 %1266 to i32
@@ -3114,7 +3110,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1275 = sext i32 %1274 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1275, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1275, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1275, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1275, i1 %.cond)
   %1276 = zext i8 %1272 to i32
@@ -3125,13 +3121,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1281 = sext i32 %1280 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1281, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1281, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1281, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1281, i1 %.cond)
   %1282 = zext i8 %1278 to i32
   %1283 = getelementptr inbounds i8, i8* %2, i64 7
   %1284 = load i1, i1* %out.
-  %1285 = icmp slt i64 7, %len.2
+  %1285 = icmp slt i64 7, %N2
   %1286 = bitcast i64* %shadow to i8*
   %safe.61 = or i1 %1284, %1285
   %select.ptr.62 = select i1 %safe.61, i8* %1283, i8* %1286
@@ -3141,7 +3137,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1290 = sext i32 %1289 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1290, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1290, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1290, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1290, i1 %.cond)
   %1291 = zext i8 %1287 to i32
@@ -3152,7 +3148,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1296 = sext i32 %1295 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1296, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1296, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1296, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1296, i1 %.cond)
   %1297 = zext i8 %1293 to i32
@@ -3163,7 +3159,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1302 = sext i32 %1301 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1302, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1302, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1302, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1302, i1 %.cond)
   %1303 = zext i8 %1299 to i32
@@ -3174,7 +3170,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1308 = sext i32 %1307 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1308, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1308, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1308, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1308, i1 %.cond)
   %1309 = zext i8 %1305 to i32
@@ -3185,7 +3181,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1314 = sext i32 %1313 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1314, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1314, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1314, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1314, i1 %.cond)
   %1315 = zext i8 %1311 to i32
@@ -3196,7 +3192,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1320 = sext i32 %1319 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1320, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1320, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1320, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1320, i1 %.cond)
   %1321 = zext i8 %1317 to i32
@@ -3207,7 +3203,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1326 = sext i32 %1325 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1326, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1326, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1326, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1326, i1 %.cond)
   %1327 = zext i8 %1323 to i32
@@ -3218,13 +3214,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1332 = sext i32 %1331 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1332, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1332, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1332, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1332, i1 %.cond)
   %1333 = zext i8 %1329 to i32
   %1334 = getelementptr inbounds i8, i8* %2, i64 6
   %1335 = load i1, i1* %out.
-  %1336 = icmp slt i64 6, %len.2
+  %1336 = icmp slt i64 6, %N2
   %1337 = bitcast i64* %shadow to i8*
   %safe.63 = or i1 %1335, %1336
   %select.ptr.64 = select i1 %safe.63, i8* %1334, i8* %1337
@@ -3234,7 +3230,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1341 = sext i32 %1340 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1341, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1341, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1341, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1341, i1 %.cond)
   %1342 = zext i8 %1338 to i32
@@ -3245,7 +3241,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1347 = sext i32 %1346 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1347, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1347, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1347, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1347, i1 %.cond)
   %1348 = zext i8 %1344 to i32
@@ -3256,7 +3252,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1353 = sext i32 %1352 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1353, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1353, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1353, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1353, i1 %.cond)
   %1354 = zext i8 %1350 to i32
@@ -3267,7 +3263,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1359 = sext i32 %1358 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1359, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1359, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1359, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1359, i1 %.cond)
   %1360 = zext i8 %1356 to i32
@@ -3278,7 +3274,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1365 = sext i32 %1364 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1365, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1365, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1365, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1365, i1 %.cond)
   %1366 = zext i8 %1362 to i32
@@ -3289,7 +3285,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1371 = sext i32 %1370 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1371, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1371, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1371, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1371, i1 %.cond)
   %1372 = zext i8 %1368 to i32
@@ -3300,7 +3296,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1377 = sext i32 %1376 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1377, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1377, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1377, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1377, i1 %.cond)
   %1378 = zext i8 %1374 to i32
@@ -3311,13 +3307,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1383 = sext i32 %1382 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1383, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1383, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1383, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1383, i1 %.cond)
   %1384 = zext i8 %1380 to i32
   %1385 = getelementptr inbounds i8, i8* %2, i64 5
   %1386 = load i1, i1* %out.
-  %1387 = icmp slt i64 5, %len.2
+  %1387 = icmp slt i64 5, %N2
   %1388 = bitcast i64* %shadow to i8*
   %safe.65 = or i1 %1386, %1387
   %select.ptr.66 = select i1 %safe.65, i8* %1385, i8* %1388
@@ -3327,7 +3323,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1392 = sext i32 %1391 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1392, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1392, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1392, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1392, i1 %.cond)
   %1393 = zext i8 %1389 to i32
@@ -3338,7 +3334,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1398 = sext i32 %1397 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1398, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1398, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1398, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1398, i1 %.cond)
   %1399 = zext i8 %1395 to i32
@@ -3349,7 +3345,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1404 = sext i32 %1403 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1404, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1404, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1404, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1404, i1 %.cond)
   %1405 = zext i8 %1401 to i32
@@ -3360,7 +3356,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1410 = sext i32 %1409 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1410, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1410, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1410, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1410, i1 %.cond)
   %1411 = zext i8 %1407 to i32
@@ -3371,7 +3367,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1416 = sext i32 %1415 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1416, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1416, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1416, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1416, i1 %.cond)
   %1417 = zext i8 %1413 to i32
@@ -3382,7 +3378,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1422 = sext i32 %1421 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1422, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1422, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1422, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1422, i1 %.cond)
   %1423 = zext i8 %1419 to i32
@@ -3393,7 +3389,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1428 = sext i32 %1427 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1428, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1428, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1428, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1428, i1 %.cond)
   %1429 = zext i8 %1425 to i32
@@ -3404,13 +3400,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1434 = sext i32 %1433 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1434, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1434, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1434, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1434, i1 %.cond)
   %1435 = zext i8 %1431 to i32
   %1436 = getelementptr inbounds i8, i8* %2, i64 4
   %1437 = load i1, i1* %out.
-  %1438 = icmp slt i64 4, %len.2
+  %1438 = icmp slt i64 4, %N2
   %1439 = bitcast i64* %shadow to i8*
   %safe.67 = or i1 %1437, %1438
   %select.ptr.68 = select i1 %safe.67, i8* %1436, i8* %1439
@@ -3420,7 +3416,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1443 = sext i32 %1442 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1443, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1443, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1443, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1443, i1 %.cond)
   %1444 = zext i8 %1440 to i32
@@ -3431,7 +3427,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1449 = sext i32 %1448 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1449, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1449, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1449, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1449, i1 %.cond)
   %1450 = zext i8 %1446 to i32
@@ -3442,7 +3438,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1455 = sext i32 %1454 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1455, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1455, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1455, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1455, i1 %.cond)
   %1456 = zext i8 %1452 to i32
@@ -3453,7 +3449,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1461 = sext i32 %1460 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1461, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1461, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1461, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1461, i1 %.cond)
   %1462 = zext i8 %1458 to i32
@@ -3464,7 +3460,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1467 = sext i32 %1466 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1467, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1467, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1467, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1467, i1 %.cond)
   %1468 = zext i8 %1464 to i32
@@ -3475,7 +3471,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1473 = sext i32 %1472 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1473, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1473, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1473, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1473, i1 %.cond)
   %1474 = zext i8 %1470 to i32
@@ -3486,7 +3482,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1479 = sext i32 %1478 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1479, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1479, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1479, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1479, i1 %.cond)
   %1480 = zext i8 %1476 to i32
@@ -3497,13 +3493,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1485 = sext i32 %1484 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1485, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1485, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1485, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1485, i1 %.cond)
   %1486 = zext i8 %1482 to i32
   %1487 = getelementptr inbounds i8, i8* %2, i64 3
   %1488 = load i1, i1* %out.
-  %1489 = icmp slt i64 3, %len.2
+  %1489 = icmp slt i64 3, %N2
   %1490 = bitcast i64* %shadow to i8*
   %safe.69 = or i1 %1488, %1489
   %select.ptr.70 = select i1 %safe.69, i8* %1487, i8* %1490
@@ -3513,7 +3509,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1494 = sext i32 %1493 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1494, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1494, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1494, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1494, i1 %.cond)
   %1495 = zext i8 %1491 to i32
@@ -3524,7 +3520,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1500 = sext i32 %1499 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1500, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1500, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1500, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1500, i1 %.cond)
   %1501 = zext i8 %1497 to i32
@@ -3535,7 +3531,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1506 = sext i32 %1505 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1506, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1506, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1506, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1506, i1 %.cond)
   %1507 = zext i8 %1503 to i32
@@ -3546,7 +3542,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1512 = sext i32 %1511 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1512, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1512, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1512, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1512, i1 %.cond)
   %1513 = zext i8 %1509 to i32
@@ -3557,7 +3553,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1518 = sext i32 %1517 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1518, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1518, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1518, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1518, i1 %.cond)
   %1519 = zext i8 %1515 to i32
@@ -3568,7 +3564,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1524 = sext i32 %1523 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1524, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1524, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1524, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1524, i1 %.cond)
   %1525 = zext i8 %1521 to i32
@@ -3579,7 +3575,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1530 = sext i32 %1529 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1530, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1530, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1530, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1530, i1 %.cond)
   %1531 = zext i8 %1527 to i32
@@ -3590,13 +3586,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1536 = sext i32 %1535 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1536, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1536, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1536, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1536, i1 %.cond)
   %1537 = zext i8 %1533 to i32
   %1538 = getelementptr inbounds i8, i8* %2, i64 2
   %1539 = load i1, i1* %out.
-  %1540 = icmp slt i64 2, %len.2
+  %1540 = icmp slt i64 2, %N2
   %1541 = bitcast i64* %shadow to i8*
   %safe.71 = or i1 %1539, %1540
   %select.ptr.72 = select i1 %safe.71, i8* %1538, i8* %1541
@@ -3606,7 +3602,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1545 = sext i32 %1544 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1545, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1545, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1545, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1545, i1 %.cond)
   %1546 = zext i8 %1542 to i32
@@ -3617,7 +3613,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1551 = sext i32 %1550 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1551, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1551, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1551, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1551, i1 %.cond)
   %1552 = zext i8 %1548 to i32
@@ -3628,7 +3624,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1557 = sext i32 %1556 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1557, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1557, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1557, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1557, i1 %.cond)
   %1558 = zext i8 %1554 to i32
@@ -3639,7 +3635,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1563 = sext i32 %1562 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1563, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1563, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1563, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1563, i1 %.cond)
   %1564 = zext i8 %1560 to i32
@@ -3650,7 +3646,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1569 = sext i32 %1568 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1569, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1569, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1569, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1569, i1 %.cond)
   %1570 = zext i8 %1566 to i32
@@ -3661,7 +3657,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1575 = sext i32 %1574 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1575, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1575, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1575, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1575, i1 %.cond)
   %1576 = zext i8 %1572 to i32
@@ -3672,7 +3668,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1581 = sext i32 %1580 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1581, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1581, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1581, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1581, i1 %.cond)
   %1582 = zext i8 %1578 to i32
@@ -3683,13 +3679,13 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1587 = sext i32 %1586 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1587, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1587, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1587, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1587, i1 %.cond)
   %1588 = zext i8 %1584 to i32
   %1589 = getelementptr inbounds i8, i8* %2, i64 1
   %1590 = load i1, i1* %out.
-  %1591 = icmp slt i64 1, %len.2
+  %1591 = icmp slt i64 1, %N2
   %1592 = bitcast i64* %shadow to i8*
   %safe.73 = or i1 %1590, %1591
   %select.ptr.74 = select i1 %safe.73, i8* %1589, i8* %1592
@@ -3699,7 +3695,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1596 = sext i32 %1595 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1596, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1596, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1596, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1596, i1 %.cond)
   %1597 = zext i8 %1593 to i32
@@ -3710,7 +3706,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1602 = sext i32 %1601 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1602, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1602, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1602, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1602, i1 %.cond)
   %1603 = zext i8 %1599 to i32
@@ -3721,7 +3717,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1608 = sext i32 %1607 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1608, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1608, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1608, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1608, i1 %.cond)
   %1609 = zext i8 %1605 to i32
@@ -3732,7 +3728,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1614 = sext i32 %1613 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1614, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1614, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1614, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1614, i1 %.cond)
   %1615 = zext i8 %1611 to i32
@@ -3743,7 +3739,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1620 = sext i32 %1619 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1620, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1620, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1620, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1620, i1 %.cond)
   %1621 = zext i8 %1617 to i32
@@ -3754,7 +3750,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1626 = sext i32 %1625 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1626, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1626, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1626, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1626, i1 %.cond)
   %1627 = zext i8 %1623 to i32
@@ -3765,7 +3761,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1632 = sext i32 %1631 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1632, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1632, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1632, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1632, i1 %.cond)
   %1633 = zext i8 %1629 to i32
@@ -3776,7 +3772,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1638 = sext i32 %1637 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1638, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1638, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1638, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1638, i1 %.cond)
   %1639 = zext i8 %1635 to i32
@@ -3787,7 +3783,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1644 = sext i32 %1643 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1644, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1644, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1644, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1644, i1 %.cond)
   %1645 = zext i8 %1641 to i32
@@ -3798,7 +3794,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1650 = sext i32 %1649 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1650, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1650, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1650, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1650, i1 %.cond)
   %1651 = zext i8 %1647 to i32
@@ -3809,7 +3805,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1656 = sext i32 %1655 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1656, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1656, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1656, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1656, i1 %.cond)
   %1657 = zext i8 %1653 to i32
@@ -3820,7 +3816,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1662 = sext i32 %1661 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1662, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1662, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1662, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1662, i1 %.cond)
   %1663 = zext i8 %1659 to i32
@@ -3831,7 +3827,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1668 = sext i32 %1667 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1668, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1668, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1668, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1668, i1 %.cond)
   %1669 = zext i8 %1665 to i32
@@ -3842,7 +3838,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1674 = sext i32 %1673 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1674, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1674, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1674, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1674, i1 %.cond)
   %1675 = zext i8 %1671 to i32
@@ -3853,7 +3849,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1680 = sext i32 %1679 to i64
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1680, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1680, i1 %.cond)
-  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1680, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1680, i1 %.cond)
   %1681 = zext i8 %1677 to i32
@@ -3864,7 +3860,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   %1686 = sext i32 %1685 to i64
   call void @swap_conditional(i64* %55, i64 19, i64* %53, i64 19, i64 %1686, i1 %.cond)
   call void @swap_conditional(i64* %56, i64 19, i64* %54, i64 19, i64 %1686, i1 %.cond)
-  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %len.3, i1 %.cond)
+  call void @fmonty(i64* %33, i64 19, i64* %34, i64 19, i64* %31, i64 19, i64* %32, i64 19, i64* %55, i64 19, i64* %56, i64 19, i64* %53, i64 19, i64* %54, i64 19, i64* %3, i64 %N3, i1 %.cond)
   call void @swap_conditional(i64* %33, i64 19, i64* %31, i64 19, i64 %1686, i1 %.cond)
   call void @swap_conditional(i64* %34, i64 19, i64* %32, i64 19, i64 %1686, i1 %.cond)
   %1687 = zext i8 %1683 to i32
@@ -3877,7 +3873,7 @@ define internal void @cmult(i64* %0, i64 %len., i64* %1, i64 %len.1, i8* %2, i64
   ret void
 }
 
-define internal void @crecip(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
+define internal void @crecip(i64* %0, i64 %N, i64* %1, i64 %N1, i1 %.cond) {
   %shadow = alloca i64
   %out. = alloca i1
   store i1 %.cond, i1* %out.
@@ -3892,7 +3888,7 @@ define internal void @crecip(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond)
   %11 = alloca [10 x i64], align 16
   %12 = alloca [10 x i64], align 16
   %13 = getelementptr inbounds [10 x i64], [10 x i64]* %3, i64 0, i64 0
-  call void @fsquare(i64* %13, i64 10, i64* %1, i64 %len.1, i1 %.cond)
+  call void @fsquare(i64* %13, i64 10, i64* %1, i64 %N1, i1 %.cond)
   %14 = getelementptr inbounds [10 x i64], [10 x i64]* %12, i64 0, i64 0
   %15 = getelementptr inbounds [10 x i64], [10 x i64]* %3, i64 0, i64 0
   call void @fsquare(i64* %14, i64 10, i64* %15, i64 10, i1 %.cond)
@@ -3901,7 +3897,7 @@ define internal void @crecip(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond)
   call void @fsquare(i64* %16, i64 10, i64* %17, i64 10, i1 %.cond)
   %18 = getelementptr inbounds [10 x i64], [10 x i64]* %4, i64 0, i64 0
   %19 = getelementptr inbounds [10 x i64], [10 x i64]* %11, i64 0, i64 0
-  call void @fmul(i64* %18, i64 10, i64* %19, i64 10, i64* %1, i64 %len.1, i1 %.cond)
+  call void @fmul(i64* %18, i64 10, i64* %19, i64 10, i64* %1, i64 %N1, i1 %.cond)
   %20 = getelementptr inbounds [10 x i64], [10 x i64]* %5, i64 0, i64 0
   %21 = getelementptr inbounds [10 x i64], [10 x i64]* %4, i64 0, i64 0
   %22 = getelementptr inbounds [10 x i64], [10 x i64]* %3, i64 0, i64 0
@@ -4529,17 +4525,17 @@ define internal void @crecip(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond)
   call void @fsquare(i64* %383, i64 10, i64* %384, i64 10, i1 %.cond)
   %385 = getelementptr inbounds [10 x i64], [10 x i64]* %12, i64 0, i64 0
   %386 = getelementptr inbounds [10 x i64], [10 x i64]* %5, i64 0, i64 0
-  call void @fmul(i64* %0, i64 %len., i64* %385, i64 10, i64* %386, i64 10, i1 %.cond)
+  call void @fmul(i64* %0, i64 %N, i64* %385, i64 10, i64* %386, i64 10, i1 %.cond)
   ret void
 }
 
-define internal void @fmul(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2, i64 %len.2, i1 %.cond) {
+define internal void @fmul(i64* %0, i64 %N, i64* %1, i64 %N1, i64* %2, i64 %N2, i1 %.cond) {
   %shadow = alloca i64
   %out. = alloca i1
   store i1 %.cond, i1* %out.
   %4 = alloca [19 x i64], align 16
   %5 = getelementptr inbounds [19 x i64], [19 x i64]* %4, i64 0, i64 0
-  call void @fproduct(i64* %5, i64 19, i64* %1, i64 %len.1, i64* %2, i64 %len.2, i1 %.cond)
+  call void @fproduct(i64* %5, i64 19, i64* %1, i64 %N1, i64* %2, i64 %N2, i1 %.cond)
   %6 = getelementptr inbounds [19 x i64], [19 x i64]* %4, i64 0, i64 0
   call void @freduce_degree(i64* %6, i64 19, i1 %.cond)
   %7 = getelementptr inbounds [19 x i64], [19 x i64]* %4, i64 0, i64 0
@@ -4551,7 +4547,7 @@ define internal void @fmul(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2, i64
   ret void
 }
 
-define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
+define internal void @fcontract(i8* %0, i64 %N, i64* %1, i64 %N1, i1 %.cond) {
 .preheader6:
   %shadow = alloca i64
   %out. = alloca i1
@@ -4572,7 +4568,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   store i32 %select.val., i32* %select.ptr., align 4
   %12 = getelementptr inbounds i64, i64* %1, i64 1
   %13 = load i1, i1* %out.
-  %14 = icmp slt i64 1, %len.1
+  %14 = icmp slt i64 1, %N1
   %15 = bitcast i64* %shadow to i64*
   %safe.2 = or i1 %13, %14
   %select.ptr.3 = select i1 %safe.2, i64* %12, i64* %15
@@ -4590,7 +4586,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   store i32 %select.val.6, i32* %select.ptr.5, align 4
   %24 = getelementptr inbounds i64, i64* %1, i64 2
   %25 = load i1, i1* %out.
-  %26 = icmp slt i64 2, %len.1
+  %26 = icmp slt i64 2, %N1
   %27 = bitcast i64* %shadow to i64*
   %safe.7 = or i1 %25, %26
   %select.ptr.8 = select i1 %safe.7, i64* %24, i64* %27
@@ -4608,7 +4604,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   store i32 %select.val.11, i32* %select.ptr.10, align 4
   %36 = getelementptr inbounds i64, i64* %1, i64 3
   %37 = load i1, i1* %out.
-  %38 = icmp slt i64 3, %len.1
+  %38 = icmp slt i64 3, %N1
   %39 = bitcast i64* %shadow to i64*
   %safe.12 = or i1 %37, %38
   %select.ptr.13 = select i1 %safe.12, i64* %36, i64* %39
@@ -4626,7 +4622,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   store i32 %select.val.16, i32* %select.ptr.15, align 4
   %48 = getelementptr inbounds i64, i64* %1, i64 4
   %49 = load i1, i1* %out.
-  %50 = icmp slt i64 4, %len.1
+  %50 = icmp slt i64 4, %N1
   %51 = bitcast i64* %shadow to i64*
   %safe.17 = or i1 %49, %50
   %select.ptr.18 = select i1 %safe.17, i64* %48, i64* %51
@@ -4644,7 +4640,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   store i32 %select.val.21, i32* %select.ptr.20, align 4
   %60 = getelementptr inbounds i64, i64* %1, i64 5
   %61 = load i1, i1* %out.
-  %62 = icmp slt i64 5, %len.1
+  %62 = icmp slt i64 5, %N1
   %63 = bitcast i64* %shadow to i64*
   %safe.22 = or i1 %61, %62
   %select.ptr.23 = select i1 %safe.22, i64* %60, i64* %63
@@ -4662,7 +4658,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   store i32 %select.val.26, i32* %select.ptr.25, align 4
   %72 = getelementptr inbounds i64, i64* %1, i64 6
   %73 = load i1, i1* %out.
-  %74 = icmp slt i64 6, %len.1
+  %74 = icmp slt i64 6, %N1
   %75 = bitcast i64* %shadow to i64*
   %safe.27 = or i1 %73, %74
   %select.ptr.28 = select i1 %safe.27, i64* %72, i64* %75
@@ -4680,7 +4676,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   store i32 %select.val.31, i32* %select.ptr.30, align 4
   %84 = getelementptr inbounds i64, i64* %1, i64 7
   %85 = load i1, i1* %out.
-  %86 = icmp slt i64 7, %len.1
+  %86 = icmp slt i64 7, %N1
   %87 = bitcast i64* %shadow to i64*
   %safe.32 = or i1 %85, %86
   %select.ptr.33 = select i1 %safe.32, i64* %84, i64* %87
@@ -4698,7 +4694,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   store i32 %select.val.36, i32* %select.ptr.35, align 4
   %96 = getelementptr inbounds i64, i64* %1, i64 8
   %97 = load i1, i1* %out.
-  %98 = icmp slt i64 8, %len.1
+  %98 = icmp slt i64 8, %N1
   %99 = bitcast i64* %shadow to i64*
   %safe.37 = or i1 %97, %98
   %select.ptr.38 = select i1 %safe.37, i64* %96, i64* %99
@@ -4716,7 +4712,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   store i32 %select.val.41, i32* %select.ptr.40, align 4
   %108 = getelementptr inbounds i64, i64* %1, i64 9
   %109 = load i1, i1* %out.
-  %110 = icmp slt i64 9, %len.1
+  %110 = icmp slt i64 9, %N1
   %111 = bitcast i64* %shadow to i64*
   %safe.42 = or i1 %109, %110
   %select.ptr.43 = select i1 %safe.42, i64* %108, i64* %111
@@ -7314,7 +7310,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   store i8 %select.val.691, i8* %0, align 1
   %1954 = getelementptr inbounds i8, i8* %0, i64 16
   %1955 = load i1, i1* %out.
-  %1956 = icmp slt i64 16, %len.
+  %1956 = icmp slt i64 16, %N
   %1957 = bitcast i64* %shadow to i8*
   %safe.692 = or i1 %1955, %1956
   %select.ptr.693 = select i1 %safe.692, i8* %1954, i8* %1957
@@ -7352,7 +7348,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %1981 = trunc i32 %1980 to i8
   %1982 = getelementptr inbounds i8, i8* %0, i64 1
   %1983 = load i1, i1* %out.
-  %1984 = icmp slt i64 1, %len.
+  %1984 = icmp slt i64 1, %N
   %1985 = bitcast i64* %shadow to i8*
   %safe.700 = or i1 %1983, %1984
   %select.ptr.701 = select i1 %safe.700, i8* %1982, i8* %1985
@@ -7372,7 +7368,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %1995 = trunc i32 %1994 to i8
   %1996 = getelementptr inbounds i8, i8* %0, i64 2
   %1997 = load i1, i1* %out.
-  %1998 = icmp slt i64 2, %len.
+  %1998 = icmp slt i64 2, %N
   %1999 = bitcast i64* %shadow to i8*
   %safe.705 = or i1 %1997, %1998
   %select.ptr.706 = select i1 %safe.705, i8* %1996, i8* %1999
@@ -7392,7 +7388,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2009 = trunc i32 %2008 to i8
   %2010 = getelementptr inbounds i8, i8* %0, i64 3
   %2011 = load i1, i1* %out.
-  %2012 = icmp slt i64 3, %len.
+  %2012 = icmp slt i64 3, %N
   %2013 = bitcast i64* %shadow to i8*
   %safe.710 = or i1 %2011, %2012
   %select.ptr.711 = select i1 %safe.710, i8* %2010, i8* %2013
@@ -7410,7 +7406,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2021 = and i32 %2020, 255
   %2022 = getelementptr inbounds i8, i8* %0, i64 3
   %2023 = load i1, i1* %out.
-  %2024 = icmp slt i64 3, %len.
+  %2024 = icmp slt i64 3, %N
   %2025 = bitcast i64* %shadow to i8*
   %safe.715 = or i1 %2023, %2024
   %select.ptr.716 = select i1 %safe.715, i8* %2022, i8* %2025
@@ -7419,7 +7415,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2028 = or i32 %2027, %2021
   %2029 = trunc i32 %2028 to i8
   %2030 = load i1, i1* %out.
-  %2031 = icmp slt i64 3, %len.
+  %2031 = icmp slt i64 3, %N
   %2032 = bitcast i64* %shadow to i8*
   %safe.717 = or i1 %2030, %2031
   %select.ptr.718 = select i1 %safe.717, i8* %2022, i8* %2032
@@ -7439,7 +7435,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2042 = trunc i32 %2041 to i8
   %2043 = getelementptr inbounds i8, i8* %0, i64 4
   %2044 = load i1, i1* %out.
-  %2045 = icmp slt i64 4, %len.
+  %2045 = icmp slt i64 4, %N
   %2046 = bitcast i64* %shadow to i8*
   %safe.722 = or i1 %2044, %2045
   %select.ptr.723 = select i1 %safe.722, i8* %2043, i8* %2046
@@ -7459,7 +7455,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2056 = trunc i32 %2055 to i8
   %2057 = getelementptr inbounds i8, i8* %0, i64 5
   %2058 = load i1, i1* %out.
-  %2059 = icmp slt i64 5, %len.
+  %2059 = icmp slt i64 5, %N
   %2060 = bitcast i64* %shadow to i8*
   %safe.727 = or i1 %2058, %2059
   %select.ptr.728 = select i1 %safe.727, i8* %2057, i8* %2060
@@ -7479,7 +7475,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2070 = trunc i32 %2069 to i8
   %2071 = getelementptr inbounds i8, i8* %0, i64 6
   %2072 = load i1, i1* %out.
-  %2073 = icmp slt i64 6, %len.
+  %2073 = icmp slt i64 6, %N
   %2074 = bitcast i64* %shadow to i8*
   %safe.732 = or i1 %2072, %2073
   %select.ptr.733 = select i1 %safe.732, i8* %2071, i8* %2074
@@ -7497,7 +7493,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2082 = and i32 %2081, 255
   %2083 = getelementptr inbounds i8, i8* %0, i64 6
   %2084 = load i1, i1* %out.
-  %2085 = icmp slt i64 6, %len.
+  %2085 = icmp slt i64 6, %N
   %2086 = bitcast i64* %shadow to i8*
   %safe.737 = or i1 %2084, %2085
   %select.ptr.738 = select i1 %safe.737, i8* %2083, i8* %2086
@@ -7506,7 +7502,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2089 = or i32 %2088, %2082
   %2090 = trunc i32 %2089 to i8
   %2091 = load i1, i1* %out.
-  %2092 = icmp slt i64 6, %len.
+  %2092 = icmp slt i64 6, %N
   %2093 = bitcast i64* %shadow to i8*
   %safe.739 = or i1 %2091, %2092
   %select.ptr.740 = select i1 %safe.739, i8* %2083, i8* %2093
@@ -7526,7 +7522,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2103 = trunc i32 %2102 to i8
   %2104 = getelementptr inbounds i8, i8* %0, i64 7
   %2105 = load i1, i1* %out.
-  %2106 = icmp slt i64 7, %len.
+  %2106 = icmp slt i64 7, %N
   %2107 = bitcast i64* %shadow to i8*
   %safe.744 = or i1 %2105, %2106
   %select.ptr.745 = select i1 %safe.744, i8* %2104, i8* %2107
@@ -7546,7 +7542,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2117 = trunc i32 %2116 to i8
   %2118 = getelementptr inbounds i8, i8* %0, i64 8
   %2119 = load i1, i1* %out.
-  %2120 = icmp slt i64 8, %len.
+  %2120 = icmp slt i64 8, %N
   %2121 = bitcast i64* %shadow to i8*
   %safe.749 = or i1 %2119, %2120
   %select.ptr.750 = select i1 %safe.749, i8* %2118, i8* %2121
@@ -7566,7 +7562,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2131 = trunc i32 %2130 to i8
   %2132 = getelementptr inbounds i8, i8* %0, i64 9
   %2133 = load i1, i1* %out.
-  %2134 = icmp slt i64 9, %len.
+  %2134 = icmp slt i64 9, %N
   %2135 = bitcast i64* %shadow to i8*
   %safe.754 = or i1 %2133, %2134
   %select.ptr.755 = select i1 %safe.754, i8* %2132, i8* %2135
@@ -7584,7 +7580,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2143 = and i32 %2142, 255
   %2144 = getelementptr inbounds i8, i8* %0, i64 9
   %2145 = load i1, i1* %out.
-  %2146 = icmp slt i64 9, %len.
+  %2146 = icmp slt i64 9, %N
   %2147 = bitcast i64* %shadow to i8*
   %safe.759 = or i1 %2145, %2146
   %select.ptr.760 = select i1 %safe.759, i8* %2144, i8* %2147
@@ -7593,7 +7589,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2150 = or i32 %2149, %2143
   %2151 = trunc i32 %2150 to i8
   %2152 = load i1, i1* %out.
-  %2153 = icmp slt i64 9, %len.
+  %2153 = icmp slt i64 9, %N
   %2154 = bitcast i64* %shadow to i8*
   %safe.761 = or i1 %2152, %2153
   %select.ptr.762 = select i1 %safe.761, i8* %2144, i8* %2154
@@ -7613,7 +7609,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2164 = trunc i32 %2163 to i8
   %2165 = getelementptr inbounds i8, i8* %0, i64 10
   %2166 = load i1, i1* %out.
-  %2167 = icmp slt i64 10, %len.
+  %2167 = icmp slt i64 10, %N
   %2168 = bitcast i64* %shadow to i8*
   %safe.766 = or i1 %2166, %2167
   %select.ptr.767 = select i1 %safe.766, i8* %2165, i8* %2168
@@ -7633,7 +7629,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2178 = trunc i32 %2177 to i8
   %2179 = getelementptr inbounds i8, i8* %0, i64 11
   %2180 = load i1, i1* %out.
-  %2181 = icmp slt i64 11, %len.
+  %2181 = icmp slt i64 11, %N
   %2182 = bitcast i64* %shadow to i8*
   %safe.771 = or i1 %2180, %2181
   %select.ptr.772 = select i1 %safe.771, i8* %2179, i8* %2182
@@ -7653,7 +7649,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2192 = trunc i32 %2191 to i8
   %2193 = getelementptr inbounds i8, i8* %0, i64 12
   %2194 = load i1, i1* %out.
-  %2195 = icmp slt i64 12, %len.
+  %2195 = icmp slt i64 12, %N
   %2196 = bitcast i64* %shadow to i8*
   %safe.776 = or i1 %2194, %2195
   %select.ptr.777 = select i1 %safe.776, i8* %2193, i8* %2196
@@ -7671,7 +7667,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2204 = and i32 %2203, 255
   %2205 = getelementptr inbounds i8, i8* %0, i64 12
   %2206 = load i1, i1* %out.
-  %2207 = icmp slt i64 12, %len.
+  %2207 = icmp slt i64 12, %N
   %2208 = bitcast i64* %shadow to i8*
   %safe.781 = or i1 %2206, %2207
   %select.ptr.782 = select i1 %safe.781, i8* %2205, i8* %2208
@@ -7680,7 +7676,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2211 = or i32 %2210, %2204
   %2212 = trunc i32 %2211 to i8
   %2213 = load i1, i1* %out.
-  %2214 = icmp slt i64 12, %len.
+  %2214 = icmp slt i64 12, %N
   %2215 = bitcast i64* %shadow to i8*
   %safe.783 = or i1 %2213, %2214
   %select.ptr.784 = select i1 %safe.783, i8* %2205, i8* %2215
@@ -7700,7 +7696,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2225 = trunc i32 %2224 to i8
   %2226 = getelementptr inbounds i8, i8* %0, i64 13
   %2227 = load i1, i1* %out.
-  %2228 = icmp slt i64 13, %len.
+  %2228 = icmp slt i64 13, %N
   %2229 = bitcast i64* %shadow to i8*
   %safe.788 = or i1 %2227, %2228
   %select.ptr.789 = select i1 %safe.788, i8* %2226, i8* %2229
@@ -7720,7 +7716,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2239 = trunc i32 %2238 to i8
   %2240 = getelementptr inbounds i8, i8* %0, i64 14
   %2241 = load i1, i1* %out.
-  %2242 = icmp slt i64 14, %len.
+  %2242 = icmp slt i64 14, %N
   %2243 = bitcast i64* %shadow to i8*
   %safe.793 = or i1 %2241, %2242
   %select.ptr.794 = select i1 %safe.793, i8* %2240, i8* %2243
@@ -7740,7 +7736,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2253 = trunc i32 %2252 to i8
   %2254 = getelementptr inbounds i8, i8* %0, i64 15
   %2255 = load i1, i1* %out.
-  %2256 = icmp slt i64 15, %len.
+  %2256 = icmp slt i64 15, %N
   %2257 = bitcast i64* %shadow to i8*
   %safe.798 = or i1 %2255, %2256
   %select.ptr.799 = select i1 %safe.798, i8* %2254, i8* %2257
@@ -7758,7 +7754,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2265 = and i32 %2264, 255
   %2266 = getelementptr inbounds i8, i8* %0, i64 16
   %2267 = load i1, i1* %out.
-  %2268 = icmp slt i64 16, %len.
+  %2268 = icmp slt i64 16, %N
   %2269 = bitcast i64* %shadow to i8*
   %safe.803 = or i1 %2267, %2268
   %select.ptr.804 = select i1 %safe.803, i8* %2266, i8* %2269
@@ -7767,7 +7763,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2272 = or i32 %2271, %2265
   %2273 = trunc i32 %2272 to i8
   %2274 = load i1, i1* %out.
-  %2275 = icmp slt i64 16, %len.
+  %2275 = icmp slt i64 16, %N
   %2276 = bitcast i64* %shadow to i8*
   %safe.805 = or i1 %2274, %2275
   %select.ptr.806 = select i1 %safe.805, i8* %2266, i8* %2276
@@ -7787,7 +7783,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2286 = trunc i32 %2285 to i8
   %2287 = getelementptr inbounds i8, i8* %0, i64 17
   %2288 = load i1, i1* %out.
-  %2289 = icmp slt i64 17, %len.
+  %2289 = icmp slt i64 17, %N
   %2290 = bitcast i64* %shadow to i8*
   %safe.810 = or i1 %2288, %2289
   %select.ptr.811 = select i1 %safe.810, i8* %2287, i8* %2290
@@ -7807,7 +7803,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2300 = trunc i32 %2299 to i8
   %2301 = getelementptr inbounds i8, i8* %0, i64 18
   %2302 = load i1, i1* %out.
-  %2303 = icmp slt i64 18, %len.
+  %2303 = icmp slt i64 18, %N
   %2304 = bitcast i64* %shadow to i8*
   %safe.815 = or i1 %2302, %2303
   %select.ptr.816 = select i1 %safe.815, i8* %2301, i8* %2304
@@ -7827,7 +7823,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2314 = trunc i32 %2313 to i8
   %2315 = getelementptr inbounds i8, i8* %0, i64 19
   %2316 = load i1, i1* %out.
-  %2317 = icmp slt i64 19, %len.
+  %2317 = icmp slt i64 19, %N
   %2318 = bitcast i64* %shadow to i8*
   %safe.820 = or i1 %2316, %2317
   %select.ptr.821 = select i1 %safe.820, i8* %2315, i8* %2318
@@ -7845,7 +7841,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2326 = and i32 %2325, 255
   %2327 = getelementptr inbounds i8, i8* %0, i64 19
   %2328 = load i1, i1* %out.
-  %2329 = icmp slt i64 19, %len.
+  %2329 = icmp slt i64 19, %N
   %2330 = bitcast i64* %shadow to i8*
   %safe.825 = or i1 %2328, %2329
   %select.ptr.826 = select i1 %safe.825, i8* %2327, i8* %2330
@@ -7854,7 +7850,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2333 = or i32 %2332, %2326
   %2334 = trunc i32 %2333 to i8
   %2335 = load i1, i1* %out.
-  %2336 = icmp slt i64 19, %len.
+  %2336 = icmp slt i64 19, %N
   %2337 = bitcast i64* %shadow to i8*
   %safe.827 = or i1 %2335, %2336
   %select.ptr.828 = select i1 %safe.827, i8* %2327, i8* %2337
@@ -7874,7 +7870,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2347 = trunc i32 %2346 to i8
   %2348 = getelementptr inbounds i8, i8* %0, i64 20
   %2349 = load i1, i1* %out.
-  %2350 = icmp slt i64 20, %len.
+  %2350 = icmp slt i64 20, %N
   %2351 = bitcast i64* %shadow to i8*
   %safe.832 = or i1 %2349, %2350
   %select.ptr.833 = select i1 %safe.832, i8* %2348, i8* %2351
@@ -7894,7 +7890,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2361 = trunc i32 %2360 to i8
   %2362 = getelementptr inbounds i8, i8* %0, i64 21
   %2363 = load i1, i1* %out.
-  %2364 = icmp slt i64 21, %len.
+  %2364 = icmp slt i64 21, %N
   %2365 = bitcast i64* %shadow to i8*
   %safe.837 = or i1 %2363, %2364
   %select.ptr.838 = select i1 %safe.837, i8* %2362, i8* %2365
@@ -7914,7 +7910,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2375 = trunc i32 %2374 to i8
   %2376 = getelementptr inbounds i8, i8* %0, i64 22
   %2377 = load i1, i1* %out.
-  %2378 = icmp slt i64 22, %len.
+  %2378 = icmp slt i64 22, %N
   %2379 = bitcast i64* %shadow to i8*
   %safe.842 = or i1 %2377, %2378
   %select.ptr.843 = select i1 %safe.842, i8* %2376, i8* %2379
@@ -7932,7 +7928,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2387 = and i32 %2386, 255
   %2388 = getelementptr inbounds i8, i8* %0, i64 22
   %2389 = load i1, i1* %out.
-  %2390 = icmp slt i64 22, %len.
+  %2390 = icmp slt i64 22, %N
   %2391 = bitcast i64* %shadow to i8*
   %safe.847 = or i1 %2389, %2390
   %select.ptr.848 = select i1 %safe.847, i8* %2388, i8* %2391
@@ -7941,7 +7937,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2394 = or i32 %2393, %2387
   %2395 = trunc i32 %2394 to i8
   %2396 = load i1, i1* %out.
-  %2397 = icmp slt i64 22, %len.
+  %2397 = icmp slt i64 22, %N
   %2398 = bitcast i64* %shadow to i8*
   %safe.849 = or i1 %2396, %2397
   %select.ptr.850 = select i1 %safe.849, i8* %2388, i8* %2398
@@ -7961,7 +7957,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2408 = trunc i32 %2407 to i8
   %2409 = getelementptr inbounds i8, i8* %0, i64 23
   %2410 = load i1, i1* %out.
-  %2411 = icmp slt i64 23, %len.
+  %2411 = icmp slt i64 23, %N
   %2412 = bitcast i64* %shadow to i8*
   %safe.854 = or i1 %2410, %2411
   %select.ptr.855 = select i1 %safe.854, i8* %2409, i8* %2412
@@ -7981,7 +7977,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2422 = trunc i32 %2421 to i8
   %2423 = getelementptr inbounds i8, i8* %0, i64 24
   %2424 = load i1, i1* %out.
-  %2425 = icmp slt i64 24, %len.
+  %2425 = icmp slt i64 24, %N
   %2426 = bitcast i64* %shadow to i8*
   %safe.859 = or i1 %2424, %2425
   %select.ptr.860 = select i1 %safe.859, i8* %2423, i8* %2426
@@ -8001,7 +7997,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2436 = trunc i32 %2435 to i8
   %2437 = getelementptr inbounds i8, i8* %0, i64 25
   %2438 = load i1, i1* %out.
-  %2439 = icmp slt i64 25, %len.
+  %2439 = icmp slt i64 25, %N
   %2440 = bitcast i64* %shadow to i8*
   %safe.864 = or i1 %2438, %2439
   %select.ptr.865 = select i1 %safe.864, i8* %2437, i8* %2440
@@ -8019,7 +8015,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2448 = and i32 %2447, 255
   %2449 = getelementptr inbounds i8, i8* %0, i64 25
   %2450 = load i1, i1* %out.
-  %2451 = icmp slt i64 25, %len.
+  %2451 = icmp slt i64 25, %N
   %2452 = bitcast i64* %shadow to i8*
   %safe.869 = or i1 %2450, %2451
   %select.ptr.870 = select i1 %safe.869, i8* %2449, i8* %2452
@@ -8028,7 +8024,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2455 = or i32 %2454, %2448
   %2456 = trunc i32 %2455 to i8
   %2457 = load i1, i1* %out.
-  %2458 = icmp slt i64 25, %len.
+  %2458 = icmp slt i64 25, %N
   %2459 = bitcast i64* %shadow to i8*
   %safe.871 = or i1 %2457, %2458
   %select.ptr.872 = select i1 %safe.871, i8* %2449, i8* %2459
@@ -8048,7 +8044,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2469 = trunc i32 %2468 to i8
   %2470 = getelementptr inbounds i8, i8* %0, i64 26
   %2471 = load i1, i1* %out.
-  %2472 = icmp slt i64 26, %len.
+  %2472 = icmp slt i64 26, %N
   %2473 = bitcast i64* %shadow to i8*
   %safe.876 = or i1 %2471, %2472
   %select.ptr.877 = select i1 %safe.876, i8* %2470, i8* %2473
@@ -8068,7 +8064,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2483 = trunc i32 %2482 to i8
   %2484 = getelementptr inbounds i8, i8* %0, i64 27
   %2485 = load i1, i1* %out.
-  %2486 = icmp slt i64 27, %len.
+  %2486 = icmp slt i64 27, %N
   %2487 = bitcast i64* %shadow to i8*
   %safe.881 = or i1 %2485, %2486
   %select.ptr.882 = select i1 %safe.881, i8* %2484, i8* %2487
@@ -8088,7 +8084,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2497 = trunc i32 %2496 to i8
   %2498 = getelementptr inbounds i8, i8* %0, i64 28
   %2499 = load i1, i1* %out.
-  %2500 = icmp slt i64 28, %len.
+  %2500 = icmp slt i64 28, %N
   %2501 = bitcast i64* %shadow to i8*
   %safe.886 = or i1 %2499, %2500
   %select.ptr.887 = select i1 %safe.886, i8* %2498, i8* %2501
@@ -8106,7 +8102,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2509 = and i32 %2508, 255
   %2510 = getelementptr inbounds i8, i8* %0, i64 28
   %2511 = load i1, i1* %out.
-  %2512 = icmp slt i64 28, %len.
+  %2512 = icmp slt i64 28, %N
   %2513 = bitcast i64* %shadow to i8*
   %safe.891 = or i1 %2511, %2512
   %select.ptr.892 = select i1 %safe.891, i8* %2510, i8* %2513
@@ -8115,7 +8111,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2516 = or i32 %2515, %2509
   %2517 = trunc i32 %2516 to i8
   %2518 = load i1, i1* %out.
-  %2519 = icmp slt i64 28, %len.
+  %2519 = icmp slt i64 28, %N
   %2520 = bitcast i64* %shadow to i8*
   %safe.893 = or i1 %2518, %2519
   %select.ptr.894 = select i1 %safe.893, i8* %2510, i8* %2520
@@ -8135,7 +8131,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2530 = trunc i32 %2529 to i8
   %2531 = getelementptr inbounds i8, i8* %0, i64 29
   %2532 = load i1, i1* %out.
-  %2533 = icmp slt i64 29, %len.
+  %2533 = icmp slt i64 29, %N
   %2534 = bitcast i64* %shadow to i8*
   %safe.898 = or i1 %2532, %2533
   %select.ptr.899 = select i1 %safe.898, i8* %2531, i8* %2534
@@ -8155,7 +8151,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2544 = trunc i32 %2543 to i8
   %2545 = getelementptr inbounds i8, i8* %0, i64 30
   %2546 = load i1, i1* %out.
-  %2547 = icmp slt i64 30, %len.
+  %2547 = icmp slt i64 30, %N
   %2548 = bitcast i64* %shadow to i8*
   %safe.903 = or i1 %2546, %2547
   %select.ptr.904 = select i1 %safe.903, i8* %2545, i8* %2548
@@ -8175,7 +8171,7 @@ define internal void @fcontract(i8* %0, i64 %len., i64* %1, i64 %len.1, i1 %.con
   %2558 = trunc i32 %2557 to i8
   %2559 = getelementptr inbounds i8, i8* %0, i64 31
   %2560 = load i1, i1* %out.
-  %2561 = icmp slt i64 31, %len.
+  %2561 = icmp slt i64 31, %N
   %2562 = bitcast i64* %shadow to i8*
   %safe.908 = or i1 %2560, %2561
   %select.ptr.909 = select i1 %safe.908, i8* %2559, i8* %2562
@@ -8215,13 +8211,13 @@ define internal i32 @s32_eq(i32 %0, i32 %1, i1 %.cond) {
   ret i32 %15
 }
 
-define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2, i64 %len.2, i1 %.cond) {
+define internal void @fproduct(i64* %0, i64 %N, i64* %1, i64 %N1, i64* %2, i64 %N2, i1 %.cond) {
   %shadow = alloca i64
   %out. = alloca i1
   store i1 %.cond, i1* %out.
   %4 = getelementptr inbounds i64, i64* %1, i64 0
   %5 = load i1, i1* %out.
-  %6 = icmp slt i64 0, %len.1
+  %6 = icmp slt i64 0, %N1
   %7 = bitcast i64* %shadow to i64*
   %safe. = or i1 %5, %6
   %select.ptr. = select i1 %safe., i64* %4, i64* %7
@@ -8230,7 +8226,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %10 = sext i32 %9 to i64
   %11 = getelementptr inbounds i64, i64* %2, i64 0
   %12 = load i1, i1* %out.
-  %13 = icmp slt i64 0, %len.2
+  %13 = icmp slt i64 0, %N2
   %14 = bitcast i64* %shadow to i64*
   %safe.3 = or i1 %12, %13
   %select.ptr.4 = select i1 %safe.3, i64* %11, i64* %14
@@ -8240,7 +8236,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %18 = mul nsw i64 %10, %17
   %19 = getelementptr inbounds i64, i64* %0, i64 0
   %20 = load i1, i1* %out.
-  %21 = icmp slt i64 0, %len.
+  %21 = icmp slt i64 0, %N
   %22 = bitcast i64* %shadow to i64*
   %safe.5 = or i1 %20, %21
   %select.ptr.6 = select i1 %safe.5, i64* %19, i64* %22
@@ -8249,7 +8245,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   store i64 %select.val., i64* %select.ptr.6, align 8
   %24 = getelementptr inbounds i64, i64* %1, i64 0
   %25 = load i1, i1* %out.
-  %26 = icmp slt i64 0, %len.1
+  %26 = icmp slt i64 0, %N1
   %27 = bitcast i64* %shadow to i64*
   %safe.7 = or i1 %25, %26
   %select.ptr.8 = select i1 %safe.7, i64* %24, i64* %27
@@ -8258,7 +8254,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %30 = sext i32 %29 to i64
   %31 = getelementptr inbounds i64, i64* %2, i64 1
   %32 = load i1, i1* %out.
-  %33 = icmp slt i64 1, %len.2
+  %33 = icmp slt i64 1, %N2
   %34 = bitcast i64* %shadow to i64*
   %safe.9 = or i1 %32, %33
   %select.ptr.10 = select i1 %safe.9, i64* %31, i64* %34
@@ -8268,7 +8264,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %38 = mul nsw i64 %30, %37
   %39 = getelementptr inbounds i64, i64* %1, i64 1
   %40 = load i1, i1* %out.
-  %41 = icmp slt i64 1, %len.1
+  %41 = icmp slt i64 1, %N1
   %42 = bitcast i64* %shadow to i64*
   %safe.11 = or i1 %40, %41
   %select.ptr.12 = select i1 %safe.11, i64* %39, i64* %42
@@ -8277,7 +8273,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %45 = sext i32 %44 to i64
   %46 = getelementptr inbounds i64, i64* %2, i64 0
   %47 = load i1, i1* %out.
-  %48 = icmp slt i64 0, %len.2
+  %48 = icmp slt i64 0, %N2
   %49 = bitcast i64* %shadow to i64*
   %safe.13 = or i1 %47, %48
   %select.ptr.14 = select i1 %safe.13, i64* %46, i64* %49
@@ -8288,7 +8284,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %54 = add nsw i64 %38, %53
   %55 = getelementptr inbounds i64, i64* %0, i64 1
   %56 = load i1, i1* %out.
-  %57 = icmp slt i64 1, %len.
+  %57 = icmp slt i64 1, %N
   %58 = bitcast i64* %shadow to i64*
   %safe.15 = or i1 %56, %57
   %select.ptr.16 = select i1 %safe.15, i64* %55, i64* %58
@@ -8297,7 +8293,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   store i64 %select.val.17, i64* %select.ptr.16, align 8
   %60 = getelementptr inbounds i64, i64* %1, i64 1
   %61 = load i1, i1* %out.
-  %62 = icmp slt i64 1, %len.1
+  %62 = icmp slt i64 1, %N1
   %63 = bitcast i64* %shadow to i64*
   %safe.18 = or i1 %61, %62
   %select.ptr.19 = select i1 %safe.18, i64* %60, i64* %63
@@ -8307,7 +8303,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %67 = mul nsw i64 2, %66
   %68 = getelementptr inbounds i64, i64* %2, i64 1
   %69 = load i1, i1* %out.
-  %70 = icmp slt i64 1, %len.2
+  %70 = icmp slt i64 1, %N2
   %71 = bitcast i64* %shadow to i64*
   %safe.20 = or i1 %69, %70
   %select.ptr.21 = select i1 %safe.20, i64* %68, i64* %71
@@ -8317,7 +8313,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %75 = mul nsw i64 %67, %74
   %76 = getelementptr inbounds i64, i64* %1, i64 0
   %77 = load i1, i1* %out.
-  %78 = icmp slt i64 0, %len.1
+  %78 = icmp slt i64 0, %N1
   %79 = bitcast i64* %shadow to i64*
   %safe.22 = or i1 %77, %78
   %select.ptr.23 = select i1 %safe.22, i64* %76, i64* %79
@@ -8326,7 +8322,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %82 = sext i32 %81 to i64
   %83 = getelementptr inbounds i64, i64* %2, i64 2
   %84 = load i1, i1* %out.
-  %85 = icmp slt i64 2, %len.2
+  %85 = icmp slt i64 2, %N2
   %86 = bitcast i64* %shadow to i64*
   %safe.24 = or i1 %84, %85
   %select.ptr.25 = select i1 %safe.24, i64* %83, i64* %86
@@ -8337,7 +8333,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %91 = add nsw i64 %75, %90
   %92 = getelementptr inbounds i64, i64* %1, i64 2
   %93 = load i1, i1* %out.
-  %94 = icmp slt i64 2, %len.1
+  %94 = icmp slt i64 2, %N1
   %95 = bitcast i64* %shadow to i64*
   %safe.26 = or i1 %93, %94
   %select.ptr.27 = select i1 %safe.26, i64* %92, i64* %95
@@ -8346,7 +8342,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %98 = sext i32 %97 to i64
   %99 = getelementptr inbounds i64, i64* %2, i64 0
   %100 = load i1, i1* %out.
-  %101 = icmp slt i64 0, %len.2
+  %101 = icmp slt i64 0, %N2
   %102 = bitcast i64* %shadow to i64*
   %safe.28 = or i1 %100, %101
   %select.ptr.29 = select i1 %safe.28, i64* %99, i64* %102
@@ -8357,7 +8353,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %107 = add nsw i64 %91, %106
   %108 = getelementptr inbounds i64, i64* %0, i64 2
   %109 = load i1, i1* %out.
-  %110 = icmp slt i64 2, %len.
+  %110 = icmp slt i64 2, %N
   %111 = bitcast i64* %shadow to i64*
   %safe.30 = or i1 %109, %110
   %select.ptr.31 = select i1 %safe.30, i64* %108, i64* %111
@@ -8366,7 +8362,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   store i64 %select.val.32, i64* %select.ptr.31, align 8
   %113 = getelementptr inbounds i64, i64* %1, i64 1
   %114 = load i1, i1* %out.
-  %115 = icmp slt i64 1, %len.1
+  %115 = icmp slt i64 1, %N1
   %116 = bitcast i64* %shadow to i64*
   %safe.33 = or i1 %114, %115
   %select.ptr.34 = select i1 %safe.33, i64* %113, i64* %116
@@ -8375,7 +8371,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %119 = sext i32 %118 to i64
   %120 = getelementptr inbounds i64, i64* %2, i64 2
   %121 = load i1, i1* %out.
-  %122 = icmp slt i64 2, %len.2
+  %122 = icmp slt i64 2, %N2
   %123 = bitcast i64* %shadow to i64*
   %safe.35 = or i1 %121, %122
   %select.ptr.36 = select i1 %safe.35, i64* %120, i64* %123
@@ -8385,7 +8381,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %127 = mul nsw i64 %119, %126
   %128 = getelementptr inbounds i64, i64* %1, i64 2
   %129 = load i1, i1* %out.
-  %130 = icmp slt i64 2, %len.1
+  %130 = icmp slt i64 2, %N1
   %131 = bitcast i64* %shadow to i64*
   %safe.37 = or i1 %129, %130
   %select.ptr.38 = select i1 %safe.37, i64* %128, i64* %131
@@ -8394,7 +8390,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %134 = sext i32 %133 to i64
   %135 = getelementptr inbounds i64, i64* %2, i64 1
   %136 = load i1, i1* %out.
-  %137 = icmp slt i64 1, %len.2
+  %137 = icmp slt i64 1, %N2
   %138 = bitcast i64* %shadow to i64*
   %safe.39 = or i1 %136, %137
   %select.ptr.40 = select i1 %safe.39, i64* %135, i64* %138
@@ -8405,7 +8401,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %143 = add nsw i64 %127, %142
   %144 = getelementptr inbounds i64, i64* %1, i64 0
   %145 = load i1, i1* %out.
-  %146 = icmp slt i64 0, %len.1
+  %146 = icmp slt i64 0, %N1
   %147 = bitcast i64* %shadow to i64*
   %safe.41 = or i1 %145, %146
   %select.ptr.42 = select i1 %safe.41, i64* %144, i64* %147
@@ -8414,7 +8410,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %150 = sext i32 %149 to i64
   %151 = getelementptr inbounds i64, i64* %2, i64 3
   %152 = load i1, i1* %out.
-  %153 = icmp slt i64 3, %len.2
+  %153 = icmp slt i64 3, %N2
   %154 = bitcast i64* %shadow to i64*
   %safe.43 = or i1 %152, %153
   %select.ptr.44 = select i1 %safe.43, i64* %151, i64* %154
@@ -8425,7 +8421,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %159 = add nsw i64 %143, %158
   %160 = getelementptr inbounds i64, i64* %1, i64 3
   %161 = load i1, i1* %out.
-  %162 = icmp slt i64 3, %len.1
+  %162 = icmp slt i64 3, %N1
   %163 = bitcast i64* %shadow to i64*
   %safe.45 = or i1 %161, %162
   %select.ptr.46 = select i1 %safe.45, i64* %160, i64* %163
@@ -8434,7 +8430,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %166 = sext i32 %165 to i64
   %167 = getelementptr inbounds i64, i64* %2, i64 0
   %168 = load i1, i1* %out.
-  %169 = icmp slt i64 0, %len.2
+  %169 = icmp slt i64 0, %N2
   %170 = bitcast i64* %shadow to i64*
   %safe.47 = or i1 %168, %169
   %select.ptr.48 = select i1 %safe.47, i64* %167, i64* %170
@@ -8445,7 +8441,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %175 = add nsw i64 %159, %174
   %176 = getelementptr inbounds i64, i64* %0, i64 3
   %177 = load i1, i1* %out.
-  %178 = icmp slt i64 3, %len.
+  %178 = icmp slt i64 3, %N
   %179 = bitcast i64* %shadow to i64*
   %safe.49 = or i1 %177, %178
   %select.ptr.50 = select i1 %safe.49, i64* %176, i64* %179
@@ -8454,7 +8450,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   store i64 %select.val.51, i64* %select.ptr.50, align 8
   %181 = getelementptr inbounds i64, i64* %1, i64 2
   %182 = load i1, i1* %out.
-  %183 = icmp slt i64 2, %len.1
+  %183 = icmp slt i64 2, %N1
   %184 = bitcast i64* %shadow to i64*
   %safe.52 = or i1 %182, %183
   %select.ptr.53 = select i1 %safe.52, i64* %181, i64* %184
@@ -8463,7 +8459,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %187 = sext i32 %186 to i64
   %188 = getelementptr inbounds i64, i64* %2, i64 2
   %189 = load i1, i1* %out.
-  %190 = icmp slt i64 2, %len.2
+  %190 = icmp slt i64 2, %N2
   %191 = bitcast i64* %shadow to i64*
   %safe.54 = or i1 %189, %190
   %select.ptr.55 = select i1 %safe.54, i64* %188, i64* %191
@@ -8473,7 +8469,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %195 = mul nsw i64 %187, %194
   %196 = getelementptr inbounds i64, i64* %1, i64 1
   %197 = load i1, i1* %out.
-  %198 = icmp slt i64 1, %len.1
+  %198 = icmp slt i64 1, %N1
   %199 = bitcast i64* %shadow to i64*
   %safe.56 = or i1 %197, %198
   %select.ptr.57 = select i1 %safe.56, i64* %196, i64* %199
@@ -8482,7 +8478,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %202 = sext i32 %201 to i64
   %203 = getelementptr inbounds i64, i64* %2, i64 3
   %204 = load i1, i1* %out.
-  %205 = icmp slt i64 3, %len.2
+  %205 = icmp slt i64 3, %N2
   %206 = bitcast i64* %shadow to i64*
   %safe.58 = or i1 %204, %205
   %select.ptr.59 = select i1 %safe.58, i64* %203, i64* %206
@@ -8492,7 +8488,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %210 = mul nsw i64 %202, %209
   %211 = getelementptr inbounds i64, i64* %1, i64 3
   %212 = load i1, i1* %out.
-  %213 = icmp slt i64 3, %len.1
+  %213 = icmp slt i64 3, %N1
   %214 = bitcast i64* %shadow to i64*
   %safe.60 = or i1 %212, %213
   %select.ptr.61 = select i1 %safe.60, i64* %211, i64* %214
@@ -8501,7 +8497,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %217 = sext i32 %216 to i64
   %218 = getelementptr inbounds i64, i64* %2, i64 1
   %219 = load i1, i1* %out.
-  %220 = icmp slt i64 1, %len.2
+  %220 = icmp slt i64 1, %N2
   %221 = bitcast i64* %shadow to i64*
   %safe.62 = or i1 %219, %220
   %select.ptr.63 = select i1 %safe.62, i64* %218, i64* %221
@@ -8514,7 +8510,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %228 = add nsw i64 %195, %227
   %229 = getelementptr inbounds i64, i64* %1, i64 0
   %230 = load i1, i1* %out.
-  %231 = icmp slt i64 0, %len.1
+  %231 = icmp slt i64 0, %N1
   %232 = bitcast i64* %shadow to i64*
   %safe.64 = or i1 %230, %231
   %select.ptr.65 = select i1 %safe.64, i64* %229, i64* %232
@@ -8523,7 +8519,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %235 = sext i32 %234 to i64
   %236 = getelementptr inbounds i64, i64* %2, i64 4
   %237 = load i1, i1* %out.
-  %238 = icmp slt i64 4, %len.2
+  %238 = icmp slt i64 4, %N2
   %239 = bitcast i64* %shadow to i64*
   %safe.66 = or i1 %237, %238
   %select.ptr.67 = select i1 %safe.66, i64* %236, i64* %239
@@ -8534,7 +8530,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %244 = add nsw i64 %228, %243
   %245 = getelementptr inbounds i64, i64* %1, i64 4
   %246 = load i1, i1* %out.
-  %247 = icmp slt i64 4, %len.1
+  %247 = icmp slt i64 4, %N1
   %248 = bitcast i64* %shadow to i64*
   %safe.68 = or i1 %246, %247
   %select.ptr.69 = select i1 %safe.68, i64* %245, i64* %248
@@ -8543,7 +8539,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %251 = sext i32 %250 to i64
   %252 = getelementptr inbounds i64, i64* %2, i64 0
   %253 = load i1, i1* %out.
-  %254 = icmp slt i64 0, %len.2
+  %254 = icmp slt i64 0, %N2
   %255 = bitcast i64* %shadow to i64*
   %safe.70 = or i1 %253, %254
   %select.ptr.71 = select i1 %safe.70, i64* %252, i64* %255
@@ -8554,7 +8550,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %260 = add nsw i64 %244, %259
   %261 = getelementptr inbounds i64, i64* %0, i64 4
   %262 = load i1, i1* %out.
-  %263 = icmp slt i64 4, %len.
+  %263 = icmp slt i64 4, %N
   %264 = bitcast i64* %shadow to i64*
   %safe.72 = or i1 %262, %263
   %select.ptr.73 = select i1 %safe.72, i64* %261, i64* %264
@@ -8563,7 +8559,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   store i64 %select.val.74, i64* %select.ptr.73, align 8
   %266 = getelementptr inbounds i64, i64* %1, i64 2
   %267 = load i1, i1* %out.
-  %268 = icmp slt i64 2, %len.1
+  %268 = icmp slt i64 2, %N1
   %269 = bitcast i64* %shadow to i64*
   %safe.75 = or i1 %267, %268
   %select.ptr.76 = select i1 %safe.75, i64* %266, i64* %269
@@ -8572,7 +8568,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %272 = sext i32 %271 to i64
   %273 = getelementptr inbounds i64, i64* %2, i64 3
   %274 = load i1, i1* %out.
-  %275 = icmp slt i64 3, %len.2
+  %275 = icmp slt i64 3, %N2
   %276 = bitcast i64* %shadow to i64*
   %safe.77 = or i1 %274, %275
   %select.ptr.78 = select i1 %safe.77, i64* %273, i64* %276
@@ -8582,7 +8578,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %280 = mul nsw i64 %272, %279
   %281 = getelementptr inbounds i64, i64* %1, i64 3
   %282 = load i1, i1* %out.
-  %283 = icmp slt i64 3, %len.1
+  %283 = icmp slt i64 3, %N1
   %284 = bitcast i64* %shadow to i64*
   %safe.79 = or i1 %282, %283
   %select.ptr.80 = select i1 %safe.79, i64* %281, i64* %284
@@ -8591,7 +8587,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %287 = sext i32 %286 to i64
   %288 = getelementptr inbounds i64, i64* %2, i64 2
   %289 = load i1, i1* %out.
-  %290 = icmp slt i64 2, %len.2
+  %290 = icmp slt i64 2, %N2
   %291 = bitcast i64* %shadow to i64*
   %safe.81 = or i1 %289, %290
   %select.ptr.82 = select i1 %safe.81, i64* %288, i64* %291
@@ -8602,7 +8598,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %296 = add nsw i64 %280, %295
   %297 = getelementptr inbounds i64, i64* %1, i64 1
   %298 = load i1, i1* %out.
-  %299 = icmp slt i64 1, %len.1
+  %299 = icmp slt i64 1, %N1
   %300 = bitcast i64* %shadow to i64*
   %safe.83 = or i1 %298, %299
   %select.ptr.84 = select i1 %safe.83, i64* %297, i64* %300
@@ -8611,7 +8607,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %303 = sext i32 %302 to i64
   %304 = getelementptr inbounds i64, i64* %2, i64 4
   %305 = load i1, i1* %out.
-  %306 = icmp slt i64 4, %len.2
+  %306 = icmp slt i64 4, %N2
   %307 = bitcast i64* %shadow to i64*
   %safe.85 = or i1 %305, %306
   %select.ptr.86 = select i1 %safe.85, i64* %304, i64* %307
@@ -8622,7 +8618,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %312 = add nsw i64 %296, %311
   %313 = getelementptr inbounds i64, i64* %1, i64 4
   %314 = load i1, i1* %out.
-  %315 = icmp slt i64 4, %len.1
+  %315 = icmp slt i64 4, %N1
   %316 = bitcast i64* %shadow to i64*
   %safe.87 = or i1 %314, %315
   %select.ptr.88 = select i1 %safe.87, i64* %313, i64* %316
@@ -8631,7 +8627,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %319 = sext i32 %318 to i64
   %320 = getelementptr inbounds i64, i64* %2, i64 1
   %321 = load i1, i1* %out.
-  %322 = icmp slt i64 1, %len.2
+  %322 = icmp slt i64 1, %N2
   %323 = bitcast i64* %shadow to i64*
   %safe.89 = or i1 %321, %322
   %select.ptr.90 = select i1 %safe.89, i64* %320, i64* %323
@@ -8642,7 +8638,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %328 = add nsw i64 %312, %327
   %329 = getelementptr inbounds i64, i64* %1, i64 0
   %330 = load i1, i1* %out.
-  %331 = icmp slt i64 0, %len.1
+  %331 = icmp slt i64 0, %N1
   %332 = bitcast i64* %shadow to i64*
   %safe.91 = or i1 %330, %331
   %select.ptr.92 = select i1 %safe.91, i64* %329, i64* %332
@@ -8651,7 +8647,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %335 = sext i32 %334 to i64
   %336 = getelementptr inbounds i64, i64* %2, i64 5
   %337 = load i1, i1* %out.
-  %338 = icmp slt i64 5, %len.2
+  %338 = icmp slt i64 5, %N2
   %339 = bitcast i64* %shadow to i64*
   %safe.93 = or i1 %337, %338
   %select.ptr.94 = select i1 %safe.93, i64* %336, i64* %339
@@ -8662,7 +8658,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %344 = add nsw i64 %328, %343
   %345 = getelementptr inbounds i64, i64* %1, i64 5
   %346 = load i1, i1* %out.
-  %347 = icmp slt i64 5, %len.1
+  %347 = icmp slt i64 5, %N1
   %348 = bitcast i64* %shadow to i64*
   %safe.95 = or i1 %346, %347
   %select.ptr.96 = select i1 %safe.95, i64* %345, i64* %348
@@ -8671,7 +8667,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %351 = sext i32 %350 to i64
   %352 = getelementptr inbounds i64, i64* %2, i64 0
   %353 = load i1, i1* %out.
-  %354 = icmp slt i64 0, %len.2
+  %354 = icmp slt i64 0, %N2
   %355 = bitcast i64* %shadow to i64*
   %safe.97 = or i1 %353, %354
   %select.ptr.98 = select i1 %safe.97, i64* %352, i64* %355
@@ -8682,7 +8678,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %360 = add nsw i64 %344, %359
   %361 = getelementptr inbounds i64, i64* %0, i64 5
   %362 = load i1, i1* %out.
-  %363 = icmp slt i64 5, %len.
+  %363 = icmp slt i64 5, %N
   %364 = bitcast i64* %shadow to i64*
   %safe.99 = or i1 %362, %363
   %select.ptr.100 = select i1 %safe.99, i64* %361, i64* %364
@@ -8691,7 +8687,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   store i64 %select.val.101, i64* %select.ptr.100, align 8
   %366 = getelementptr inbounds i64, i64* %1, i64 3
   %367 = load i1, i1* %out.
-  %368 = icmp slt i64 3, %len.1
+  %368 = icmp slt i64 3, %N1
   %369 = bitcast i64* %shadow to i64*
   %safe.102 = or i1 %367, %368
   %select.ptr.103 = select i1 %safe.102, i64* %366, i64* %369
@@ -8700,7 +8696,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %372 = sext i32 %371 to i64
   %373 = getelementptr inbounds i64, i64* %2, i64 3
   %374 = load i1, i1* %out.
-  %375 = icmp slt i64 3, %len.2
+  %375 = icmp slt i64 3, %N2
   %376 = bitcast i64* %shadow to i64*
   %safe.104 = or i1 %374, %375
   %select.ptr.105 = select i1 %safe.104, i64* %373, i64* %376
@@ -8710,7 +8706,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %380 = mul nsw i64 %372, %379
   %381 = getelementptr inbounds i64, i64* %1, i64 1
   %382 = load i1, i1* %out.
-  %383 = icmp slt i64 1, %len.1
+  %383 = icmp slt i64 1, %N1
   %384 = bitcast i64* %shadow to i64*
   %safe.106 = or i1 %382, %383
   %select.ptr.107 = select i1 %safe.106, i64* %381, i64* %384
@@ -8719,7 +8715,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %387 = sext i32 %386 to i64
   %388 = getelementptr inbounds i64, i64* %2, i64 5
   %389 = load i1, i1* %out.
-  %390 = icmp slt i64 5, %len.2
+  %390 = icmp slt i64 5, %N2
   %391 = bitcast i64* %shadow to i64*
   %safe.108 = or i1 %389, %390
   %select.ptr.109 = select i1 %safe.108, i64* %388, i64* %391
@@ -8730,7 +8726,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %396 = add nsw i64 %380, %395
   %397 = getelementptr inbounds i64, i64* %1, i64 5
   %398 = load i1, i1* %out.
-  %399 = icmp slt i64 5, %len.1
+  %399 = icmp slt i64 5, %N1
   %400 = bitcast i64* %shadow to i64*
   %safe.110 = or i1 %398, %399
   %select.ptr.111 = select i1 %safe.110, i64* %397, i64* %400
@@ -8739,7 +8735,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %403 = sext i32 %402 to i64
   %404 = getelementptr inbounds i64, i64* %2, i64 1
   %405 = load i1, i1* %out.
-  %406 = icmp slt i64 1, %len.2
+  %406 = icmp slt i64 1, %N2
   %407 = bitcast i64* %shadow to i64*
   %safe.112 = or i1 %405, %406
   %select.ptr.113 = select i1 %safe.112, i64* %404, i64* %407
@@ -8751,7 +8747,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %413 = mul nsw i64 2, %412
   %414 = getelementptr inbounds i64, i64* %1, i64 2
   %415 = load i1, i1* %out.
-  %416 = icmp slt i64 2, %len.1
+  %416 = icmp slt i64 2, %N1
   %417 = bitcast i64* %shadow to i64*
   %safe.114 = or i1 %415, %416
   %select.ptr.115 = select i1 %safe.114, i64* %414, i64* %417
@@ -8760,7 +8756,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %420 = sext i32 %419 to i64
   %421 = getelementptr inbounds i64, i64* %2, i64 4
   %422 = load i1, i1* %out.
-  %423 = icmp slt i64 4, %len.2
+  %423 = icmp slt i64 4, %N2
   %424 = bitcast i64* %shadow to i64*
   %safe.116 = or i1 %422, %423
   %select.ptr.117 = select i1 %safe.116, i64* %421, i64* %424
@@ -8771,7 +8767,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %429 = add nsw i64 %413, %428
   %430 = getelementptr inbounds i64, i64* %1, i64 4
   %431 = load i1, i1* %out.
-  %432 = icmp slt i64 4, %len.1
+  %432 = icmp slt i64 4, %N1
   %433 = bitcast i64* %shadow to i64*
   %safe.118 = or i1 %431, %432
   %select.ptr.119 = select i1 %safe.118, i64* %430, i64* %433
@@ -8780,7 +8776,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %436 = sext i32 %435 to i64
   %437 = getelementptr inbounds i64, i64* %2, i64 2
   %438 = load i1, i1* %out.
-  %439 = icmp slt i64 2, %len.2
+  %439 = icmp slt i64 2, %N2
   %440 = bitcast i64* %shadow to i64*
   %safe.120 = or i1 %438, %439
   %select.ptr.121 = select i1 %safe.120, i64* %437, i64* %440
@@ -8791,7 +8787,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %445 = add nsw i64 %429, %444
   %446 = getelementptr inbounds i64, i64* %1, i64 0
   %447 = load i1, i1* %out.
-  %448 = icmp slt i64 0, %len.1
+  %448 = icmp slt i64 0, %N1
   %449 = bitcast i64* %shadow to i64*
   %safe.122 = or i1 %447, %448
   %select.ptr.123 = select i1 %safe.122, i64* %446, i64* %449
@@ -8800,7 +8796,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %452 = sext i32 %451 to i64
   %453 = getelementptr inbounds i64, i64* %2, i64 6
   %454 = load i1, i1* %out.
-  %455 = icmp slt i64 6, %len.2
+  %455 = icmp slt i64 6, %N2
   %456 = bitcast i64* %shadow to i64*
   %safe.124 = or i1 %454, %455
   %select.ptr.125 = select i1 %safe.124, i64* %453, i64* %456
@@ -8811,7 +8807,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %461 = add nsw i64 %445, %460
   %462 = getelementptr inbounds i64, i64* %1, i64 6
   %463 = load i1, i1* %out.
-  %464 = icmp slt i64 6, %len.1
+  %464 = icmp slt i64 6, %N1
   %465 = bitcast i64* %shadow to i64*
   %safe.126 = or i1 %463, %464
   %select.ptr.127 = select i1 %safe.126, i64* %462, i64* %465
@@ -8820,7 +8816,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %468 = sext i32 %467 to i64
   %469 = getelementptr inbounds i64, i64* %2, i64 0
   %470 = load i1, i1* %out.
-  %471 = icmp slt i64 0, %len.2
+  %471 = icmp slt i64 0, %N2
   %472 = bitcast i64* %shadow to i64*
   %safe.128 = or i1 %470, %471
   %select.ptr.129 = select i1 %safe.128, i64* %469, i64* %472
@@ -8831,7 +8827,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %477 = add nsw i64 %461, %476
   %478 = getelementptr inbounds i64, i64* %0, i64 6
   %479 = load i1, i1* %out.
-  %480 = icmp slt i64 6, %len.
+  %480 = icmp slt i64 6, %N
   %481 = bitcast i64* %shadow to i64*
   %safe.130 = or i1 %479, %480
   %select.ptr.131 = select i1 %safe.130, i64* %478, i64* %481
@@ -8840,7 +8836,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   store i64 %select.val.132, i64* %select.ptr.131, align 8
   %483 = getelementptr inbounds i64, i64* %1, i64 3
   %484 = load i1, i1* %out.
-  %485 = icmp slt i64 3, %len.1
+  %485 = icmp slt i64 3, %N1
   %486 = bitcast i64* %shadow to i64*
   %safe.133 = or i1 %484, %485
   %select.ptr.134 = select i1 %safe.133, i64* %483, i64* %486
@@ -8849,7 +8845,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %489 = sext i32 %488 to i64
   %490 = getelementptr inbounds i64, i64* %2, i64 4
   %491 = load i1, i1* %out.
-  %492 = icmp slt i64 4, %len.2
+  %492 = icmp slt i64 4, %N2
   %493 = bitcast i64* %shadow to i64*
   %safe.135 = or i1 %491, %492
   %select.ptr.136 = select i1 %safe.135, i64* %490, i64* %493
@@ -8859,7 +8855,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %497 = mul nsw i64 %489, %496
   %498 = getelementptr inbounds i64, i64* %1, i64 4
   %499 = load i1, i1* %out.
-  %500 = icmp slt i64 4, %len.1
+  %500 = icmp slt i64 4, %N1
   %501 = bitcast i64* %shadow to i64*
   %safe.137 = or i1 %499, %500
   %select.ptr.138 = select i1 %safe.137, i64* %498, i64* %501
@@ -8868,7 +8864,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %504 = sext i32 %503 to i64
   %505 = getelementptr inbounds i64, i64* %2, i64 3
   %506 = load i1, i1* %out.
-  %507 = icmp slt i64 3, %len.2
+  %507 = icmp slt i64 3, %N2
   %508 = bitcast i64* %shadow to i64*
   %safe.139 = or i1 %506, %507
   %select.ptr.140 = select i1 %safe.139, i64* %505, i64* %508
@@ -8879,7 +8875,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %513 = add nsw i64 %497, %512
   %514 = getelementptr inbounds i64, i64* %1, i64 2
   %515 = load i1, i1* %out.
-  %516 = icmp slt i64 2, %len.1
+  %516 = icmp slt i64 2, %N1
   %517 = bitcast i64* %shadow to i64*
   %safe.141 = or i1 %515, %516
   %select.ptr.142 = select i1 %safe.141, i64* %514, i64* %517
@@ -8888,7 +8884,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %520 = sext i32 %519 to i64
   %521 = getelementptr inbounds i64, i64* %2, i64 5
   %522 = load i1, i1* %out.
-  %523 = icmp slt i64 5, %len.2
+  %523 = icmp slt i64 5, %N2
   %524 = bitcast i64* %shadow to i64*
   %safe.143 = or i1 %522, %523
   %select.ptr.144 = select i1 %safe.143, i64* %521, i64* %524
@@ -8899,7 +8895,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %529 = add nsw i64 %513, %528
   %530 = getelementptr inbounds i64, i64* %1, i64 5
   %531 = load i1, i1* %out.
-  %532 = icmp slt i64 5, %len.1
+  %532 = icmp slt i64 5, %N1
   %533 = bitcast i64* %shadow to i64*
   %safe.145 = or i1 %531, %532
   %select.ptr.146 = select i1 %safe.145, i64* %530, i64* %533
@@ -8908,7 +8904,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %536 = sext i32 %535 to i64
   %537 = getelementptr inbounds i64, i64* %2, i64 2
   %538 = load i1, i1* %out.
-  %539 = icmp slt i64 2, %len.2
+  %539 = icmp slt i64 2, %N2
   %540 = bitcast i64* %shadow to i64*
   %safe.147 = or i1 %538, %539
   %select.ptr.148 = select i1 %safe.147, i64* %537, i64* %540
@@ -8919,7 +8915,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %545 = add nsw i64 %529, %544
   %546 = getelementptr inbounds i64, i64* %1, i64 1
   %547 = load i1, i1* %out.
-  %548 = icmp slt i64 1, %len.1
+  %548 = icmp slt i64 1, %N1
   %549 = bitcast i64* %shadow to i64*
   %safe.149 = or i1 %547, %548
   %select.ptr.150 = select i1 %safe.149, i64* %546, i64* %549
@@ -8928,7 +8924,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %552 = sext i32 %551 to i64
   %553 = getelementptr inbounds i64, i64* %2, i64 6
   %554 = load i1, i1* %out.
-  %555 = icmp slt i64 6, %len.2
+  %555 = icmp slt i64 6, %N2
   %556 = bitcast i64* %shadow to i64*
   %safe.151 = or i1 %554, %555
   %select.ptr.152 = select i1 %safe.151, i64* %553, i64* %556
@@ -8939,7 +8935,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %561 = add nsw i64 %545, %560
   %562 = getelementptr inbounds i64, i64* %1, i64 6
   %563 = load i1, i1* %out.
-  %564 = icmp slt i64 6, %len.1
+  %564 = icmp slt i64 6, %N1
   %565 = bitcast i64* %shadow to i64*
   %safe.153 = or i1 %563, %564
   %select.ptr.154 = select i1 %safe.153, i64* %562, i64* %565
@@ -8948,7 +8944,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %568 = sext i32 %567 to i64
   %569 = getelementptr inbounds i64, i64* %2, i64 1
   %570 = load i1, i1* %out.
-  %571 = icmp slt i64 1, %len.2
+  %571 = icmp slt i64 1, %N2
   %572 = bitcast i64* %shadow to i64*
   %safe.155 = or i1 %570, %571
   %select.ptr.156 = select i1 %safe.155, i64* %569, i64* %572
@@ -8959,7 +8955,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %577 = add nsw i64 %561, %576
   %578 = getelementptr inbounds i64, i64* %1, i64 0
   %579 = load i1, i1* %out.
-  %580 = icmp slt i64 0, %len.1
+  %580 = icmp slt i64 0, %N1
   %581 = bitcast i64* %shadow to i64*
   %safe.157 = or i1 %579, %580
   %select.ptr.158 = select i1 %safe.157, i64* %578, i64* %581
@@ -8968,7 +8964,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %584 = sext i32 %583 to i64
   %585 = getelementptr inbounds i64, i64* %2, i64 7
   %586 = load i1, i1* %out.
-  %587 = icmp slt i64 7, %len.2
+  %587 = icmp slt i64 7, %N2
   %588 = bitcast i64* %shadow to i64*
   %safe.159 = or i1 %586, %587
   %select.ptr.160 = select i1 %safe.159, i64* %585, i64* %588
@@ -8979,7 +8975,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %593 = add nsw i64 %577, %592
   %594 = getelementptr inbounds i64, i64* %1, i64 7
   %595 = load i1, i1* %out.
-  %596 = icmp slt i64 7, %len.1
+  %596 = icmp slt i64 7, %N1
   %597 = bitcast i64* %shadow to i64*
   %safe.161 = or i1 %595, %596
   %select.ptr.162 = select i1 %safe.161, i64* %594, i64* %597
@@ -8988,7 +8984,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %600 = sext i32 %599 to i64
   %601 = getelementptr inbounds i64, i64* %2, i64 0
   %602 = load i1, i1* %out.
-  %603 = icmp slt i64 0, %len.2
+  %603 = icmp slt i64 0, %N2
   %604 = bitcast i64* %shadow to i64*
   %safe.163 = or i1 %602, %603
   %select.ptr.164 = select i1 %safe.163, i64* %601, i64* %604
@@ -8999,7 +8995,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %609 = add nsw i64 %593, %608
   %610 = getelementptr inbounds i64, i64* %0, i64 7
   %611 = load i1, i1* %out.
-  %612 = icmp slt i64 7, %len.
+  %612 = icmp slt i64 7, %N
   %613 = bitcast i64* %shadow to i64*
   %safe.165 = or i1 %611, %612
   %select.ptr.166 = select i1 %safe.165, i64* %610, i64* %613
@@ -9008,7 +9004,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   store i64 %select.val.167, i64* %select.ptr.166, align 8
   %615 = getelementptr inbounds i64, i64* %1, i64 4
   %616 = load i1, i1* %out.
-  %617 = icmp slt i64 4, %len.1
+  %617 = icmp slt i64 4, %N1
   %618 = bitcast i64* %shadow to i64*
   %safe.168 = or i1 %616, %617
   %select.ptr.169 = select i1 %safe.168, i64* %615, i64* %618
@@ -9017,7 +9013,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %621 = sext i32 %620 to i64
   %622 = getelementptr inbounds i64, i64* %2, i64 4
   %623 = load i1, i1* %out.
-  %624 = icmp slt i64 4, %len.2
+  %624 = icmp slt i64 4, %N2
   %625 = bitcast i64* %shadow to i64*
   %safe.170 = or i1 %623, %624
   %select.ptr.171 = select i1 %safe.170, i64* %622, i64* %625
@@ -9027,7 +9023,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %629 = mul nsw i64 %621, %628
   %630 = getelementptr inbounds i64, i64* %1, i64 3
   %631 = load i1, i1* %out.
-  %632 = icmp slt i64 3, %len.1
+  %632 = icmp slt i64 3, %N1
   %633 = bitcast i64* %shadow to i64*
   %safe.172 = or i1 %631, %632
   %select.ptr.173 = select i1 %safe.172, i64* %630, i64* %633
@@ -9036,7 +9032,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %636 = sext i32 %635 to i64
   %637 = getelementptr inbounds i64, i64* %2, i64 5
   %638 = load i1, i1* %out.
-  %639 = icmp slt i64 5, %len.2
+  %639 = icmp slt i64 5, %N2
   %640 = bitcast i64* %shadow to i64*
   %safe.174 = or i1 %638, %639
   %select.ptr.175 = select i1 %safe.174, i64* %637, i64* %640
@@ -9046,7 +9042,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %644 = mul nsw i64 %636, %643
   %645 = getelementptr inbounds i64, i64* %1, i64 5
   %646 = load i1, i1* %out.
-  %647 = icmp slt i64 5, %len.1
+  %647 = icmp slt i64 5, %N1
   %648 = bitcast i64* %shadow to i64*
   %safe.176 = or i1 %646, %647
   %select.ptr.177 = select i1 %safe.176, i64* %645, i64* %648
@@ -9055,7 +9051,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %651 = sext i32 %650 to i64
   %652 = getelementptr inbounds i64, i64* %2, i64 3
   %653 = load i1, i1* %out.
-  %654 = icmp slt i64 3, %len.2
+  %654 = icmp slt i64 3, %N2
   %655 = bitcast i64* %shadow to i64*
   %safe.178 = or i1 %653, %654
   %select.ptr.179 = select i1 %safe.178, i64* %652, i64* %655
@@ -9066,7 +9062,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %660 = add nsw i64 %644, %659
   %661 = getelementptr inbounds i64, i64* %1, i64 1
   %662 = load i1, i1* %out.
-  %663 = icmp slt i64 1, %len.1
+  %663 = icmp slt i64 1, %N1
   %664 = bitcast i64* %shadow to i64*
   %safe.180 = or i1 %662, %663
   %select.ptr.181 = select i1 %safe.180, i64* %661, i64* %664
@@ -9075,7 +9071,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %667 = sext i32 %666 to i64
   %668 = getelementptr inbounds i64, i64* %2, i64 7
   %669 = load i1, i1* %out.
-  %670 = icmp slt i64 7, %len.2
+  %670 = icmp slt i64 7, %N2
   %671 = bitcast i64* %shadow to i64*
   %safe.182 = or i1 %669, %670
   %select.ptr.183 = select i1 %safe.182, i64* %668, i64* %671
@@ -9086,7 +9082,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %676 = add nsw i64 %660, %675
   %677 = getelementptr inbounds i64, i64* %1, i64 7
   %678 = load i1, i1* %out.
-  %679 = icmp slt i64 7, %len.1
+  %679 = icmp slt i64 7, %N1
   %680 = bitcast i64* %shadow to i64*
   %safe.184 = or i1 %678, %679
   %select.ptr.185 = select i1 %safe.184, i64* %677, i64* %680
@@ -9095,7 +9091,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %683 = sext i32 %682 to i64
   %684 = getelementptr inbounds i64, i64* %2, i64 1
   %685 = load i1, i1* %out.
-  %686 = icmp slt i64 1, %len.2
+  %686 = icmp slt i64 1, %N2
   %687 = bitcast i64* %shadow to i64*
   %safe.186 = or i1 %685, %686
   %select.ptr.187 = select i1 %safe.186, i64* %684, i64* %687
@@ -9108,7 +9104,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %694 = add nsw i64 %629, %693
   %695 = getelementptr inbounds i64, i64* %1, i64 2
   %696 = load i1, i1* %out.
-  %697 = icmp slt i64 2, %len.1
+  %697 = icmp slt i64 2, %N1
   %698 = bitcast i64* %shadow to i64*
   %safe.188 = or i1 %696, %697
   %select.ptr.189 = select i1 %safe.188, i64* %695, i64* %698
@@ -9117,7 +9113,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %701 = sext i32 %700 to i64
   %702 = getelementptr inbounds i64, i64* %2, i64 6
   %703 = load i1, i1* %out.
-  %704 = icmp slt i64 6, %len.2
+  %704 = icmp slt i64 6, %N2
   %705 = bitcast i64* %shadow to i64*
   %safe.190 = or i1 %703, %704
   %select.ptr.191 = select i1 %safe.190, i64* %702, i64* %705
@@ -9128,7 +9124,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %710 = add nsw i64 %694, %709
   %711 = getelementptr inbounds i64, i64* %1, i64 6
   %712 = load i1, i1* %out.
-  %713 = icmp slt i64 6, %len.1
+  %713 = icmp slt i64 6, %N1
   %714 = bitcast i64* %shadow to i64*
   %safe.192 = or i1 %712, %713
   %select.ptr.193 = select i1 %safe.192, i64* %711, i64* %714
@@ -9137,7 +9133,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %717 = sext i32 %716 to i64
   %718 = getelementptr inbounds i64, i64* %2, i64 2
   %719 = load i1, i1* %out.
-  %720 = icmp slt i64 2, %len.2
+  %720 = icmp slt i64 2, %N2
   %721 = bitcast i64* %shadow to i64*
   %safe.194 = or i1 %719, %720
   %select.ptr.195 = select i1 %safe.194, i64* %718, i64* %721
@@ -9148,7 +9144,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %726 = add nsw i64 %710, %725
   %727 = getelementptr inbounds i64, i64* %1, i64 0
   %728 = load i1, i1* %out.
-  %729 = icmp slt i64 0, %len.1
+  %729 = icmp slt i64 0, %N1
   %730 = bitcast i64* %shadow to i64*
   %safe.196 = or i1 %728, %729
   %select.ptr.197 = select i1 %safe.196, i64* %727, i64* %730
@@ -9157,7 +9153,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %733 = sext i32 %732 to i64
   %734 = getelementptr inbounds i64, i64* %2, i64 8
   %735 = load i1, i1* %out.
-  %736 = icmp slt i64 8, %len.2
+  %736 = icmp slt i64 8, %N2
   %737 = bitcast i64* %shadow to i64*
   %safe.198 = or i1 %735, %736
   %select.ptr.199 = select i1 %safe.198, i64* %734, i64* %737
@@ -9168,7 +9164,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %742 = add nsw i64 %726, %741
   %743 = getelementptr inbounds i64, i64* %1, i64 8
   %744 = load i1, i1* %out.
-  %745 = icmp slt i64 8, %len.1
+  %745 = icmp slt i64 8, %N1
   %746 = bitcast i64* %shadow to i64*
   %safe.200 = or i1 %744, %745
   %select.ptr.201 = select i1 %safe.200, i64* %743, i64* %746
@@ -9177,7 +9173,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %749 = sext i32 %748 to i64
   %750 = getelementptr inbounds i64, i64* %2, i64 0
   %751 = load i1, i1* %out.
-  %752 = icmp slt i64 0, %len.2
+  %752 = icmp slt i64 0, %N2
   %753 = bitcast i64* %shadow to i64*
   %safe.202 = or i1 %751, %752
   %select.ptr.203 = select i1 %safe.202, i64* %750, i64* %753
@@ -9188,7 +9184,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %758 = add nsw i64 %742, %757
   %759 = getelementptr inbounds i64, i64* %0, i64 8
   %760 = load i1, i1* %out.
-  %761 = icmp slt i64 8, %len.
+  %761 = icmp slt i64 8, %N
   %762 = bitcast i64* %shadow to i64*
   %safe.204 = or i1 %760, %761
   %select.ptr.205 = select i1 %safe.204, i64* %759, i64* %762
@@ -9197,7 +9193,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   store i64 %select.val.206, i64* %select.ptr.205, align 8
   %764 = getelementptr inbounds i64, i64* %1, i64 4
   %765 = load i1, i1* %out.
-  %766 = icmp slt i64 4, %len.1
+  %766 = icmp slt i64 4, %N1
   %767 = bitcast i64* %shadow to i64*
   %safe.207 = or i1 %765, %766
   %select.ptr.208 = select i1 %safe.207, i64* %764, i64* %767
@@ -9206,7 +9202,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %770 = sext i32 %769 to i64
   %771 = getelementptr inbounds i64, i64* %2, i64 5
   %772 = load i1, i1* %out.
-  %773 = icmp slt i64 5, %len.2
+  %773 = icmp slt i64 5, %N2
   %774 = bitcast i64* %shadow to i64*
   %safe.209 = or i1 %772, %773
   %select.ptr.210 = select i1 %safe.209, i64* %771, i64* %774
@@ -9216,7 +9212,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %778 = mul nsw i64 %770, %777
   %779 = getelementptr inbounds i64, i64* %1, i64 5
   %780 = load i1, i1* %out.
-  %781 = icmp slt i64 5, %len.1
+  %781 = icmp slt i64 5, %N1
   %782 = bitcast i64* %shadow to i64*
   %safe.211 = or i1 %780, %781
   %select.ptr.212 = select i1 %safe.211, i64* %779, i64* %782
@@ -9225,7 +9221,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %785 = sext i32 %784 to i64
   %786 = getelementptr inbounds i64, i64* %2, i64 4
   %787 = load i1, i1* %out.
-  %788 = icmp slt i64 4, %len.2
+  %788 = icmp slt i64 4, %N2
   %789 = bitcast i64* %shadow to i64*
   %safe.213 = or i1 %787, %788
   %select.ptr.214 = select i1 %safe.213, i64* %786, i64* %789
@@ -9236,7 +9232,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %794 = add nsw i64 %778, %793
   %795 = getelementptr inbounds i64, i64* %1, i64 3
   %796 = load i1, i1* %out.
-  %797 = icmp slt i64 3, %len.1
+  %797 = icmp slt i64 3, %N1
   %798 = bitcast i64* %shadow to i64*
   %safe.215 = or i1 %796, %797
   %select.ptr.216 = select i1 %safe.215, i64* %795, i64* %798
@@ -9245,7 +9241,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %801 = sext i32 %800 to i64
   %802 = getelementptr inbounds i64, i64* %2, i64 6
   %803 = load i1, i1* %out.
-  %804 = icmp slt i64 6, %len.2
+  %804 = icmp slt i64 6, %N2
   %805 = bitcast i64* %shadow to i64*
   %safe.217 = or i1 %803, %804
   %select.ptr.218 = select i1 %safe.217, i64* %802, i64* %805
@@ -9256,7 +9252,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %810 = add nsw i64 %794, %809
   %811 = getelementptr inbounds i64, i64* %1, i64 6
   %812 = load i1, i1* %out.
-  %813 = icmp slt i64 6, %len.1
+  %813 = icmp slt i64 6, %N1
   %814 = bitcast i64* %shadow to i64*
   %safe.219 = or i1 %812, %813
   %select.ptr.220 = select i1 %safe.219, i64* %811, i64* %814
@@ -9265,7 +9261,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %817 = sext i32 %816 to i64
   %818 = getelementptr inbounds i64, i64* %2, i64 3
   %819 = load i1, i1* %out.
-  %820 = icmp slt i64 3, %len.2
+  %820 = icmp slt i64 3, %N2
   %821 = bitcast i64* %shadow to i64*
   %safe.221 = or i1 %819, %820
   %select.ptr.222 = select i1 %safe.221, i64* %818, i64* %821
@@ -9276,7 +9272,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %826 = add nsw i64 %810, %825
   %827 = getelementptr inbounds i64, i64* %1, i64 2
   %828 = load i1, i1* %out.
-  %829 = icmp slt i64 2, %len.1
+  %829 = icmp slt i64 2, %N1
   %830 = bitcast i64* %shadow to i64*
   %safe.223 = or i1 %828, %829
   %select.ptr.224 = select i1 %safe.223, i64* %827, i64* %830
@@ -9285,7 +9281,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %833 = sext i32 %832 to i64
   %834 = getelementptr inbounds i64, i64* %2, i64 7
   %835 = load i1, i1* %out.
-  %836 = icmp slt i64 7, %len.2
+  %836 = icmp slt i64 7, %N2
   %837 = bitcast i64* %shadow to i64*
   %safe.225 = or i1 %835, %836
   %select.ptr.226 = select i1 %safe.225, i64* %834, i64* %837
@@ -9296,7 +9292,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %842 = add nsw i64 %826, %841
   %843 = getelementptr inbounds i64, i64* %1, i64 7
   %844 = load i1, i1* %out.
-  %845 = icmp slt i64 7, %len.1
+  %845 = icmp slt i64 7, %N1
   %846 = bitcast i64* %shadow to i64*
   %safe.227 = or i1 %844, %845
   %select.ptr.228 = select i1 %safe.227, i64* %843, i64* %846
@@ -9305,7 +9301,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %849 = sext i32 %848 to i64
   %850 = getelementptr inbounds i64, i64* %2, i64 2
   %851 = load i1, i1* %out.
-  %852 = icmp slt i64 2, %len.2
+  %852 = icmp slt i64 2, %N2
   %853 = bitcast i64* %shadow to i64*
   %safe.229 = or i1 %851, %852
   %select.ptr.230 = select i1 %safe.229, i64* %850, i64* %853
@@ -9316,7 +9312,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %858 = add nsw i64 %842, %857
   %859 = getelementptr inbounds i64, i64* %1, i64 1
   %860 = load i1, i1* %out.
-  %861 = icmp slt i64 1, %len.1
+  %861 = icmp slt i64 1, %N1
   %862 = bitcast i64* %shadow to i64*
   %safe.231 = or i1 %860, %861
   %select.ptr.232 = select i1 %safe.231, i64* %859, i64* %862
@@ -9325,7 +9321,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %865 = sext i32 %864 to i64
   %866 = getelementptr inbounds i64, i64* %2, i64 8
   %867 = load i1, i1* %out.
-  %868 = icmp slt i64 8, %len.2
+  %868 = icmp slt i64 8, %N2
   %869 = bitcast i64* %shadow to i64*
   %safe.233 = or i1 %867, %868
   %select.ptr.234 = select i1 %safe.233, i64* %866, i64* %869
@@ -9336,7 +9332,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %874 = add nsw i64 %858, %873
   %875 = getelementptr inbounds i64, i64* %1, i64 8
   %876 = load i1, i1* %out.
-  %877 = icmp slt i64 8, %len.1
+  %877 = icmp slt i64 8, %N1
   %878 = bitcast i64* %shadow to i64*
   %safe.235 = or i1 %876, %877
   %select.ptr.236 = select i1 %safe.235, i64* %875, i64* %878
@@ -9345,7 +9341,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %881 = sext i32 %880 to i64
   %882 = getelementptr inbounds i64, i64* %2, i64 1
   %883 = load i1, i1* %out.
-  %884 = icmp slt i64 1, %len.2
+  %884 = icmp slt i64 1, %N2
   %885 = bitcast i64* %shadow to i64*
   %safe.237 = or i1 %883, %884
   %select.ptr.238 = select i1 %safe.237, i64* %882, i64* %885
@@ -9356,7 +9352,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %890 = add nsw i64 %874, %889
   %891 = getelementptr inbounds i64, i64* %1, i64 0
   %892 = load i1, i1* %out.
-  %893 = icmp slt i64 0, %len.1
+  %893 = icmp slt i64 0, %N1
   %894 = bitcast i64* %shadow to i64*
   %safe.239 = or i1 %892, %893
   %select.ptr.240 = select i1 %safe.239, i64* %891, i64* %894
@@ -9365,7 +9361,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %897 = sext i32 %896 to i64
   %898 = getelementptr inbounds i64, i64* %2, i64 9
   %899 = load i1, i1* %out.
-  %900 = icmp slt i64 9, %len.2
+  %900 = icmp slt i64 9, %N2
   %901 = bitcast i64* %shadow to i64*
   %safe.241 = or i1 %899, %900
   %select.ptr.242 = select i1 %safe.241, i64* %898, i64* %901
@@ -9376,7 +9372,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %906 = add nsw i64 %890, %905
   %907 = getelementptr inbounds i64, i64* %1, i64 9
   %908 = load i1, i1* %out.
-  %909 = icmp slt i64 9, %len.1
+  %909 = icmp slt i64 9, %N1
   %910 = bitcast i64* %shadow to i64*
   %safe.243 = or i1 %908, %909
   %select.ptr.244 = select i1 %safe.243, i64* %907, i64* %910
@@ -9385,7 +9381,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %913 = sext i32 %912 to i64
   %914 = getelementptr inbounds i64, i64* %2, i64 0
   %915 = load i1, i1* %out.
-  %916 = icmp slt i64 0, %len.2
+  %916 = icmp slt i64 0, %N2
   %917 = bitcast i64* %shadow to i64*
   %safe.245 = or i1 %915, %916
   %select.ptr.246 = select i1 %safe.245, i64* %914, i64* %917
@@ -9396,7 +9392,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %922 = add nsw i64 %906, %921
   %923 = getelementptr inbounds i64, i64* %0, i64 9
   %924 = load i1, i1* %out.
-  %925 = icmp slt i64 9, %len.
+  %925 = icmp slt i64 9, %N
   %926 = bitcast i64* %shadow to i64*
   %safe.247 = or i1 %924, %925
   %select.ptr.248 = select i1 %safe.247, i64* %923, i64* %926
@@ -9405,7 +9401,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   store i64 %select.val.249, i64* %select.ptr.248, align 8
   %928 = getelementptr inbounds i64, i64* %1, i64 5
   %929 = load i1, i1* %out.
-  %930 = icmp slt i64 5, %len.1
+  %930 = icmp slt i64 5, %N1
   %931 = bitcast i64* %shadow to i64*
   %safe.250 = or i1 %929, %930
   %select.ptr.251 = select i1 %safe.250, i64* %928, i64* %931
@@ -9414,7 +9410,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %934 = sext i32 %933 to i64
   %935 = getelementptr inbounds i64, i64* %2, i64 5
   %936 = load i1, i1* %out.
-  %937 = icmp slt i64 5, %len.2
+  %937 = icmp slt i64 5, %N2
   %938 = bitcast i64* %shadow to i64*
   %safe.252 = or i1 %936, %937
   %select.ptr.253 = select i1 %safe.252, i64* %935, i64* %938
@@ -9424,7 +9420,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %942 = mul nsw i64 %934, %941
   %943 = getelementptr inbounds i64, i64* %1, i64 3
   %944 = load i1, i1* %out.
-  %945 = icmp slt i64 3, %len.1
+  %945 = icmp slt i64 3, %N1
   %946 = bitcast i64* %shadow to i64*
   %safe.254 = or i1 %944, %945
   %select.ptr.255 = select i1 %safe.254, i64* %943, i64* %946
@@ -9433,7 +9429,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %949 = sext i32 %948 to i64
   %950 = getelementptr inbounds i64, i64* %2, i64 7
   %951 = load i1, i1* %out.
-  %952 = icmp slt i64 7, %len.2
+  %952 = icmp slt i64 7, %N2
   %953 = bitcast i64* %shadow to i64*
   %safe.256 = or i1 %951, %952
   %select.ptr.257 = select i1 %safe.256, i64* %950, i64* %953
@@ -9444,7 +9440,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %958 = add nsw i64 %942, %957
   %959 = getelementptr inbounds i64, i64* %1, i64 7
   %960 = load i1, i1* %out.
-  %961 = icmp slt i64 7, %len.1
+  %961 = icmp slt i64 7, %N1
   %962 = bitcast i64* %shadow to i64*
   %safe.258 = or i1 %960, %961
   %select.ptr.259 = select i1 %safe.258, i64* %959, i64* %962
@@ -9453,7 +9449,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %965 = sext i32 %964 to i64
   %966 = getelementptr inbounds i64, i64* %2, i64 3
   %967 = load i1, i1* %out.
-  %968 = icmp slt i64 3, %len.2
+  %968 = icmp slt i64 3, %N2
   %969 = bitcast i64* %shadow to i64*
   %safe.260 = or i1 %967, %968
   %select.ptr.261 = select i1 %safe.260, i64* %966, i64* %969
@@ -9464,7 +9460,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %974 = add nsw i64 %958, %973
   %975 = getelementptr inbounds i64, i64* %1, i64 1
   %976 = load i1, i1* %out.
-  %977 = icmp slt i64 1, %len.1
+  %977 = icmp slt i64 1, %N1
   %978 = bitcast i64* %shadow to i64*
   %safe.262 = or i1 %976, %977
   %select.ptr.263 = select i1 %safe.262, i64* %975, i64* %978
@@ -9473,7 +9469,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %981 = sext i32 %980 to i64
   %982 = getelementptr inbounds i64, i64* %2, i64 9
   %983 = load i1, i1* %out.
-  %984 = icmp slt i64 9, %len.2
+  %984 = icmp slt i64 9, %N2
   %985 = bitcast i64* %shadow to i64*
   %safe.264 = or i1 %983, %984
   %select.ptr.265 = select i1 %safe.264, i64* %982, i64* %985
@@ -9484,7 +9480,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %990 = add nsw i64 %974, %989
   %991 = getelementptr inbounds i64, i64* %1, i64 9
   %992 = load i1, i1* %out.
-  %993 = icmp slt i64 9, %len.1
+  %993 = icmp slt i64 9, %N1
   %994 = bitcast i64* %shadow to i64*
   %safe.266 = or i1 %992, %993
   %select.ptr.267 = select i1 %safe.266, i64* %991, i64* %994
@@ -9493,7 +9489,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %997 = sext i32 %996 to i64
   %998 = getelementptr inbounds i64, i64* %2, i64 1
   %999 = load i1, i1* %out.
-  %1000 = icmp slt i64 1, %len.2
+  %1000 = icmp slt i64 1, %N2
   %1001 = bitcast i64* %shadow to i64*
   %safe.268 = or i1 %999, %1000
   %select.ptr.269 = select i1 %safe.268, i64* %998, i64* %1001
@@ -9505,7 +9501,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1007 = mul nsw i64 2, %1006
   %1008 = getelementptr inbounds i64, i64* %1, i64 4
   %1009 = load i1, i1* %out.
-  %1010 = icmp slt i64 4, %len.1
+  %1010 = icmp slt i64 4, %N1
   %1011 = bitcast i64* %shadow to i64*
   %safe.270 = or i1 %1009, %1010
   %select.ptr.271 = select i1 %safe.270, i64* %1008, i64* %1011
@@ -9514,7 +9510,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1014 = sext i32 %1013 to i64
   %1015 = getelementptr inbounds i64, i64* %2, i64 6
   %1016 = load i1, i1* %out.
-  %1017 = icmp slt i64 6, %len.2
+  %1017 = icmp slt i64 6, %N2
   %1018 = bitcast i64* %shadow to i64*
   %safe.272 = or i1 %1016, %1017
   %select.ptr.273 = select i1 %safe.272, i64* %1015, i64* %1018
@@ -9525,7 +9521,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1023 = add nsw i64 %1007, %1022
   %1024 = getelementptr inbounds i64, i64* %1, i64 6
   %1025 = load i1, i1* %out.
-  %1026 = icmp slt i64 6, %len.1
+  %1026 = icmp slt i64 6, %N1
   %1027 = bitcast i64* %shadow to i64*
   %safe.274 = or i1 %1025, %1026
   %select.ptr.275 = select i1 %safe.274, i64* %1024, i64* %1027
@@ -9534,7 +9530,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1030 = sext i32 %1029 to i64
   %1031 = getelementptr inbounds i64, i64* %2, i64 4
   %1032 = load i1, i1* %out.
-  %1033 = icmp slt i64 4, %len.2
+  %1033 = icmp slt i64 4, %N2
   %1034 = bitcast i64* %shadow to i64*
   %safe.276 = or i1 %1032, %1033
   %select.ptr.277 = select i1 %safe.276, i64* %1031, i64* %1034
@@ -9545,7 +9541,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1039 = add nsw i64 %1023, %1038
   %1040 = getelementptr inbounds i64, i64* %1, i64 2
   %1041 = load i1, i1* %out.
-  %1042 = icmp slt i64 2, %len.1
+  %1042 = icmp slt i64 2, %N1
   %1043 = bitcast i64* %shadow to i64*
   %safe.278 = or i1 %1041, %1042
   %select.ptr.279 = select i1 %safe.278, i64* %1040, i64* %1043
@@ -9554,7 +9550,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1046 = sext i32 %1045 to i64
   %1047 = getelementptr inbounds i64, i64* %2, i64 8
   %1048 = load i1, i1* %out.
-  %1049 = icmp slt i64 8, %len.2
+  %1049 = icmp slt i64 8, %N2
   %1050 = bitcast i64* %shadow to i64*
   %safe.280 = or i1 %1048, %1049
   %select.ptr.281 = select i1 %safe.280, i64* %1047, i64* %1050
@@ -9565,7 +9561,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1055 = add nsw i64 %1039, %1054
   %1056 = getelementptr inbounds i64, i64* %1, i64 8
   %1057 = load i1, i1* %out.
-  %1058 = icmp slt i64 8, %len.1
+  %1058 = icmp slt i64 8, %N1
   %1059 = bitcast i64* %shadow to i64*
   %safe.282 = or i1 %1057, %1058
   %select.ptr.283 = select i1 %safe.282, i64* %1056, i64* %1059
@@ -9574,7 +9570,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1062 = sext i32 %1061 to i64
   %1063 = getelementptr inbounds i64, i64* %2, i64 2
   %1064 = load i1, i1* %out.
-  %1065 = icmp slt i64 2, %len.2
+  %1065 = icmp slt i64 2, %N2
   %1066 = bitcast i64* %shadow to i64*
   %safe.284 = or i1 %1064, %1065
   %select.ptr.285 = select i1 %safe.284, i64* %1063, i64* %1066
@@ -9585,7 +9581,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1071 = add nsw i64 %1055, %1070
   %1072 = getelementptr inbounds i64, i64* %0, i64 10
   %1073 = load i1, i1* %out.
-  %1074 = icmp slt i64 10, %len.
+  %1074 = icmp slt i64 10, %N
   %1075 = bitcast i64* %shadow to i64*
   %safe.286 = or i1 %1073, %1074
   %select.ptr.287 = select i1 %safe.286, i64* %1072, i64* %1075
@@ -9594,7 +9590,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   store i64 %select.val.288, i64* %select.ptr.287, align 8
   %1077 = getelementptr inbounds i64, i64* %1, i64 5
   %1078 = load i1, i1* %out.
-  %1079 = icmp slt i64 5, %len.1
+  %1079 = icmp slt i64 5, %N1
   %1080 = bitcast i64* %shadow to i64*
   %safe.289 = or i1 %1078, %1079
   %select.ptr.290 = select i1 %safe.289, i64* %1077, i64* %1080
@@ -9603,7 +9599,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1083 = sext i32 %1082 to i64
   %1084 = getelementptr inbounds i64, i64* %2, i64 6
   %1085 = load i1, i1* %out.
-  %1086 = icmp slt i64 6, %len.2
+  %1086 = icmp slt i64 6, %N2
   %1087 = bitcast i64* %shadow to i64*
   %safe.291 = or i1 %1085, %1086
   %select.ptr.292 = select i1 %safe.291, i64* %1084, i64* %1087
@@ -9613,7 +9609,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1091 = mul nsw i64 %1083, %1090
   %1092 = getelementptr inbounds i64, i64* %1, i64 6
   %1093 = load i1, i1* %out.
-  %1094 = icmp slt i64 6, %len.1
+  %1094 = icmp slt i64 6, %N1
   %1095 = bitcast i64* %shadow to i64*
   %safe.293 = or i1 %1093, %1094
   %select.ptr.294 = select i1 %safe.293, i64* %1092, i64* %1095
@@ -9622,7 +9618,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1098 = sext i32 %1097 to i64
   %1099 = getelementptr inbounds i64, i64* %2, i64 5
   %1100 = load i1, i1* %out.
-  %1101 = icmp slt i64 5, %len.2
+  %1101 = icmp slt i64 5, %N2
   %1102 = bitcast i64* %shadow to i64*
   %safe.295 = or i1 %1100, %1101
   %select.ptr.296 = select i1 %safe.295, i64* %1099, i64* %1102
@@ -9633,7 +9629,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1107 = add nsw i64 %1091, %1106
   %1108 = getelementptr inbounds i64, i64* %1, i64 4
   %1109 = load i1, i1* %out.
-  %1110 = icmp slt i64 4, %len.1
+  %1110 = icmp slt i64 4, %N1
   %1111 = bitcast i64* %shadow to i64*
   %safe.297 = or i1 %1109, %1110
   %select.ptr.298 = select i1 %safe.297, i64* %1108, i64* %1111
@@ -9642,7 +9638,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1114 = sext i32 %1113 to i64
   %1115 = getelementptr inbounds i64, i64* %2, i64 7
   %1116 = load i1, i1* %out.
-  %1117 = icmp slt i64 7, %len.2
+  %1117 = icmp slt i64 7, %N2
   %1118 = bitcast i64* %shadow to i64*
   %safe.299 = or i1 %1116, %1117
   %select.ptr.300 = select i1 %safe.299, i64* %1115, i64* %1118
@@ -9653,7 +9649,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1123 = add nsw i64 %1107, %1122
   %1124 = getelementptr inbounds i64, i64* %1, i64 7
   %1125 = load i1, i1* %out.
-  %1126 = icmp slt i64 7, %len.1
+  %1126 = icmp slt i64 7, %N1
   %1127 = bitcast i64* %shadow to i64*
   %safe.301 = or i1 %1125, %1126
   %select.ptr.302 = select i1 %safe.301, i64* %1124, i64* %1127
@@ -9662,7 +9658,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1130 = sext i32 %1129 to i64
   %1131 = getelementptr inbounds i64, i64* %2, i64 4
   %1132 = load i1, i1* %out.
-  %1133 = icmp slt i64 4, %len.2
+  %1133 = icmp slt i64 4, %N2
   %1134 = bitcast i64* %shadow to i64*
   %safe.303 = or i1 %1132, %1133
   %select.ptr.304 = select i1 %safe.303, i64* %1131, i64* %1134
@@ -9673,7 +9669,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1139 = add nsw i64 %1123, %1138
   %1140 = getelementptr inbounds i64, i64* %1, i64 3
   %1141 = load i1, i1* %out.
-  %1142 = icmp slt i64 3, %len.1
+  %1142 = icmp slt i64 3, %N1
   %1143 = bitcast i64* %shadow to i64*
   %safe.305 = or i1 %1141, %1142
   %select.ptr.306 = select i1 %safe.305, i64* %1140, i64* %1143
@@ -9682,7 +9678,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1146 = sext i32 %1145 to i64
   %1147 = getelementptr inbounds i64, i64* %2, i64 8
   %1148 = load i1, i1* %out.
-  %1149 = icmp slt i64 8, %len.2
+  %1149 = icmp slt i64 8, %N2
   %1150 = bitcast i64* %shadow to i64*
   %safe.307 = or i1 %1148, %1149
   %select.ptr.308 = select i1 %safe.307, i64* %1147, i64* %1150
@@ -9693,7 +9689,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1155 = add nsw i64 %1139, %1154
   %1156 = getelementptr inbounds i64, i64* %1, i64 8
   %1157 = load i1, i1* %out.
-  %1158 = icmp slt i64 8, %len.1
+  %1158 = icmp slt i64 8, %N1
   %1159 = bitcast i64* %shadow to i64*
   %safe.309 = or i1 %1157, %1158
   %select.ptr.310 = select i1 %safe.309, i64* %1156, i64* %1159
@@ -9702,7 +9698,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1162 = sext i32 %1161 to i64
   %1163 = getelementptr inbounds i64, i64* %2, i64 3
   %1164 = load i1, i1* %out.
-  %1165 = icmp slt i64 3, %len.2
+  %1165 = icmp slt i64 3, %N2
   %1166 = bitcast i64* %shadow to i64*
   %safe.311 = or i1 %1164, %1165
   %select.ptr.312 = select i1 %safe.311, i64* %1163, i64* %1166
@@ -9713,7 +9709,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1171 = add nsw i64 %1155, %1170
   %1172 = getelementptr inbounds i64, i64* %1, i64 2
   %1173 = load i1, i1* %out.
-  %1174 = icmp slt i64 2, %len.1
+  %1174 = icmp slt i64 2, %N1
   %1175 = bitcast i64* %shadow to i64*
   %safe.313 = or i1 %1173, %1174
   %select.ptr.314 = select i1 %safe.313, i64* %1172, i64* %1175
@@ -9722,7 +9718,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1178 = sext i32 %1177 to i64
   %1179 = getelementptr inbounds i64, i64* %2, i64 9
   %1180 = load i1, i1* %out.
-  %1181 = icmp slt i64 9, %len.2
+  %1181 = icmp slt i64 9, %N2
   %1182 = bitcast i64* %shadow to i64*
   %safe.315 = or i1 %1180, %1181
   %select.ptr.316 = select i1 %safe.315, i64* %1179, i64* %1182
@@ -9733,7 +9729,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1187 = add nsw i64 %1171, %1186
   %1188 = getelementptr inbounds i64, i64* %1, i64 9
   %1189 = load i1, i1* %out.
-  %1190 = icmp slt i64 9, %len.1
+  %1190 = icmp slt i64 9, %N1
   %1191 = bitcast i64* %shadow to i64*
   %safe.317 = or i1 %1189, %1190
   %select.ptr.318 = select i1 %safe.317, i64* %1188, i64* %1191
@@ -9742,7 +9738,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1194 = sext i32 %1193 to i64
   %1195 = getelementptr inbounds i64, i64* %2, i64 2
   %1196 = load i1, i1* %out.
-  %1197 = icmp slt i64 2, %len.2
+  %1197 = icmp slt i64 2, %N2
   %1198 = bitcast i64* %shadow to i64*
   %safe.319 = or i1 %1196, %1197
   %select.ptr.320 = select i1 %safe.319, i64* %1195, i64* %1198
@@ -9753,7 +9749,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1203 = add nsw i64 %1187, %1202
   %1204 = getelementptr inbounds i64, i64* %0, i64 11
   %1205 = load i1, i1* %out.
-  %1206 = icmp slt i64 11, %len.
+  %1206 = icmp slt i64 11, %N
   %1207 = bitcast i64* %shadow to i64*
   %safe.321 = or i1 %1205, %1206
   %select.ptr.322 = select i1 %safe.321, i64* %1204, i64* %1207
@@ -9762,7 +9758,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   store i64 %select.val.323, i64* %select.ptr.322, align 8
   %1209 = getelementptr inbounds i64, i64* %1, i64 6
   %1210 = load i1, i1* %out.
-  %1211 = icmp slt i64 6, %len.1
+  %1211 = icmp slt i64 6, %N1
   %1212 = bitcast i64* %shadow to i64*
   %safe.324 = or i1 %1210, %1211
   %select.ptr.325 = select i1 %safe.324, i64* %1209, i64* %1212
@@ -9771,7 +9767,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1215 = sext i32 %1214 to i64
   %1216 = getelementptr inbounds i64, i64* %2, i64 6
   %1217 = load i1, i1* %out.
-  %1218 = icmp slt i64 6, %len.2
+  %1218 = icmp slt i64 6, %N2
   %1219 = bitcast i64* %shadow to i64*
   %safe.326 = or i1 %1217, %1218
   %select.ptr.327 = select i1 %safe.326, i64* %1216, i64* %1219
@@ -9781,7 +9777,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1223 = mul nsw i64 %1215, %1222
   %1224 = getelementptr inbounds i64, i64* %1, i64 5
   %1225 = load i1, i1* %out.
-  %1226 = icmp slt i64 5, %len.1
+  %1226 = icmp slt i64 5, %N1
   %1227 = bitcast i64* %shadow to i64*
   %safe.328 = or i1 %1225, %1226
   %select.ptr.329 = select i1 %safe.328, i64* %1224, i64* %1227
@@ -9790,7 +9786,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1230 = sext i32 %1229 to i64
   %1231 = getelementptr inbounds i64, i64* %2, i64 7
   %1232 = load i1, i1* %out.
-  %1233 = icmp slt i64 7, %len.2
+  %1233 = icmp slt i64 7, %N2
   %1234 = bitcast i64* %shadow to i64*
   %safe.330 = or i1 %1232, %1233
   %select.ptr.331 = select i1 %safe.330, i64* %1231, i64* %1234
@@ -9800,7 +9796,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1238 = mul nsw i64 %1230, %1237
   %1239 = getelementptr inbounds i64, i64* %1, i64 7
   %1240 = load i1, i1* %out.
-  %1241 = icmp slt i64 7, %len.1
+  %1241 = icmp slt i64 7, %N1
   %1242 = bitcast i64* %shadow to i64*
   %safe.332 = or i1 %1240, %1241
   %select.ptr.333 = select i1 %safe.332, i64* %1239, i64* %1242
@@ -9809,7 +9805,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1245 = sext i32 %1244 to i64
   %1246 = getelementptr inbounds i64, i64* %2, i64 5
   %1247 = load i1, i1* %out.
-  %1248 = icmp slt i64 5, %len.2
+  %1248 = icmp slt i64 5, %N2
   %1249 = bitcast i64* %shadow to i64*
   %safe.334 = or i1 %1247, %1248
   %select.ptr.335 = select i1 %safe.334, i64* %1246, i64* %1249
@@ -9820,7 +9816,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1254 = add nsw i64 %1238, %1253
   %1255 = getelementptr inbounds i64, i64* %1, i64 3
   %1256 = load i1, i1* %out.
-  %1257 = icmp slt i64 3, %len.1
+  %1257 = icmp slt i64 3, %N1
   %1258 = bitcast i64* %shadow to i64*
   %safe.336 = or i1 %1256, %1257
   %select.ptr.337 = select i1 %safe.336, i64* %1255, i64* %1258
@@ -9829,7 +9825,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1261 = sext i32 %1260 to i64
   %1262 = getelementptr inbounds i64, i64* %2, i64 9
   %1263 = load i1, i1* %out.
-  %1264 = icmp slt i64 9, %len.2
+  %1264 = icmp slt i64 9, %N2
   %1265 = bitcast i64* %shadow to i64*
   %safe.338 = or i1 %1263, %1264
   %select.ptr.339 = select i1 %safe.338, i64* %1262, i64* %1265
@@ -9840,7 +9836,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1270 = add nsw i64 %1254, %1269
   %1271 = getelementptr inbounds i64, i64* %1, i64 9
   %1272 = load i1, i1* %out.
-  %1273 = icmp slt i64 9, %len.1
+  %1273 = icmp slt i64 9, %N1
   %1274 = bitcast i64* %shadow to i64*
   %safe.340 = or i1 %1272, %1273
   %select.ptr.341 = select i1 %safe.340, i64* %1271, i64* %1274
@@ -9849,7 +9845,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1277 = sext i32 %1276 to i64
   %1278 = getelementptr inbounds i64, i64* %2, i64 3
   %1279 = load i1, i1* %out.
-  %1280 = icmp slt i64 3, %len.2
+  %1280 = icmp slt i64 3, %N2
   %1281 = bitcast i64* %shadow to i64*
   %safe.342 = or i1 %1279, %1280
   %select.ptr.343 = select i1 %safe.342, i64* %1278, i64* %1281
@@ -9862,7 +9858,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1288 = add nsw i64 %1223, %1287
   %1289 = getelementptr inbounds i64, i64* %1, i64 4
   %1290 = load i1, i1* %out.
-  %1291 = icmp slt i64 4, %len.1
+  %1291 = icmp slt i64 4, %N1
   %1292 = bitcast i64* %shadow to i64*
   %safe.344 = or i1 %1290, %1291
   %select.ptr.345 = select i1 %safe.344, i64* %1289, i64* %1292
@@ -9871,7 +9867,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1295 = sext i32 %1294 to i64
   %1296 = getelementptr inbounds i64, i64* %2, i64 8
   %1297 = load i1, i1* %out.
-  %1298 = icmp slt i64 8, %len.2
+  %1298 = icmp slt i64 8, %N2
   %1299 = bitcast i64* %shadow to i64*
   %safe.346 = or i1 %1297, %1298
   %select.ptr.347 = select i1 %safe.346, i64* %1296, i64* %1299
@@ -9882,7 +9878,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1304 = add nsw i64 %1288, %1303
   %1305 = getelementptr inbounds i64, i64* %1, i64 8
   %1306 = load i1, i1* %out.
-  %1307 = icmp slt i64 8, %len.1
+  %1307 = icmp slt i64 8, %N1
   %1308 = bitcast i64* %shadow to i64*
   %safe.348 = or i1 %1306, %1307
   %select.ptr.349 = select i1 %safe.348, i64* %1305, i64* %1308
@@ -9891,7 +9887,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1311 = sext i32 %1310 to i64
   %1312 = getelementptr inbounds i64, i64* %2, i64 4
   %1313 = load i1, i1* %out.
-  %1314 = icmp slt i64 4, %len.2
+  %1314 = icmp slt i64 4, %N2
   %1315 = bitcast i64* %shadow to i64*
   %safe.350 = or i1 %1313, %1314
   %select.ptr.351 = select i1 %safe.350, i64* %1312, i64* %1315
@@ -9902,7 +9898,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1320 = add nsw i64 %1304, %1319
   %1321 = getelementptr inbounds i64, i64* %0, i64 12
   %1322 = load i1, i1* %out.
-  %1323 = icmp slt i64 12, %len.
+  %1323 = icmp slt i64 12, %N
   %1324 = bitcast i64* %shadow to i64*
   %safe.352 = or i1 %1322, %1323
   %select.ptr.353 = select i1 %safe.352, i64* %1321, i64* %1324
@@ -9911,7 +9907,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   store i64 %select.val.354, i64* %select.ptr.353, align 8
   %1326 = getelementptr inbounds i64, i64* %1, i64 6
   %1327 = load i1, i1* %out.
-  %1328 = icmp slt i64 6, %len.1
+  %1328 = icmp slt i64 6, %N1
   %1329 = bitcast i64* %shadow to i64*
   %safe.355 = or i1 %1327, %1328
   %select.ptr.356 = select i1 %safe.355, i64* %1326, i64* %1329
@@ -9920,7 +9916,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1332 = sext i32 %1331 to i64
   %1333 = getelementptr inbounds i64, i64* %2, i64 7
   %1334 = load i1, i1* %out.
-  %1335 = icmp slt i64 7, %len.2
+  %1335 = icmp slt i64 7, %N2
   %1336 = bitcast i64* %shadow to i64*
   %safe.357 = or i1 %1334, %1335
   %select.ptr.358 = select i1 %safe.357, i64* %1333, i64* %1336
@@ -9930,7 +9926,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1340 = mul nsw i64 %1332, %1339
   %1341 = getelementptr inbounds i64, i64* %1, i64 7
   %1342 = load i1, i1* %out.
-  %1343 = icmp slt i64 7, %len.1
+  %1343 = icmp slt i64 7, %N1
   %1344 = bitcast i64* %shadow to i64*
   %safe.359 = or i1 %1342, %1343
   %select.ptr.360 = select i1 %safe.359, i64* %1341, i64* %1344
@@ -9939,7 +9935,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1347 = sext i32 %1346 to i64
   %1348 = getelementptr inbounds i64, i64* %2, i64 6
   %1349 = load i1, i1* %out.
-  %1350 = icmp slt i64 6, %len.2
+  %1350 = icmp slt i64 6, %N2
   %1351 = bitcast i64* %shadow to i64*
   %safe.361 = or i1 %1349, %1350
   %select.ptr.362 = select i1 %safe.361, i64* %1348, i64* %1351
@@ -9950,7 +9946,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1356 = add nsw i64 %1340, %1355
   %1357 = getelementptr inbounds i64, i64* %1, i64 5
   %1358 = load i1, i1* %out.
-  %1359 = icmp slt i64 5, %len.1
+  %1359 = icmp slt i64 5, %N1
   %1360 = bitcast i64* %shadow to i64*
   %safe.363 = or i1 %1358, %1359
   %select.ptr.364 = select i1 %safe.363, i64* %1357, i64* %1360
@@ -9959,7 +9955,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1363 = sext i32 %1362 to i64
   %1364 = getelementptr inbounds i64, i64* %2, i64 8
   %1365 = load i1, i1* %out.
-  %1366 = icmp slt i64 8, %len.2
+  %1366 = icmp slt i64 8, %N2
   %1367 = bitcast i64* %shadow to i64*
   %safe.365 = or i1 %1365, %1366
   %select.ptr.366 = select i1 %safe.365, i64* %1364, i64* %1367
@@ -9970,7 +9966,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1372 = add nsw i64 %1356, %1371
   %1373 = getelementptr inbounds i64, i64* %1, i64 8
   %1374 = load i1, i1* %out.
-  %1375 = icmp slt i64 8, %len.1
+  %1375 = icmp slt i64 8, %N1
   %1376 = bitcast i64* %shadow to i64*
   %safe.367 = or i1 %1374, %1375
   %select.ptr.368 = select i1 %safe.367, i64* %1373, i64* %1376
@@ -9979,7 +9975,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1379 = sext i32 %1378 to i64
   %1380 = getelementptr inbounds i64, i64* %2, i64 5
   %1381 = load i1, i1* %out.
-  %1382 = icmp slt i64 5, %len.2
+  %1382 = icmp slt i64 5, %N2
   %1383 = bitcast i64* %shadow to i64*
   %safe.369 = or i1 %1381, %1382
   %select.ptr.370 = select i1 %safe.369, i64* %1380, i64* %1383
@@ -9990,7 +9986,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1388 = add nsw i64 %1372, %1387
   %1389 = getelementptr inbounds i64, i64* %1, i64 4
   %1390 = load i1, i1* %out.
-  %1391 = icmp slt i64 4, %len.1
+  %1391 = icmp slt i64 4, %N1
   %1392 = bitcast i64* %shadow to i64*
   %safe.371 = or i1 %1390, %1391
   %select.ptr.372 = select i1 %safe.371, i64* %1389, i64* %1392
@@ -9999,7 +9995,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1395 = sext i32 %1394 to i64
   %1396 = getelementptr inbounds i64, i64* %2, i64 9
   %1397 = load i1, i1* %out.
-  %1398 = icmp slt i64 9, %len.2
+  %1398 = icmp slt i64 9, %N2
   %1399 = bitcast i64* %shadow to i64*
   %safe.373 = or i1 %1397, %1398
   %select.ptr.374 = select i1 %safe.373, i64* %1396, i64* %1399
@@ -10010,7 +10006,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1404 = add nsw i64 %1388, %1403
   %1405 = getelementptr inbounds i64, i64* %1, i64 9
   %1406 = load i1, i1* %out.
-  %1407 = icmp slt i64 9, %len.1
+  %1407 = icmp slt i64 9, %N1
   %1408 = bitcast i64* %shadow to i64*
   %safe.375 = or i1 %1406, %1407
   %select.ptr.376 = select i1 %safe.375, i64* %1405, i64* %1408
@@ -10019,7 +10015,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1411 = sext i32 %1410 to i64
   %1412 = getelementptr inbounds i64, i64* %2, i64 4
   %1413 = load i1, i1* %out.
-  %1414 = icmp slt i64 4, %len.2
+  %1414 = icmp slt i64 4, %N2
   %1415 = bitcast i64* %shadow to i64*
   %safe.377 = or i1 %1413, %1414
   %select.ptr.378 = select i1 %safe.377, i64* %1412, i64* %1415
@@ -10030,7 +10026,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1420 = add nsw i64 %1404, %1419
   %1421 = getelementptr inbounds i64, i64* %0, i64 13
   %1422 = load i1, i1* %out.
-  %1423 = icmp slt i64 13, %len.
+  %1423 = icmp slt i64 13, %N
   %1424 = bitcast i64* %shadow to i64*
   %safe.379 = or i1 %1422, %1423
   %select.ptr.380 = select i1 %safe.379, i64* %1421, i64* %1424
@@ -10039,7 +10035,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   store i64 %select.val.381, i64* %select.ptr.380, align 8
   %1426 = getelementptr inbounds i64, i64* %1, i64 7
   %1427 = load i1, i1* %out.
-  %1428 = icmp slt i64 7, %len.1
+  %1428 = icmp slt i64 7, %N1
   %1429 = bitcast i64* %shadow to i64*
   %safe.382 = or i1 %1427, %1428
   %select.ptr.383 = select i1 %safe.382, i64* %1426, i64* %1429
@@ -10048,7 +10044,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1432 = sext i32 %1431 to i64
   %1433 = getelementptr inbounds i64, i64* %2, i64 7
   %1434 = load i1, i1* %out.
-  %1435 = icmp slt i64 7, %len.2
+  %1435 = icmp slt i64 7, %N2
   %1436 = bitcast i64* %shadow to i64*
   %safe.384 = or i1 %1434, %1435
   %select.ptr.385 = select i1 %safe.384, i64* %1433, i64* %1436
@@ -10058,7 +10054,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1440 = mul nsw i64 %1432, %1439
   %1441 = getelementptr inbounds i64, i64* %1, i64 5
   %1442 = load i1, i1* %out.
-  %1443 = icmp slt i64 5, %len.1
+  %1443 = icmp slt i64 5, %N1
   %1444 = bitcast i64* %shadow to i64*
   %safe.386 = or i1 %1442, %1443
   %select.ptr.387 = select i1 %safe.386, i64* %1441, i64* %1444
@@ -10067,7 +10063,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1447 = sext i32 %1446 to i64
   %1448 = getelementptr inbounds i64, i64* %2, i64 9
   %1449 = load i1, i1* %out.
-  %1450 = icmp slt i64 9, %len.2
+  %1450 = icmp slt i64 9, %N2
   %1451 = bitcast i64* %shadow to i64*
   %safe.388 = or i1 %1449, %1450
   %select.ptr.389 = select i1 %safe.388, i64* %1448, i64* %1451
@@ -10078,7 +10074,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1456 = add nsw i64 %1440, %1455
   %1457 = getelementptr inbounds i64, i64* %1, i64 9
   %1458 = load i1, i1* %out.
-  %1459 = icmp slt i64 9, %len.1
+  %1459 = icmp slt i64 9, %N1
   %1460 = bitcast i64* %shadow to i64*
   %safe.390 = or i1 %1458, %1459
   %select.ptr.391 = select i1 %safe.390, i64* %1457, i64* %1460
@@ -10087,7 +10083,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1463 = sext i32 %1462 to i64
   %1464 = getelementptr inbounds i64, i64* %2, i64 5
   %1465 = load i1, i1* %out.
-  %1466 = icmp slt i64 5, %len.2
+  %1466 = icmp slt i64 5, %N2
   %1467 = bitcast i64* %shadow to i64*
   %safe.392 = or i1 %1465, %1466
   %select.ptr.393 = select i1 %safe.392, i64* %1464, i64* %1467
@@ -10099,7 +10095,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1473 = mul nsw i64 2, %1472
   %1474 = getelementptr inbounds i64, i64* %1, i64 6
   %1475 = load i1, i1* %out.
-  %1476 = icmp slt i64 6, %len.1
+  %1476 = icmp slt i64 6, %N1
   %1477 = bitcast i64* %shadow to i64*
   %safe.394 = or i1 %1475, %1476
   %select.ptr.395 = select i1 %safe.394, i64* %1474, i64* %1477
@@ -10108,7 +10104,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1480 = sext i32 %1479 to i64
   %1481 = getelementptr inbounds i64, i64* %2, i64 8
   %1482 = load i1, i1* %out.
-  %1483 = icmp slt i64 8, %len.2
+  %1483 = icmp slt i64 8, %N2
   %1484 = bitcast i64* %shadow to i64*
   %safe.396 = or i1 %1482, %1483
   %select.ptr.397 = select i1 %safe.396, i64* %1481, i64* %1484
@@ -10119,7 +10115,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1489 = add nsw i64 %1473, %1488
   %1490 = getelementptr inbounds i64, i64* %1, i64 8
   %1491 = load i1, i1* %out.
-  %1492 = icmp slt i64 8, %len.1
+  %1492 = icmp slt i64 8, %N1
   %1493 = bitcast i64* %shadow to i64*
   %safe.398 = or i1 %1491, %1492
   %select.ptr.399 = select i1 %safe.398, i64* %1490, i64* %1493
@@ -10128,7 +10124,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1496 = sext i32 %1495 to i64
   %1497 = getelementptr inbounds i64, i64* %2, i64 6
   %1498 = load i1, i1* %out.
-  %1499 = icmp slt i64 6, %len.2
+  %1499 = icmp slt i64 6, %N2
   %1500 = bitcast i64* %shadow to i64*
   %safe.400 = or i1 %1498, %1499
   %select.ptr.401 = select i1 %safe.400, i64* %1497, i64* %1500
@@ -10139,7 +10135,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1505 = add nsw i64 %1489, %1504
   %1506 = getelementptr inbounds i64, i64* %0, i64 14
   %1507 = load i1, i1* %out.
-  %1508 = icmp slt i64 14, %len.
+  %1508 = icmp slt i64 14, %N
   %1509 = bitcast i64* %shadow to i64*
   %safe.402 = or i1 %1507, %1508
   %select.ptr.403 = select i1 %safe.402, i64* %1506, i64* %1509
@@ -10148,7 +10144,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   store i64 %select.val.404, i64* %select.ptr.403, align 8
   %1511 = getelementptr inbounds i64, i64* %1, i64 7
   %1512 = load i1, i1* %out.
-  %1513 = icmp slt i64 7, %len.1
+  %1513 = icmp slt i64 7, %N1
   %1514 = bitcast i64* %shadow to i64*
   %safe.405 = or i1 %1512, %1513
   %select.ptr.406 = select i1 %safe.405, i64* %1511, i64* %1514
@@ -10157,7 +10153,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1517 = sext i32 %1516 to i64
   %1518 = getelementptr inbounds i64, i64* %2, i64 8
   %1519 = load i1, i1* %out.
-  %1520 = icmp slt i64 8, %len.2
+  %1520 = icmp slt i64 8, %N2
   %1521 = bitcast i64* %shadow to i64*
   %safe.407 = or i1 %1519, %1520
   %select.ptr.408 = select i1 %safe.407, i64* %1518, i64* %1521
@@ -10167,7 +10163,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1525 = mul nsw i64 %1517, %1524
   %1526 = getelementptr inbounds i64, i64* %1, i64 8
   %1527 = load i1, i1* %out.
-  %1528 = icmp slt i64 8, %len.1
+  %1528 = icmp slt i64 8, %N1
   %1529 = bitcast i64* %shadow to i64*
   %safe.409 = or i1 %1527, %1528
   %select.ptr.410 = select i1 %safe.409, i64* %1526, i64* %1529
@@ -10176,7 +10172,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1532 = sext i32 %1531 to i64
   %1533 = getelementptr inbounds i64, i64* %2, i64 7
   %1534 = load i1, i1* %out.
-  %1535 = icmp slt i64 7, %len.2
+  %1535 = icmp slt i64 7, %N2
   %1536 = bitcast i64* %shadow to i64*
   %safe.411 = or i1 %1534, %1535
   %select.ptr.412 = select i1 %safe.411, i64* %1533, i64* %1536
@@ -10187,7 +10183,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1541 = add nsw i64 %1525, %1540
   %1542 = getelementptr inbounds i64, i64* %1, i64 6
   %1543 = load i1, i1* %out.
-  %1544 = icmp slt i64 6, %len.1
+  %1544 = icmp slt i64 6, %N1
   %1545 = bitcast i64* %shadow to i64*
   %safe.413 = or i1 %1543, %1544
   %select.ptr.414 = select i1 %safe.413, i64* %1542, i64* %1545
@@ -10196,7 +10192,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1548 = sext i32 %1547 to i64
   %1549 = getelementptr inbounds i64, i64* %2, i64 9
   %1550 = load i1, i1* %out.
-  %1551 = icmp slt i64 9, %len.2
+  %1551 = icmp slt i64 9, %N2
   %1552 = bitcast i64* %shadow to i64*
   %safe.415 = or i1 %1550, %1551
   %select.ptr.416 = select i1 %safe.415, i64* %1549, i64* %1552
@@ -10207,7 +10203,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1557 = add nsw i64 %1541, %1556
   %1558 = getelementptr inbounds i64, i64* %1, i64 9
   %1559 = load i1, i1* %out.
-  %1560 = icmp slt i64 9, %len.1
+  %1560 = icmp slt i64 9, %N1
   %1561 = bitcast i64* %shadow to i64*
   %safe.417 = or i1 %1559, %1560
   %select.ptr.418 = select i1 %safe.417, i64* %1558, i64* %1561
@@ -10216,7 +10212,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1564 = sext i32 %1563 to i64
   %1565 = getelementptr inbounds i64, i64* %2, i64 6
   %1566 = load i1, i1* %out.
-  %1567 = icmp slt i64 6, %len.2
+  %1567 = icmp slt i64 6, %N2
   %1568 = bitcast i64* %shadow to i64*
   %safe.419 = or i1 %1566, %1567
   %select.ptr.420 = select i1 %safe.419, i64* %1565, i64* %1568
@@ -10227,7 +10223,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1573 = add nsw i64 %1557, %1572
   %1574 = getelementptr inbounds i64, i64* %0, i64 15
   %1575 = load i1, i1* %out.
-  %1576 = icmp slt i64 15, %len.
+  %1576 = icmp slt i64 15, %N
   %1577 = bitcast i64* %shadow to i64*
   %safe.421 = or i1 %1575, %1576
   %select.ptr.422 = select i1 %safe.421, i64* %1574, i64* %1577
@@ -10236,7 +10232,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   store i64 %select.val.423, i64* %select.ptr.422, align 8
   %1579 = getelementptr inbounds i64, i64* %1, i64 8
   %1580 = load i1, i1* %out.
-  %1581 = icmp slt i64 8, %len.1
+  %1581 = icmp slt i64 8, %N1
   %1582 = bitcast i64* %shadow to i64*
   %safe.424 = or i1 %1580, %1581
   %select.ptr.425 = select i1 %safe.424, i64* %1579, i64* %1582
@@ -10245,7 +10241,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1585 = sext i32 %1584 to i64
   %1586 = getelementptr inbounds i64, i64* %2, i64 8
   %1587 = load i1, i1* %out.
-  %1588 = icmp slt i64 8, %len.2
+  %1588 = icmp slt i64 8, %N2
   %1589 = bitcast i64* %shadow to i64*
   %safe.426 = or i1 %1587, %1588
   %select.ptr.427 = select i1 %safe.426, i64* %1586, i64* %1589
@@ -10255,7 +10251,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1593 = mul nsw i64 %1585, %1592
   %1594 = getelementptr inbounds i64, i64* %1, i64 7
   %1595 = load i1, i1* %out.
-  %1596 = icmp slt i64 7, %len.1
+  %1596 = icmp slt i64 7, %N1
   %1597 = bitcast i64* %shadow to i64*
   %safe.428 = or i1 %1595, %1596
   %select.ptr.429 = select i1 %safe.428, i64* %1594, i64* %1597
@@ -10264,7 +10260,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1600 = sext i32 %1599 to i64
   %1601 = getelementptr inbounds i64, i64* %2, i64 9
   %1602 = load i1, i1* %out.
-  %1603 = icmp slt i64 9, %len.2
+  %1603 = icmp slt i64 9, %N2
   %1604 = bitcast i64* %shadow to i64*
   %safe.430 = or i1 %1602, %1603
   %select.ptr.431 = select i1 %safe.430, i64* %1601, i64* %1604
@@ -10274,7 +10270,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1608 = mul nsw i64 %1600, %1607
   %1609 = getelementptr inbounds i64, i64* %1, i64 9
   %1610 = load i1, i1* %out.
-  %1611 = icmp slt i64 9, %len.1
+  %1611 = icmp slt i64 9, %N1
   %1612 = bitcast i64* %shadow to i64*
   %safe.432 = or i1 %1610, %1611
   %select.ptr.433 = select i1 %safe.432, i64* %1609, i64* %1612
@@ -10283,7 +10279,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1615 = sext i32 %1614 to i64
   %1616 = getelementptr inbounds i64, i64* %2, i64 7
   %1617 = load i1, i1* %out.
-  %1618 = icmp slt i64 7, %len.2
+  %1618 = icmp slt i64 7, %N2
   %1619 = bitcast i64* %shadow to i64*
   %safe.434 = or i1 %1617, %1618
   %select.ptr.435 = select i1 %safe.434, i64* %1616, i64* %1619
@@ -10296,7 +10292,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1626 = add nsw i64 %1593, %1625
   %1627 = getelementptr inbounds i64, i64* %0, i64 16
   %1628 = load i1, i1* %out.
-  %1629 = icmp slt i64 16, %len.
+  %1629 = icmp slt i64 16, %N
   %1630 = bitcast i64* %shadow to i64*
   %safe.436 = or i1 %1628, %1629
   %select.ptr.437 = select i1 %safe.436, i64* %1627, i64* %1630
@@ -10305,7 +10301,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   store i64 %select.val.438, i64* %select.ptr.437, align 8
   %1632 = getelementptr inbounds i64, i64* %1, i64 8
   %1633 = load i1, i1* %out.
-  %1634 = icmp slt i64 8, %len.1
+  %1634 = icmp slt i64 8, %N1
   %1635 = bitcast i64* %shadow to i64*
   %safe.439 = or i1 %1633, %1634
   %select.ptr.440 = select i1 %safe.439, i64* %1632, i64* %1635
@@ -10314,7 +10310,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1638 = sext i32 %1637 to i64
   %1639 = getelementptr inbounds i64, i64* %2, i64 9
   %1640 = load i1, i1* %out.
-  %1641 = icmp slt i64 9, %len.2
+  %1641 = icmp slt i64 9, %N2
   %1642 = bitcast i64* %shadow to i64*
   %safe.441 = or i1 %1640, %1641
   %select.ptr.442 = select i1 %safe.441, i64* %1639, i64* %1642
@@ -10324,7 +10320,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1646 = mul nsw i64 %1638, %1645
   %1647 = getelementptr inbounds i64, i64* %1, i64 9
   %1648 = load i1, i1* %out.
-  %1649 = icmp slt i64 9, %len.1
+  %1649 = icmp slt i64 9, %N1
   %1650 = bitcast i64* %shadow to i64*
   %safe.443 = or i1 %1648, %1649
   %select.ptr.444 = select i1 %safe.443, i64* %1647, i64* %1650
@@ -10333,7 +10329,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1653 = sext i32 %1652 to i64
   %1654 = getelementptr inbounds i64, i64* %2, i64 8
   %1655 = load i1, i1* %out.
-  %1656 = icmp slt i64 8, %len.2
+  %1656 = icmp slt i64 8, %N2
   %1657 = bitcast i64* %shadow to i64*
   %safe.445 = or i1 %1655, %1656
   %select.ptr.446 = select i1 %safe.445, i64* %1654, i64* %1657
@@ -10344,7 +10340,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1662 = add nsw i64 %1646, %1661
   %1663 = getelementptr inbounds i64, i64* %0, i64 17
   %1664 = load i1, i1* %out.
-  %1665 = icmp slt i64 17, %len.
+  %1665 = icmp slt i64 17, %N
   %1666 = bitcast i64* %shadow to i64*
   %safe.447 = or i1 %1664, %1665
   %select.ptr.448 = select i1 %safe.447, i64* %1663, i64* %1666
@@ -10353,7 +10349,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   store i64 %select.val.449, i64* %select.ptr.448, align 8
   %1668 = getelementptr inbounds i64, i64* %1, i64 9
   %1669 = load i1, i1* %out.
-  %1670 = icmp slt i64 9, %len.1
+  %1670 = icmp slt i64 9, %N1
   %1671 = bitcast i64* %shadow to i64*
   %safe.450 = or i1 %1669, %1670
   %select.ptr.451 = select i1 %safe.450, i64* %1668, i64* %1671
@@ -10363,7 +10359,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1675 = mul nsw i64 2, %1674
   %1676 = getelementptr inbounds i64, i64* %2, i64 9
   %1677 = load i1, i1* %out.
-  %1678 = icmp slt i64 9, %len.2
+  %1678 = icmp slt i64 9, %N2
   %1679 = bitcast i64* %shadow to i64*
   %safe.452 = or i1 %1677, %1678
   %select.ptr.453 = select i1 %safe.452, i64* %1676, i64* %1679
@@ -10373,7 +10369,7 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   %1683 = mul nsw i64 %1675, %1682
   %1684 = getelementptr inbounds i64, i64* %0, i64 18
   %1685 = load i1, i1* %out.
-  %1686 = icmp slt i64 18, %len.
+  %1686 = icmp slt i64 18, %N
   %1687 = bitcast i64* %shadow to i64*
   %safe.454 = or i1 %1685, %1686
   %select.ptr.455 = select i1 %safe.454, i64* %1684, i64* %1687
@@ -10383,13 +10379,13 @@ define internal void @fproduct(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2,
   ret void
 }
 
-define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
+define internal void @freduce_degree(i64* %0, i64 %N, i1 %.cond) {
   %shadow = alloca i64
   %out. = alloca i1
   store i1 %.cond, i1* %out.
   %2 = getelementptr inbounds i64, i64* %0, i64 18
   %3 = load i1, i1* %out.
-  %4 = icmp slt i64 18, %len.
+  %4 = icmp slt i64 18, %N
   %5 = bitcast i64* %shadow to i64*
   %safe. = or i1 %3, %4
   %select.ptr. = select i1 %safe., i64* %2, i64* %5
@@ -10397,14 +10393,14 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   %7 = shl i64 %6, 4
   %8 = getelementptr inbounds i64, i64* %0, i64 8
   %9 = load i1, i1* %out.
-  %10 = icmp slt i64 8, %len.
+  %10 = icmp slt i64 8, %N
   %11 = bitcast i64* %shadow to i64*
   %safe.1 = or i1 %9, %10
   %select.ptr.2 = select i1 %safe.1, i64* %8, i64* %11
   %12 = load i64, i64* %select.ptr.2, align 8
   %13 = add nsw i64 %12, %7
   %14 = load i1, i1* %out.
-  %15 = icmp slt i64 8, %len.
+  %15 = icmp slt i64 8, %N
   %16 = bitcast i64* %shadow to i64*
   %safe.3 = or i1 %14, %15
   %select.ptr.4 = select i1 %safe.3, i64* %8, i64* %16
@@ -10413,7 +10409,7 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val., i64* %select.ptr.4, align 8
   %18 = getelementptr inbounds i64, i64* %0, i64 18
   %19 = load i1, i1* %out.
-  %20 = icmp slt i64 18, %len.
+  %20 = icmp slt i64 18, %N
   %21 = bitcast i64* %shadow to i64*
   %safe.5 = or i1 %19, %20
   %select.ptr.6 = select i1 %safe.5, i64* %18, i64* %21
@@ -10421,14 +10417,14 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   %23 = shl i64 %22, 1
   %24 = getelementptr inbounds i64, i64* %0, i64 8
   %25 = load i1, i1* %out.
-  %26 = icmp slt i64 8, %len.
+  %26 = icmp slt i64 8, %N
   %27 = bitcast i64* %shadow to i64*
   %safe.7 = or i1 %25, %26
   %select.ptr.8 = select i1 %safe.7, i64* %24, i64* %27
   %28 = load i64, i64* %select.ptr.8, align 8
   %29 = add nsw i64 %28, %23
   %30 = load i1, i1* %out.
-  %31 = icmp slt i64 8, %len.
+  %31 = icmp slt i64 8, %N
   %32 = bitcast i64* %shadow to i64*
   %safe.9 = or i1 %30, %31
   %select.ptr.10 = select i1 %safe.9, i64* %24, i64* %32
@@ -10437,21 +10433,21 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.11, i64* %select.ptr.10, align 8
   %34 = getelementptr inbounds i64, i64* %0, i64 18
   %35 = load i1, i1* %out.
-  %36 = icmp slt i64 18, %len.
+  %36 = icmp slt i64 18, %N
   %37 = bitcast i64* %shadow to i64*
   %safe.12 = or i1 %35, %36
   %select.ptr.13 = select i1 %safe.12, i64* %34, i64* %37
   %38 = load i64, i64* %select.ptr.13, align 8
   %39 = getelementptr inbounds i64, i64* %0, i64 8
   %40 = load i1, i1* %out.
-  %41 = icmp slt i64 8, %len.
+  %41 = icmp slt i64 8, %N
   %42 = bitcast i64* %shadow to i64*
   %safe.14 = or i1 %40, %41
   %select.ptr.15 = select i1 %safe.14, i64* %39, i64* %42
   %43 = load i64, i64* %select.ptr.15, align 8
   %44 = add nsw i64 %43, %38
   %45 = load i1, i1* %out.
-  %46 = icmp slt i64 8, %len.
+  %46 = icmp slt i64 8, %N
   %47 = bitcast i64* %shadow to i64*
   %safe.16 = or i1 %45, %46
   %select.ptr.17 = select i1 %safe.16, i64* %39, i64* %47
@@ -10460,7 +10456,7 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.18, i64* %select.ptr.17, align 8
   %49 = getelementptr inbounds i64, i64* %0, i64 17
   %50 = load i1, i1* %out.
-  %51 = icmp slt i64 17, %len.
+  %51 = icmp slt i64 17, %N
   %52 = bitcast i64* %shadow to i64*
   %safe.19 = or i1 %50, %51
   %select.ptr.20 = select i1 %safe.19, i64* %49, i64* %52
@@ -10468,14 +10464,14 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   %54 = shl i64 %53, 4
   %55 = getelementptr inbounds i64, i64* %0, i64 7
   %56 = load i1, i1* %out.
-  %57 = icmp slt i64 7, %len.
+  %57 = icmp slt i64 7, %N
   %58 = bitcast i64* %shadow to i64*
   %safe.21 = or i1 %56, %57
   %select.ptr.22 = select i1 %safe.21, i64* %55, i64* %58
   %59 = load i64, i64* %select.ptr.22, align 8
   %60 = add nsw i64 %59, %54
   %61 = load i1, i1* %out.
-  %62 = icmp slt i64 7, %len.
+  %62 = icmp slt i64 7, %N
   %63 = bitcast i64* %shadow to i64*
   %safe.23 = or i1 %61, %62
   %select.ptr.24 = select i1 %safe.23, i64* %55, i64* %63
@@ -10484,7 +10480,7 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.25, i64* %select.ptr.24, align 8
   %65 = getelementptr inbounds i64, i64* %0, i64 17
   %66 = load i1, i1* %out.
-  %67 = icmp slt i64 17, %len.
+  %67 = icmp slt i64 17, %N
   %68 = bitcast i64* %shadow to i64*
   %safe.26 = or i1 %66, %67
   %select.ptr.27 = select i1 %safe.26, i64* %65, i64* %68
@@ -10492,14 +10488,14 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   %70 = shl i64 %69, 1
   %71 = getelementptr inbounds i64, i64* %0, i64 7
   %72 = load i1, i1* %out.
-  %73 = icmp slt i64 7, %len.
+  %73 = icmp slt i64 7, %N
   %74 = bitcast i64* %shadow to i64*
   %safe.28 = or i1 %72, %73
   %select.ptr.29 = select i1 %safe.28, i64* %71, i64* %74
   %75 = load i64, i64* %select.ptr.29, align 8
   %76 = add nsw i64 %75, %70
   %77 = load i1, i1* %out.
-  %78 = icmp slt i64 7, %len.
+  %78 = icmp slt i64 7, %N
   %79 = bitcast i64* %shadow to i64*
   %safe.30 = or i1 %77, %78
   %select.ptr.31 = select i1 %safe.30, i64* %71, i64* %79
@@ -10508,21 +10504,21 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.32, i64* %select.ptr.31, align 8
   %81 = getelementptr inbounds i64, i64* %0, i64 17
   %82 = load i1, i1* %out.
-  %83 = icmp slt i64 17, %len.
+  %83 = icmp slt i64 17, %N
   %84 = bitcast i64* %shadow to i64*
   %safe.33 = or i1 %82, %83
   %select.ptr.34 = select i1 %safe.33, i64* %81, i64* %84
   %85 = load i64, i64* %select.ptr.34, align 8
   %86 = getelementptr inbounds i64, i64* %0, i64 7
   %87 = load i1, i1* %out.
-  %88 = icmp slt i64 7, %len.
+  %88 = icmp slt i64 7, %N
   %89 = bitcast i64* %shadow to i64*
   %safe.35 = or i1 %87, %88
   %select.ptr.36 = select i1 %safe.35, i64* %86, i64* %89
   %90 = load i64, i64* %select.ptr.36, align 8
   %91 = add nsw i64 %90, %85
   %92 = load i1, i1* %out.
-  %93 = icmp slt i64 7, %len.
+  %93 = icmp slt i64 7, %N
   %94 = bitcast i64* %shadow to i64*
   %safe.37 = or i1 %92, %93
   %select.ptr.38 = select i1 %safe.37, i64* %86, i64* %94
@@ -10531,7 +10527,7 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.39, i64* %select.ptr.38, align 8
   %96 = getelementptr inbounds i64, i64* %0, i64 16
   %97 = load i1, i1* %out.
-  %98 = icmp slt i64 16, %len.
+  %98 = icmp slt i64 16, %N
   %99 = bitcast i64* %shadow to i64*
   %safe.40 = or i1 %97, %98
   %select.ptr.41 = select i1 %safe.40, i64* %96, i64* %99
@@ -10539,14 +10535,14 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   %101 = shl i64 %100, 4
   %102 = getelementptr inbounds i64, i64* %0, i64 6
   %103 = load i1, i1* %out.
-  %104 = icmp slt i64 6, %len.
+  %104 = icmp slt i64 6, %N
   %105 = bitcast i64* %shadow to i64*
   %safe.42 = or i1 %103, %104
   %select.ptr.43 = select i1 %safe.42, i64* %102, i64* %105
   %106 = load i64, i64* %select.ptr.43, align 8
   %107 = add nsw i64 %106, %101
   %108 = load i1, i1* %out.
-  %109 = icmp slt i64 6, %len.
+  %109 = icmp slt i64 6, %N
   %110 = bitcast i64* %shadow to i64*
   %safe.44 = or i1 %108, %109
   %select.ptr.45 = select i1 %safe.44, i64* %102, i64* %110
@@ -10555,7 +10551,7 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.46, i64* %select.ptr.45, align 8
   %112 = getelementptr inbounds i64, i64* %0, i64 16
   %113 = load i1, i1* %out.
-  %114 = icmp slt i64 16, %len.
+  %114 = icmp slt i64 16, %N
   %115 = bitcast i64* %shadow to i64*
   %safe.47 = or i1 %113, %114
   %select.ptr.48 = select i1 %safe.47, i64* %112, i64* %115
@@ -10563,14 +10559,14 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   %117 = shl i64 %116, 1
   %118 = getelementptr inbounds i64, i64* %0, i64 6
   %119 = load i1, i1* %out.
-  %120 = icmp slt i64 6, %len.
+  %120 = icmp slt i64 6, %N
   %121 = bitcast i64* %shadow to i64*
   %safe.49 = or i1 %119, %120
   %select.ptr.50 = select i1 %safe.49, i64* %118, i64* %121
   %122 = load i64, i64* %select.ptr.50, align 8
   %123 = add nsw i64 %122, %117
   %124 = load i1, i1* %out.
-  %125 = icmp slt i64 6, %len.
+  %125 = icmp slt i64 6, %N
   %126 = bitcast i64* %shadow to i64*
   %safe.51 = or i1 %124, %125
   %select.ptr.52 = select i1 %safe.51, i64* %118, i64* %126
@@ -10579,21 +10575,21 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.53, i64* %select.ptr.52, align 8
   %128 = getelementptr inbounds i64, i64* %0, i64 16
   %129 = load i1, i1* %out.
-  %130 = icmp slt i64 16, %len.
+  %130 = icmp slt i64 16, %N
   %131 = bitcast i64* %shadow to i64*
   %safe.54 = or i1 %129, %130
   %select.ptr.55 = select i1 %safe.54, i64* %128, i64* %131
   %132 = load i64, i64* %select.ptr.55, align 8
   %133 = getelementptr inbounds i64, i64* %0, i64 6
   %134 = load i1, i1* %out.
-  %135 = icmp slt i64 6, %len.
+  %135 = icmp slt i64 6, %N
   %136 = bitcast i64* %shadow to i64*
   %safe.56 = or i1 %134, %135
   %select.ptr.57 = select i1 %safe.56, i64* %133, i64* %136
   %137 = load i64, i64* %select.ptr.57, align 8
   %138 = add nsw i64 %137, %132
   %139 = load i1, i1* %out.
-  %140 = icmp slt i64 6, %len.
+  %140 = icmp slt i64 6, %N
   %141 = bitcast i64* %shadow to i64*
   %safe.58 = or i1 %139, %140
   %select.ptr.59 = select i1 %safe.58, i64* %133, i64* %141
@@ -10602,7 +10598,7 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.60, i64* %select.ptr.59, align 8
   %143 = getelementptr inbounds i64, i64* %0, i64 15
   %144 = load i1, i1* %out.
-  %145 = icmp slt i64 15, %len.
+  %145 = icmp slt i64 15, %N
   %146 = bitcast i64* %shadow to i64*
   %safe.61 = or i1 %144, %145
   %select.ptr.62 = select i1 %safe.61, i64* %143, i64* %146
@@ -10610,14 +10606,14 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   %148 = shl i64 %147, 4
   %149 = getelementptr inbounds i64, i64* %0, i64 5
   %150 = load i1, i1* %out.
-  %151 = icmp slt i64 5, %len.
+  %151 = icmp slt i64 5, %N
   %152 = bitcast i64* %shadow to i64*
   %safe.63 = or i1 %150, %151
   %select.ptr.64 = select i1 %safe.63, i64* %149, i64* %152
   %153 = load i64, i64* %select.ptr.64, align 8
   %154 = add nsw i64 %153, %148
   %155 = load i1, i1* %out.
-  %156 = icmp slt i64 5, %len.
+  %156 = icmp slt i64 5, %N
   %157 = bitcast i64* %shadow to i64*
   %safe.65 = or i1 %155, %156
   %select.ptr.66 = select i1 %safe.65, i64* %149, i64* %157
@@ -10626,7 +10622,7 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.67, i64* %select.ptr.66, align 8
   %159 = getelementptr inbounds i64, i64* %0, i64 15
   %160 = load i1, i1* %out.
-  %161 = icmp slt i64 15, %len.
+  %161 = icmp slt i64 15, %N
   %162 = bitcast i64* %shadow to i64*
   %safe.68 = or i1 %160, %161
   %select.ptr.69 = select i1 %safe.68, i64* %159, i64* %162
@@ -10634,14 +10630,14 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   %164 = shl i64 %163, 1
   %165 = getelementptr inbounds i64, i64* %0, i64 5
   %166 = load i1, i1* %out.
-  %167 = icmp slt i64 5, %len.
+  %167 = icmp slt i64 5, %N
   %168 = bitcast i64* %shadow to i64*
   %safe.70 = or i1 %166, %167
   %select.ptr.71 = select i1 %safe.70, i64* %165, i64* %168
   %169 = load i64, i64* %select.ptr.71, align 8
   %170 = add nsw i64 %169, %164
   %171 = load i1, i1* %out.
-  %172 = icmp slt i64 5, %len.
+  %172 = icmp slt i64 5, %N
   %173 = bitcast i64* %shadow to i64*
   %safe.72 = or i1 %171, %172
   %select.ptr.73 = select i1 %safe.72, i64* %165, i64* %173
@@ -10650,21 +10646,21 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.74, i64* %select.ptr.73, align 8
   %175 = getelementptr inbounds i64, i64* %0, i64 15
   %176 = load i1, i1* %out.
-  %177 = icmp slt i64 15, %len.
+  %177 = icmp slt i64 15, %N
   %178 = bitcast i64* %shadow to i64*
   %safe.75 = or i1 %176, %177
   %select.ptr.76 = select i1 %safe.75, i64* %175, i64* %178
   %179 = load i64, i64* %select.ptr.76, align 8
   %180 = getelementptr inbounds i64, i64* %0, i64 5
   %181 = load i1, i1* %out.
-  %182 = icmp slt i64 5, %len.
+  %182 = icmp slt i64 5, %N
   %183 = bitcast i64* %shadow to i64*
   %safe.77 = or i1 %181, %182
   %select.ptr.78 = select i1 %safe.77, i64* %180, i64* %183
   %184 = load i64, i64* %select.ptr.78, align 8
   %185 = add nsw i64 %184, %179
   %186 = load i1, i1* %out.
-  %187 = icmp slt i64 5, %len.
+  %187 = icmp slt i64 5, %N
   %188 = bitcast i64* %shadow to i64*
   %safe.79 = or i1 %186, %187
   %select.ptr.80 = select i1 %safe.79, i64* %180, i64* %188
@@ -10673,7 +10669,7 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.81, i64* %select.ptr.80, align 8
   %190 = getelementptr inbounds i64, i64* %0, i64 14
   %191 = load i1, i1* %out.
-  %192 = icmp slt i64 14, %len.
+  %192 = icmp slt i64 14, %N
   %193 = bitcast i64* %shadow to i64*
   %safe.82 = or i1 %191, %192
   %select.ptr.83 = select i1 %safe.82, i64* %190, i64* %193
@@ -10681,14 +10677,14 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   %195 = shl i64 %194, 4
   %196 = getelementptr inbounds i64, i64* %0, i64 4
   %197 = load i1, i1* %out.
-  %198 = icmp slt i64 4, %len.
+  %198 = icmp slt i64 4, %N
   %199 = bitcast i64* %shadow to i64*
   %safe.84 = or i1 %197, %198
   %select.ptr.85 = select i1 %safe.84, i64* %196, i64* %199
   %200 = load i64, i64* %select.ptr.85, align 8
   %201 = add nsw i64 %200, %195
   %202 = load i1, i1* %out.
-  %203 = icmp slt i64 4, %len.
+  %203 = icmp slt i64 4, %N
   %204 = bitcast i64* %shadow to i64*
   %safe.86 = or i1 %202, %203
   %select.ptr.87 = select i1 %safe.86, i64* %196, i64* %204
@@ -10697,7 +10693,7 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.88, i64* %select.ptr.87, align 8
   %206 = getelementptr inbounds i64, i64* %0, i64 14
   %207 = load i1, i1* %out.
-  %208 = icmp slt i64 14, %len.
+  %208 = icmp slt i64 14, %N
   %209 = bitcast i64* %shadow to i64*
   %safe.89 = or i1 %207, %208
   %select.ptr.90 = select i1 %safe.89, i64* %206, i64* %209
@@ -10705,14 +10701,14 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   %211 = shl i64 %210, 1
   %212 = getelementptr inbounds i64, i64* %0, i64 4
   %213 = load i1, i1* %out.
-  %214 = icmp slt i64 4, %len.
+  %214 = icmp slt i64 4, %N
   %215 = bitcast i64* %shadow to i64*
   %safe.91 = or i1 %213, %214
   %select.ptr.92 = select i1 %safe.91, i64* %212, i64* %215
   %216 = load i64, i64* %select.ptr.92, align 8
   %217 = add nsw i64 %216, %211
   %218 = load i1, i1* %out.
-  %219 = icmp slt i64 4, %len.
+  %219 = icmp slt i64 4, %N
   %220 = bitcast i64* %shadow to i64*
   %safe.93 = or i1 %218, %219
   %select.ptr.94 = select i1 %safe.93, i64* %212, i64* %220
@@ -10721,21 +10717,21 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.95, i64* %select.ptr.94, align 8
   %222 = getelementptr inbounds i64, i64* %0, i64 14
   %223 = load i1, i1* %out.
-  %224 = icmp slt i64 14, %len.
+  %224 = icmp slt i64 14, %N
   %225 = bitcast i64* %shadow to i64*
   %safe.96 = or i1 %223, %224
   %select.ptr.97 = select i1 %safe.96, i64* %222, i64* %225
   %226 = load i64, i64* %select.ptr.97, align 8
   %227 = getelementptr inbounds i64, i64* %0, i64 4
   %228 = load i1, i1* %out.
-  %229 = icmp slt i64 4, %len.
+  %229 = icmp slt i64 4, %N
   %230 = bitcast i64* %shadow to i64*
   %safe.98 = or i1 %228, %229
   %select.ptr.99 = select i1 %safe.98, i64* %227, i64* %230
   %231 = load i64, i64* %select.ptr.99, align 8
   %232 = add nsw i64 %231, %226
   %233 = load i1, i1* %out.
-  %234 = icmp slt i64 4, %len.
+  %234 = icmp slt i64 4, %N
   %235 = bitcast i64* %shadow to i64*
   %safe.100 = or i1 %233, %234
   %select.ptr.101 = select i1 %safe.100, i64* %227, i64* %235
@@ -10744,7 +10740,7 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.102, i64* %select.ptr.101, align 8
   %237 = getelementptr inbounds i64, i64* %0, i64 13
   %238 = load i1, i1* %out.
-  %239 = icmp slt i64 13, %len.
+  %239 = icmp slt i64 13, %N
   %240 = bitcast i64* %shadow to i64*
   %safe.103 = or i1 %238, %239
   %select.ptr.104 = select i1 %safe.103, i64* %237, i64* %240
@@ -10752,14 +10748,14 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   %242 = shl i64 %241, 4
   %243 = getelementptr inbounds i64, i64* %0, i64 3
   %244 = load i1, i1* %out.
-  %245 = icmp slt i64 3, %len.
+  %245 = icmp slt i64 3, %N
   %246 = bitcast i64* %shadow to i64*
   %safe.105 = or i1 %244, %245
   %select.ptr.106 = select i1 %safe.105, i64* %243, i64* %246
   %247 = load i64, i64* %select.ptr.106, align 8
   %248 = add nsw i64 %247, %242
   %249 = load i1, i1* %out.
-  %250 = icmp slt i64 3, %len.
+  %250 = icmp slt i64 3, %N
   %251 = bitcast i64* %shadow to i64*
   %safe.107 = or i1 %249, %250
   %select.ptr.108 = select i1 %safe.107, i64* %243, i64* %251
@@ -10768,7 +10764,7 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.109, i64* %select.ptr.108, align 8
   %253 = getelementptr inbounds i64, i64* %0, i64 13
   %254 = load i1, i1* %out.
-  %255 = icmp slt i64 13, %len.
+  %255 = icmp slt i64 13, %N
   %256 = bitcast i64* %shadow to i64*
   %safe.110 = or i1 %254, %255
   %select.ptr.111 = select i1 %safe.110, i64* %253, i64* %256
@@ -10776,14 +10772,14 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   %258 = shl i64 %257, 1
   %259 = getelementptr inbounds i64, i64* %0, i64 3
   %260 = load i1, i1* %out.
-  %261 = icmp slt i64 3, %len.
+  %261 = icmp slt i64 3, %N
   %262 = bitcast i64* %shadow to i64*
   %safe.112 = or i1 %260, %261
   %select.ptr.113 = select i1 %safe.112, i64* %259, i64* %262
   %263 = load i64, i64* %select.ptr.113, align 8
   %264 = add nsw i64 %263, %258
   %265 = load i1, i1* %out.
-  %266 = icmp slt i64 3, %len.
+  %266 = icmp slt i64 3, %N
   %267 = bitcast i64* %shadow to i64*
   %safe.114 = or i1 %265, %266
   %select.ptr.115 = select i1 %safe.114, i64* %259, i64* %267
@@ -10792,21 +10788,21 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.116, i64* %select.ptr.115, align 8
   %269 = getelementptr inbounds i64, i64* %0, i64 13
   %270 = load i1, i1* %out.
-  %271 = icmp slt i64 13, %len.
+  %271 = icmp slt i64 13, %N
   %272 = bitcast i64* %shadow to i64*
   %safe.117 = or i1 %270, %271
   %select.ptr.118 = select i1 %safe.117, i64* %269, i64* %272
   %273 = load i64, i64* %select.ptr.118, align 8
   %274 = getelementptr inbounds i64, i64* %0, i64 3
   %275 = load i1, i1* %out.
-  %276 = icmp slt i64 3, %len.
+  %276 = icmp slt i64 3, %N
   %277 = bitcast i64* %shadow to i64*
   %safe.119 = or i1 %275, %276
   %select.ptr.120 = select i1 %safe.119, i64* %274, i64* %277
   %278 = load i64, i64* %select.ptr.120, align 8
   %279 = add nsw i64 %278, %273
   %280 = load i1, i1* %out.
-  %281 = icmp slt i64 3, %len.
+  %281 = icmp slt i64 3, %N
   %282 = bitcast i64* %shadow to i64*
   %safe.121 = or i1 %280, %281
   %select.ptr.122 = select i1 %safe.121, i64* %274, i64* %282
@@ -10815,7 +10811,7 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.123, i64* %select.ptr.122, align 8
   %284 = getelementptr inbounds i64, i64* %0, i64 12
   %285 = load i1, i1* %out.
-  %286 = icmp slt i64 12, %len.
+  %286 = icmp slt i64 12, %N
   %287 = bitcast i64* %shadow to i64*
   %safe.124 = or i1 %285, %286
   %select.ptr.125 = select i1 %safe.124, i64* %284, i64* %287
@@ -10823,14 +10819,14 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   %289 = shl i64 %288, 4
   %290 = getelementptr inbounds i64, i64* %0, i64 2
   %291 = load i1, i1* %out.
-  %292 = icmp slt i64 2, %len.
+  %292 = icmp slt i64 2, %N
   %293 = bitcast i64* %shadow to i64*
   %safe.126 = or i1 %291, %292
   %select.ptr.127 = select i1 %safe.126, i64* %290, i64* %293
   %294 = load i64, i64* %select.ptr.127, align 8
   %295 = add nsw i64 %294, %289
   %296 = load i1, i1* %out.
-  %297 = icmp slt i64 2, %len.
+  %297 = icmp slt i64 2, %N
   %298 = bitcast i64* %shadow to i64*
   %safe.128 = or i1 %296, %297
   %select.ptr.129 = select i1 %safe.128, i64* %290, i64* %298
@@ -10839,7 +10835,7 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.130, i64* %select.ptr.129, align 8
   %300 = getelementptr inbounds i64, i64* %0, i64 12
   %301 = load i1, i1* %out.
-  %302 = icmp slt i64 12, %len.
+  %302 = icmp slt i64 12, %N
   %303 = bitcast i64* %shadow to i64*
   %safe.131 = or i1 %301, %302
   %select.ptr.132 = select i1 %safe.131, i64* %300, i64* %303
@@ -10847,14 +10843,14 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   %305 = shl i64 %304, 1
   %306 = getelementptr inbounds i64, i64* %0, i64 2
   %307 = load i1, i1* %out.
-  %308 = icmp slt i64 2, %len.
+  %308 = icmp slt i64 2, %N
   %309 = bitcast i64* %shadow to i64*
   %safe.133 = or i1 %307, %308
   %select.ptr.134 = select i1 %safe.133, i64* %306, i64* %309
   %310 = load i64, i64* %select.ptr.134, align 8
   %311 = add nsw i64 %310, %305
   %312 = load i1, i1* %out.
-  %313 = icmp slt i64 2, %len.
+  %313 = icmp slt i64 2, %N
   %314 = bitcast i64* %shadow to i64*
   %safe.135 = or i1 %312, %313
   %select.ptr.136 = select i1 %safe.135, i64* %306, i64* %314
@@ -10863,21 +10859,21 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.137, i64* %select.ptr.136, align 8
   %316 = getelementptr inbounds i64, i64* %0, i64 12
   %317 = load i1, i1* %out.
-  %318 = icmp slt i64 12, %len.
+  %318 = icmp slt i64 12, %N
   %319 = bitcast i64* %shadow to i64*
   %safe.138 = or i1 %317, %318
   %select.ptr.139 = select i1 %safe.138, i64* %316, i64* %319
   %320 = load i64, i64* %select.ptr.139, align 8
   %321 = getelementptr inbounds i64, i64* %0, i64 2
   %322 = load i1, i1* %out.
-  %323 = icmp slt i64 2, %len.
+  %323 = icmp slt i64 2, %N
   %324 = bitcast i64* %shadow to i64*
   %safe.140 = or i1 %322, %323
   %select.ptr.141 = select i1 %safe.140, i64* %321, i64* %324
   %325 = load i64, i64* %select.ptr.141, align 8
   %326 = add nsw i64 %325, %320
   %327 = load i1, i1* %out.
-  %328 = icmp slt i64 2, %len.
+  %328 = icmp slt i64 2, %N
   %329 = bitcast i64* %shadow to i64*
   %safe.142 = or i1 %327, %328
   %select.ptr.143 = select i1 %safe.142, i64* %321, i64* %329
@@ -10886,7 +10882,7 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.144, i64* %select.ptr.143, align 8
   %331 = getelementptr inbounds i64, i64* %0, i64 11
   %332 = load i1, i1* %out.
-  %333 = icmp slt i64 11, %len.
+  %333 = icmp slt i64 11, %N
   %334 = bitcast i64* %shadow to i64*
   %safe.145 = or i1 %332, %333
   %select.ptr.146 = select i1 %safe.145, i64* %331, i64* %334
@@ -10894,14 +10890,14 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   %336 = shl i64 %335, 4
   %337 = getelementptr inbounds i64, i64* %0, i64 1
   %338 = load i1, i1* %out.
-  %339 = icmp slt i64 1, %len.
+  %339 = icmp slt i64 1, %N
   %340 = bitcast i64* %shadow to i64*
   %safe.147 = or i1 %338, %339
   %select.ptr.148 = select i1 %safe.147, i64* %337, i64* %340
   %341 = load i64, i64* %select.ptr.148, align 8
   %342 = add nsw i64 %341, %336
   %343 = load i1, i1* %out.
-  %344 = icmp slt i64 1, %len.
+  %344 = icmp slt i64 1, %N
   %345 = bitcast i64* %shadow to i64*
   %safe.149 = or i1 %343, %344
   %select.ptr.150 = select i1 %safe.149, i64* %337, i64* %345
@@ -10910,7 +10906,7 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.151, i64* %select.ptr.150, align 8
   %347 = getelementptr inbounds i64, i64* %0, i64 11
   %348 = load i1, i1* %out.
-  %349 = icmp slt i64 11, %len.
+  %349 = icmp slt i64 11, %N
   %350 = bitcast i64* %shadow to i64*
   %safe.152 = or i1 %348, %349
   %select.ptr.153 = select i1 %safe.152, i64* %347, i64* %350
@@ -10918,14 +10914,14 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   %352 = shl i64 %351, 1
   %353 = getelementptr inbounds i64, i64* %0, i64 1
   %354 = load i1, i1* %out.
-  %355 = icmp slt i64 1, %len.
+  %355 = icmp slt i64 1, %N
   %356 = bitcast i64* %shadow to i64*
   %safe.154 = or i1 %354, %355
   %select.ptr.155 = select i1 %safe.154, i64* %353, i64* %356
   %357 = load i64, i64* %select.ptr.155, align 8
   %358 = add nsw i64 %357, %352
   %359 = load i1, i1* %out.
-  %360 = icmp slt i64 1, %len.
+  %360 = icmp slt i64 1, %N
   %361 = bitcast i64* %shadow to i64*
   %safe.156 = or i1 %359, %360
   %select.ptr.157 = select i1 %safe.156, i64* %353, i64* %361
@@ -10934,21 +10930,21 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.158, i64* %select.ptr.157, align 8
   %363 = getelementptr inbounds i64, i64* %0, i64 11
   %364 = load i1, i1* %out.
-  %365 = icmp slt i64 11, %len.
+  %365 = icmp slt i64 11, %N
   %366 = bitcast i64* %shadow to i64*
   %safe.159 = or i1 %364, %365
   %select.ptr.160 = select i1 %safe.159, i64* %363, i64* %366
   %367 = load i64, i64* %select.ptr.160, align 8
   %368 = getelementptr inbounds i64, i64* %0, i64 1
   %369 = load i1, i1* %out.
-  %370 = icmp slt i64 1, %len.
+  %370 = icmp slt i64 1, %N
   %371 = bitcast i64* %shadow to i64*
   %safe.161 = or i1 %369, %370
   %select.ptr.162 = select i1 %safe.161, i64* %368, i64* %371
   %372 = load i64, i64* %select.ptr.162, align 8
   %373 = add nsw i64 %372, %367
   %374 = load i1, i1* %out.
-  %375 = icmp slt i64 1, %len.
+  %375 = icmp slt i64 1, %N
   %376 = bitcast i64* %shadow to i64*
   %safe.163 = or i1 %374, %375
   %select.ptr.164 = select i1 %safe.163, i64* %368, i64* %376
@@ -10957,7 +10953,7 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.165, i64* %select.ptr.164, align 8
   %378 = getelementptr inbounds i64, i64* %0, i64 10
   %379 = load i1, i1* %out.
-  %380 = icmp slt i64 10, %len.
+  %380 = icmp slt i64 10, %N
   %381 = bitcast i64* %shadow to i64*
   %safe.166 = or i1 %379, %380
   %select.ptr.167 = select i1 %safe.166, i64* %378, i64* %381
@@ -10965,14 +10961,14 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   %383 = shl i64 %382, 4
   %384 = getelementptr inbounds i64, i64* %0, i64 0
   %385 = load i1, i1* %out.
-  %386 = icmp slt i64 0, %len.
+  %386 = icmp slt i64 0, %N
   %387 = bitcast i64* %shadow to i64*
   %safe.168 = or i1 %385, %386
   %select.ptr.169 = select i1 %safe.168, i64* %384, i64* %387
   %388 = load i64, i64* %select.ptr.169, align 8
   %389 = add nsw i64 %388, %383
   %390 = load i1, i1* %out.
-  %391 = icmp slt i64 0, %len.
+  %391 = icmp slt i64 0, %N
   %392 = bitcast i64* %shadow to i64*
   %safe.170 = or i1 %390, %391
   %select.ptr.171 = select i1 %safe.170, i64* %384, i64* %392
@@ -10981,7 +10977,7 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.172, i64* %select.ptr.171, align 8
   %394 = getelementptr inbounds i64, i64* %0, i64 10
   %395 = load i1, i1* %out.
-  %396 = icmp slt i64 10, %len.
+  %396 = icmp slt i64 10, %N
   %397 = bitcast i64* %shadow to i64*
   %safe.173 = or i1 %395, %396
   %select.ptr.174 = select i1 %safe.173, i64* %394, i64* %397
@@ -10989,14 +10985,14 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   %399 = shl i64 %398, 1
   %400 = getelementptr inbounds i64, i64* %0, i64 0
   %401 = load i1, i1* %out.
-  %402 = icmp slt i64 0, %len.
+  %402 = icmp slt i64 0, %N
   %403 = bitcast i64* %shadow to i64*
   %safe.175 = or i1 %401, %402
   %select.ptr.176 = select i1 %safe.175, i64* %400, i64* %403
   %404 = load i64, i64* %select.ptr.176, align 8
   %405 = add nsw i64 %404, %399
   %406 = load i1, i1* %out.
-  %407 = icmp slt i64 0, %len.
+  %407 = icmp slt i64 0, %N
   %408 = bitcast i64* %shadow to i64*
   %safe.177 = or i1 %406, %407
   %select.ptr.178 = select i1 %safe.177, i64* %400, i64* %408
@@ -11005,21 +11001,21 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.179, i64* %select.ptr.178, align 8
   %410 = getelementptr inbounds i64, i64* %0, i64 10
   %411 = load i1, i1* %out.
-  %412 = icmp slt i64 10, %len.
+  %412 = icmp slt i64 10, %N
   %413 = bitcast i64* %shadow to i64*
   %safe.180 = or i1 %411, %412
   %select.ptr.181 = select i1 %safe.180, i64* %410, i64* %413
   %414 = load i64, i64* %select.ptr.181, align 8
   %415 = getelementptr inbounds i64, i64* %0, i64 0
   %416 = load i1, i1* %out.
-  %417 = icmp slt i64 0, %len.
+  %417 = icmp slt i64 0, %N
   %418 = bitcast i64* %shadow to i64*
   %safe.182 = or i1 %416, %417
   %select.ptr.183 = select i1 %safe.182, i64* %415, i64* %418
   %419 = load i64, i64* %select.ptr.183, align 8
   %420 = add nsw i64 %419, %414
   %421 = load i1, i1* %out.
-  %422 = icmp slt i64 0, %len.
+  %422 = icmp slt i64 0, %N
   %423 = bitcast i64* %shadow to i64*
   %safe.184 = or i1 %421, %422
   %select.ptr.185 = select i1 %safe.184, i64* %415, i64* %423
@@ -11029,13 +11025,13 @@ define internal void @freduce_degree(i64* %0, i64 %len., i1 %.cond) {
   ret void
 }
 
-define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
+define internal void @freduce_coefficients(i64* %0, i64 %N, i1 %.cond) {
   %shadow = alloca i64
   %out. = alloca i1
   store i1 %.cond, i1* %out.
   %2 = getelementptr inbounds i64, i64* %0, i64 10
   %3 = load i1, i1* %out.
-  %4 = icmp slt i64 10, %len.
+  %4 = icmp slt i64 10, %N
   %5 = bitcast i64* %shadow to i64*
   %safe. = or i1 %3, %4
   %select.ptr. = select i1 %safe., i64* %2, i64* %5
@@ -11055,14 +11051,14 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.1, i64* %0, align 8
   %16 = getelementptr inbounds i64, i64* %0, i64 1
   %17 = load i1, i1* %out.
-  %18 = icmp slt i64 1, %len.
+  %18 = icmp slt i64 1, %N
   %19 = bitcast i64* %shadow to i64*
   %safe.2 = or i1 %17, %18
   %select.ptr.3 = select i1 %safe.2, i64* %16, i64* %19
   %20 = load i64, i64* %select.ptr.3, align 8
   %21 = add nsw i64 %20, %9
   %22 = load i1, i1* %out.
-  %23 = icmp slt i64 1, %len.
+  %23 = icmp slt i64 1, %N
   %24 = bitcast i64* %shadow to i64*
   %safe.4 = or i1 %22, %23
   %select.ptr.5 = select i1 %safe.4, i64* %16, i64* %24
@@ -11071,7 +11067,7 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.6, i64* %select.ptr.5, align 8
   %26 = getelementptr inbounds i64, i64* %0, i64 1
   %27 = load i1, i1* %out.
-  %28 = icmp slt i64 1, %len.
+  %28 = icmp slt i64 1, %N
   %29 = bitcast i64* %shadow to i64*
   %safe.7 = or i1 %27, %28
   %select.ptr.8 = select i1 %safe.7, i64* %26, i64* %29
@@ -11080,14 +11076,14 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   %32 = shl i64 %31, 25
   %33 = getelementptr inbounds i64, i64* %0, i64 1
   %34 = load i1, i1* %out.
-  %35 = icmp slt i64 1, %len.
+  %35 = icmp slt i64 1, %N
   %36 = bitcast i64* %shadow to i64*
   %safe.9 = or i1 %34, %35
   %select.ptr.10 = select i1 %safe.9, i64* %33, i64* %36
   %37 = load i64, i64* %select.ptr.10, align 8
   %38 = sub nsw i64 %37, %32
   %39 = load i1, i1* %out.
-  %40 = icmp slt i64 1, %len.
+  %40 = icmp slt i64 1, %N
   %41 = bitcast i64* %shadow to i64*
   %safe.11 = or i1 %39, %40
   %select.ptr.12 = select i1 %safe.11, i64* %33, i64* %41
@@ -11096,14 +11092,14 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.13, i64* %select.ptr.12, align 8
   %43 = getelementptr inbounds i64, i64* %0, i64 2
   %44 = load i1, i1* %out.
-  %45 = icmp slt i64 2, %len.
+  %45 = icmp slt i64 2, %N
   %46 = bitcast i64* %shadow to i64*
   %safe.14 = or i1 %44, %45
   %select.ptr.15 = select i1 %safe.14, i64* %43, i64* %46
   %47 = load i64, i64* %select.ptr.15, align 8
   %48 = add nsw i64 %47, %31
   %49 = load i1, i1* %out.
-  %50 = icmp slt i64 2, %len.
+  %50 = icmp slt i64 2, %N
   %51 = bitcast i64* %shadow to i64*
   %safe.16 = or i1 %49, %50
   %select.ptr.17 = select i1 %safe.16, i64* %43, i64* %51
@@ -11112,7 +11108,7 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.18, i64* %select.ptr.17, align 8
   %53 = getelementptr inbounds i64, i64* %0, i64 2
   %54 = load i1, i1* %out.
-  %55 = icmp slt i64 2, %len.
+  %55 = icmp slt i64 2, %N
   %56 = bitcast i64* %shadow to i64*
   %safe.19 = or i1 %54, %55
   %select.ptr.20 = select i1 %safe.19, i64* %53, i64* %56
@@ -11121,14 +11117,14 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   %59 = shl i64 %58, 26
   %60 = getelementptr inbounds i64, i64* %0, i64 2
   %61 = load i1, i1* %out.
-  %62 = icmp slt i64 2, %len.
+  %62 = icmp slt i64 2, %N
   %63 = bitcast i64* %shadow to i64*
   %safe.21 = or i1 %61, %62
   %select.ptr.22 = select i1 %safe.21, i64* %60, i64* %63
   %64 = load i64, i64* %select.ptr.22, align 8
   %65 = sub nsw i64 %64, %59
   %66 = load i1, i1* %out.
-  %67 = icmp slt i64 2, %len.
+  %67 = icmp slt i64 2, %N
   %68 = bitcast i64* %shadow to i64*
   %safe.23 = or i1 %66, %67
   %select.ptr.24 = select i1 %safe.23, i64* %60, i64* %68
@@ -11137,14 +11133,14 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.25, i64* %select.ptr.24, align 8
   %70 = getelementptr inbounds i64, i64* %0, i64 3
   %71 = load i1, i1* %out.
-  %72 = icmp slt i64 3, %len.
+  %72 = icmp slt i64 3, %N
   %73 = bitcast i64* %shadow to i64*
   %safe.26 = or i1 %71, %72
   %select.ptr.27 = select i1 %safe.26, i64* %70, i64* %73
   %74 = load i64, i64* %select.ptr.27, align 8
   %75 = add nsw i64 %74, %58
   %76 = load i1, i1* %out.
-  %77 = icmp slt i64 3, %len.
+  %77 = icmp slt i64 3, %N
   %78 = bitcast i64* %shadow to i64*
   %safe.28 = or i1 %76, %77
   %select.ptr.29 = select i1 %safe.28, i64* %70, i64* %78
@@ -11153,7 +11149,7 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.30, i64* %select.ptr.29, align 8
   %80 = getelementptr inbounds i64, i64* %0, i64 3
   %81 = load i1, i1* %out.
-  %82 = icmp slt i64 3, %len.
+  %82 = icmp slt i64 3, %N
   %83 = bitcast i64* %shadow to i64*
   %safe.31 = or i1 %81, %82
   %select.ptr.32 = select i1 %safe.31, i64* %80, i64* %83
@@ -11162,14 +11158,14 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   %86 = shl i64 %85, 25
   %87 = getelementptr inbounds i64, i64* %0, i64 3
   %88 = load i1, i1* %out.
-  %89 = icmp slt i64 3, %len.
+  %89 = icmp slt i64 3, %N
   %90 = bitcast i64* %shadow to i64*
   %safe.33 = or i1 %88, %89
   %select.ptr.34 = select i1 %safe.33, i64* %87, i64* %90
   %91 = load i64, i64* %select.ptr.34, align 8
   %92 = sub nsw i64 %91, %86
   %93 = load i1, i1* %out.
-  %94 = icmp slt i64 3, %len.
+  %94 = icmp slt i64 3, %N
   %95 = bitcast i64* %shadow to i64*
   %safe.35 = or i1 %93, %94
   %select.ptr.36 = select i1 %safe.35, i64* %87, i64* %95
@@ -11178,14 +11174,14 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.37, i64* %select.ptr.36, align 8
   %97 = getelementptr inbounds i64, i64* %0, i64 4
   %98 = load i1, i1* %out.
-  %99 = icmp slt i64 4, %len.
+  %99 = icmp slt i64 4, %N
   %100 = bitcast i64* %shadow to i64*
   %safe.38 = or i1 %98, %99
   %select.ptr.39 = select i1 %safe.38, i64* %97, i64* %100
   %101 = load i64, i64* %select.ptr.39, align 8
   %102 = add nsw i64 %101, %85
   %103 = load i1, i1* %out.
-  %104 = icmp slt i64 4, %len.
+  %104 = icmp slt i64 4, %N
   %105 = bitcast i64* %shadow to i64*
   %safe.40 = or i1 %103, %104
   %select.ptr.41 = select i1 %safe.40, i64* %97, i64* %105
@@ -11194,7 +11190,7 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.42, i64* %select.ptr.41, align 8
   %107 = getelementptr inbounds i64, i64* %0, i64 4
   %108 = load i1, i1* %out.
-  %109 = icmp slt i64 4, %len.
+  %109 = icmp slt i64 4, %N
   %110 = bitcast i64* %shadow to i64*
   %safe.43 = or i1 %108, %109
   %select.ptr.44 = select i1 %safe.43, i64* %107, i64* %110
@@ -11203,14 +11199,14 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   %113 = shl i64 %112, 26
   %114 = getelementptr inbounds i64, i64* %0, i64 4
   %115 = load i1, i1* %out.
-  %116 = icmp slt i64 4, %len.
+  %116 = icmp slt i64 4, %N
   %117 = bitcast i64* %shadow to i64*
   %safe.45 = or i1 %115, %116
   %select.ptr.46 = select i1 %safe.45, i64* %114, i64* %117
   %118 = load i64, i64* %select.ptr.46, align 8
   %119 = sub nsw i64 %118, %113
   %120 = load i1, i1* %out.
-  %121 = icmp slt i64 4, %len.
+  %121 = icmp slt i64 4, %N
   %122 = bitcast i64* %shadow to i64*
   %safe.47 = or i1 %120, %121
   %select.ptr.48 = select i1 %safe.47, i64* %114, i64* %122
@@ -11219,14 +11215,14 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.49, i64* %select.ptr.48, align 8
   %124 = getelementptr inbounds i64, i64* %0, i64 5
   %125 = load i1, i1* %out.
-  %126 = icmp slt i64 5, %len.
+  %126 = icmp slt i64 5, %N
   %127 = bitcast i64* %shadow to i64*
   %safe.50 = or i1 %125, %126
   %select.ptr.51 = select i1 %safe.50, i64* %124, i64* %127
   %128 = load i64, i64* %select.ptr.51, align 8
   %129 = add nsw i64 %128, %112
   %130 = load i1, i1* %out.
-  %131 = icmp slt i64 5, %len.
+  %131 = icmp slt i64 5, %N
   %132 = bitcast i64* %shadow to i64*
   %safe.52 = or i1 %130, %131
   %select.ptr.53 = select i1 %safe.52, i64* %124, i64* %132
@@ -11235,7 +11231,7 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.54, i64* %select.ptr.53, align 8
   %134 = getelementptr inbounds i64, i64* %0, i64 5
   %135 = load i1, i1* %out.
-  %136 = icmp slt i64 5, %len.
+  %136 = icmp slt i64 5, %N
   %137 = bitcast i64* %shadow to i64*
   %safe.55 = or i1 %135, %136
   %select.ptr.56 = select i1 %safe.55, i64* %134, i64* %137
@@ -11244,14 +11240,14 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   %140 = shl i64 %139, 25
   %141 = getelementptr inbounds i64, i64* %0, i64 5
   %142 = load i1, i1* %out.
-  %143 = icmp slt i64 5, %len.
+  %143 = icmp slt i64 5, %N
   %144 = bitcast i64* %shadow to i64*
   %safe.57 = or i1 %142, %143
   %select.ptr.58 = select i1 %safe.57, i64* %141, i64* %144
   %145 = load i64, i64* %select.ptr.58, align 8
   %146 = sub nsw i64 %145, %140
   %147 = load i1, i1* %out.
-  %148 = icmp slt i64 5, %len.
+  %148 = icmp slt i64 5, %N
   %149 = bitcast i64* %shadow to i64*
   %safe.59 = or i1 %147, %148
   %select.ptr.60 = select i1 %safe.59, i64* %141, i64* %149
@@ -11260,14 +11256,14 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.61, i64* %select.ptr.60, align 8
   %151 = getelementptr inbounds i64, i64* %0, i64 6
   %152 = load i1, i1* %out.
-  %153 = icmp slt i64 6, %len.
+  %153 = icmp slt i64 6, %N
   %154 = bitcast i64* %shadow to i64*
   %safe.62 = or i1 %152, %153
   %select.ptr.63 = select i1 %safe.62, i64* %151, i64* %154
   %155 = load i64, i64* %select.ptr.63, align 8
   %156 = add nsw i64 %155, %139
   %157 = load i1, i1* %out.
-  %158 = icmp slt i64 6, %len.
+  %158 = icmp slt i64 6, %N
   %159 = bitcast i64* %shadow to i64*
   %safe.64 = or i1 %157, %158
   %select.ptr.65 = select i1 %safe.64, i64* %151, i64* %159
@@ -11276,7 +11272,7 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.66, i64* %select.ptr.65, align 8
   %161 = getelementptr inbounds i64, i64* %0, i64 6
   %162 = load i1, i1* %out.
-  %163 = icmp slt i64 6, %len.
+  %163 = icmp slt i64 6, %N
   %164 = bitcast i64* %shadow to i64*
   %safe.67 = or i1 %162, %163
   %select.ptr.68 = select i1 %safe.67, i64* %161, i64* %164
@@ -11285,14 +11281,14 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   %167 = shl i64 %166, 26
   %168 = getelementptr inbounds i64, i64* %0, i64 6
   %169 = load i1, i1* %out.
-  %170 = icmp slt i64 6, %len.
+  %170 = icmp slt i64 6, %N
   %171 = bitcast i64* %shadow to i64*
   %safe.69 = or i1 %169, %170
   %select.ptr.70 = select i1 %safe.69, i64* %168, i64* %171
   %172 = load i64, i64* %select.ptr.70, align 8
   %173 = sub nsw i64 %172, %167
   %174 = load i1, i1* %out.
-  %175 = icmp slt i64 6, %len.
+  %175 = icmp slt i64 6, %N
   %176 = bitcast i64* %shadow to i64*
   %safe.71 = or i1 %174, %175
   %select.ptr.72 = select i1 %safe.71, i64* %168, i64* %176
@@ -11301,14 +11297,14 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.73, i64* %select.ptr.72, align 8
   %178 = getelementptr inbounds i64, i64* %0, i64 7
   %179 = load i1, i1* %out.
-  %180 = icmp slt i64 7, %len.
+  %180 = icmp slt i64 7, %N
   %181 = bitcast i64* %shadow to i64*
   %safe.74 = or i1 %179, %180
   %select.ptr.75 = select i1 %safe.74, i64* %178, i64* %181
   %182 = load i64, i64* %select.ptr.75, align 8
   %183 = add nsw i64 %182, %166
   %184 = load i1, i1* %out.
-  %185 = icmp slt i64 7, %len.
+  %185 = icmp slt i64 7, %N
   %186 = bitcast i64* %shadow to i64*
   %safe.76 = or i1 %184, %185
   %select.ptr.77 = select i1 %safe.76, i64* %178, i64* %186
@@ -11317,7 +11313,7 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.78, i64* %select.ptr.77, align 8
   %188 = getelementptr inbounds i64, i64* %0, i64 7
   %189 = load i1, i1* %out.
-  %190 = icmp slt i64 7, %len.
+  %190 = icmp slt i64 7, %N
   %191 = bitcast i64* %shadow to i64*
   %safe.79 = or i1 %189, %190
   %select.ptr.80 = select i1 %safe.79, i64* %188, i64* %191
@@ -11326,14 +11322,14 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   %194 = shl i64 %193, 25
   %195 = getelementptr inbounds i64, i64* %0, i64 7
   %196 = load i1, i1* %out.
-  %197 = icmp slt i64 7, %len.
+  %197 = icmp slt i64 7, %N
   %198 = bitcast i64* %shadow to i64*
   %safe.81 = or i1 %196, %197
   %select.ptr.82 = select i1 %safe.81, i64* %195, i64* %198
   %199 = load i64, i64* %select.ptr.82, align 8
   %200 = sub nsw i64 %199, %194
   %201 = load i1, i1* %out.
-  %202 = icmp slt i64 7, %len.
+  %202 = icmp slt i64 7, %N
   %203 = bitcast i64* %shadow to i64*
   %safe.83 = or i1 %201, %202
   %select.ptr.84 = select i1 %safe.83, i64* %195, i64* %203
@@ -11342,14 +11338,14 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.85, i64* %select.ptr.84, align 8
   %205 = getelementptr inbounds i64, i64* %0, i64 8
   %206 = load i1, i1* %out.
-  %207 = icmp slt i64 8, %len.
+  %207 = icmp slt i64 8, %N
   %208 = bitcast i64* %shadow to i64*
   %safe.86 = or i1 %206, %207
   %select.ptr.87 = select i1 %safe.86, i64* %205, i64* %208
   %209 = load i64, i64* %select.ptr.87, align 8
   %210 = add nsw i64 %209, %193
   %211 = load i1, i1* %out.
-  %212 = icmp slt i64 8, %len.
+  %212 = icmp slt i64 8, %N
   %213 = bitcast i64* %shadow to i64*
   %safe.88 = or i1 %211, %212
   %select.ptr.89 = select i1 %safe.88, i64* %205, i64* %213
@@ -11358,7 +11354,7 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.90, i64* %select.ptr.89, align 8
   %215 = getelementptr inbounds i64, i64* %0, i64 8
   %216 = load i1, i1* %out.
-  %217 = icmp slt i64 8, %len.
+  %217 = icmp slt i64 8, %N
   %218 = bitcast i64* %shadow to i64*
   %safe.91 = or i1 %216, %217
   %select.ptr.92 = select i1 %safe.91, i64* %215, i64* %218
@@ -11367,14 +11363,14 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   %221 = shl i64 %220, 26
   %222 = getelementptr inbounds i64, i64* %0, i64 8
   %223 = load i1, i1* %out.
-  %224 = icmp slt i64 8, %len.
+  %224 = icmp slt i64 8, %N
   %225 = bitcast i64* %shadow to i64*
   %safe.93 = or i1 %223, %224
   %select.ptr.94 = select i1 %safe.93, i64* %222, i64* %225
   %226 = load i64, i64* %select.ptr.94, align 8
   %227 = sub nsw i64 %226, %221
   %228 = load i1, i1* %out.
-  %229 = icmp slt i64 8, %len.
+  %229 = icmp slt i64 8, %N
   %230 = bitcast i64* %shadow to i64*
   %safe.95 = or i1 %228, %229
   %select.ptr.96 = select i1 %safe.95, i64* %222, i64* %230
@@ -11383,14 +11379,14 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.97, i64* %select.ptr.96, align 8
   %232 = getelementptr inbounds i64, i64* %0, i64 9
   %233 = load i1, i1* %out.
-  %234 = icmp slt i64 9, %len.
+  %234 = icmp slt i64 9, %N
   %235 = bitcast i64* %shadow to i64*
   %safe.98 = or i1 %233, %234
   %select.ptr.99 = select i1 %safe.98, i64* %232, i64* %235
   %236 = load i64, i64* %select.ptr.99, align 8
   %237 = add nsw i64 %236, %220
   %238 = load i1, i1* %out.
-  %239 = icmp slt i64 9, %len.
+  %239 = icmp slt i64 9, %N
   %240 = bitcast i64* %shadow to i64*
   %safe.100 = or i1 %238, %239
   %select.ptr.101 = select i1 %safe.100, i64* %232, i64* %240
@@ -11399,7 +11395,7 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.102, i64* %select.ptr.101, align 8
   %242 = getelementptr inbounds i64, i64* %0, i64 9
   %243 = load i1, i1* %out.
-  %244 = icmp slt i64 9, %len.
+  %244 = icmp slt i64 9, %N
   %245 = bitcast i64* %shadow to i64*
   %safe.103 = or i1 %243, %244
   %select.ptr.104 = select i1 %safe.103, i64* %242, i64* %245
@@ -11408,14 +11404,14 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   %248 = shl i64 %247, 25
   %249 = getelementptr inbounds i64, i64* %0, i64 9
   %250 = load i1, i1* %out.
-  %251 = icmp slt i64 9, %len.
+  %251 = icmp slt i64 9, %N
   %252 = bitcast i64* %shadow to i64*
   %safe.105 = or i1 %250, %251
   %select.ptr.106 = select i1 %safe.105, i64* %249, i64* %252
   %253 = load i64, i64* %select.ptr.106, align 8
   %254 = sub nsw i64 %253, %248
   %255 = load i1, i1* %out.
-  %256 = icmp slt i64 9, %len.
+  %256 = icmp slt i64 9, %N
   %257 = bitcast i64* %shadow to i64*
   %safe.107 = or i1 %255, %256
   %select.ptr.108 = select i1 %safe.107, i64* %249, i64* %257
@@ -11424,14 +11420,14 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.109, i64* %select.ptr.108, align 8
   %259 = getelementptr inbounds i64, i64* %0, i64 10
   %260 = load i1, i1* %out.
-  %261 = icmp slt i64 10, %len.
+  %261 = icmp slt i64 10, %N
   %262 = bitcast i64* %shadow to i64*
   %safe.110 = or i1 %260, %261
   %select.ptr.111 = select i1 %safe.110, i64* %259, i64* %262
   %263 = load i64, i64* %select.ptr.111, align 8
   %264 = add nsw i64 %263, %247
   %265 = load i1, i1* %out.
-  %266 = icmp slt i64 10, %len.
+  %266 = icmp slt i64 10, %N
   %267 = bitcast i64* %shadow to i64*
   %safe.112 = or i1 %265, %266
   %select.ptr.113 = select i1 %safe.112, i64* %259, i64* %267
@@ -11440,7 +11436,7 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.114, i64* %select.ptr.113, align 8
   %269 = getelementptr inbounds i64, i64* %0, i64 10
   %270 = load i1, i1* %out.
-  %271 = icmp slt i64 10, %len.
+  %271 = icmp slt i64 10, %N
   %272 = bitcast i64* %shadow to i64*
   %safe.115 = or i1 %270, %271
   %select.ptr.116 = select i1 %safe.115, i64* %269, i64* %272
@@ -11455,7 +11451,7 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.117, i64* %0, align 8
   %280 = getelementptr inbounds i64, i64* %0, i64 10
   %281 = load i1, i1* %out.
-  %282 = icmp slt i64 10, %len.
+  %282 = icmp slt i64 10, %N
   %283 = bitcast i64* %shadow to i64*
   %safe.118 = or i1 %281, %282
   %select.ptr.119 = select i1 %safe.118, i64* %280, i64* %283
@@ -11470,7 +11466,7 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.120, i64* %0, align 8
   %291 = getelementptr inbounds i64, i64* %0, i64 10
   %292 = load i1, i1* %out.
-  %293 = icmp slt i64 10, %len.
+  %293 = icmp slt i64 10, %N
   %294 = bitcast i64* %shadow to i64*
   %safe.121 = or i1 %292, %293
   %select.ptr.122 = select i1 %safe.121, i64* %291, i64* %294
@@ -11484,7 +11480,7 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.123, i64* %0, align 8
   %301 = getelementptr inbounds i64, i64* %0, i64 10
   %302 = load i1, i1* %out.
-  %303 = icmp slt i64 10, %len.
+  %303 = icmp slt i64 10, %N
   %304 = bitcast i64* %shadow to i64*
   %safe.124 = or i1 %302, %303
   %select.ptr.125 = select i1 %safe.124, i64* %301, i64* %304
@@ -11504,14 +11500,14 @@ define internal void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond) {
   store i64 %select.val.127, i64* %0, align 8
   %315 = getelementptr inbounds i64, i64* %0, i64 1
   %316 = load i1, i1* %out.
-  %317 = icmp slt i64 1, %len.
+  %317 = icmp slt i64 1, %N
   %318 = bitcast i64* %shadow to i64*
   %safe.128 = or i1 %316, %317
   %select.ptr.129 = select i1 %safe.128, i64* %315, i64* %318
   %319 = load i64, i64* %select.ptr.129, align 8
   %320 = add nsw i64 %319, %308
   %321 = load i1, i1* %out.
-  %322 = icmp slt i64 1, %len.
+  %322 = icmp slt i64 1, %N
   %323 = bitcast i64* %shadow to i64*
   %safe.130 = or i1 %321, %322
   %select.ptr.131 = select i1 %safe.130, i64* %315, i64* %323
@@ -11549,13 +11545,13 @@ define internal i64 @div_by_2_25(i64 %0, i1 %.cond) {
   ret i64 %8
 }
 
-define internal void @fsquare(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
+define internal void @fsquare(i64* %0, i64 %N, i64* %1, i64 %N1, i1 %.cond) {
   %shadow = alloca i64
   %out. = alloca i1
   store i1 %.cond, i1* %out.
   %3 = alloca [19 x i64], align 16
   %4 = getelementptr inbounds [19 x i64], [19 x i64]* %3, i64 0, i64 0
-  call void @fsquare_inner(i64* %4, i64 19, i64* %1, i64 %len.1, i1 %.cond)
+  call void @fsquare_inner(i64* %4, i64 19, i64* %1, i64 %N1, i1 %.cond)
   %5 = getelementptr inbounds [19 x i64], [19 x i64]* %3, i64 0, i64 0
   call void @freduce_degree(i64* %5, i64 19, i1 %.cond)
   %6 = getelementptr inbounds [19 x i64], [19 x i64]* %3, i64 0, i64 0
@@ -11567,13 +11563,13 @@ define internal void @fsquare(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond
   ret void
 }
 
-define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
+define internal void @fsquare_inner(i64* %0, i64 %N, i64* %1, i64 %N1, i1 %.cond) {
   %shadow = alloca i64
   %out. = alloca i1
   store i1 %.cond, i1* %out.
   %3 = getelementptr inbounds i64, i64* %1, i64 0
   %4 = load i1, i1* %out.
-  %5 = icmp slt i64 0, %len.1
+  %5 = icmp slt i64 0, %N1
   %6 = bitcast i64* %shadow to i64*
   %safe. = or i1 %4, %5
   %select.ptr. = select i1 %safe., i64* %3, i64* %6
@@ -11582,7 +11578,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %9 = sext i32 %8 to i64
   %10 = getelementptr inbounds i64, i64* %1, i64 0
   %11 = load i1, i1* %out.
-  %12 = icmp slt i64 0, %len.1
+  %12 = icmp slt i64 0, %N1
   %13 = bitcast i64* %shadow to i64*
   %safe.2 = or i1 %11, %12
   %select.ptr.3 = select i1 %safe.2, i64* %10, i64* %13
@@ -11592,7 +11588,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %17 = mul nsw i64 %9, %16
   %18 = getelementptr inbounds i64, i64* %0, i64 0
   %19 = load i1, i1* %out.
-  %20 = icmp slt i64 0, %len.
+  %20 = icmp slt i64 0, %N
   %21 = bitcast i64* %shadow to i64*
   %safe.4 = or i1 %19, %20
   %select.ptr.5 = select i1 %safe.4, i64* %18, i64* %21
@@ -11601,7 +11597,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   store i64 %select.val., i64* %select.ptr.5, align 8
   %23 = getelementptr inbounds i64, i64* %1, i64 0
   %24 = load i1, i1* %out.
-  %25 = icmp slt i64 0, %len.1
+  %25 = icmp slt i64 0, %N1
   %26 = bitcast i64* %shadow to i64*
   %safe.6 = or i1 %24, %25
   %select.ptr.7 = select i1 %safe.6, i64* %23, i64* %26
@@ -11611,7 +11607,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %30 = mul nsw i64 2, %29
   %31 = getelementptr inbounds i64, i64* %1, i64 1
   %32 = load i1, i1* %out.
-  %33 = icmp slt i64 1, %len.1
+  %33 = icmp slt i64 1, %N1
   %34 = bitcast i64* %shadow to i64*
   %safe.8 = or i1 %32, %33
   %select.ptr.9 = select i1 %safe.8, i64* %31, i64* %34
@@ -11621,7 +11617,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %38 = mul nsw i64 %30, %37
   %39 = getelementptr inbounds i64, i64* %0, i64 1
   %40 = load i1, i1* %out.
-  %41 = icmp slt i64 1, %len.
+  %41 = icmp slt i64 1, %N
   %42 = bitcast i64* %shadow to i64*
   %safe.10 = or i1 %40, %41
   %select.ptr.11 = select i1 %safe.10, i64* %39, i64* %42
@@ -11630,7 +11626,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   store i64 %select.val.12, i64* %select.ptr.11, align 8
   %44 = getelementptr inbounds i64, i64* %1, i64 1
   %45 = load i1, i1* %out.
-  %46 = icmp slt i64 1, %len.1
+  %46 = icmp slt i64 1, %N1
   %47 = bitcast i64* %shadow to i64*
   %safe.13 = or i1 %45, %46
   %select.ptr.14 = select i1 %safe.13, i64* %44, i64* %47
@@ -11639,7 +11635,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %50 = sext i32 %49 to i64
   %51 = getelementptr inbounds i64, i64* %1, i64 1
   %52 = load i1, i1* %out.
-  %53 = icmp slt i64 1, %len.1
+  %53 = icmp slt i64 1, %N1
   %54 = bitcast i64* %shadow to i64*
   %safe.15 = or i1 %52, %53
   %select.ptr.16 = select i1 %safe.15, i64* %51, i64* %54
@@ -11649,7 +11645,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %58 = mul nsw i64 %50, %57
   %59 = getelementptr inbounds i64, i64* %1, i64 0
   %60 = load i1, i1* %out.
-  %61 = icmp slt i64 0, %len.1
+  %61 = icmp slt i64 0, %N1
   %62 = bitcast i64* %shadow to i64*
   %safe.17 = or i1 %60, %61
   %select.ptr.18 = select i1 %safe.17, i64* %59, i64* %62
@@ -11658,7 +11654,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %65 = sext i32 %64 to i64
   %66 = getelementptr inbounds i64, i64* %1, i64 2
   %67 = load i1, i1* %out.
-  %68 = icmp slt i64 2, %len.1
+  %68 = icmp slt i64 2, %N1
   %69 = bitcast i64* %shadow to i64*
   %safe.19 = or i1 %67, %68
   %select.ptr.20 = select i1 %safe.19, i64* %66, i64* %69
@@ -11670,7 +11666,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %75 = mul nsw i64 2, %74
   %76 = getelementptr inbounds i64, i64* %0, i64 2
   %77 = load i1, i1* %out.
-  %78 = icmp slt i64 2, %len.
+  %78 = icmp slt i64 2, %N
   %79 = bitcast i64* %shadow to i64*
   %safe.21 = or i1 %77, %78
   %select.ptr.22 = select i1 %safe.21, i64* %76, i64* %79
@@ -11679,7 +11675,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   store i64 %select.val.23, i64* %select.ptr.22, align 8
   %81 = getelementptr inbounds i64, i64* %1, i64 1
   %82 = load i1, i1* %out.
-  %83 = icmp slt i64 1, %len.1
+  %83 = icmp slt i64 1, %N1
   %84 = bitcast i64* %shadow to i64*
   %safe.24 = or i1 %82, %83
   %select.ptr.25 = select i1 %safe.24, i64* %81, i64* %84
@@ -11688,7 +11684,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %87 = sext i32 %86 to i64
   %88 = getelementptr inbounds i64, i64* %1, i64 2
   %89 = load i1, i1* %out.
-  %90 = icmp slt i64 2, %len.1
+  %90 = icmp slt i64 2, %N1
   %91 = bitcast i64* %shadow to i64*
   %safe.26 = or i1 %89, %90
   %select.ptr.27 = select i1 %safe.26, i64* %88, i64* %91
@@ -11698,7 +11694,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %95 = mul nsw i64 %87, %94
   %96 = getelementptr inbounds i64, i64* %1, i64 0
   %97 = load i1, i1* %out.
-  %98 = icmp slt i64 0, %len.1
+  %98 = icmp slt i64 0, %N1
   %99 = bitcast i64* %shadow to i64*
   %safe.28 = or i1 %97, %98
   %select.ptr.29 = select i1 %safe.28, i64* %96, i64* %99
@@ -11707,7 +11703,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %102 = sext i32 %101 to i64
   %103 = getelementptr inbounds i64, i64* %1, i64 3
   %104 = load i1, i1* %out.
-  %105 = icmp slt i64 3, %len.1
+  %105 = icmp slt i64 3, %N1
   %106 = bitcast i64* %shadow to i64*
   %safe.30 = or i1 %104, %105
   %select.ptr.31 = select i1 %safe.30, i64* %103, i64* %106
@@ -11719,7 +11715,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %112 = mul nsw i64 2, %111
   %113 = getelementptr inbounds i64, i64* %0, i64 3
   %114 = load i1, i1* %out.
-  %115 = icmp slt i64 3, %len.
+  %115 = icmp slt i64 3, %N
   %116 = bitcast i64* %shadow to i64*
   %safe.32 = or i1 %114, %115
   %select.ptr.33 = select i1 %safe.32, i64* %113, i64* %116
@@ -11728,7 +11724,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   store i64 %select.val.34, i64* %select.ptr.33, align 8
   %118 = getelementptr inbounds i64, i64* %1, i64 2
   %119 = load i1, i1* %out.
-  %120 = icmp slt i64 2, %len.1
+  %120 = icmp slt i64 2, %N1
   %121 = bitcast i64* %shadow to i64*
   %safe.35 = or i1 %119, %120
   %select.ptr.36 = select i1 %safe.35, i64* %118, i64* %121
@@ -11737,7 +11733,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %124 = sext i32 %123 to i64
   %125 = getelementptr inbounds i64, i64* %1, i64 2
   %126 = load i1, i1* %out.
-  %127 = icmp slt i64 2, %len.1
+  %127 = icmp slt i64 2, %N1
   %128 = bitcast i64* %shadow to i64*
   %safe.37 = or i1 %126, %127
   %select.ptr.38 = select i1 %safe.37, i64* %125, i64* %128
@@ -11747,7 +11743,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %132 = mul nsw i64 %124, %131
   %133 = getelementptr inbounds i64, i64* %1, i64 1
   %134 = load i1, i1* %out.
-  %135 = icmp slt i64 1, %len.1
+  %135 = icmp slt i64 1, %N1
   %136 = bitcast i64* %shadow to i64*
   %safe.39 = or i1 %134, %135
   %select.ptr.40 = select i1 %safe.39, i64* %133, i64* %136
@@ -11757,7 +11753,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %140 = mul nsw i64 4, %139
   %141 = getelementptr inbounds i64, i64* %1, i64 3
   %142 = load i1, i1* %out.
-  %143 = icmp slt i64 3, %len.1
+  %143 = icmp slt i64 3, %N1
   %144 = bitcast i64* %shadow to i64*
   %safe.41 = or i1 %142, %143
   %select.ptr.42 = select i1 %safe.41, i64* %141, i64* %144
@@ -11768,7 +11764,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %149 = add nsw i64 %132, %148
   %150 = getelementptr inbounds i64, i64* %1, i64 0
   %151 = load i1, i1* %out.
-  %152 = icmp slt i64 0, %len.1
+  %152 = icmp slt i64 0, %N1
   %153 = bitcast i64* %shadow to i64*
   %safe.43 = or i1 %151, %152
   %select.ptr.44 = select i1 %safe.43, i64* %150, i64* %153
@@ -11778,7 +11774,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %157 = mul nsw i64 2, %156
   %158 = getelementptr inbounds i64, i64* %1, i64 4
   %159 = load i1, i1* %out.
-  %160 = icmp slt i64 4, %len.1
+  %160 = icmp slt i64 4, %N1
   %161 = bitcast i64* %shadow to i64*
   %safe.45 = or i1 %159, %160
   %select.ptr.46 = select i1 %safe.45, i64* %158, i64* %161
@@ -11789,7 +11785,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %166 = add nsw i64 %149, %165
   %167 = getelementptr inbounds i64, i64* %0, i64 4
   %168 = load i1, i1* %out.
-  %169 = icmp slt i64 4, %len.
+  %169 = icmp slt i64 4, %N
   %170 = bitcast i64* %shadow to i64*
   %safe.47 = or i1 %168, %169
   %select.ptr.48 = select i1 %safe.47, i64* %167, i64* %170
@@ -11798,7 +11794,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   store i64 %select.val.49, i64* %select.ptr.48, align 8
   %172 = getelementptr inbounds i64, i64* %1, i64 2
   %173 = load i1, i1* %out.
-  %174 = icmp slt i64 2, %len.1
+  %174 = icmp slt i64 2, %N1
   %175 = bitcast i64* %shadow to i64*
   %safe.50 = or i1 %173, %174
   %select.ptr.51 = select i1 %safe.50, i64* %172, i64* %175
@@ -11807,7 +11803,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %178 = sext i32 %177 to i64
   %179 = getelementptr inbounds i64, i64* %1, i64 3
   %180 = load i1, i1* %out.
-  %181 = icmp slt i64 3, %len.1
+  %181 = icmp slt i64 3, %N1
   %182 = bitcast i64* %shadow to i64*
   %safe.52 = or i1 %180, %181
   %select.ptr.53 = select i1 %safe.52, i64* %179, i64* %182
@@ -11817,7 +11813,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %186 = mul nsw i64 %178, %185
   %187 = getelementptr inbounds i64, i64* %1, i64 1
   %188 = load i1, i1* %out.
-  %189 = icmp slt i64 1, %len.1
+  %189 = icmp slt i64 1, %N1
   %190 = bitcast i64* %shadow to i64*
   %safe.54 = or i1 %188, %189
   %select.ptr.55 = select i1 %safe.54, i64* %187, i64* %190
@@ -11826,7 +11822,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %193 = sext i32 %192 to i64
   %194 = getelementptr inbounds i64, i64* %1, i64 4
   %195 = load i1, i1* %out.
-  %196 = icmp slt i64 4, %len.1
+  %196 = icmp slt i64 4, %N1
   %197 = bitcast i64* %shadow to i64*
   %safe.56 = or i1 %195, %196
   %select.ptr.57 = select i1 %safe.56, i64* %194, i64* %197
@@ -11837,7 +11833,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %202 = add nsw i64 %186, %201
   %203 = getelementptr inbounds i64, i64* %1, i64 0
   %204 = load i1, i1* %out.
-  %205 = icmp slt i64 0, %len.1
+  %205 = icmp slt i64 0, %N1
   %206 = bitcast i64* %shadow to i64*
   %safe.58 = or i1 %204, %205
   %select.ptr.59 = select i1 %safe.58, i64* %203, i64* %206
@@ -11846,7 +11842,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %209 = sext i32 %208 to i64
   %210 = getelementptr inbounds i64, i64* %1, i64 5
   %211 = load i1, i1* %out.
-  %212 = icmp slt i64 5, %len.1
+  %212 = icmp slt i64 5, %N1
   %213 = bitcast i64* %shadow to i64*
   %safe.60 = or i1 %211, %212
   %select.ptr.61 = select i1 %safe.60, i64* %210, i64* %213
@@ -11858,7 +11854,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %219 = mul nsw i64 2, %218
   %220 = getelementptr inbounds i64, i64* %0, i64 5
   %221 = load i1, i1* %out.
-  %222 = icmp slt i64 5, %len.
+  %222 = icmp slt i64 5, %N
   %223 = bitcast i64* %shadow to i64*
   %safe.62 = or i1 %221, %222
   %select.ptr.63 = select i1 %safe.62, i64* %220, i64* %223
@@ -11867,7 +11863,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   store i64 %select.val.64, i64* %select.ptr.63, align 8
   %225 = getelementptr inbounds i64, i64* %1, i64 3
   %226 = load i1, i1* %out.
-  %227 = icmp slt i64 3, %len.1
+  %227 = icmp slt i64 3, %N1
   %228 = bitcast i64* %shadow to i64*
   %safe.65 = or i1 %226, %227
   %select.ptr.66 = select i1 %safe.65, i64* %225, i64* %228
@@ -11876,7 +11872,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %231 = sext i32 %230 to i64
   %232 = getelementptr inbounds i64, i64* %1, i64 3
   %233 = load i1, i1* %out.
-  %234 = icmp slt i64 3, %len.1
+  %234 = icmp slt i64 3, %N1
   %235 = bitcast i64* %shadow to i64*
   %safe.67 = or i1 %233, %234
   %select.ptr.68 = select i1 %safe.67, i64* %232, i64* %235
@@ -11886,7 +11882,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %239 = mul nsw i64 %231, %238
   %240 = getelementptr inbounds i64, i64* %1, i64 2
   %241 = load i1, i1* %out.
-  %242 = icmp slt i64 2, %len.1
+  %242 = icmp slt i64 2, %N1
   %243 = bitcast i64* %shadow to i64*
   %safe.69 = or i1 %241, %242
   %select.ptr.70 = select i1 %safe.69, i64* %240, i64* %243
@@ -11895,7 +11891,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %246 = sext i32 %245 to i64
   %247 = getelementptr inbounds i64, i64* %1, i64 4
   %248 = load i1, i1* %out.
-  %249 = icmp slt i64 4, %len.1
+  %249 = icmp slt i64 4, %N1
   %250 = bitcast i64* %shadow to i64*
   %safe.71 = or i1 %248, %249
   %select.ptr.72 = select i1 %safe.71, i64* %247, i64* %250
@@ -11906,7 +11902,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %255 = add nsw i64 %239, %254
   %256 = getelementptr inbounds i64, i64* %1, i64 0
   %257 = load i1, i1* %out.
-  %258 = icmp slt i64 0, %len.1
+  %258 = icmp slt i64 0, %N1
   %259 = bitcast i64* %shadow to i64*
   %safe.73 = or i1 %257, %258
   %select.ptr.74 = select i1 %safe.73, i64* %256, i64* %259
@@ -11915,7 +11911,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %262 = sext i32 %261 to i64
   %263 = getelementptr inbounds i64, i64* %1, i64 6
   %264 = load i1, i1* %out.
-  %265 = icmp slt i64 6, %len.1
+  %265 = icmp slt i64 6, %N1
   %266 = bitcast i64* %shadow to i64*
   %safe.75 = or i1 %264, %265
   %select.ptr.76 = select i1 %safe.75, i64* %263, i64* %266
@@ -11926,7 +11922,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %271 = add nsw i64 %255, %270
   %272 = getelementptr inbounds i64, i64* %1, i64 1
   %273 = load i1, i1* %out.
-  %274 = icmp slt i64 1, %len.1
+  %274 = icmp slt i64 1, %N1
   %275 = bitcast i64* %shadow to i64*
   %safe.77 = or i1 %273, %274
   %select.ptr.78 = select i1 %safe.77, i64* %272, i64* %275
@@ -11936,7 +11932,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %279 = mul nsw i64 2, %278
   %280 = getelementptr inbounds i64, i64* %1, i64 5
   %281 = load i1, i1* %out.
-  %282 = icmp slt i64 5, %len.1
+  %282 = icmp slt i64 5, %N1
   %283 = bitcast i64* %shadow to i64*
   %safe.79 = or i1 %281, %282
   %select.ptr.80 = select i1 %safe.79, i64* %280, i64* %283
@@ -11948,7 +11944,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %289 = mul nsw i64 2, %288
   %290 = getelementptr inbounds i64, i64* %0, i64 6
   %291 = load i1, i1* %out.
-  %292 = icmp slt i64 6, %len.
+  %292 = icmp slt i64 6, %N
   %293 = bitcast i64* %shadow to i64*
   %safe.81 = or i1 %291, %292
   %select.ptr.82 = select i1 %safe.81, i64* %290, i64* %293
@@ -11957,7 +11953,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   store i64 %select.val.83, i64* %select.ptr.82, align 8
   %295 = getelementptr inbounds i64, i64* %1, i64 3
   %296 = load i1, i1* %out.
-  %297 = icmp slt i64 3, %len.1
+  %297 = icmp slt i64 3, %N1
   %298 = bitcast i64* %shadow to i64*
   %safe.84 = or i1 %296, %297
   %select.ptr.85 = select i1 %safe.84, i64* %295, i64* %298
@@ -11966,7 +11962,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %301 = sext i32 %300 to i64
   %302 = getelementptr inbounds i64, i64* %1, i64 4
   %303 = load i1, i1* %out.
-  %304 = icmp slt i64 4, %len.1
+  %304 = icmp slt i64 4, %N1
   %305 = bitcast i64* %shadow to i64*
   %safe.86 = or i1 %303, %304
   %select.ptr.87 = select i1 %safe.86, i64* %302, i64* %305
@@ -11976,7 +11972,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %309 = mul nsw i64 %301, %308
   %310 = getelementptr inbounds i64, i64* %1, i64 2
   %311 = load i1, i1* %out.
-  %312 = icmp slt i64 2, %len.1
+  %312 = icmp slt i64 2, %N1
   %313 = bitcast i64* %shadow to i64*
   %safe.88 = or i1 %311, %312
   %select.ptr.89 = select i1 %safe.88, i64* %310, i64* %313
@@ -11985,7 +11981,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %316 = sext i32 %315 to i64
   %317 = getelementptr inbounds i64, i64* %1, i64 5
   %318 = load i1, i1* %out.
-  %319 = icmp slt i64 5, %len.1
+  %319 = icmp slt i64 5, %N1
   %320 = bitcast i64* %shadow to i64*
   %safe.90 = or i1 %318, %319
   %select.ptr.91 = select i1 %safe.90, i64* %317, i64* %320
@@ -11996,7 +11992,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %325 = add nsw i64 %309, %324
   %326 = getelementptr inbounds i64, i64* %1, i64 1
   %327 = load i1, i1* %out.
-  %328 = icmp slt i64 1, %len.1
+  %328 = icmp slt i64 1, %N1
   %329 = bitcast i64* %shadow to i64*
   %safe.92 = or i1 %327, %328
   %select.ptr.93 = select i1 %safe.92, i64* %326, i64* %329
@@ -12005,7 +12001,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %332 = sext i32 %331 to i64
   %333 = getelementptr inbounds i64, i64* %1, i64 6
   %334 = load i1, i1* %out.
-  %335 = icmp slt i64 6, %len.1
+  %335 = icmp slt i64 6, %N1
   %336 = bitcast i64* %shadow to i64*
   %safe.94 = or i1 %334, %335
   %select.ptr.95 = select i1 %safe.94, i64* %333, i64* %336
@@ -12016,7 +12012,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %341 = add nsw i64 %325, %340
   %342 = getelementptr inbounds i64, i64* %1, i64 0
   %343 = load i1, i1* %out.
-  %344 = icmp slt i64 0, %len.1
+  %344 = icmp slt i64 0, %N1
   %345 = bitcast i64* %shadow to i64*
   %safe.96 = or i1 %343, %344
   %select.ptr.97 = select i1 %safe.96, i64* %342, i64* %345
@@ -12025,7 +12021,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %348 = sext i32 %347 to i64
   %349 = getelementptr inbounds i64, i64* %1, i64 7
   %350 = load i1, i1* %out.
-  %351 = icmp slt i64 7, %len.1
+  %351 = icmp slt i64 7, %N1
   %352 = bitcast i64* %shadow to i64*
   %safe.98 = or i1 %350, %351
   %select.ptr.99 = select i1 %safe.98, i64* %349, i64* %352
@@ -12037,7 +12033,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %358 = mul nsw i64 2, %357
   %359 = getelementptr inbounds i64, i64* %0, i64 7
   %360 = load i1, i1* %out.
-  %361 = icmp slt i64 7, %len.
+  %361 = icmp slt i64 7, %N
   %362 = bitcast i64* %shadow to i64*
   %safe.100 = or i1 %360, %361
   %select.ptr.101 = select i1 %safe.100, i64* %359, i64* %362
@@ -12046,7 +12042,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   store i64 %select.val.102, i64* %select.ptr.101, align 8
   %364 = getelementptr inbounds i64, i64* %1, i64 4
   %365 = load i1, i1* %out.
-  %366 = icmp slt i64 4, %len.1
+  %366 = icmp slt i64 4, %N1
   %367 = bitcast i64* %shadow to i64*
   %safe.103 = or i1 %365, %366
   %select.ptr.104 = select i1 %safe.103, i64* %364, i64* %367
@@ -12055,7 +12051,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %370 = sext i32 %369 to i64
   %371 = getelementptr inbounds i64, i64* %1, i64 4
   %372 = load i1, i1* %out.
-  %373 = icmp slt i64 4, %len.1
+  %373 = icmp slt i64 4, %N1
   %374 = bitcast i64* %shadow to i64*
   %safe.105 = or i1 %372, %373
   %select.ptr.106 = select i1 %safe.105, i64* %371, i64* %374
@@ -12065,7 +12061,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %378 = mul nsw i64 %370, %377
   %379 = getelementptr inbounds i64, i64* %1, i64 2
   %380 = load i1, i1* %out.
-  %381 = icmp slt i64 2, %len.1
+  %381 = icmp slt i64 2, %N1
   %382 = bitcast i64* %shadow to i64*
   %safe.107 = or i1 %380, %381
   %select.ptr.108 = select i1 %safe.107, i64* %379, i64* %382
@@ -12074,7 +12070,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %385 = sext i32 %384 to i64
   %386 = getelementptr inbounds i64, i64* %1, i64 6
   %387 = load i1, i1* %out.
-  %388 = icmp slt i64 6, %len.1
+  %388 = icmp slt i64 6, %N1
   %389 = bitcast i64* %shadow to i64*
   %safe.109 = or i1 %387, %388
   %select.ptr.110 = select i1 %safe.109, i64* %386, i64* %389
@@ -12084,7 +12080,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %393 = mul nsw i64 %385, %392
   %394 = getelementptr inbounds i64, i64* %1, i64 0
   %395 = load i1, i1* %out.
-  %396 = icmp slt i64 0, %len.1
+  %396 = icmp slt i64 0, %N1
   %397 = bitcast i64* %shadow to i64*
   %safe.111 = or i1 %395, %396
   %select.ptr.112 = select i1 %safe.111, i64* %394, i64* %397
@@ -12093,7 +12089,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %400 = sext i32 %399 to i64
   %401 = getelementptr inbounds i64, i64* %1, i64 8
   %402 = load i1, i1* %out.
-  %403 = icmp slt i64 8, %len.1
+  %403 = icmp slt i64 8, %N1
   %404 = bitcast i64* %shadow to i64*
   %safe.113 = or i1 %402, %403
   %select.ptr.114 = select i1 %safe.113, i64* %401, i64* %404
@@ -12104,7 +12100,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %409 = add nsw i64 %393, %408
   %410 = getelementptr inbounds i64, i64* %1, i64 1
   %411 = load i1, i1* %out.
-  %412 = icmp slt i64 1, %len.1
+  %412 = icmp slt i64 1, %N1
   %413 = bitcast i64* %shadow to i64*
   %safe.115 = or i1 %411, %412
   %select.ptr.116 = select i1 %safe.115, i64* %410, i64* %413
@@ -12113,7 +12109,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %416 = sext i32 %415 to i64
   %417 = getelementptr inbounds i64, i64* %1, i64 7
   %418 = load i1, i1* %out.
-  %419 = icmp slt i64 7, %len.1
+  %419 = icmp slt i64 7, %N1
   %420 = bitcast i64* %shadow to i64*
   %safe.117 = or i1 %418, %419
   %select.ptr.118 = select i1 %safe.117, i64* %417, i64* %420
@@ -12123,7 +12119,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %424 = mul nsw i64 %416, %423
   %425 = getelementptr inbounds i64, i64* %1, i64 3
   %426 = load i1, i1* %out.
-  %427 = icmp slt i64 3, %len.1
+  %427 = icmp slt i64 3, %N1
   %428 = bitcast i64* %shadow to i64*
   %safe.119 = or i1 %426, %427
   %select.ptr.120 = select i1 %safe.119, i64* %425, i64* %428
@@ -12132,7 +12128,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %431 = sext i32 %430 to i64
   %432 = getelementptr inbounds i64, i64* %1, i64 5
   %433 = load i1, i1* %out.
-  %434 = icmp slt i64 5, %len.1
+  %434 = icmp slt i64 5, %N1
   %435 = bitcast i64* %shadow to i64*
   %safe.121 = or i1 %433, %434
   %select.ptr.122 = select i1 %safe.121, i64* %432, i64* %435
@@ -12147,7 +12143,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %444 = add nsw i64 %378, %443
   %445 = getelementptr inbounds i64, i64* %0, i64 8
   %446 = load i1, i1* %out.
-  %447 = icmp slt i64 8, %len.
+  %447 = icmp slt i64 8, %N
   %448 = bitcast i64* %shadow to i64*
   %safe.123 = or i1 %446, %447
   %select.ptr.124 = select i1 %safe.123, i64* %445, i64* %448
@@ -12156,7 +12152,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   store i64 %select.val.125, i64* %select.ptr.124, align 8
   %450 = getelementptr inbounds i64, i64* %1, i64 4
   %451 = load i1, i1* %out.
-  %452 = icmp slt i64 4, %len.1
+  %452 = icmp slt i64 4, %N1
   %453 = bitcast i64* %shadow to i64*
   %safe.126 = or i1 %451, %452
   %select.ptr.127 = select i1 %safe.126, i64* %450, i64* %453
@@ -12165,7 +12161,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %456 = sext i32 %455 to i64
   %457 = getelementptr inbounds i64, i64* %1, i64 5
   %458 = load i1, i1* %out.
-  %459 = icmp slt i64 5, %len.1
+  %459 = icmp slt i64 5, %N1
   %460 = bitcast i64* %shadow to i64*
   %safe.128 = or i1 %458, %459
   %select.ptr.129 = select i1 %safe.128, i64* %457, i64* %460
@@ -12175,7 +12171,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %464 = mul nsw i64 %456, %463
   %465 = getelementptr inbounds i64, i64* %1, i64 3
   %466 = load i1, i1* %out.
-  %467 = icmp slt i64 3, %len.1
+  %467 = icmp slt i64 3, %N1
   %468 = bitcast i64* %shadow to i64*
   %safe.130 = or i1 %466, %467
   %select.ptr.131 = select i1 %safe.130, i64* %465, i64* %468
@@ -12184,7 +12180,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %471 = sext i32 %470 to i64
   %472 = getelementptr inbounds i64, i64* %1, i64 6
   %473 = load i1, i1* %out.
-  %474 = icmp slt i64 6, %len.1
+  %474 = icmp slt i64 6, %N1
   %475 = bitcast i64* %shadow to i64*
   %safe.132 = or i1 %473, %474
   %select.ptr.133 = select i1 %safe.132, i64* %472, i64* %475
@@ -12195,7 +12191,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %480 = add nsw i64 %464, %479
   %481 = getelementptr inbounds i64, i64* %1, i64 2
   %482 = load i1, i1* %out.
-  %483 = icmp slt i64 2, %len.1
+  %483 = icmp slt i64 2, %N1
   %484 = bitcast i64* %shadow to i64*
   %safe.134 = or i1 %482, %483
   %select.ptr.135 = select i1 %safe.134, i64* %481, i64* %484
@@ -12204,7 +12200,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %487 = sext i32 %486 to i64
   %488 = getelementptr inbounds i64, i64* %1, i64 7
   %489 = load i1, i1* %out.
-  %490 = icmp slt i64 7, %len.1
+  %490 = icmp slt i64 7, %N1
   %491 = bitcast i64* %shadow to i64*
   %safe.136 = or i1 %489, %490
   %select.ptr.137 = select i1 %safe.136, i64* %488, i64* %491
@@ -12215,7 +12211,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %496 = add nsw i64 %480, %495
   %497 = getelementptr inbounds i64, i64* %1, i64 1
   %498 = load i1, i1* %out.
-  %499 = icmp slt i64 1, %len.1
+  %499 = icmp slt i64 1, %N1
   %500 = bitcast i64* %shadow to i64*
   %safe.138 = or i1 %498, %499
   %select.ptr.139 = select i1 %safe.138, i64* %497, i64* %500
@@ -12224,7 +12220,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %503 = sext i32 %502 to i64
   %504 = getelementptr inbounds i64, i64* %1, i64 8
   %505 = load i1, i1* %out.
-  %506 = icmp slt i64 8, %len.1
+  %506 = icmp slt i64 8, %N1
   %507 = bitcast i64* %shadow to i64*
   %safe.140 = or i1 %505, %506
   %select.ptr.141 = select i1 %safe.140, i64* %504, i64* %507
@@ -12235,7 +12231,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %512 = add nsw i64 %496, %511
   %513 = getelementptr inbounds i64, i64* %1, i64 0
   %514 = load i1, i1* %out.
-  %515 = icmp slt i64 0, %len.1
+  %515 = icmp slt i64 0, %N1
   %516 = bitcast i64* %shadow to i64*
   %safe.142 = or i1 %514, %515
   %select.ptr.143 = select i1 %safe.142, i64* %513, i64* %516
@@ -12244,7 +12240,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %519 = sext i32 %518 to i64
   %520 = getelementptr inbounds i64, i64* %1, i64 9
   %521 = load i1, i1* %out.
-  %522 = icmp slt i64 9, %len.1
+  %522 = icmp slt i64 9, %N1
   %523 = bitcast i64* %shadow to i64*
   %safe.144 = or i1 %521, %522
   %select.ptr.145 = select i1 %safe.144, i64* %520, i64* %523
@@ -12256,7 +12252,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %529 = mul nsw i64 2, %528
   %530 = getelementptr inbounds i64, i64* %0, i64 9
   %531 = load i1, i1* %out.
-  %532 = icmp slt i64 9, %len.
+  %532 = icmp slt i64 9, %N
   %533 = bitcast i64* %shadow to i64*
   %safe.146 = or i1 %531, %532
   %select.ptr.147 = select i1 %safe.146, i64* %530, i64* %533
@@ -12265,7 +12261,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   store i64 %select.val.148, i64* %select.ptr.147, align 8
   %535 = getelementptr inbounds i64, i64* %1, i64 5
   %536 = load i1, i1* %out.
-  %537 = icmp slt i64 5, %len.1
+  %537 = icmp slt i64 5, %N1
   %538 = bitcast i64* %shadow to i64*
   %safe.149 = or i1 %536, %537
   %select.ptr.150 = select i1 %safe.149, i64* %535, i64* %538
@@ -12274,7 +12270,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %541 = sext i32 %540 to i64
   %542 = getelementptr inbounds i64, i64* %1, i64 5
   %543 = load i1, i1* %out.
-  %544 = icmp slt i64 5, %len.1
+  %544 = icmp slt i64 5, %N1
   %545 = bitcast i64* %shadow to i64*
   %safe.151 = or i1 %543, %544
   %select.ptr.152 = select i1 %safe.151, i64* %542, i64* %545
@@ -12284,7 +12280,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %549 = mul nsw i64 %541, %548
   %550 = getelementptr inbounds i64, i64* %1, i64 4
   %551 = load i1, i1* %out.
-  %552 = icmp slt i64 4, %len.1
+  %552 = icmp slt i64 4, %N1
   %553 = bitcast i64* %shadow to i64*
   %safe.153 = or i1 %551, %552
   %select.ptr.154 = select i1 %safe.153, i64* %550, i64* %553
@@ -12293,7 +12289,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %556 = sext i32 %555 to i64
   %557 = getelementptr inbounds i64, i64* %1, i64 6
   %558 = load i1, i1* %out.
-  %559 = icmp slt i64 6, %len.1
+  %559 = icmp slt i64 6, %N1
   %560 = bitcast i64* %shadow to i64*
   %safe.155 = or i1 %558, %559
   %select.ptr.156 = select i1 %safe.155, i64* %557, i64* %560
@@ -12304,7 +12300,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %565 = add nsw i64 %549, %564
   %566 = getelementptr inbounds i64, i64* %1, i64 2
   %567 = load i1, i1* %out.
-  %568 = icmp slt i64 2, %len.1
+  %568 = icmp slt i64 2, %N1
   %569 = bitcast i64* %shadow to i64*
   %safe.157 = or i1 %567, %568
   %select.ptr.158 = select i1 %safe.157, i64* %566, i64* %569
@@ -12313,7 +12309,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %572 = sext i32 %571 to i64
   %573 = getelementptr inbounds i64, i64* %1, i64 8
   %574 = load i1, i1* %out.
-  %575 = icmp slt i64 8, %len.1
+  %575 = icmp slt i64 8, %N1
   %576 = bitcast i64* %shadow to i64*
   %safe.159 = or i1 %574, %575
   %select.ptr.160 = select i1 %safe.159, i64* %573, i64* %576
@@ -12324,7 +12320,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %581 = add nsw i64 %565, %580
   %582 = getelementptr inbounds i64, i64* %1, i64 3
   %583 = load i1, i1* %out.
-  %584 = icmp slt i64 3, %len.1
+  %584 = icmp slt i64 3, %N1
   %585 = bitcast i64* %shadow to i64*
   %safe.161 = or i1 %583, %584
   %select.ptr.162 = select i1 %safe.161, i64* %582, i64* %585
@@ -12333,7 +12329,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %588 = sext i32 %587 to i64
   %589 = getelementptr inbounds i64, i64* %1, i64 7
   %590 = load i1, i1* %out.
-  %591 = icmp slt i64 7, %len.1
+  %591 = icmp slt i64 7, %N1
   %592 = bitcast i64* %shadow to i64*
   %safe.163 = or i1 %590, %591
   %select.ptr.164 = select i1 %safe.163, i64* %589, i64* %592
@@ -12343,7 +12339,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %596 = mul nsw i64 %588, %595
   %597 = getelementptr inbounds i64, i64* %1, i64 1
   %598 = load i1, i1* %out.
-  %599 = icmp slt i64 1, %len.1
+  %599 = icmp slt i64 1, %N1
   %600 = bitcast i64* %shadow to i64*
   %safe.165 = or i1 %598, %599
   %select.ptr.166 = select i1 %safe.165, i64* %597, i64* %600
@@ -12352,7 +12348,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %603 = sext i32 %602 to i64
   %604 = getelementptr inbounds i64, i64* %1, i64 9
   %605 = load i1, i1* %out.
-  %606 = icmp slt i64 9, %len.1
+  %606 = icmp slt i64 9, %N1
   %607 = bitcast i64* %shadow to i64*
   %safe.167 = or i1 %605, %606
   %select.ptr.168 = select i1 %safe.167, i64* %604, i64* %607
@@ -12366,7 +12362,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %615 = mul nsw i64 2, %614
   %616 = getelementptr inbounds i64, i64* %0, i64 10
   %617 = load i1, i1* %out.
-  %618 = icmp slt i64 10, %len.
+  %618 = icmp slt i64 10, %N
   %619 = bitcast i64* %shadow to i64*
   %safe.169 = or i1 %617, %618
   %select.ptr.170 = select i1 %safe.169, i64* %616, i64* %619
@@ -12375,7 +12371,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   store i64 %select.val.171, i64* %select.ptr.170, align 8
   %621 = getelementptr inbounds i64, i64* %1, i64 5
   %622 = load i1, i1* %out.
-  %623 = icmp slt i64 5, %len.1
+  %623 = icmp slt i64 5, %N1
   %624 = bitcast i64* %shadow to i64*
   %safe.172 = or i1 %622, %623
   %select.ptr.173 = select i1 %safe.172, i64* %621, i64* %624
@@ -12384,7 +12380,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %627 = sext i32 %626 to i64
   %628 = getelementptr inbounds i64, i64* %1, i64 6
   %629 = load i1, i1* %out.
-  %630 = icmp slt i64 6, %len.1
+  %630 = icmp slt i64 6, %N1
   %631 = bitcast i64* %shadow to i64*
   %safe.174 = or i1 %629, %630
   %select.ptr.175 = select i1 %safe.174, i64* %628, i64* %631
@@ -12394,7 +12390,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %635 = mul nsw i64 %627, %634
   %636 = getelementptr inbounds i64, i64* %1, i64 4
   %637 = load i1, i1* %out.
-  %638 = icmp slt i64 4, %len.1
+  %638 = icmp slt i64 4, %N1
   %639 = bitcast i64* %shadow to i64*
   %safe.176 = or i1 %637, %638
   %select.ptr.177 = select i1 %safe.176, i64* %636, i64* %639
@@ -12403,7 +12399,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %642 = sext i32 %641 to i64
   %643 = getelementptr inbounds i64, i64* %1, i64 7
   %644 = load i1, i1* %out.
-  %645 = icmp slt i64 7, %len.1
+  %645 = icmp slt i64 7, %N1
   %646 = bitcast i64* %shadow to i64*
   %safe.178 = or i1 %644, %645
   %select.ptr.179 = select i1 %safe.178, i64* %643, i64* %646
@@ -12414,7 +12410,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %651 = add nsw i64 %635, %650
   %652 = getelementptr inbounds i64, i64* %1, i64 3
   %653 = load i1, i1* %out.
-  %654 = icmp slt i64 3, %len.1
+  %654 = icmp slt i64 3, %N1
   %655 = bitcast i64* %shadow to i64*
   %safe.180 = or i1 %653, %654
   %select.ptr.181 = select i1 %safe.180, i64* %652, i64* %655
@@ -12423,7 +12419,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %658 = sext i32 %657 to i64
   %659 = getelementptr inbounds i64, i64* %1, i64 8
   %660 = load i1, i1* %out.
-  %661 = icmp slt i64 8, %len.1
+  %661 = icmp slt i64 8, %N1
   %662 = bitcast i64* %shadow to i64*
   %safe.182 = or i1 %660, %661
   %select.ptr.183 = select i1 %safe.182, i64* %659, i64* %662
@@ -12434,7 +12430,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %667 = add nsw i64 %651, %666
   %668 = getelementptr inbounds i64, i64* %1, i64 2
   %669 = load i1, i1* %out.
-  %670 = icmp slt i64 2, %len.1
+  %670 = icmp slt i64 2, %N1
   %671 = bitcast i64* %shadow to i64*
   %safe.184 = or i1 %669, %670
   %select.ptr.185 = select i1 %safe.184, i64* %668, i64* %671
@@ -12443,7 +12439,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %674 = sext i32 %673 to i64
   %675 = getelementptr inbounds i64, i64* %1, i64 9
   %676 = load i1, i1* %out.
-  %677 = icmp slt i64 9, %len.1
+  %677 = icmp slt i64 9, %N1
   %678 = bitcast i64* %shadow to i64*
   %safe.186 = or i1 %676, %677
   %select.ptr.187 = select i1 %safe.186, i64* %675, i64* %678
@@ -12455,7 +12451,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %684 = mul nsw i64 2, %683
   %685 = getelementptr inbounds i64, i64* %0, i64 11
   %686 = load i1, i1* %out.
-  %687 = icmp slt i64 11, %len.
+  %687 = icmp slt i64 11, %N
   %688 = bitcast i64* %shadow to i64*
   %safe.188 = or i1 %686, %687
   %select.ptr.189 = select i1 %safe.188, i64* %685, i64* %688
@@ -12464,7 +12460,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   store i64 %select.val.190, i64* %select.ptr.189, align 8
   %690 = getelementptr inbounds i64, i64* %1, i64 6
   %691 = load i1, i1* %out.
-  %692 = icmp slt i64 6, %len.1
+  %692 = icmp slt i64 6, %N1
   %693 = bitcast i64* %shadow to i64*
   %safe.191 = or i1 %691, %692
   %select.ptr.192 = select i1 %safe.191, i64* %690, i64* %693
@@ -12473,7 +12469,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %696 = sext i32 %695 to i64
   %697 = getelementptr inbounds i64, i64* %1, i64 6
   %698 = load i1, i1* %out.
-  %699 = icmp slt i64 6, %len.1
+  %699 = icmp slt i64 6, %N1
   %700 = bitcast i64* %shadow to i64*
   %safe.193 = or i1 %698, %699
   %select.ptr.194 = select i1 %safe.193, i64* %697, i64* %700
@@ -12483,7 +12479,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %704 = mul nsw i64 %696, %703
   %705 = getelementptr inbounds i64, i64* %1, i64 4
   %706 = load i1, i1* %out.
-  %707 = icmp slt i64 4, %len.1
+  %707 = icmp slt i64 4, %N1
   %708 = bitcast i64* %shadow to i64*
   %safe.195 = or i1 %706, %707
   %select.ptr.196 = select i1 %safe.195, i64* %705, i64* %708
@@ -12492,7 +12488,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %711 = sext i32 %710 to i64
   %712 = getelementptr inbounds i64, i64* %1, i64 8
   %713 = load i1, i1* %out.
-  %714 = icmp slt i64 8, %len.1
+  %714 = icmp slt i64 8, %N1
   %715 = bitcast i64* %shadow to i64*
   %safe.197 = or i1 %713, %714
   %select.ptr.198 = select i1 %safe.197, i64* %712, i64* %715
@@ -12502,7 +12498,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %719 = mul nsw i64 %711, %718
   %720 = getelementptr inbounds i64, i64* %1, i64 5
   %721 = load i1, i1* %out.
-  %722 = icmp slt i64 5, %len.1
+  %722 = icmp slt i64 5, %N1
   %723 = bitcast i64* %shadow to i64*
   %safe.199 = or i1 %721, %722
   %select.ptr.200 = select i1 %safe.199, i64* %720, i64* %723
@@ -12511,7 +12507,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %726 = sext i32 %725 to i64
   %727 = getelementptr inbounds i64, i64* %1, i64 7
   %728 = load i1, i1* %out.
-  %729 = icmp slt i64 7, %len.1
+  %729 = icmp slt i64 7, %N1
   %730 = bitcast i64* %shadow to i64*
   %safe.201 = or i1 %728, %729
   %select.ptr.202 = select i1 %safe.201, i64* %727, i64* %730
@@ -12521,7 +12517,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %734 = mul nsw i64 %726, %733
   %735 = getelementptr inbounds i64, i64* %1, i64 3
   %736 = load i1, i1* %out.
-  %737 = icmp slt i64 3, %len.1
+  %737 = icmp slt i64 3, %N1
   %738 = bitcast i64* %shadow to i64*
   %safe.203 = or i1 %736, %737
   %select.ptr.204 = select i1 %safe.203, i64* %735, i64* %738
@@ -12530,7 +12526,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %741 = sext i32 %740 to i64
   %742 = getelementptr inbounds i64, i64* %1, i64 9
   %743 = load i1, i1* %out.
-  %744 = icmp slt i64 9, %len.1
+  %744 = icmp slt i64 9, %N1
   %745 = bitcast i64* %shadow to i64*
   %safe.205 = or i1 %743, %744
   %select.ptr.206 = select i1 %safe.205, i64* %742, i64* %745
@@ -12545,7 +12541,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %754 = add nsw i64 %704, %753
   %755 = getelementptr inbounds i64, i64* %0, i64 12
   %756 = load i1, i1* %out.
-  %757 = icmp slt i64 12, %len.
+  %757 = icmp slt i64 12, %N
   %758 = bitcast i64* %shadow to i64*
   %safe.207 = or i1 %756, %757
   %select.ptr.208 = select i1 %safe.207, i64* %755, i64* %758
@@ -12554,7 +12550,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   store i64 %select.val.209, i64* %select.ptr.208, align 8
   %760 = getelementptr inbounds i64, i64* %1, i64 6
   %761 = load i1, i1* %out.
-  %762 = icmp slt i64 6, %len.1
+  %762 = icmp slt i64 6, %N1
   %763 = bitcast i64* %shadow to i64*
   %safe.210 = or i1 %761, %762
   %select.ptr.211 = select i1 %safe.210, i64* %760, i64* %763
@@ -12563,7 +12559,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %766 = sext i32 %765 to i64
   %767 = getelementptr inbounds i64, i64* %1, i64 7
   %768 = load i1, i1* %out.
-  %769 = icmp slt i64 7, %len.1
+  %769 = icmp slt i64 7, %N1
   %770 = bitcast i64* %shadow to i64*
   %safe.212 = or i1 %768, %769
   %select.ptr.213 = select i1 %safe.212, i64* %767, i64* %770
@@ -12573,7 +12569,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %774 = mul nsw i64 %766, %773
   %775 = getelementptr inbounds i64, i64* %1, i64 5
   %776 = load i1, i1* %out.
-  %777 = icmp slt i64 5, %len.1
+  %777 = icmp slt i64 5, %N1
   %778 = bitcast i64* %shadow to i64*
   %safe.214 = or i1 %776, %777
   %select.ptr.215 = select i1 %safe.214, i64* %775, i64* %778
@@ -12582,7 +12578,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %781 = sext i32 %780 to i64
   %782 = getelementptr inbounds i64, i64* %1, i64 8
   %783 = load i1, i1* %out.
-  %784 = icmp slt i64 8, %len.1
+  %784 = icmp slt i64 8, %N1
   %785 = bitcast i64* %shadow to i64*
   %safe.216 = or i1 %783, %784
   %select.ptr.217 = select i1 %safe.216, i64* %782, i64* %785
@@ -12593,7 +12589,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %790 = add nsw i64 %774, %789
   %791 = getelementptr inbounds i64, i64* %1, i64 4
   %792 = load i1, i1* %out.
-  %793 = icmp slt i64 4, %len.1
+  %793 = icmp slt i64 4, %N1
   %794 = bitcast i64* %shadow to i64*
   %safe.218 = or i1 %792, %793
   %select.ptr.219 = select i1 %safe.218, i64* %791, i64* %794
@@ -12602,7 +12598,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %797 = sext i32 %796 to i64
   %798 = getelementptr inbounds i64, i64* %1, i64 9
   %799 = load i1, i1* %out.
-  %800 = icmp slt i64 9, %len.1
+  %800 = icmp slt i64 9, %N1
   %801 = bitcast i64* %shadow to i64*
   %safe.220 = or i1 %799, %800
   %select.ptr.221 = select i1 %safe.220, i64* %798, i64* %801
@@ -12614,7 +12610,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %807 = mul nsw i64 2, %806
   %808 = getelementptr inbounds i64, i64* %0, i64 13
   %809 = load i1, i1* %out.
-  %810 = icmp slt i64 13, %len.
+  %810 = icmp slt i64 13, %N
   %811 = bitcast i64* %shadow to i64*
   %safe.222 = or i1 %809, %810
   %select.ptr.223 = select i1 %safe.222, i64* %808, i64* %811
@@ -12623,7 +12619,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   store i64 %select.val.224, i64* %select.ptr.223, align 8
   %813 = getelementptr inbounds i64, i64* %1, i64 7
   %814 = load i1, i1* %out.
-  %815 = icmp slt i64 7, %len.1
+  %815 = icmp slt i64 7, %N1
   %816 = bitcast i64* %shadow to i64*
   %safe.225 = or i1 %814, %815
   %select.ptr.226 = select i1 %safe.225, i64* %813, i64* %816
@@ -12632,7 +12628,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %819 = sext i32 %818 to i64
   %820 = getelementptr inbounds i64, i64* %1, i64 7
   %821 = load i1, i1* %out.
-  %822 = icmp slt i64 7, %len.1
+  %822 = icmp slt i64 7, %N1
   %823 = bitcast i64* %shadow to i64*
   %safe.227 = or i1 %821, %822
   %select.ptr.228 = select i1 %safe.227, i64* %820, i64* %823
@@ -12642,7 +12638,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %827 = mul nsw i64 %819, %826
   %828 = getelementptr inbounds i64, i64* %1, i64 6
   %829 = load i1, i1* %out.
-  %830 = icmp slt i64 6, %len.1
+  %830 = icmp slt i64 6, %N1
   %831 = bitcast i64* %shadow to i64*
   %safe.229 = or i1 %829, %830
   %select.ptr.230 = select i1 %safe.229, i64* %828, i64* %831
@@ -12651,7 +12647,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %834 = sext i32 %833 to i64
   %835 = getelementptr inbounds i64, i64* %1, i64 8
   %836 = load i1, i1* %out.
-  %837 = icmp slt i64 8, %len.1
+  %837 = icmp slt i64 8, %N1
   %838 = bitcast i64* %shadow to i64*
   %safe.231 = or i1 %836, %837
   %select.ptr.232 = select i1 %safe.231, i64* %835, i64* %838
@@ -12662,7 +12658,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %843 = add nsw i64 %827, %842
   %844 = getelementptr inbounds i64, i64* %1, i64 5
   %845 = load i1, i1* %out.
-  %846 = icmp slt i64 5, %len.1
+  %846 = icmp slt i64 5, %N1
   %847 = bitcast i64* %shadow to i64*
   %safe.233 = or i1 %845, %846
   %select.ptr.234 = select i1 %safe.233, i64* %844, i64* %847
@@ -12672,7 +12668,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %851 = mul nsw i64 2, %850
   %852 = getelementptr inbounds i64, i64* %1, i64 9
   %853 = load i1, i1* %out.
-  %854 = icmp slt i64 9, %len.1
+  %854 = icmp slt i64 9, %N1
   %855 = bitcast i64* %shadow to i64*
   %safe.235 = or i1 %853, %854
   %select.ptr.236 = select i1 %safe.235, i64* %852, i64* %855
@@ -12684,7 +12680,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %861 = mul nsw i64 2, %860
   %862 = getelementptr inbounds i64, i64* %0, i64 14
   %863 = load i1, i1* %out.
-  %864 = icmp slt i64 14, %len.
+  %864 = icmp slt i64 14, %N
   %865 = bitcast i64* %shadow to i64*
   %safe.237 = or i1 %863, %864
   %select.ptr.238 = select i1 %safe.237, i64* %862, i64* %865
@@ -12693,7 +12689,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   store i64 %select.val.239, i64* %select.ptr.238, align 8
   %867 = getelementptr inbounds i64, i64* %1, i64 7
   %868 = load i1, i1* %out.
-  %869 = icmp slt i64 7, %len.1
+  %869 = icmp slt i64 7, %N1
   %870 = bitcast i64* %shadow to i64*
   %safe.240 = or i1 %868, %869
   %select.ptr.241 = select i1 %safe.240, i64* %867, i64* %870
@@ -12702,7 +12698,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %873 = sext i32 %872 to i64
   %874 = getelementptr inbounds i64, i64* %1, i64 8
   %875 = load i1, i1* %out.
-  %876 = icmp slt i64 8, %len.1
+  %876 = icmp slt i64 8, %N1
   %877 = bitcast i64* %shadow to i64*
   %safe.242 = or i1 %875, %876
   %select.ptr.243 = select i1 %safe.242, i64* %874, i64* %877
@@ -12712,7 +12708,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %881 = mul nsw i64 %873, %880
   %882 = getelementptr inbounds i64, i64* %1, i64 6
   %883 = load i1, i1* %out.
-  %884 = icmp slt i64 6, %len.1
+  %884 = icmp slt i64 6, %N1
   %885 = bitcast i64* %shadow to i64*
   %safe.244 = or i1 %883, %884
   %select.ptr.245 = select i1 %safe.244, i64* %882, i64* %885
@@ -12721,7 +12717,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %888 = sext i32 %887 to i64
   %889 = getelementptr inbounds i64, i64* %1, i64 9
   %890 = load i1, i1* %out.
-  %891 = icmp slt i64 9, %len.1
+  %891 = icmp slt i64 9, %N1
   %892 = bitcast i64* %shadow to i64*
   %safe.246 = or i1 %890, %891
   %select.ptr.247 = select i1 %safe.246, i64* %889, i64* %892
@@ -12733,7 +12729,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %898 = mul nsw i64 2, %897
   %899 = getelementptr inbounds i64, i64* %0, i64 15
   %900 = load i1, i1* %out.
-  %901 = icmp slt i64 15, %len.
+  %901 = icmp slt i64 15, %N
   %902 = bitcast i64* %shadow to i64*
   %safe.248 = or i1 %900, %901
   %select.ptr.249 = select i1 %safe.248, i64* %899, i64* %902
@@ -12742,7 +12738,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   store i64 %select.val.250, i64* %select.ptr.249, align 8
   %904 = getelementptr inbounds i64, i64* %1, i64 8
   %905 = load i1, i1* %out.
-  %906 = icmp slt i64 8, %len.1
+  %906 = icmp slt i64 8, %N1
   %907 = bitcast i64* %shadow to i64*
   %safe.251 = or i1 %905, %906
   %select.ptr.252 = select i1 %safe.251, i64* %904, i64* %907
@@ -12751,7 +12747,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %910 = sext i32 %909 to i64
   %911 = getelementptr inbounds i64, i64* %1, i64 8
   %912 = load i1, i1* %out.
-  %913 = icmp slt i64 8, %len.1
+  %913 = icmp slt i64 8, %N1
   %914 = bitcast i64* %shadow to i64*
   %safe.253 = or i1 %912, %913
   %select.ptr.254 = select i1 %safe.253, i64* %911, i64* %914
@@ -12761,7 +12757,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %918 = mul nsw i64 %910, %917
   %919 = getelementptr inbounds i64, i64* %1, i64 7
   %920 = load i1, i1* %out.
-  %921 = icmp slt i64 7, %len.1
+  %921 = icmp slt i64 7, %N1
   %922 = bitcast i64* %shadow to i64*
   %safe.255 = or i1 %920, %921
   %select.ptr.256 = select i1 %safe.255, i64* %919, i64* %922
@@ -12771,7 +12767,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %926 = mul nsw i64 4, %925
   %927 = getelementptr inbounds i64, i64* %1, i64 9
   %928 = load i1, i1* %out.
-  %929 = icmp slt i64 9, %len.1
+  %929 = icmp slt i64 9, %N1
   %930 = bitcast i64* %shadow to i64*
   %safe.257 = or i1 %928, %929
   %select.ptr.258 = select i1 %safe.257, i64* %927, i64* %930
@@ -12782,7 +12778,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %935 = add nsw i64 %918, %934
   %936 = getelementptr inbounds i64, i64* %0, i64 16
   %937 = load i1, i1* %out.
-  %938 = icmp slt i64 16, %len.
+  %938 = icmp slt i64 16, %N
   %939 = bitcast i64* %shadow to i64*
   %safe.259 = or i1 %937, %938
   %select.ptr.260 = select i1 %safe.259, i64* %936, i64* %939
@@ -12791,7 +12787,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   store i64 %select.val.261, i64* %select.ptr.260, align 8
   %941 = getelementptr inbounds i64, i64* %1, i64 8
   %942 = load i1, i1* %out.
-  %943 = icmp slt i64 8, %len.1
+  %943 = icmp slt i64 8, %N1
   %944 = bitcast i64* %shadow to i64*
   %safe.262 = or i1 %942, %943
   %select.ptr.263 = select i1 %safe.262, i64* %941, i64* %944
@@ -12801,7 +12797,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %948 = mul nsw i64 2, %947
   %949 = getelementptr inbounds i64, i64* %1, i64 9
   %950 = load i1, i1* %out.
-  %951 = icmp slt i64 9, %len.1
+  %951 = icmp slt i64 9, %N1
   %952 = bitcast i64* %shadow to i64*
   %safe.264 = or i1 %950, %951
   %select.ptr.265 = select i1 %safe.264, i64* %949, i64* %952
@@ -12811,7 +12807,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %956 = mul nsw i64 %948, %955
   %957 = getelementptr inbounds i64, i64* %0, i64 17
   %958 = load i1, i1* %out.
-  %959 = icmp slt i64 17, %len.
+  %959 = icmp slt i64 17, %N
   %960 = bitcast i64* %shadow to i64*
   %safe.266 = or i1 %958, %959
   %select.ptr.267 = select i1 %safe.266, i64* %957, i64* %960
@@ -12820,7 +12816,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   store i64 %select.val.268, i64* %select.ptr.267, align 8
   %962 = getelementptr inbounds i64, i64* %1, i64 9
   %963 = load i1, i1* %out.
-  %964 = icmp slt i64 9, %len.1
+  %964 = icmp slt i64 9, %N1
   %965 = bitcast i64* %shadow to i64*
   %safe.269 = or i1 %963, %964
   %select.ptr.270 = select i1 %safe.269, i64* %962, i64* %965
@@ -12830,7 +12826,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %969 = mul nsw i64 2, %968
   %970 = getelementptr inbounds i64, i64* %1, i64 9
   %971 = load i1, i1* %out.
-  %972 = icmp slt i64 9, %len.1
+  %972 = icmp slt i64 9, %N1
   %973 = bitcast i64* %shadow to i64*
   %safe.271 = or i1 %971, %972
   %select.ptr.272 = select i1 %safe.271, i64* %970, i64* %973
@@ -12840,7 +12836,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   %977 = mul nsw i64 %969, %976
   %978 = getelementptr inbounds i64, i64* %0, i64 18
   %979 = load i1, i1* %out.
-  %980 = icmp slt i64 18, %len.
+  %980 = icmp slt i64 18, %N
   %981 = bitcast i64* %shadow to i64*
   %safe.273 = or i1 %979, %980
   %select.ptr.274 = select i1 %safe.273, i64* %978, i64* %981
@@ -12850,7 +12846,7 @@ define internal void @fsquare_inner(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 
   ret void
 }
 
-define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, i64 %2, i1 %.cond) {
+define internal void @swap_conditional(i64* %0, i64 %N, i64* %1, i64 %N1, i64 %2, i1 %.cond) {
 .loopexit:
   %shadow = alloca i64
   %out. = alloca i1
@@ -12877,7 +12873,7 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   store i64 %select.val.2, i64* %1, align 8
   %15 = getelementptr inbounds i64, i64* %0, i64 1
   %16 = load i1, i1* %out.1
-  %17 = icmp slt i64 1, %len.
+  %17 = icmp slt i64 1, %N
   %18 = bitcast i64* %shadow to i64*
   %safe. = or i1 %16, %17
   %select.ptr. = select i1 %safe., i64* %15, i64* %18
@@ -12885,14 +12881,14 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   %20 = trunc i64 %19 to i32
   %21 = getelementptr inbounds i64, i64* %1, i64 1
   %22 = load i1, i1* %out.1
-  %23 = icmp slt i64 1, %len.1
+  %23 = icmp slt i64 1, %N1
   %24 = bitcast i64* %shadow to i64*
   %safe.3 = or i1 %22, %23
   %select.ptr.4 = select i1 %safe.3, i64* %21, i64* %24
   %25 = load i64, i64* %select.ptr.4, align 8
   %26 = getelementptr inbounds i64, i64* %0, i64 1
   %27 = load i1, i1* %out.1
-  %28 = icmp slt i64 1, %len.
+  %28 = icmp slt i64 1, %N
   %29 = bitcast i64* %shadow to i64*
   %safe.5 = or i1 %27, %28
   %select.ptr.6 = select i1 %safe.5, i64* %26, i64* %29
@@ -12902,7 +12898,7 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   %31 = sext i32 %20 to i64
   %32 = getelementptr inbounds i64, i64* %1, i64 1
   %33 = load i1, i1* %out.1
-  %34 = icmp slt i64 1, %len.1
+  %34 = icmp slt i64 1, %N1
   %35 = bitcast i64* %shadow to i64*
   %safe.8 = or i1 %33, %34
   %select.ptr.9 = select i1 %safe.8, i64* %32, i64* %35
@@ -12911,7 +12907,7 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   store i64 %select.val.10, i64* %select.ptr.9, align 8
   %37 = getelementptr inbounds i64, i64* %0, i64 2
   %38 = load i1, i1* %out.1
-  %39 = icmp slt i64 2, %len.
+  %39 = icmp slt i64 2, %N
   %40 = bitcast i64* %shadow to i64*
   %safe.11 = or i1 %38, %39
   %select.ptr.12 = select i1 %safe.11, i64* %37, i64* %40
@@ -12919,14 +12915,14 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   %42 = trunc i64 %41 to i32
   %43 = getelementptr inbounds i64, i64* %1, i64 2
   %44 = load i1, i1* %out.1
-  %45 = icmp slt i64 2, %len.1
+  %45 = icmp slt i64 2, %N1
   %46 = bitcast i64* %shadow to i64*
   %safe.13 = or i1 %44, %45
   %select.ptr.14 = select i1 %safe.13, i64* %43, i64* %46
   %47 = load i64, i64* %select.ptr.14, align 8
   %48 = getelementptr inbounds i64, i64* %0, i64 2
   %49 = load i1, i1* %out.1
-  %50 = icmp slt i64 2, %len.
+  %50 = icmp slt i64 2, %N
   %51 = bitcast i64* %shadow to i64*
   %safe.15 = or i1 %49, %50
   %select.ptr.16 = select i1 %safe.15, i64* %48, i64* %51
@@ -12936,7 +12932,7 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   %53 = sext i32 %42 to i64
   %54 = getelementptr inbounds i64, i64* %1, i64 2
   %55 = load i1, i1* %out.1
-  %56 = icmp slt i64 2, %len.1
+  %56 = icmp slt i64 2, %N1
   %57 = bitcast i64* %shadow to i64*
   %safe.18 = or i1 %55, %56
   %select.ptr.19 = select i1 %safe.18, i64* %54, i64* %57
@@ -12945,7 +12941,7 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   store i64 %select.val.20, i64* %select.ptr.19, align 8
   %59 = getelementptr inbounds i64, i64* %0, i64 3
   %60 = load i1, i1* %out.1
-  %61 = icmp slt i64 3, %len.
+  %61 = icmp slt i64 3, %N
   %62 = bitcast i64* %shadow to i64*
   %safe.21 = or i1 %60, %61
   %select.ptr.22 = select i1 %safe.21, i64* %59, i64* %62
@@ -12953,14 +12949,14 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   %64 = trunc i64 %63 to i32
   %65 = getelementptr inbounds i64, i64* %1, i64 3
   %66 = load i1, i1* %out.1
-  %67 = icmp slt i64 3, %len.1
+  %67 = icmp slt i64 3, %N1
   %68 = bitcast i64* %shadow to i64*
   %safe.23 = or i1 %66, %67
   %select.ptr.24 = select i1 %safe.23, i64* %65, i64* %68
   %69 = load i64, i64* %select.ptr.24, align 8
   %70 = getelementptr inbounds i64, i64* %0, i64 3
   %71 = load i1, i1* %out.1
-  %72 = icmp slt i64 3, %len.
+  %72 = icmp slt i64 3, %N
   %73 = bitcast i64* %shadow to i64*
   %safe.25 = or i1 %71, %72
   %select.ptr.26 = select i1 %safe.25, i64* %70, i64* %73
@@ -12970,7 +12966,7 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   %75 = sext i32 %64 to i64
   %76 = getelementptr inbounds i64, i64* %1, i64 3
   %77 = load i1, i1* %out.1
-  %78 = icmp slt i64 3, %len.1
+  %78 = icmp slt i64 3, %N1
   %79 = bitcast i64* %shadow to i64*
   %safe.28 = or i1 %77, %78
   %select.ptr.29 = select i1 %safe.28, i64* %76, i64* %79
@@ -12979,7 +12975,7 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   store i64 %select.val.30, i64* %select.ptr.29, align 8
   %81 = getelementptr inbounds i64, i64* %0, i64 4
   %82 = load i1, i1* %out.1
-  %83 = icmp slt i64 4, %len.
+  %83 = icmp slt i64 4, %N
   %84 = bitcast i64* %shadow to i64*
   %safe.31 = or i1 %82, %83
   %select.ptr.32 = select i1 %safe.31, i64* %81, i64* %84
@@ -12987,14 +12983,14 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   %86 = trunc i64 %85 to i32
   %87 = getelementptr inbounds i64, i64* %1, i64 4
   %88 = load i1, i1* %out.1
-  %89 = icmp slt i64 4, %len.1
+  %89 = icmp slt i64 4, %N1
   %90 = bitcast i64* %shadow to i64*
   %safe.33 = or i1 %88, %89
   %select.ptr.34 = select i1 %safe.33, i64* %87, i64* %90
   %91 = load i64, i64* %select.ptr.34, align 8
   %92 = getelementptr inbounds i64, i64* %0, i64 4
   %93 = load i1, i1* %out.1
-  %94 = icmp slt i64 4, %len.
+  %94 = icmp slt i64 4, %N
   %95 = bitcast i64* %shadow to i64*
   %safe.35 = or i1 %93, %94
   %select.ptr.36 = select i1 %safe.35, i64* %92, i64* %95
@@ -13004,7 +13000,7 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   %97 = sext i32 %86 to i64
   %98 = getelementptr inbounds i64, i64* %1, i64 4
   %99 = load i1, i1* %out.1
-  %100 = icmp slt i64 4, %len.1
+  %100 = icmp slt i64 4, %N1
   %101 = bitcast i64* %shadow to i64*
   %safe.38 = or i1 %99, %100
   %select.ptr.39 = select i1 %safe.38, i64* %98, i64* %101
@@ -13013,7 +13009,7 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   store i64 %select.val.40, i64* %select.ptr.39, align 8
   %103 = getelementptr inbounds i64, i64* %0, i64 5
   %104 = load i1, i1* %out.1
-  %105 = icmp slt i64 5, %len.
+  %105 = icmp slt i64 5, %N
   %106 = bitcast i64* %shadow to i64*
   %safe.41 = or i1 %104, %105
   %select.ptr.42 = select i1 %safe.41, i64* %103, i64* %106
@@ -13021,14 +13017,14 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   %108 = trunc i64 %107 to i32
   %109 = getelementptr inbounds i64, i64* %1, i64 5
   %110 = load i1, i1* %out.1
-  %111 = icmp slt i64 5, %len.1
+  %111 = icmp slt i64 5, %N1
   %112 = bitcast i64* %shadow to i64*
   %safe.43 = or i1 %110, %111
   %select.ptr.44 = select i1 %safe.43, i64* %109, i64* %112
   %113 = load i64, i64* %select.ptr.44, align 8
   %114 = getelementptr inbounds i64, i64* %0, i64 5
   %115 = load i1, i1* %out.1
-  %116 = icmp slt i64 5, %len.
+  %116 = icmp slt i64 5, %N
   %117 = bitcast i64* %shadow to i64*
   %safe.45 = or i1 %115, %116
   %select.ptr.46 = select i1 %safe.45, i64* %114, i64* %117
@@ -13038,7 +13034,7 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   %119 = sext i32 %108 to i64
   %120 = getelementptr inbounds i64, i64* %1, i64 5
   %121 = load i1, i1* %out.1
-  %122 = icmp slt i64 5, %len.1
+  %122 = icmp slt i64 5, %N1
   %123 = bitcast i64* %shadow to i64*
   %safe.48 = or i1 %121, %122
   %select.ptr.49 = select i1 %safe.48, i64* %120, i64* %123
@@ -13047,7 +13043,7 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   store i64 %select.val.50, i64* %select.ptr.49, align 8
   %125 = getelementptr inbounds i64, i64* %0, i64 6
   %126 = load i1, i1* %out.1
-  %127 = icmp slt i64 6, %len.
+  %127 = icmp slt i64 6, %N
   %128 = bitcast i64* %shadow to i64*
   %safe.51 = or i1 %126, %127
   %select.ptr.52 = select i1 %safe.51, i64* %125, i64* %128
@@ -13055,14 +13051,14 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   %130 = trunc i64 %129 to i32
   %131 = getelementptr inbounds i64, i64* %1, i64 6
   %132 = load i1, i1* %out.1
-  %133 = icmp slt i64 6, %len.1
+  %133 = icmp slt i64 6, %N1
   %134 = bitcast i64* %shadow to i64*
   %safe.53 = or i1 %132, %133
   %select.ptr.54 = select i1 %safe.53, i64* %131, i64* %134
   %135 = load i64, i64* %select.ptr.54, align 8
   %136 = getelementptr inbounds i64, i64* %0, i64 6
   %137 = load i1, i1* %out.1
-  %138 = icmp slt i64 6, %len.
+  %138 = icmp slt i64 6, %N
   %139 = bitcast i64* %shadow to i64*
   %safe.55 = or i1 %137, %138
   %select.ptr.56 = select i1 %safe.55, i64* %136, i64* %139
@@ -13072,7 +13068,7 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   %141 = sext i32 %130 to i64
   %142 = getelementptr inbounds i64, i64* %1, i64 6
   %143 = load i1, i1* %out.1
-  %144 = icmp slt i64 6, %len.1
+  %144 = icmp slt i64 6, %N1
   %145 = bitcast i64* %shadow to i64*
   %safe.58 = or i1 %143, %144
   %select.ptr.59 = select i1 %safe.58, i64* %142, i64* %145
@@ -13081,7 +13077,7 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   store i64 %select.val.60, i64* %select.ptr.59, align 8
   %147 = getelementptr inbounds i64, i64* %0, i64 7
   %148 = load i1, i1* %out.1
-  %149 = icmp slt i64 7, %len.
+  %149 = icmp slt i64 7, %N
   %150 = bitcast i64* %shadow to i64*
   %safe.61 = or i1 %148, %149
   %select.ptr.62 = select i1 %safe.61, i64* %147, i64* %150
@@ -13089,14 +13085,14 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   %152 = trunc i64 %151 to i32
   %153 = getelementptr inbounds i64, i64* %1, i64 7
   %154 = load i1, i1* %out.1
-  %155 = icmp slt i64 7, %len.1
+  %155 = icmp slt i64 7, %N1
   %156 = bitcast i64* %shadow to i64*
   %safe.63 = or i1 %154, %155
   %select.ptr.64 = select i1 %safe.63, i64* %153, i64* %156
   %157 = load i64, i64* %select.ptr.64, align 8
   %158 = getelementptr inbounds i64, i64* %0, i64 7
   %159 = load i1, i1* %out.1
-  %160 = icmp slt i64 7, %len.
+  %160 = icmp slt i64 7, %N
   %161 = bitcast i64* %shadow to i64*
   %safe.65 = or i1 %159, %160
   %select.ptr.66 = select i1 %safe.65, i64* %158, i64* %161
@@ -13106,7 +13102,7 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   %163 = sext i32 %152 to i64
   %164 = getelementptr inbounds i64, i64* %1, i64 7
   %165 = load i1, i1* %out.1
-  %166 = icmp slt i64 7, %len.1
+  %166 = icmp slt i64 7, %N1
   %167 = bitcast i64* %shadow to i64*
   %safe.68 = or i1 %165, %166
   %select.ptr.69 = select i1 %safe.68, i64* %164, i64* %167
@@ -13115,7 +13111,7 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   store i64 %select.val.70, i64* %select.ptr.69, align 8
   %169 = getelementptr inbounds i64, i64* %0, i64 8
   %170 = load i1, i1* %out.1
-  %171 = icmp slt i64 8, %len.
+  %171 = icmp slt i64 8, %N
   %172 = bitcast i64* %shadow to i64*
   %safe.71 = or i1 %170, %171
   %select.ptr.72 = select i1 %safe.71, i64* %169, i64* %172
@@ -13123,14 +13119,14 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   %174 = trunc i64 %173 to i32
   %175 = getelementptr inbounds i64, i64* %1, i64 8
   %176 = load i1, i1* %out.1
-  %177 = icmp slt i64 8, %len.1
+  %177 = icmp slt i64 8, %N1
   %178 = bitcast i64* %shadow to i64*
   %safe.73 = or i1 %176, %177
   %select.ptr.74 = select i1 %safe.73, i64* %175, i64* %178
   %179 = load i64, i64* %select.ptr.74, align 8
   %180 = getelementptr inbounds i64, i64* %0, i64 8
   %181 = load i1, i1* %out.1
-  %182 = icmp slt i64 8, %len.
+  %182 = icmp slt i64 8, %N
   %183 = bitcast i64* %shadow to i64*
   %safe.75 = or i1 %181, %182
   %select.ptr.76 = select i1 %safe.75, i64* %180, i64* %183
@@ -13140,7 +13136,7 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   %185 = sext i32 %174 to i64
   %186 = getelementptr inbounds i64, i64* %1, i64 8
   %187 = load i1, i1* %out.1
-  %188 = icmp slt i64 8, %len.1
+  %188 = icmp slt i64 8, %N1
   %189 = bitcast i64* %shadow to i64*
   %safe.78 = or i1 %187, %188
   %select.ptr.79 = select i1 %safe.78, i64* %186, i64* %189
@@ -13149,7 +13145,7 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   store i64 %select.val.80, i64* %select.ptr.79, align 8
   %191 = getelementptr inbounds i64, i64* %0, i64 9
   %192 = load i1, i1* %out.1
-  %193 = icmp slt i64 9, %len.
+  %193 = icmp slt i64 9, %N
   %194 = bitcast i64* %shadow to i64*
   %safe.81 = or i1 %192, %193
   %select.ptr.82 = select i1 %safe.81, i64* %191, i64* %194
@@ -13157,14 +13153,14 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   %196 = trunc i64 %195 to i32
   %197 = getelementptr inbounds i64, i64* %1, i64 9
   %198 = load i1, i1* %out.1
-  %199 = icmp slt i64 9, %len.1
+  %199 = icmp slt i64 9, %N1
   %200 = bitcast i64* %shadow to i64*
   %safe.83 = or i1 %198, %199
   %select.ptr.84 = select i1 %safe.83, i64* %197, i64* %200
   %201 = load i64, i64* %select.ptr.84, align 8
   %202 = getelementptr inbounds i64, i64* %0, i64 9
   %203 = load i1, i1* %out.1
-  %204 = icmp slt i64 9, %len.
+  %204 = icmp slt i64 9, %N
   %205 = bitcast i64* %shadow to i64*
   %safe.85 = or i1 %203, %204
   %select.ptr.86 = select i1 %safe.85, i64* %202, i64* %205
@@ -13174,7 +13170,7 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   %207 = sext i32 %196 to i64
   %208 = getelementptr inbounds i64, i64* %1, i64 9
   %209 = load i1, i1* %out.1
-  %210 = icmp slt i64 9, %len.1
+  %210 = icmp slt i64 9, %N1
   %211 = bitcast i64* %shadow to i64*
   %safe.88 = or i1 %209, %210
   %select.ptr.89 = select i1 %safe.88, i64* %208, i64* %211
@@ -13190,7 +13186,7 @@ define internal void @swap_conditional(i64* %0, i64 %len., i64* %1, i64 %len.1, 
   ret void
 }
 
-define internal void @fmonty(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2, i64 %len.2, i64* %3, i64 %len.3, i64* %4, i64 %len.4, i64* %5, i64 %len.5, i64* %6, i64 %len.6, i64* %7, i64 %len.7, i64* %8, i64 %len.8, i1 %.cond) {
+define internal void @fmonty(i64* %0, i64 %N, i64* %1, i64 %N1, i64* %2, i64 %N2, i64* %3, i64 %N3, i64* %4, i64 %N4, i64* %5, i64 %N5, i64* %6, i64 %N6, i64* %7, i64 %N7, i64* %8, i64 %N8, i1 %.cond) {
   %shadow = alloca i64
   %out. = alloca i1
   store i1 %.cond, i1* %out.
@@ -13207,20 +13203,20 @@ define internal void @fmonty(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2, i
   %20 = bitcast i64* %19 to i8*
   %21 = bitcast i64* %4 to i8*
   call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 16 %20, i8* align 8 %21, i64 80, i1 false)
-  call void @fsum(i64* %4, i64 %len.4, i64* %5, i64 %len.5, i1 %.cond)
+  call void @fsum(i64* %4, i64 %N4, i64* %5, i64 %N5, i1 %.cond)
   %22 = getelementptr inbounds [10 x i64], [10 x i64]* %10, i64 0, i64 0
-  call void @fdifference(i64* %5, i64 %len.5, i64* %22, i64 10, i1 %.cond)
+  call void @fdifference(i64* %5, i64 %N5, i64* %22, i64 10, i1 %.cond)
   %23 = getelementptr inbounds [10 x i64], [10 x i64]* %11, i64 0, i64 0
   %24 = bitcast i64* %23 to i8*
   %25 = bitcast i64* %6 to i8*
   call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 16 %24, i8* align 8 %25, i64 80, i1 false)
-  call void @fsum(i64* %6, i64 %len.6, i64* %7, i64 %len.7, i1 %.cond)
+  call void @fsum(i64* %6, i64 %N6, i64* %7, i64 %N7, i1 %.cond)
   %26 = getelementptr inbounds [10 x i64], [10 x i64]* %11, i64 0, i64 0
-  call void @fdifference(i64* %7, i64 %len.7, i64* %26, i64 10, i1 %.cond)
+  call void @fdifference(i64* %7, i64 %N7, i64* %26, i64 10, i1 %.cond)
   %27 = getelementptr inbounds [19 x i64], [19 x i64]* %15, i64 0, i64 0
-  call void @fproduct(i64* %27, i64 19, i64* %6, i64 %len.6, i64* %5, i64 %len.5, i1 %.cond)
+  call void @fproduct(i64* %27, i64 19, i64* %6, i64 %N6, i64* %5, i64 %N5, i1 %.cond)
   %28 = getelementptr inbounds [19 x i64], [19 x i64]* %16, i64 0, i64 0
-  call void @fproduct(i64* %28, i64 19, i64* %4, i64 %len.4, i64* %7, i64 %len.7, i1 %.cond)
+  call void @fproduct(i64* %28, i64 19, i64* %4, i64 %N4, i64* %7, i64 %N7, i1 %.cond)
   %29 = getelementptr inbounds [19 x i64], [19 x i64]* %15, i64 0, i64 0
   call void @freduce_degree(i64* %29, i64 19, i1 %.cond)
   %30 = getelementptr inbounds [19 x i64], [19 x i64]* %15, i64 0, i64 0
@@ -13248,7 +13244,7 @@ define internal void @fmonty(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2, i
   call void @fsquare(i64* %43, i64 19, i64* %44, i64 19, i1 %.cond)
   %45 = getelementptr inbounds [19 x i64], [19 x i64]* %16, i64 0, i64 0
   %46 = getelementptr inbounds [19 x i64], [19 x i64]* %17, i64 0, i64 0
-  call void @fproduct(i64* %45, i64 19, i64* %46, i64 19, i64* %8, i64 %len.8, i1 %.cond)
+  call void @fproduct(i64* %45, i64 19, i64* %46, i64 19, i64* %8, i64 %N8, i1 %.cond)
   %47 = getelementptr inbounds [19 x i64], [19 x i64]* %16, i64 0, i64 0
   call void @freduce_degree(i64* %47, i64 19, i1 %.cond)
   %48 = getelementptr inbounds [19 x i64], [19 x i64]* %16, i64 0, i64 0
@@ -13262,14 +13258,14 @@ define internal void @fmonty(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2, i
   %54 = bitcast i64* %53 to i8*
   call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 8 %52, i8* align 16 %54, i64 80, i1 false)
   %55 = getelementptr inbounds [19 x i64], [19 x i64]* %13, i64 0, i64 0
-  call void @fsquare(i64* %55, i64 19, i64* %4, i64 %len.4, i1 %.cond)
+  call void @fsquare(i64* %55, i64 19, i64* %4, i64 %N4, i1 %.cond)
   %56 = getelementptr inbounds [19 x i64], [19 x i64]* %14, i64 0, i64 0
-  call void @fsquare(i64* %56, i64 19, i64* %5, i64 %len.5, i1 %.cond)
+  call void @fsquare(i64* %56, i64 19, i64* %5, i64 %N5, i1 %.cond)
   %57 = getelementptr inbounds [19 x i64], [19 x i64]* %13, i64 0, i64 0
   %58 = getelementptr inbounds [19 x i64], [19 x i64]* %14, i64 0, i64 0
-  call void @fproduct(i64* %0, i64 %len., i64* %57, i64 19, i64* %58, i64 19, i1 %.cond)
-  call void @freduce_degree(i64* %0, i64 %len., i1 %.cond)
-  call void @freduce_coefficients(i64* %0, i64 %len., i1 %.cond)
+  call void @fproduct(i64* %0, i64 %N, i64* %57, i64 19, i64* %58, i64 19, i1 %.cond)
+  call void @freduce_degree(i64* %0, i64 %N, i1 %.cond)
+  call void @freduce_coefficients(i64* %0, i64 %N, i1 %.cond)
   %59 = getelementptr inbounds [19 x i64], [19 x i64]* %14, i64 0, i64 0
   %60 = getelementptr inbounds [19 x i64], [19 x i64]* %13, i64 0, i64 0
   call void @fdifference(i64* %59, i64 19, i64* %60, i64 19, i1 %.cond)
@@ -13287,13 +13283,13 @@ define internal void @fmonty(i64* %0, i64 %len., i64* %1, i64 %len.1, i64* %2, i
   call void @fsum(i64* %67, i64 19, i64* %68, i64 19, i1 %.cond)
   %69 = getelementptr inbounds [19 x i64], [19 x i64]* %14, i64 0, i64 0
   %70 = getelementptr inbounds [19 x i64], [19 x i64]* %12, i64 0, i64 0
-  call void @fproduct(i64* %1, i64 %len.1, i64* %69, i64 19, i64* %70, i64 19, i1 %.cond)
-  call void @freduce_degree(i64* %1, i64 %len.1, i1 %.cond)
-  call void @freduce_coefficients(i64* %1, i64 %len.1, i1 %.cond)
+  call void @fproduct(i64* %1, i64 %N1, i64* %69, i64 19, i64* %70, i64 19, i1 %.cond)
+  call void @freduce_degree(i64* %1, i64 %N1, i1 %.cond)
+  call void @freduce_coefficients(i64* %1, i64 %N1, i1 %.cond)
   ret void
 }
 
-define internal void @fsum(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
+define internal void @fsum(i64* %0, i64 %N, i64* %1, i64 %N1, i1 %.cond) {
   %shadow = alloca i64
   %out. = alloca i1
   store i1 %.cond, i1* %out.
@@ -13308,14 +13304,14 @@ define internal void @fsum(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
   store i64 %select.val., i64* %0, align 8
   %10 = getelementptr inbounds i64, i64* %0, i64 1
   %11 = load i1, i1* %out.
-  %12 = icmp slt i64 1, %len.
+  %12 = icmp slt i64 1, %N
   %13 = bitcast i64* %shadow to i64*
   %safe. = or i1 %11, %12
   %select.ptr. = select i1 %safe., i64* %10, i64* %13
   %14 = load i64, i64* %select.ptr., align 8
   %15 = getelementptr inbounds i64, i64* %1, i64 1
   %16 = load i1, i1* %out.
-  %17 = icmp slt i64 1, %len.1
+  %17 = icmp slt i64 1, %N1
   %18 = bitcast i64* %shadow to i64*
   %safe.2 = or i1 %16, %17
   %select.ptr.3 = select i1 %safe.2, i64* %15, i64* %18
@@ -13323,7 +13319,7 @@ define internal void @fsum(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
   %20 = add nsw i64 %14, %19
   %21 = getelementptr inbounds i64, i64* %0, i64 1
   %22 = load i1, i1* %out.
-  %23 = icmp slt i64 1, %len.
+  %23 = icmp slt i64 1, %N
   %24 = bitcast i64* %shadow to i64*
   %safe.4 = or i1 %22, %23
   %select.ptr.5 = select i1 %safe.4, i64* %21, i64* %24
@@ -13332,14 +13328,14 @@ define internal void @fsum(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
   store i64 %select.val.6, i64* %select.ptr.5, align 8
   %26 = getelementptr inbounds i64, i64* %0, i64 2
   %27 = load i1, i1* %out.
-  %28 = icmp slt i64 2, %len.
+  %28 = icmp slt i64 2, %N
   %29 = bitcast i64* %shadow to i64*
   %safe.7 = or i1 %27, %28
   %select.ptr.8 = select i1 %safe.7, i64* %26, i64* %29
   %30 = load i64, i64* %select.ptr.8, align 8
   %31 = getelementptr inbounds i64, i64* %1, i64 2
   %32 = load i1, i1* %out.
-  %33 = icmp slt i64 2, %len.1
+  %33 = icmp slt i64 2, %N1
   %34 = bitcast i64* %shadow to i64*
   %safe.9 = or i1 %32, %33
   %select.ptr.10 = select i1 %safe.9, i64* %31, i64* %34
@@ -13347,7 +13343,7 @@ define internal void @fsum(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
   %36 = add nsw i64 %30, %35
   %37 = getelementptr inbounds i64, i64* %0, i64 2
   %38 = load i1, i1* %out.
-  %39 = icmp slt i64 2, %len.
+  %39 = icmp slt i64 2, %N
   %40 = bitcast i64* %shadow to i64*
   %safe.11 = or i1 %38, %39
   %select.ptr.12 = select i1 %safe.11, i64* %37, i64* %40
@@ -13356,14 +13352,14 @@ define internal void @fsum(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
   store i64 %select.val.13, i64* %select.ptr.12, align 8
   %42 = getelementptr inbounds i64, i64* %0, i64 3
   %43 = load i1, i1* %out.
-  %44 = icmp slt i64 3, %len.
+  %44 = icmp slt i64 3, %N
   %45 = bitcast i64* %shadow to i64*
   %safe.14 = or i1 %43, %44
   %select.ptr.15 = select i1 %safe.14, i64* %42, i64* %45
   %46 = load i64, i64* %select.ptr.15, align 8
   %47 = getelementptr inbounds i64, i64* %1, i64 3
   %48 = load i1, i1* %out.
-  %49 = icmp slt i64 3, %len.1
+  %49 = icmp slt i64 3, %N1
   %50 = bitcast i64* %shadow to i64*
   %safe.16 = or i1 %48, %49
   %select.ptr.17 = select i1 %safe.16, i64* %47, i64* %50
@@ -13371,7 +13367,7 @@ define internal void @fsum(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
   %52 = add nsw i64 %46, %51
   %53 = getelementptr inbounds i64, i64* %0, i64 3
   %54 = load i1, i1* %out.
-  %55 = icmp slt i64 3, %len.
+  %55 = icmp slt i64 3, %N
   %56 = bitcast i64* %shadow to i64*
   %safe.18 = or i1 %54, %55
   %select.ptr.19 = select i1 %safe.18, i64* %53, i64* %56
@@ -13380,14 +13376,14 @@ define internal void @fsum(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
   store i64 %select.val.20, i64* %select.ptr.19, align 8
   %58 = getelementptr inbounds i64, i64* %0, i64 4
   %59 = load i1, i1* %out.
-  %60 = icmp slt i64 4, %len.
+  %60 = icmp slt i64 4, %N
   %61 = bitcast i64* %shadow to i64*
   %safe.21 = or i1 %59, %60
   %select.ptr.22 = select i1 %safe.21, i64* %58, i64* %61
   %62 = load i64, i64* %select.ptr.22, align 8
   %63 = getelementptr inbounds i64, i64* %1, i64 4
   %64 = load i1, i1* %out.
-  %65 = icmp slt i64 4, %len.1
+  %65 = icmp slt i64 4, %N1
   %66 = bitcast i64* %shadow to i64*
   %safe.23 = or i1 %64, %65
   %select.ptr.24 = select i1 %safe.23, i64* %63, i64* %66
@@ -13395,7 +13391,7 @@ define internal void @fsum(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
   %68 = add nsw i64 %62, %67
   %69 = getelementptr inbounds i64, i64* %0, i64 4
   %70 = load i1, i1* %out.
-  %71 = icmp slt i64 4, %len.
+  %71 = icmp slt i64 4, %N
   %72 = bitcast i64* %shadow to i64*
   %safe.25 = or i1 %70, %71
   %select.ptr.26 = select i1 %safe.25, i64* %69, i64* %72
@@ -13404,14 +13400,14 @@ define internal void @fsum(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
   store i64 %select.val.27, i64* %select.ptr.26, align 8
   %74 = getelementptr inbounds i64, i64* %0, i64 5
   %75 = load i1, i1* %out.
-  %76 = icmp slt i64 5, %len.
+  %76 = icmp slt i64 5, %N
   %77 = bitcast i64* %shadow to i64*
   %safe.28 = or i1 %75, %76
   %select.ptr.29 = select i1 %safe.28, i64* %74, i64* %77
   %78 = load i64, i64* %select.ptr.29, align 8
   %79 = getelementptr inbounds i64, i64* %1, i64 5
   %80 = load i1, i1* %out.
-  %81 = icmp slt i64 5, %len.1
+  %81 = icmp slt i64 5, %N1
   %82 = bitcast i64* %shadow to i64*
   %safe.30 = or i1 %80, %81
   %select.ptr.31 = select i1 %safe.30, i64* %79, i64* %82
@@ -13419,7 +13415,7 @@ define internal void @fsum(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
   %84 = add nsw i64 %78, %83
   %85 = getelementptr inbounds i64, i64* %0, i64 5
   %86 = load i1, i1* %out.
-  %87 = icmp slt i64 5, %len.
+  %87 = icmp slt i64 5, %N
   %88 = bitcast i64* %shadow to i64*
   %safe.32 = or i1 %86, %87
   %select.ptr.33 = select i1 %safe.32, i64* %85, i64* %88
@@ -13428,14 +13424,14 @@ define internal void @fsum(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
   store i64 %select.val.34, i64* %select.ptr.33, align 8
   %90 = getelementptr inbounds i64, i64* %0, i64 6
   %91 = load i1, i1* %out.
-  %92 = icmp slt i64 6, %len.
+  %92 = icmp slt i64 6, %N
   %93 = bitcast i64* %shadow to i64*
   %safe.35 = or i1 %91, %92
   %select.ptr.36 = select i1 %safe.35, i64* %90, i64* %93
   %94 = load i64, i64* %select.ptr.36, align 8
   %95 = getelementptr inbounds i64, i64* %1, i64 6
   %96 = load i1, i1* %out.
-  %97 = icmp slt i64 6, %len.1
+  %97 = icmp slt i64 6, %N1
   %98 = bitcast i64* %shadow to i64*
   %safe.37 = or i1 %96, %97
   %select.ptr.38 = select i1 %safe.37, i64* %95, i64* %98
@@ -13443,7 +13439,7 @@ define internal void @fsum(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
   %100 = add nsw i64 %94, %99
   %101 = getelementptr inbounds i64, i64* %0, i64 6
   %102 = load i1, i1* %out.
-  %103 = icmp slt i64 6, %len.
+  %103 = icmp slt i64 6, %N
   %104 = bitcast i64* %shadow to i64*
   %safe.39 = or i1 %102, %103
   %select.ptr.40 = select i1 %safe.39, i64* %101, i64* %104
@@ -13452,14 +13448,14 @@ define internal void @fsum(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
   store i64 %select.val.41, i64* %select.ptr.40, align 8
   %106 = getelementptr inbounds i64, i64* %0, i64 7
   %107 = load i1, i1* %out.
-  %108 = icmp slt i64 7, %len.
+  %108 = icmp slt i64 7, %N
   %109 = bitcast i64* %shadow to i64*
   %safe.42 = or i1 %107, %108
   %select.ptr.43 = select i1 %safe.42, i64* %106, i64* %109
   %110 = load i64, i64* %select.ptr.43, align 8
   %111 = getelementptr inbounds i64, i64* %1, i64 7
   %112 = load i1, i1* %out.
-  %113 = icmp slt i64 7, %len.1
+  %113 = icmp slt i64 7, %N1
   %114 = bitcast i64* %shadow to i64*
   %safe.44 = or i1 %112, %113
   %select.ptr.45 = select i1 %safe.44, i64* %111, i64* %114
@@ -13467,7 +13463,7 @@ define internal void @fsum(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
   %116 = add nsw i64 %110, %115
   %117 = getelementptr inbounds i64, i64* %0, i64 7
   %118 = load i1, i1* %out.
-  %119 = icmp slt i64 7, %len.
+  %119 = icmp slt i64 7, %N
   %120 = bitcast i64* %shadow to i64*
   %safe.46 = or i1 %118, %119
   %select.ptr.47 = select i1 %safe.46, i64* %117, i64* %120
@@ -13476,14 +13472,14 @@ define internal void @fsum(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
   store i64 %select.val.48, i64* %select.ptr.47, align 8
   %122 = getelementptr inbounds i64, i64* %0, i64 8
   %123 = load i1, i1* %out.
-  %124 = icmp slt i64 8, %len.
+  %124 = icmp slt i64 8, %N
   %125 = bitcast i64* %shadow to i64*
   %safe.49 = or i1 %123, %124
   %select.ptr.50 = select i1 %safe.49, i64* %122, i64* %125
   %126 = load i64, i64* %select.ptr.50, align 8
   %127 = getelementptr inbounds i64, i64* %1, i64 8
   %128 = load i1, i1* %out.
-  %129 = icmp slt i64 8, %len.1
+  %129 = icmp slt i64 8, %N1
   %130 = bitcast i64* %shadow to i64*
   %safe.51 = or i1 %128, %129
   %select.ptr.52 = select i1 %safe.51, i64* %127, i64* %130
@@ -13491,7 +13487,7 @@ define internal void @fsum(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
   %132 = add nsw i64 %126, %131
   %133 = getelementptr inbounds i64, i64* %0, i64 8
   %134 = load i1, i1* %out.
-  %135 = icmp slt i64 8, %len.
+  %135 = icmp slt i64 8, %N
   %136 = bitcast i64* %shadow to i64*
   %safe.53 = or i1 %134, %135
   %select.ptr.54 = select i1 %safe.53, i64* %133, i64* %136
@@ -13500,14 +13496,14 @@ define internal void @fsum(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
   store i64 %select.val.55, i64* %select.ptr.54, align 8
   %138 = getelementptr inbounds i64, i64* %0, i64 9
   %139 = load i1, i1* %out.
-  %140 = icmp slt i64 9, %len.
+  %140 = icmp slt i64 9, %N
   %141 = bitcast i64* %shadow to i64*
   %safe.56 = or i1 %139, %140
   %select.ptr.57 = select i1 %safe.56, i64* %138, i64* %141
   %142 = load i64, i64* %select.ptr.57, align 8
   %143 = getelementptr inbounds i64, i64* %1, i64 9
   %144 = load i1, i1* %out.
-  %145 = icmp slt i64 9, %len.1
+  %145 = icmp slt i64 9, %N1
   %146 = bitcast i64* %shadow to i64*
   %safe.58 = or i1 %144, %145
   %select.ptr.59 = select i1 %safe.58, i64* %143, i64* %146
@@ -13515,7 +13511,7 @@ define internal void @fsum(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
   %148 = add nsw i64 %142, %147
   %149 = getelementptr inbounds i64, i64* %0, i64 9
   %150 = load i1, i1* %out.
-  %151 = icmp slt i64 9, %len.
+  %151 = icmp slt i64 9, %N
   %152 = bitcast i64* %shadow to i64*
   %safe.60 = or i1 %150, %151
   %select.ptr.61 = select i1 %safe.60, i64* %149, i64* %152
@@ -13525,7 +13521,7 @@ define internal void @fsum(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
   ret void
 }
 
-define internal void @fdifference(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.cond) {
+define internal void @fdifference(i64* %0, i64 %N, i64* %1, i64 %N1, i1 %.cond) {
   %shadow = alloca i64
   %out. = alloca i1
   store i1 %.cond, i1* %out.
@@ -13540,14 +13536,14 @@ define internal void @fdifference(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.
   store i64 %select.val., i64* %0, align 8
   %10 = getelementptr inbounds i64, i64* %1, i64 1
   %11 = load i1, i1* %out.
-  %12 = icmp slt i64 1, %len.1
+  %12 = icmp slt i64 1, %N1
   %13 = bitcast i64* %shadow to i64*
   %safe. = or i1 %11, %12
   %select.ptr. = select i1 %safe., i64* %10, i64* %13
   %14 = load i64, i64* %select.ptr., align 8
   %15 = getelementptr inbounds i64, i64* %0, i64 1
   %16 = load i1, i1* %out.
-  %17 = icmp slt i64 1, %len.
+  %17 = icmp slt i64 1, %N
   %18 = bitcast i64* %shadow to i64*
   %safe.2 = or i1 %16, %17
   %select.ptr.3 = select i1 %safe.2, i64* %15, i64* %18
@@ -13555,7 +13551,7 @@ define internal void @fdifference(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.
   %20 = sub nsw i64 %14, %19
   %21 = getelementptr inbounds i64, i64* %0, i64 1
   %22 = load i1, i1* %out.
-  %23 = icmp slt i64 1, %len.
+  %23 = icmp slt i64 1, %N
   %24 = bitcast i64* %shadow to i64*
   %safe.4 = or i1 %22, %23
   %select.ptr.5 = select i1 %safe.4, i64* %21, i64* %24
@@ -13564,14 +13560,14 @@ define internal void @fdifference(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.
   store i64 %select.val.6, i64* %select.ptr.5, align 8
   %26 = getelementptr inbounds i64, i64* %1, i64 2
   %27 = load i1, i1* %out.
-  %28 = icmp slt i64 2, %len.1
+  %28 = icmp slt i64 2, %N1
   %29 = bitcast i64* %shadow to i64*
   %safe.7 = or i1 %27, %28
   %select.ptr.8 = select i1 %safe.7, i64* %26, i64* %29
   %30 = load i64, i64* %select.ptr.8, align 8
   %31 = getelementptr inbounds i64, i64* %0, i64 2
   %32 = load i1, i1* %out.
-  %33 = icmp slt i64 2, %len.
+  %33 = icmp slt i64 2, %N
   %34 = bitcast i64* %shadow to i64*
   %safe.9 = or i1 %32, %33
   %select.ptr.10 = select i1 %safe.9, i64* %31, i64* %34
@@ -13579,7 +13575,7 @@ define internal void @fdifference(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.
   %36 = sub nsw i64 %30, %35
   %37 = getelementptr inbounds i64, i64* %0, i64 2
   %38 = load i1, i1* %out.
-  %39 = icmp slt i64 2, %len.
+  %39 = icmp slt i64 2, %N
   %40 = bitcast i64* %shadow to i64*
   %safe.11 = or i1 %38, %39
   %select.ptr.12 = select i1 %safe.11, i64* %37, i64* %40
@@ -13588,14 +13584,14 @@ define internal void @fdifference(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.
   store i64 %select.val.13, i64* %select.ptr.12, align 8
   %42 = getelementptr inbounds i64, i64* %1, i64 3
   %43 = load i1, i1* %out.
-  %44 = icmp slt i64 3, %len.1
+  %44 = icmp slt i64 3, %N1
   %45 = bitcast i64* %shadow to i64*
   %safe.14 = or i1 %43, %44
   %select.ptr.15 = select i1 %safe.14, i64* %42, i64* %45
   %46 = load i64, i64* %select.ptr.15, align 8
   %47 = getelementptr inbounds i64, i64* %0, i64 3
   %48 = load i1, i1* %out.
-  %49 = icmp slt i64 3, %len.
+  %49 = icmp slt i64 3, %N
   %50 = bitcast i64* %shadow to i64*
   %safe.16 = or i1 %48, %49
   %select.ptr.17 = select i1 %safe.16, i64* %47, i64* %50
@@ -13603,7 +13599,7 @@ define internal void @fdifference(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.
   %52 = sub nsw i64 %46, %51
   %53 = getelementptr inbounds i64, i64* %0, i64 3
   %54 = load i1, i1* %out.
-  %55 = icmp slt i64 3, %len.
+  %55 = icmp slt i64 3, %N
   %56 = bitcast i64* %shadow to i64*
   %safe.18 = or i1 %54, %55
   %select.ptr.19 = select i1 %safe.18, i64* %53, i64* %56
@@ -13612,14 +13608,14 @@ define internal void @fdifference(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.
   store i64 %select.val.20, i64* %select.ptr.19, align 8
   %58 = getelementptr inbounds i64, i64* %1, i64 4
   %59 = load i1, i1* %out.
-  %60 = icmp slt i64 4, %len.1
+  %60 = icmp slt i64 4, %N1
   %61 = bitcast i64* %shadow to i64*
   %safe.21 = or i1 %59, %60
   %select.ptr.22 = select i1 %safe.21, i64* %58, i64* %61
   %62 = load i64, i64* %select.ptr.22, align 8
   %63 = getelementptr inbounds i64, i64* %0, i64 4
   %64 = load i1, i1* %out.
-  %65 = icmp slt i64 4, %len.
+  %65 = icmp slt i64 4, %N
   %66 = bitcast i64* %shadow to i64*
   %safe.23 = or i1 %64, %65
   %select.ptr.24 = select i1 %safe.23, i64* %63, i64* %66
@@ -13627,7 +13623,7 @@ define internal void @fdifference(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.
   %68 = sub nsw i64 %62, %67
   %69 = getelementptr inbounds i64, i64* %0, i64 4
   %70 = load i1, i1* %out.
-  %71 = icmp slt i64 4, %len.
+  %71 = icmp slt i64 4, %N
   %72 = bitcast i64* %shadow to i64*
   %safe.25 = or i1 %70, %71
   %select.ptr.26 = select i1 %safe.25, i64* %69, i64* %72
@@ -13636,14 +13632,14 @@ define internal void @fdifference(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.
   store i64 %select.val.27, i64* %select.ptr.26, align 8
   %74 = getelementptr inbounds i64, i64* %1, i64 5
   %75 = load i1, i1* %out.
-  %76 = icmp slt i64 5, %len.1
+  %76 = icmp slt i64 5, %N1
   %77 = bitcast i64* %shadow to i64*
   %safe.28 = or i1 %75, %76
   %select.ptr.29 = select i1 %safe.28, i64* %74, i64* %77
   %78 = load i64, i64* %select.ptr.29, align 8
   %79 = getelementptr inbounds i64, i64* %0, i64 5
   %80 = load i1, i1* %out.
-  %81 = icmp slt i64 5, %len.
+  %81 = icmp slt i64 5, %N
   %82 = bitcast i64* %shadow to i64*
   %safe.30 = or i1 %80, %81
   %select.ptr.31 = select i1 %safe.30, i64* %79, i64* %82
@@ -13651,7 +13647,7 @@ define internal void @fdifference(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.
   %84 = sub nsw i64 %78, %83
   %85 = getelementptr inbounds i64, i64* %0, i64 5
   %86 = load i1, i1* %out.
-  %87 = icmp slt i64 5, %len.
+  %87 = icmp slt i64 5, %N
   %88 = bitcast i64* %shadow to i64*
   %safe.32 = or i1 %86, %87
   %select.ptr.33 = select i1 %safe.32, i64* %85, i64* %88
@@ -13660,14 +13656,14 @@ define internal void @fdifference(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.
   store i64 %select.val.34, i64* %select.ptr.33, align 8
   %90 = getelementptr inbounds i64, i64* %1, i64 6
   %91 = load i1, i1* %out.
-  %92 = icmp slt i64 6, %len.1
+  %92 = icmp slt i64 6, %N1
   %93 = bitcast i64* %shadow to i64*
   %safe.35 = or i1 %91, %92
   %select.ptr.36 = select i1 %safe.35, i64* %90, i64* %93
   %94 = load i64, i64* %select.ptr.36, align 8
   %95 = getelementptr inbounds i64, i64* %0, i64 6
   %96 = load i1, i1* %out.
-  %97 = icmp slt i64 6, %len.
+  %97 = icmp slt i64 6, %N
   %98 = bitcast i64* %shadow to i64*
   %safe.37 = or i1 %96, %97
   %select.ptr.38 = select i1 %safe.37, i64* %95, i64* %98
@@ -13675,7 +13671,7 @@ define internal void @fdifference(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.
   %100 = sub nsw i64 %94, %99
   %101 = getelementptr inbounds i64, i64* %0, i64 6
   %102 = load i1, i1* %out.
-  %103 = icmp slt i64 6, %len.
+  %103 = icmp slt i64 6, %N
   %104 = bitcast i64* %shadow to i64*
   %safe.39 = or i1 %102, %103
   %select.ptr.40 = select i1 %safe.39, i64* %101, i64* %104
@@ -13684,14 +13680,14 @@ define internal void @fdifference(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.
   store i64 %select.val.41, i64* %select.ptr.40, align 8
   %106 = getelementptr inbounds i64, i64* %1, i64 7
   %107 = load i1, i1* %out.
-  %108 = icmp slt i64 7, %len.1
+  %108 = icmp slt i64 7, %N1
   %109 = bitcast i64* %shadow to i64*
   %safe.42 = or i1 %107, %108
   %select.ptr.43 = select i1 %safe.42, i64* %106, i64* %109
   %110 = load i64, i64* %select.ptr.43, align 8
   %111 = getelementptr inbounds i64, i64* %0, i64 7
   %112 = load i1, i1* %out.
-  %113 = icmp slt i64 7, %len.
+  %113 = icmp slt i64 7, %N
   %114 = bitcast i64* %shadow to i64*
   %safe.44 = or i1 %112, %113
   %select.ptr.45 = select i1 %safe.44, i64* %111, i64* %114
@@ -13699,7 +13695,7 @@ define internal void @fdifference(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.
   %116 = sub nsw i64 %110, %115
   %117 = getelementptr inbounds i64, i64* %0, i64 7
   %118 = load i1, i1* %out.
-  %119 = icmp slt i64 7, %len.
+  %119 = icmp slt i64 7, %N
   %120 = bitcast i64* %shadow to i64*
   %safe.46 = or i1 %118, %119
   %select.ptr.47 = select i1 %safe.46, i64* %117, i64* %120
@@ -13708,14 +13704,14 @@ define internal void @fdifference(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.
   store i64 %select.val.48, i64* %select.ptr.47, align 8
   %122 = getelementptr inbounds i64, i64* %1, i64 8
   %123 = load i1, i1* %out.
-  %124 = icmp slt i64 8, %len.1
+  %124 = icmp slt i64 8, %N1
   %125 = bitcast i64* %shadow to i64*
   %safe.49 = or i1 %123, %124
   %select.ptr.50 = select i1 %safe.49, i64* %122, i64* %125
   %126 = load i64, i64* %select.ptr.50, align 8
   %127 = getelementptr inbounds i64, i64* %0, i64 8
   %128 = load i1, i1* %out.
-  %129 = icmp slt i64 8, %len.
+  %129 = icmp slt i64 8, %N
   %130 = bitcast i64* %shadow to i64*
   %safe.51 = or i1 %128, %129
   %select.ptr.52 = select i1 %safe.51, i64* %127, i64* %130
@@ -13723,7 +13719,7 @@ define internal void @fdifference(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.
   %132 = sub nsw i64 %126, %131
   %133 = getelementptr inbounds i64, i64* %0, i64 8
   %134 = load i1, i1* %out.
-  %135 = icmp slt i64 8, %len.
+  %135 = icmp slt i64 8, %N
   %136 = bitcast i64* %shadow to i64*
   %safe.53 = or i1 %134, %135
   %select.ptr.54 = select i1 %safe.53, i64* %133, i64* %136
@@ -13732,14 +13728,14 @@ define internal void @fdifference(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.
   store i64 %select.val.55, i64* %select.ptr.54, align 8
   %138 = getelementptr inbounds i64, i64* %1, i64 9
   %139 = load i1, i1* %out.
-  %140 = icmp slt i64 9, %len.1
+  %140 = icmp slt i64 9, %N1
   %141 = bitcast i64* %shadow to i64*
   %safe.56 = or i1 %139, %140
   %select.ptr.57 = select i1 %safe.56, i64* %138, i64* %141
   %142 = load i64, i64* %select.ptr.57, align 8
   %143 = getelementptr inbounds i64, i64* %0, i64 9
   %144 = load i1, i1* %out.
-  %145 = icmp slt i64 9, %len.
+  %145 = icmp slt i64 9, %N
   %146 = bitcast i64* %shadow to i64*
   %safe.58 = or i1 %144, %145
   %select.ptr.59 = select i1 %safe.58, i64* %143, i64* %146
@@ -13747,7 +13743,7 @@ define internal void @fdifference(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.
   %148 = sub nsw i64 %142, %147
   %149 = getelementptr inbounds i64, i64* %0, i64 9
   %150 = load i1, i1* %out.
-  %151 = icmp slt i64 9, %len.
+  %151 = icmp slt i64 9, %N
   %152 = bitcast i64* %shadow to i64*
   %safe.60 = or i1 %150, %151
   %select.ptr.61 = select i1 %safe.60, i64* %149, i64* %152
@@ -13757,7 +13753,7 @@ define internal void @fdifference(i64* %0, i64 %len., i64* %1, i64 %len.1, i1 %.
   ret void
 }
 
-define internal void @fscalar_product(i64* %0, i64 %len., i64* %1, i64 %len.1, i64 %2, i1 %.cond) {
+define internal void @fscalar_product(i64* %0, i64 %N, i64* %1, i64 %N1, i64 %2, i1 %.cond) {
   %shadow = alloca i64
   %out. = alloca i1
   store i1 %.cond, i1* %out.
@@ -13770,7 +13766,7 @@ define internal void @fscalar_product(i64* %0, i64 %len., i64* %1, i64 %len.1, i
   store i64 %select.val., i64* %0, align 8
   %9 = getelementptr inbounds i64, i64* %1, i64 1
   %10 = load i1, i1* %out.
-  %11 = icmp slt i64 1, %len.1
+  %11 = icmp slt i64 1, %N1
   %12 = bitcast i64* %shadow to i64*
   %safe. = or i1 %10, %11
   %select.ptr. = select i1 %safe., i64* %9, i64* %12
@@ -13778,7 +13774,7 @@ define internal void @fscalar_product(i64* %0, i64 %len., i64* %1, i64 %len.1, i
   %14 = mul nsw i64 %13, %2
   %15 = getelementptr inbounds i64, i64* %0, i64 1
   %16 = load i1, i1* %out.
-  %17 = icmp slt i64 1, %len.
+  %17 = icmp slt i64 1, %N
   %18 = bitcast i64* %shadow to i64*
   %safe.2 = or i1 %16, %17
   %select.ptr.3 = select i1 %safe.2, i64* %15, i64* %18
@@ -13787,7 +13783,7 @@ define internal void @fscalar_product(i64* %0, i64 %len., i64* %1, i64 %len.1, i
   store i64 %select.val.4, i64* %select.ptr.3, align 8
   %20 = getelementptr inbounds i64, i64* %1, i64 2
   %21 = load i1, i1* %out.
-  %22 = icmp slt i64 2, %len.1
+  %22 = icmp slt i64 2, %N1
   %23 = bitcast i64* %shadow to i64*
   %safe.5 = or i1 %21, %22
   %select.ptr.6 = select i1 %safe.5, i64* %20, i64* %23
@@ -13795,7 +13791,7 @@ define internal void @fscalar_product(i64* %0, i64 %len., i64* %1, i64 %len.1, i
   %25 = mul nsw i64 %24, %2
   %26 = getelementptr inbounds i64, i64* %0, i64 2
   %27 = load i1, i1* %out.
-  %28 = icmp slt i64 2, %len.
+  %28 = icmp slt i64 2, %N
   %29 = bitcast i64* %shadow to i64*
   %safe.7 = or i1 %27, %28
   %select.ptr.8 = select i1 %safe.7, i64* %26, i64* %29
@@ -13804,7 +13800,7 @@ define internal void @fscalar_product(i64* %0, i64 %len., i64* %1, i64 %len.1, i
   store i64 %select.val.9, i64* %select.ptr.8, align 8
   %31 = getelementptr inbounds i64, i64* %1, i64 3
   %32 = load i1, i1* %out.
-  %33 = icmp slt i64 3, %len.1
+  %33 = icmp slt i64 3, %N1
   %34 = bitcast i64* %shadow to i64*
   %safe.10 = or i1 %32, %33
   %select.ptr.11 = select i1 %safe.10, i64* %31, i64* %34
@@ -13812,7 +13808,7 @@ define internal void @fscalar_product(i64* %0, i64 %len., i64* %1, i64 %len.1, i
   %36 = mul nsw i64 %35, %2
   %37 = getelementptr inbounds i64, i64* %0, i64 3
   %38 = load i1, i1* %out.
-  %39 = icmp slt i64 3, %len.
+  %39 = icmp slt i64 3, %N
   %40 = bitcast i64* %shadow to i64*
   %safe.12 = or i1 %38, %39
   %select.ptr.13 = select i1 %safe.12, i64* %37, i64* %40
@@ -13821,7 +13817,7 @@ define internal void @fscalar_product(i64* %0, i64 %len., i64* %1, i64 %len.1, i
   store i64 %select.val.14, i64* %select.ptr.13, align 8
   %42 = getelementptr inbounds i64, i64* %1, i64 4
   %43 = load i1, i1* %out.
-  %44 = icmp slt i64 4, %len.1
+  %44 = icmp slt i64 4, %N1
   %45 = bitcast i64* %shadow to i64*
   %safe.15 = or i1 %43, %44
   %select.ptr.16 = select i1 %safe.15, i64* %42, i64* %45
@@ -13829,7 +13825,7 @@ define internal void @fscalar_product(i64* %0, i64 %len., i64* %1, i64 %len.1, i
   %47 = mul nsw i64 %46, %2
   %48 = getelementptr inbounds i64, i64* %0, i64 4
   %49 = load i1, i1* %out.
-  %50 = icmp slt i64 4, %len.
+  %50 = icmp slt i64 4, %N
   %51 = bitcast i64* %shadow to i64*
   %safe.17 = or i1 %49, %50
   %select.ptr.18 = select i1 %safe.17, i64* %48, i64* %51
@@ -13838,7 +13834,7 @@ define internal void @fscalar_product(i64* %0, i64 %len., i64* %1, i64 %len.1, i
   store i64 %select.val.19, i64* %select.ptr.18, align 8
   %53 = getelementptr inbounds i64, i64* %1, i64 5
   %54 = load i1, i1* %out.
-  %55 = icmp slt i64 5, %len.1
+  %55 = icmp slt i64 5, %N1
   %56 = bitcast i64* %shadow to i64*
   %safe.20 = or i1 %54, %55
   %select.ptr.21 = select i1 %safe.20, i64* %53, i64* %56
@@ -13846,7 +13842,7 @@ define internal void @fscalar_product(i64* %0, i64 %len., i64* %1, i64 %len.1, i
   %58 = mul nsw i64 %57, %2
   %59 = getelementptr inbounds i64, i64* %0, i64 5
   %60 = load i1, i1* %out.
-  %61 = icmp slt i64 5, %len.
+  %61 = icmp slt i64 5, %N
   %62 = bitcast i64* %shadow to i64*
   %safe.22 = or i1 %60, %61
   %select.ptr.23 = select i1 %safe.22, i64* %59, i64* %62
@@ -13855,7 +13851,7 @@ define internal void @fscalar_product(i64* %0, i64 %len., i64* %1, i64 %len.1, i
   store i64 %select.val.24, i64* %select.ptr.23, align 8
   %64 = getelementptr inbounds i64, i64* %1, i64 6
   %65 = load i1, i1* %out.
-  %66 = icmp slt i64 6, %len.1
+  %66 = icmp slt i64 6, %N1
   %67 = bitcast i64* %shadow to i64*
   %safe.25 = or i1 %65, %66
   %select.ptr.26 = select i1 %safe.25, i64* %64, i64* %67
@@ -13863,7 +13859,7 @@ define internal void @fscalar_product(i64* %0, i64 %len., i64* %1, i64 %len.1, i
   %69 = mul nsw i64 %68, %2
   %70 = getelementptr inbounds i64, i64* %0, i64 6
   %71 = load i1, i1* %out.
-  %72 = icmp slt i64 6, %len.
+  %72 = icmp slt i64 6, %N
   %73 = bitcast i64* %shadow to i64*
   %safe.27 = or i1 %71, %72
   %select.ptr.28 = select i1 %safe.27, i64* %70, i64* %73
@@ -13872,7 +13868,7 @@ define internal void @fscalar_product(i64* %0, i64 %len., i64* %1, i64 %len.1, i
   store i64 %select.val.29, i64* %select.ptr.28, align 8
   %75 = getelementptr inbounds i64, i64* %1, i64 7
   %76 = load i1, i1* %out.
-  %77 = icmp slt i64 7, %len.1
+  %77 = icmp slt i64 7, %N1
   %78 = bitcast i64* %shadow to i64*
   %safe.30 = or i1 %76, %77
   %select.ptr.31 = select i1 %safe.30, i64* %75, i64* %78
@@ -13880,7 +13876,7 @@ define internal void @fscalar_product(i64* %0, i64 %len., i64* %1, i64 %len.1, i
   %80 = mul nsw i64 %79, %2
   %81 = getelementptr inbounds i64, i64* %0, i64 7
   %82 = load i1, i1* %out.
-  %83 = icmp slt i64 7, %len.
+  %83 = icmp slt i64 7, %N
   %84 = bitcast i64* %shadow to i64*
   %safe.32 = or i1 %82, %83
   %select.ptr.33 = select i1 %safe.32, i64* %81, i64* %84
@@ -13889,7 +13885,7 @@ define internal void @fscalar_product(i64* %0, i64 %len., i64* %1, i64 %len.1, i
   store i64 %select.val.34, i64* %select.ptr.33, align 8
   %86 = getelementptr inbounds i64, i64* %1, i64 8
   %87 = load i1, i1* %out.
-  %88 = icmp slt i64 8, %len.1
+  %88 = icmp slt i64 8, %N1
   %89 = bitcast i64* %shadow to i64*
   %safe.35 = or i1 %87, %88
   %select.ptr.36 = select i1 %safe.35, i64* %86, i64* %89
@@ -13897,7 +13893,7 @@ define internal void @fscalar_product(i64* %0, i64 %len., i64* %1, i64 %len.1, i
   %91 = mul nsw i64 %90, %2
   %92 = getelementptr inbounds i64, i64* %0, i64 8
   %93 = load i1, i1* %out.
-  %94 = icmp slt i64 8, %len.
+  %94 = icmp slt i64 8, %N
   %95 = bitcast i64* %shadow to i64*
   %safe.37 = or i1 %93, %94
   %select.ptr.38 = select i1 %safe.37, i64* %92, i64* %95
@@ -13906,7 +13902,7 @@ define internal void @fscalar_product(i64* %0, i64 %len., i64* %1, i64 %len.1, i
   store i64 %select.val.39, i64* %select.ptr.38, align 8
   %97 = getelementptr inbounds i64, i64* %1, i64 9
   %98 = load i1, i1* %out.
-  %99 = icmp slt i64 9, %len.1
+  %99 = icmp slt i64 9, %N1
   %100 = bitcast i64* %shadow to i64*
   %safe.40 = or i1 %98, %99
   %select.ptr.41 = select i1 %safe.40, i64* %97, i64* %100
@@ -13914,7 +13910,7 @@ define internal void @fscalar_product(i64* %0, i64 %len., i64* %1, i64 %len.1, i
   %102 = mul nsw i64 %101, %2
   %103 = getelementptr inbounds i64, i64* %0, i64 9
   %104 = load i1, i1* %out.
-  %105 = icmp slt i64 9, %len.
+  %105 = icmp slt i64 9, %N
   %106 = bitcast i64* %shadow to i64*
   %safe.42 = or i1 %104, %105
   %select.ptr.43 = select i1 %safe.42, i64* %103, i64* %106
@@ -13924,7 +13920,7 @@ define internal void @fscalar_product(i64* %0, i64 %len., i64* %1, i64 %len.1, i
   ret void
 }
 
-define void @randombytes(i8* %0, i64 %len., i64 %1) {
+define void @randombytes(i8* %0, i64 %N, i64 %1) {
   %3 = icmp sge i64 %1, 0
   br i1 %3, label %5, label %4
 

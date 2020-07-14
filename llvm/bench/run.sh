@@ -11,6 +11,7 @@ declare -a benchs=(
     "mu" 
     "dudect-examples/aes32"
     "dudect-examples/donnabad"
+    "bearssl/hash/md5"
 )
 
 while [ $# -gt 0 ]; do

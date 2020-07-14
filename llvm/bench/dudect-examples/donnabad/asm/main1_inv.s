@@ -22,7 +22,6 @@ main:                                   # @main
 	movaps	%xmm0, -48(%rbp)
 	leaq	-48(%rbp), %rdi
 	movl	$32, %esi
-	xorl	%edx, %edx
 	callq	do_one_computation
 	movzbl	%al, %esi
 	movl	$.L.str, %edi
@@ -58,8 +57,8 @@ do_one_computation:                     # @do_one_computation
 	.cfi_def_cfa_offset 32
 	pushq	%rbx
 	.cfi_def_cfa_offset 40
-	subq	$104, %rsp
-	.cfi_def_cfa_offset 144
+	subq	$72, %rsp
+	.cfi_def_cfa_offset 112
 	.cfi_offset %rbx, -40
 	.cfi_offset %r12, -32
 	.cfi_offset %r14, -24
@@ -69,10 +68,6 @@ do_one_computation:                     # @do_one_computation
 	xorps	%xmm0, %xmm0
 	movaps	%xmm0, 16(%rsp)
 	movaps	%xmm0, (%rsp)
-	movaps	.L__const.do_one_computation.secret(%rip), %xmm0
-	movaps	%xmm0, 64(%rsp)
-	movaps	.L__const.do_one_computation.secret+16(%rip), %xmm0
-	movaps	%xmm0, 80(%rsp)
 	movaps	.L__const.do_one_computation.basepoint(%rip), %xmm0
 	movaps	%xmm0, 32(%rsp)
 	movaps	.L__const.do_one_computation.basepoint+16(%rip), %xmm0
@@ -215,7 +210,7 @@ do_one_computation:                     # @do_one_computation
 	movq	%rcx, 8(%rbx)
 	movq	%rax, (%rbx)
 	movb	(%rsp), %al
-	addq	$104, %rsp
+	addq	$72, %rsp
 	.cfi_def_cfa_offset 40
 	popq	%rbx
 	.cfi_def_cfa_offset 32
@@ -28523,17 +28518,8 @@ number_measurements:
 	.quad	1                       # 0x1
 	.size	number_measurements, 8
 
-	.type	.L__const.do_one_computation.secret,@object # @__const.do_one_computation.secret
-	.section	.rodata.cst32,"aM",@progbits,32
-	.p2align	4
-.L__const.do_one_computation.secret:
-	.byte	1                       # 0x1
-	.byte	2                       # 0x2
-	.byte	3                       # 0x3
-	.zero	29
-	.size	.L__const.do_one_computation.secret, 32
-
 	.type	.L__const.do_one_computation.basepoint,@object # @__const.do_one_computation.basepoint
+	.section	.rodata.cst32,"aM",@progbits,32
 	.p2align	4
 .L__const.do_one_computation.basepoint:
 	.byte	9                       # 0x9

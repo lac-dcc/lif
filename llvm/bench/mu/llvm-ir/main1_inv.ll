@@ -28,7 +28,7 @@ declare void @llvm.memset.p0i8.i64(i8* nocapture writeonly, i8, i64, i1 immarg) 
 
 declare i32 @printf(i8*, ...) #2
 
-define void @mu(i32* %0, i64 %len.) {
+define void @mu(i32* %0, i64 %N) {
   %out. = alloca i1
   store i1 true, i1* %out.
   %out.1 = alloca i1
@@ -275,7 +275,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %34, i1* %out.2
   %35 = getelementptr inbounds i32, i32* %0, i64 1
   %36 = load i1, i1* %out.2
-  %37 = icmp slt i64 1, %len.
+  %37 = icmp slt i64 1, %N
   %38 = bitcast i64* %shadow to i32*
   %safe.3 = or i1 %36, %37
   %select.ptr.4 = select i1 %safe.3, i32* %35, i32* %38
@@ -311,7 +311,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %58, i1* %out.4
   %59 = getelementptr inbounds i32, i32* %0, i64 2
   %60 = load i1, i1* %out.4
-  %61 = icmp slt i64 2, %len.
+  %61 = icmp slt i64 2, %N
   %62 = bitcast i64* %shadow to i32*
   %safe.10 = or i1 %60, %61
   %select.ptr.11 = select i1 %safe.10, i32* %59, i32* %62
@@ -354,14 +354,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.17, i32* %0, align 4
   %88 = getelementptr inbounds i32, i32* %0, i64 1
   %89 = load i1, i1* %out.6
-  %90 = icmp slt i64 1, %len.
+  %90 = icmp slt i64 1, %N
   %91 = bitcast i64* %shadow to i32*
   %safe.18 = or i1 %89, %90
   %select.ptr.19 = select i1 %safe.18, i32* %88, i32* %91
   %92 = load i32, i32* %select.ptr.19, align 4
   %93 = ashr i32 %92, 1
   %94 = load i1, i1* %out.6
-  %95 = icmp slt i64 1, %len.
+  %95 = icmp slt i64 1, %N
   %96 = bitcast i64* %shadow to i32*
   %safe.20 = or i1 %94, %95
   %select.ptr.21 = select i1 %safe.20, i32* %88, i32* %96
@@ -370,14 +370,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.22, i32* %select.ptr.21, align 4
   %98 = getelementptr inbounds i32, i32* %0, i64 2
   %99 = load i1, i1* %out.6
-  %100 = icmp slt i64 2, %len.
+  %100 = icmp slt i64 2, %N
   %101 = bitcast i64* %shadow to i32*
   %safe.23 = or i1 %99, %100
   %select.ptr.24 = select i1 %safe.23, i32* %98, i32* %101
   %102 = load i32, i32* %select.ptr.24, align 4
   %103 = ashr i32 %102, 1
   %104 = load i1, i1* %out.6
-  %105 = icmp slt i64 2, %len.
+  %105 = icmp slt i64 2, %N
   %106 = bitcast i64* %shadow to i32*
   %safe.25 = or i1 %104, %105
   %select.ptr.26 = select i1 %safe.25, i32* %98, i32* %106
@@ -470,7 +470,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %163, i1* %out.8
   %164 = getelementptr inbounds i32, i32* %0, i64 1
   %165 = load i1, i1* %out.8
-  %166 = icmp slt i64 1, %len.
+  %166 = icmp slt i64 1, %N
   %167 = bitcast i64* %shadow to i32*
   %safe.48 = or i1 %165, %166
   %select.ptr.49 = select i1 %safe.48, i32* %164, i32* %167
@@ -506,7 +506,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %187, i1* %out.10
   %188 = getelementptr inbounds i32, i32* %0, i64 2
   %189 = load i1, i1* %out.10
-  %190 = icmp slt i64 2, %len.
+  %190 = icmp slt i64 2, %N
   %191 = bitcast i64* %shadow to i32*
   %safe.55 = or i1 %189, %190
   %select.ptr.56 = select i1 %safe.55, i32* %188, i32* %191
@@ -549,14 +549,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.62, i32* %0, align 4
   %217 = getelementptr inbounds i32, i32* %0, i64 1
   %218 = load i1, i1* %out.12
-  %219 = icmp slt i64 1, %len.
+  %219 = icmp slt i64 1, %N
   %220 = bitcast i64* %shadow to i32*
   %safe.63 = or i1 %218, %219
   %select.ptr.64 = select i1 %safe.63, i32* %217, i32* %220
   %221 = load i32, i32* %select.ptr.64, align 4
   %222 = ashr i32 %221, 1
   %223 = load i1, i1* %out.12
-  %224 = icmp slt i64 1, %len.
+  %224 = icmp slt i64 1, %N
   %225 = bitcast i64* %shadow to i32*
   %safe.65 = or i1 %223, %224
   %select.ptr.66 = select i1 %safe.65, i32* %217, i32* %225
@@ -565,14 +565,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.67, i32* %select.ptr.66, align 4
   %227 = getelementptr inbounds i32, i32* %0, i64 2
   %228 = load i1, i1* %out.12
-  %229 = icmp slt i64 2, %len.
+  %229 = icmp slt i64 2, %N
   %230 = bitcast i64* %shadow to i32*
   %safe.68 = or i1 %228, %229
   %select.ptr.69 = select i1 %safe.68, i32* %227, i32* %230
   %231 = load i32, i32* %select.ptr.69, align 4
   %232 = ashr i32 %231, 1
   %233 = load i1, i1* %out.12
-  %234 = icmp slt i64 2, %len.
+  %234 = icmp slt i64 2, %N
   %235 = bitcast i64* %shadow to i32*
   %safe.70 = or i1 %233, %234
   %select.ptr.71 = select i1 %safe.70, i32* %227, i32* %235
@@ -665,7 +665,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %292, i1* %out.14
   %293 = getelementptr inbounds i32, i32* %0, i64 1
   %294 = load i1, i1* %out.14
-  %295 = icmp slt i64 1, %len.
+  %295 = icmp slt i64 1, %N
   %296 = bitcast i64* %shadow to i32*
   %safe.93 = or i1 %294, %295
   %select.ptr.94 = select i1 %safe.93, i32* %293, i32* %296
@@ -701,7 +701,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %316, i1* %out.16
   %317 = getelementptr inbounds i32, i32* %0, i64 2
   %318 = load i1, i1* %out.16
-  %319 = icmp slt i64 2, %len.
+  %319 = icmp slt i64 2, %N
   %320 = bitcast i64* %shadow to i32*
   %safe.100 = or i1 %318, %319
   %select.ptr.101 = select i1 %safe.100, i32* %317, i32* %320
@@ -744,14 +744,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.107, i32* %0, align 4
   %346 = getelementptr inbounds i32, i32* %0, i64 1
   %347 = load i1, i1* %out.18
-  %348 = icmp slt i64 1, %len.
+  %348 = icmp slt i64 1, %N
   %349 = bitcast i64* %shadow to i32*
   %safe.108 = or i1 %347, %348
   %select.ptr.109 = select i1 %safe.108, i32* %346, i32* %349
   %350 = load i32, i32* %select.ptr.109, align 4
   %351 = ashr i32 %350, 1
   %352 = load i1, i1* %out.18
-  %353 = icmp slt i64 1, %len.
+  %353 = icmp slt i64 1, %N
   %354 = bitcast i64* %shadow to i32*
   %safe.110 = or i1 %352, %353
   %select.ptr.111 = select i1 %safe.110, i32* %346, i32* %354
@@ -760,14 +760,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.112, i32* %select.ptr.111, align 4
   %356 = getelementptr inbounds i32, i32* %0, i64 2
   %357 = load i1, i1* %out.18
-  %358 = icmp slt i64 2, %len.
+  %358 = icmp slt i64 2, %N
   %359 = bitcast i64* %shadow to i32*
   %safe.113 = or i1 %357, %358
   %select.ptr.114 = select i1 %safe.113, i32* %356, i32* %359
   %360 = load i32, i32* %select.ptr.114, align 4
   %361 = ashr i32 %360, 1
   %362 = load i1, i1* %out.18
-  %363 = icmp slt i64 2, %len.
+  %363 = icmp slt i64 2, %N
   %364 = bitcast i64* %shadow to i32*
   %safe.115 = or i1 %362, %363
   %select.ptr.116 = select i1 %safe.115, i32* %356, i32* %364
@@ -860,7 +860,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %421, i1* %out.20
   %422 = getelementptr inbounds i32, i32* %0, i64 1
   %423 = load i1, i1* %out.20
-  %424 = icmp slt i64 1, %len.
+  %424 = icmp slt i64 1, %N
   %425 = bitcast i64* %shadow to i32*
   %safe.138 = or i1 %423, %424
   %select.ptr.139 = select i1 %safe.138, i32* %422, i32* %425
@@ -896,7 +896,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %445, i1* %out.22
   %446 = getelementptr inbounds i32, i32* %0, i64 2
   %447 = load i1, i1* %out.22
-  %448 = icmp slt i64 2, %len.
+  %448 = icmp slt i64 2, %N
   %449 = bitcast i64* %shadow to i32*
   %safe.145 = or i1 %447, %448
   %select.ptr.146 = select i1 %safe.145, i32* %446, i32* %449
@@ -939,14 +939,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.152, i32* %0, align 4
   %475 = getelementptr inbounds i32, i32* %0, i64 1
   %476 = load i1, i1* %out.24
-  %477 = icmp slt i64 1, %len.
+  %477 = icmp slt i64 1, %N
   %478 = bitcast i64* %shadow to i32*
   %safe.153 = or i1 %476, %477
   %select.ptr.154 = select i1 %safe.153, i32* %475, i32* %478
   %479 = load i32, i32* %select.ptr.154, align 4
   %480 = ashr i32 %479, 1
   %481 = load i1, i1* %out.24
-  %482 = icmp slt i64 1, %len.
+  %482 = icmp slt i64 1, %N
   %483 = bitcast i64* %shadow to i32*
   %safe.155 = or i1 %481, %482
   %select.ptr.156 = select i1 %safe.155, i32* %475, i32* %483
@@ -955,14 +955,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.157, i32* %select.ptr.156, align 4
   %485 = getelementptr inbounds i32, i32* %0, i64 2
   %486 = load i1, i1* %out.24
-  %487 = icmp slt i64 2, %len.
+  %487 = icmp slt i64 2, %N
   %488 = bitcast i64* %shadow to i32*
   %safe.158 = or i1 %486, %487
   %select.ptr.159 = select i1 %safe.158, i32* %485, i32* %488
   %489 = load i32, i32* %select.ptr.159, align 4
   %490 = ashr i32 %489, 1
   %491 = load i1, i1* %out.24
-  %492 = icmp slt i64 2, %len.
+  %492 = icmp slt i64 2, %N
   %493 = bitcast i64* %shadow to i32*
   %safe.160 = or i1 %491, %492
   %select.ptr.161 = select i1 %safe.160, i32* %485, i32* %493
@@ -1055,7 +1055,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %550, i1* %out.26
   %551 = getelementptr inbounds i32, i32* %0, i64 1
   %552 = load i1, i1* %out.26
-  %553 = icmp slt i64 1, %len.
+  %553 = icmp slt i64 1, %N
   %554 = bitcast i64* %shadow to i32*
   %safe.183 = or i1 %552, %553
   %select.ptr.184 = select i1 %safe.183, i32* %551, i32* %554
@@ -1091,7 +1091,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %574, i1* %out.28
   %575 = getelementptr inbounds i32, i32* %0, i64 2
   %576 = load i1, i1* %out.28
-  %577 = icmp slt i64 2, %len.
+  %577 = icmp slt i64 2, %N
   %578 = bitcast i64* %shadow to i32*
   %safe.190 = or i1 %576, %577
   %select.ptr.191 = select i1 %safe.190, i32* %575, i32* %578
@@ -1134,14 +1134,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.197, i32* %0, align 4
   %604 = getelementptr inbounds i32, i32* %0, i64 1
   %605 = load i1, i1* %out.30
-  %606 = icmp slt i64 1, %len.
+  %606 = icmp slt i64 1, %N
   %607 = bitcast i64* %shadow to i32*
   %safe.198 = or i1 %605, %606
   %select.ptr.199 = select i1 %safe.198, i32* %604, i32* %607
   %608 = load i32, i32* %select.ptr.199, align 4
   %609 = ashr i32 %608, 1
   %610 = load i1, i1* %out.30
-  %611 = icmp slt i64 1, %len.
+  %611 = icmp slt i64 1, %N
   %612 = bitcast i64* %shadow to i32*
   %safe.200 = or i1 %610, %611
   %select.ptr.201 = select i1 %safe.200, i32* %604, i32* %612
@@ -1150,14 +1150,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.202, i32* %select.ptr.201, align 4
   %614 = getelementptr inbounds i32, i32* %0, i64 2
   %615 = load i1, i1* %out.30
-  %616 = icmp slt i64 2, %len.
+  %616 = icmp slt i64 2, %N
   %617 = bitcast i64* %shadow to i32*
   %safe.203 = or i1 %615, %616
   %select.ptr.204 = select i1 %safe.203, i32* %614, i32* %617
   %618 = load i32, i32* %select.ptr.204, align 4
   %619 = ashr i32 %618, 1
   %620 = load i1, i1* %out.30
-  %621 = icmp slt i64 2, %len.
+  %621 = icmp slt i64 2, %N
   %622 = bitcast i64* %shadow to i32*
   %safe.205 = or i1 %620, %621
   %select.ptr.206 = select i1 %safe.205, i32* %614, i32* %622
@@ -1250,7 +1250,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %679, i1* %out.32
   %680 = getelementptr inbounds i32, i32* %0, i64 1
   %681 = load i1, i1* %out.32
-  %682 = icmp slt i64 1, %len.
+  %682 = icmp slt i64 1, %N
   %683 = bitcast i64* %shadow to i32*
   %safe.228 = or i1 %681, %682
   %select.ptr.229 = select i1 %safe.228, i32* %680, i32* %683
@@ -1286,7 +1286,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %703, i1* %out.34
   %704 = getelementptr inbounds i32, i32* %0, i64 2
   %705 = load i1, i1* %out.34
-  %706 = icmp slt i64 2, %len.
+  %706 = icmp slt i64 2, %N
   %707 = bitcast i64* %shadow to i32*
   %safe.235 = or i1 %705, %706
   %select.ptr.236 = select i1 %safe.235, i32* %704, i32* %707
@@ -1329,14 +1329,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.242, i32* %0, align 4
   %733 = getelementptr inbounds i32, i32* %0, i64 1
   %734 = load i1, i1* %out.36
-  %735 = icmp slt i64 1, %len.
+  %735 = icmp slt i64 1, %N
   %736 = bitcast i64* %shadow to i32*
   %safe.243 = or i1 %734, %735
   %select.ptr.244 = select i1 %safe.243, i32* %733, i32* %736
   %737 = load i32, i32* %select.ptr.244, align 4
   %738 = ashr i32 %737, 1
   %739 = load i1, i1* %out.36
-  %740 = icmp slt i64 1, %len.
+  %740 = icmp slt i64 1, %N
   %741 = bitcast i64* %shadow to i32*
   %safe.245 = or i1 %739, %740
   %select.ptr.246 = select i1 %safe.245, i32* %733, i32* %741
@@ -1345,14 +1345,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.247, i32* %select.ptr.246, align 4
   %743 = getelementptr inbounds i32, i32* %0, i64 2
   %744 = load i1, i1* %out.36
-  %745 = icmp slt i64 2, %len.
+  %745 = icmp slt i64 2, %N
   %746 = bitcast i64* %shadow to i32*
   %safe.248 = or i1 %744, %745
   %select.ptr.249 = select i1 %safe.248, i32* %743, i32* %746
   %747 = load i32, i32* %select.ptr.249, align 4
   %748 = ashr i32 %747, 1
   %749 = load i1, i1* %out.36
-  %750 = icmp slt i64 2, %len.
+  %750 = icmp slt i64 2, %N
   %751 = bitcast i64* %shadow to i32*
   %safe.250 = or i1 %749, %750
   %select.ptr.251 = select i1 %safe.250, i32* %743, i32* %751
@@ -1445,7 +1445,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %808, i1* %out.38
   %809 = getelementptr inbounds i32, i32* %0, i64 1
   %810 = load i1, i1* %out.38
-  %811 = icmp slt i64 1, %len.
+  %811 = icmp slt i64 1, %N
   %812 = bitcast i64* %shadow to i32*
   %safe.273 = or i1 %810, %811
   %select.ptr.274 = select i1 %safe.273, i32* %809, i32* %812
@@ -1481,7 +1481,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %832, i1* %out.40
   %833 = getelementptr inbounds i32, i32* %0, i64 2
   %834 = load i1, i1* %out.40
-  %835 = icmp slt i64 2, %len.
+  %835 = icmp slt i64 2, %N
   %836 = bitcast i64* %shadow to i32*
   %safe.280 = or i1 %834, %835
   %select.ptr.281 = select i1 %safe.280, i32* %833, i32* %836
@@ -1524,14 +1524,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.287, i32* %0, align 4
   %862 = getelementptr inbounds i32, i32* %0, i64 1
   %863 = load i1, i1* %out.42
-  %864 = icmp slt i64 1, %len.
+  %864 = icmp slt i64 1, %N
   %865 = bitcast i64* %shadow to i32*
   %safe.288 = or i1 %863, %864
   %select.ptr.289 = select i1 %safe.288, i32* %862, i32* %865
   %866 = load i32, i32* %select.ptr.289, align 4
   %867 = ashr i32 %866, 1
   %868 = load i1, i1* %out.42
-  %869 = icmp slt i64 1, %len.
+  %869 = icmp slt i64 1, %N
   %870 = bitcast i64* %shadow to i32*
   %safe.290 = or i1 %868, %869
   %select.ptr.291 = select i1 %safe.290, i32* %862, i32* %870
@@ -1540,14 +1540,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.292, i32* %select.ptr.291, align 4
   %872 = getelementptr inbounds i32, i32* %0, i64 2
   %873 = load i1, i1* %out.42
-  %874 = icmp slt i64 2, %len.
+  %874 = icmp slt i64 2, %N
   %875 = bitcast i64* %shadow to i32*
   %safe.293 = or i1 %873, %874
   %select.ptr.294 = select i1 %safe.293, i32* %872, i32* %875
   %876 = load i32, i32* %select.ptr.294, align 4
   %877 = ashr i32 %876, 1
   %878 = load i1, i1* %out.42
-  %879 = icmp slt i64 2, %len.
+  %879 = icmp slt i64 2, %N
   %880 = bitcast i64* %shadow to i32*
   %safe.295 = or i1 %878, %879
   %select.ptr.296 = select i1 %safe.295, i32* %872, i32* %880
@@ -1640,7 +1640,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %937, i1* %out.44
   %938 = getelementptr inbounds i32, i32* %0, i64 1
   %939 = load i1, i1* %out.44
-  %940 = icmp slt i64 1, %len.
+  %940 = icmp slt i64 1, %N
   %941 = bitcast i64* %shadow to i32*
   %safe.318 = or i1 %939, %940
   %select.ptr.319 = select i1 %safe.318, i32* %938, i32* %941
@@ -1676,7 +1676,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %961, i1* %out.46
   %962 = getelementptr inbounds i32, i32* %0, i64 2
   %963 = load i1, i1* %out.46
-  %964 = icmp slt i64 2, %len.
+  %964 = icmp slt i64 2, %N
   %965 = bitcast i64* %shadow to i32*
   %safe.325 = or i1 %963, %964
   %select.ptr.326 = select i1 %safe.325, i32* %962, i32* %965
@@ -1719,14 +1719,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.332, i32* %0, align 4
   %991 = getelementptr inbounds i32, i32* %0, i64 1
   %992 = load i1, i1* %out.48
-  %993 = icmp slt i64 1, %len.
+  %993 = icmp slt i64 1, %N
   %994 = bitcast i64* %shadow to i32*
   %safe.333 = or i1 %992, %993
   %select.ptr.334 = select i1 %safe.333, i32* %991, i32* %994
   %995 = load i32, i32* %select.ptr.334, align 4
   %996 = ashr i32 %995, 1
   %997 = load i1, i1* %out.48
-  %998 = icmp slt i64 1, %len.
+  %998 = icmp slt i64 1, %N
   %999 = bitcast i64* %shadow to i32*
   %safe.335 = or i1 %997, %998
   %select.ptr.336 = select i1 %safe.335, i32* %991, i32* %999
@@ -1735,14 +1735,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.337, i32* %select.ptr.336, align 4
   %1001 = getelementptr inbounds i32, i32* %0, i64 2
   %1002 = load i1, i1* %out.48
-  %1003 = icmp slt i64 2, %len.
+  %1003 = icmp slt i64 2, %N
   %1004 = bitcast i64* %shadow to i32*
   %safe.338 = or i1 %1002, %1003
   %select.ptr.339 = select i1 %safe.338, i32* %1001, i32* %1004
   %1005 = load i32, i32* %select.ptr.339, align 4
   %1006 = ashr i32 %1005, 1
   %1007 = load i1, i1* %out.48
-  %1008 = icmp slt i64 2, %len.
+  %1008 = icmp slt i64 2, %N
   %1009 = bitcast i64* %shadow to i32*
   %safe.340 = or i1 %1007, %1008
   %select.ptr.341 = select i1 %safe.340, i32* %1001, i32* %1009
@@ -1835,7 +1835,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %1066, i1* %out.50
   %1067 = getelementptr inbounds i32, i32* %0, i64 1
   %1068 = load i1, i1* %out.50
-  %1069 = icmp slt i64 1, %len.
+  %1069 = icmp slt i64 1, %N
   %1070 = bitcast i64* %shadow to i32*
   %safe.363 = or i1 %1068, %1069
   %select.ptr.364 = select i1 %safe.363, i32* %1067, i32* %1070
@@ -1871,7 +1871,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %1090, i1* %out.52
   %1091 = getelementptr inbounds i32, i32* %0, i64 2
   %1092 = load i1, i1* %out.52
-  %1093 = icmp slt i64 2, %len.
+  %1093 = icmp slt i64 2, %N
   %1094 = bitcast i64* %shadow to i32*
   %safe.370 = or i1 %1092, %1093
   %select.ptr.371 = select i1 %safe.370, i32* %1091, i32* %1094
@@ -1914,14 +1914,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.377, i32* %0, align 4
   %1120 = getelementptr inbounds i32, i32* %0, i64 1
   %1121 = load i1, i1* %out.54
-  %1122 = icmp slt i64 1, %len.
+  %1122 = icmp slt i64 1, %N
   %1123 = bitcast i64* %shadow to i32*
   %safe.378 = or i1 %1121, %1122
   %select.ptr.379 = select i1 %safe.378, i32* %1120, i32* %1123
   %1124 = load i32, i32* %select.ptr.379, align 4
   %1125 = ashr i32 %1124, 1
   %1126 = load i1, i1* %out.54
-  %1127 = icmp slt i64 1, %len.
+  %1127 = icmp slt i64 1, %N
   %1128 = bitcast i64* %shadow to i32*
   %safe.380 = or i1 %1126, %1127
   %select.ptr.381 = select i1 %safe.380, i32* %1120, i32* %1128
@@ -1930,14 +1930,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.382, i32* %select.ptr.381, align 4
   %1130 = getelementptr inbounds i32, i32* %0, i64 2
   %1131 = load i1, i1* %out.54
-  %1132 = icmp slt i64 2, %len.
+  %1132 = icmp slt i64 2, %N
   %1133 = bitcast i64* %shadow to i32*
   %safe.383 = or i1 %1131, %1132
   %select.ptr.384 = select i1 %safe.383, i32* %1130, i32* %1133
   %1134 = load i32, i32* %select.ptr.384, align 4
   %1135 = ashr i32 %1134, 1
   %1136 = load i1, i1* %out.54
-  %1137 = icmp slt i64 2, %len.
+  %1137 = icmp slt i64 2, %N
   %1138 = bitcast i64* %shadow to i32*
   %safe.385 = or i1 %1136, %1137
   %select.ptr.386 = select i1 %safe.385, i32* %1130, i32* %1138
@@ -2030,7 +2030,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %1195, i1* %out.56
   %1196 = getelementptr inbounds i32, i32* %0, i64 1
   %1197 = load i1, i1* %out.56
-  %1198 = icmp slt i64 1, %len.
+  %1198 = icmp slt i64 1, %N
   %1199 = bitcast i64* %shadow to i32*
   %safe.408 = or i1 %1197, %1198
   %select.ptr.409 = select i1 %safe.408, i32* %1196, i32* %1199
@@ -2066,7 +2066,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %1219, i1* %out.58
   %1220 = getelementptr inbounds i32, i32* %0, i64 2
   %1221 = load i1, i1* %out.58
-  %1222 = icmp slt i64 2, %len.
+  %1222 = icmp slt i64 2, %N
   %1223 = bitcast i64* %shadow to i32*
   %safe.415 = or i1 %1221, %1222
   %select.ptr.416 = select i1 %safe.415, i32* %1220, i32* %1223
@@ -2109,14 +2109,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.422, i32* %0, align 4
   %1249 = getelementptr inbounds i32, i32* %0, i64 1
   %1250 = load i1, i1* %out.60
-  %1251 = icmp slt i64 1, %len.
+  %1251 = icmp slt i64 1, %N
   %1252 = bitcast i64* %shadow to i32*
   %safe.423 = or i1 %1250, %1251
   %select.ptr.424 = select i1 %safe.423, i32* %1249, i32* %1252
   %1253 = load i32, i32* %select.ptr.424, align 4
   %1254 = ashr i32 %1253, 1
   %1255 = load i1, i1* %out.60
-  %1256 = icmp slt i64 1, %len.
+  %1256 = icmp slt i64 1, %N
   %1257 = bitcast i64* %shadow to i32*
   %safe.425 = or i1 %1255, %1256
   %select.ptr.426 = select i1 %safe.425, i32* %1249, i32* %1257
@@ -2125,14 +2125,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.427, i32* %select.ptr.426, align 4
   %1259 = getelementptr inbounds i32, i32* %0, i64 2
   %1260 = load i1, i1* %out.60
-  %1261 = icmp slt i64 2, %len.
+  %1261 = icmp slt i64 2, %N
   %1262 = bitcast i64* %shadow to i32*
   %safe.428 = or i1 %1260, %1261
   %select.ptr.429 = select i1 %safe.428, i32* %1259, i32* %1262
   %1263 = load i32, i32* %select.ptr.429, align 4
   %1264 = ashr i32 %1263, 1
   %1265 = load i1, i1* %out.60
-  %1266 = icmp slt i64 2, %len.
+  %1266 = icmp slt i64 2, %N
   %1267 = bitcast i64* %shadow to i32*
   %safe.430 = or i1 %1265, %1266
   %select.ptr.431 = select i1 %safe.430, i32* %1259, i32* %1267
@@ -2225,7 +2225,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %1324, i1* %out.62
   %1325 = getelementptr inbounds i32, i32* %0, i64 1
   %1326 = load i1, i1* %out.62
-  %1327 = icmp slt i64 1, %len.
+  %1327 = icmp slt i64 1, %N
   %1328 = bitcast i64* %shadow to i32*
   %safe.453 = or i1 %1326, %1327
   %select.ptr.454 = select i1 %safe.453, i32* %1325, i32* %1328
@@ -2261,7 +2261,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %1348, i1* %out.64
   %1349 = getelementptr inbounds i32, i32* %0, i64 2
   %1350 = load i1, i1* %out.64
-  %1351 = icmp slt i64 2, %len.
+  %1351 = icmp slt i64 2, %N
   %1352 = bitcast i64* %shadow to i32*
   %safe.460 = or i1 %1350, %1351
   %select.ptr.461 = select i1 %safe.460, i32* %1349, i32* %1352
@@ -2304,14 +2304,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.467, i32* %0, align 4
   %1378 = getelementptr inbounds i32, i32* %0, i64 1
   %1379 = load i1, i1* %out.66
-  %1380 = icmp slt i64 1, %len.
+  %1380 = icmp slt i64 1, %N
   %1381 = bitcast i64* %shadow to i32*
   %safe.468 = or i1 %1379, %1380
   %select.ptr.469 = select i1 %safe.468, i32* %1378, i32* %1381
   %1382 = load i32, i32* %select.ptr.469, align 4
   %1383 = ashr i32 %1382, 1
   %1384 = load i1, i1* %out.66
-  %1385 = icmp slt i64 1, %len.
+  %1385 = icmp slt i64 1, %N
   %1386 = bitcast i64* %shadow to i32*
   %safe.470 = or i1 %1384, %1385
   %select.ptr.471 = select i1 %safe.470, i32* %1378, i32* %1386
@@ -2320,14 +2320,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.472, i32* %select.ptr.471, align 4
   %1388 = getelementptr inbounds i32, i32* %0, i64 2
   %1389 = load i1, i1* %out.66
-  %1390 = icmp slt i64 2, %len.
+  %1390 = icmp slt i64 2, %N
   %1391 = bitcast i64* %shadow to i32*
   %safe.473 = or i1 %1389, %1390
   %select.ptr.474 = select i1 %safe.473, i32* %1388, i32* %1391
   %1392 = load i32, i32* %select.ptr.474, align 4
   %1393 = ashr i32 %1392, 1
   %1394 = load i1, i1* %out.66
-  %1395 = icmp slt i64 2, %len.
+  %1395 = icmp slt i64 2, %N
   %1396 = bitcast i64* %shadow to i32*
   %safe.475 = or i1 %1394, %1395
   %select.ptr.476 = select i1 %safe.475, i32* %1388, i32* %1396
@@ -2420,7 +2420,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %1453, i1* %out.68
   %1454 = getelementptr inbounds i32, i32* %0, i64 1
   %1455 = load i1, i1* %out.68
-  %1456 = icmp slt i64 1, %len.
+  %1456 = icmp slt i64 1, %N
   %1457 = bitcast i64* %shadow to i32*
   %safe.498 = or i1 %1455, %1456
   %select.ptr.499 = select i1 %safe.498, i32* %1454, i32* %1457
@@ -2456,7 +2456,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %1477, i1* %out.70
   %1478 = getelementptr inbounds i32, i32* %0, i64 2
   %1479 = load i1, i1* %out.70
-  %1480 = icmp slt i64 2, %len.
+  %1480 = icmp slt i64 2, %N
   %1481 = bitcast i64* %shadow to i32*
   %safe.505 = or i1 %1479, %1480
   %select.ptr.506 = select i1 %safe.505, i32* %1478, i32* %1481
@@ -2499,14 +2499,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.512, i32* %0, align 4
   %1507 = getelementptr inbounds i32, i32* %0, i64 1
   %1508 = load i1, i1* %out.72
-  %1509 = icmp slt i64 1, %len.
+  %1509 = icmp slt i64 1, %N
   %1510 = bitcast i64* %shadow to i32*
   %safe.513 = or i1 %1508, %1509
   %select.ptr.514 = select i1 %safe.513, i32* %1507, i32* %1510
   %1511 = load i32, i32* %select.ptr.514, align 4
   %1512 = ashr i32 %1511, 1
   %1513 = load i1, i1* %out.72
-  %1514 = icmp slt i64 1, %len.
+  %1514 = icmp slt i64 1, %N
   %1515 = bitcast i64* %shadow to i32*
   %safe.515 = or i1 %1513, %1514
   %select.ptr.516 = select i1 %safe.515, i32* %1507, i32* %1515
@@ -2515,14 +2515,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.517, i32* %select.ptr.516, align 4
   %1517 = getelementptr inbounds i32, i32* %0, i64 2
   %1518 = load i1, i1* %out.72
-  %1519 = icmp slt i64 2, %len.
+  %1519 = icmp slt i64 2, %N
   %1520 = bitcast i64* %shadow to i32*
   %safe.518 = or i1 %1518, %1519
   %select.ptr.519 = select i1 %safe.518, i32* %1517, i32* %1520
   %1521 = load i32, i32* %select.ptr.519, align 4
   %1522 = ashr i32 %1521, 1
   %1523 = load i1, i1* %out.72
-  %1524 = icmp slt i64 2, %len.
+  %1524 = icmp slt i64 2, %N
   %1525 = bitcast i64* %shadow to i32*
   %safe.520 = or i1 %1523, %1524
   %select.ptr.521 = select i1 %safe.520, i32* %1517, i32* %1525
@@ -2615,7 +2615,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %1582, i1* %out.74
   %1583 = getelementptr inbounds i32, i32* %0, i64 1
   %1584 = load i1, i1* %out.74
-  %1585 = icmp slt i64 1, %len.
+  %1585 = icmp slt i64 1, %N
   %1586 = bitcast i64* %shadow to i32*
   %safe.543 = or i1 %1584, %1585
   %select.ptr.544 = select i1 %safe.543, i32* %1583, i32* %1586
@@ -2651,7 +2651,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %1606, i1* %out.76
   %1607 = getelementptr inbounds i32, i32* %0, i64 2
   %1608 = load i1, i1* %out.76
-  %1609 = icmp slt i64 2, %len.
+  %1609 = icmp slt i64 2, %N
   %1610 = bitcast i64* %shadow to i32*
   %safe.550 = or i1 %1608, %1609
   %select.ptr.551 = select i1 %safe.550, i32* %1607, i32* %1610
@@ -2694,14 +2694,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.557, i32* %0, align 4
   %1636 = getelementptr inbounds i32, i32* %0, i64 1
   %1637 = load i1, i1* %out.78
-  %1638 = icmp slt i64 1, %len.
+  %1638 = icmp slt i64 1, %N
   %1639 = bitcast i64* %shadow to i32*
   %safe.558 = or i1 %1637, %1638
   %select.ptr.559 = select i1 %safe.558, i32* %1636, i32* %1639
   %1640 = load i32, i32* %select.ptr.559, align 4
   %1641 = ashr i32 %1640, 1
   %1642 = load i1, i1* %out.78
-  %1643 = icmp slt i64 1, %len.
+  %1643 = icmp slt i64 1, %N
   %1644 = bitcast i64* %shadow to i32*
   %safe.560 = or i1 %1642, %1643
   %select.ptr.561 = select i1 %safe.560, i32* %1636, i32* %1644
@@ -2710,14 +2710,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.562, i32* %select.ptr.561, align 4
   %1646 = getelementptr inbounds i32, i32* %0, i64 2
   %1647 = load i1, i1* %out.78
-  %1648 = icmp slt i64 2, %len.
+  %1648 = icmp slt i64 2, %N
   %1649 = bitcast i64* %shadow to i32*
   %safe.563 = or i1 %1647, %1648
   %select.ptr.564 = select i1 %safe.563, i32* %1646, i32* %1649
   %1650 = load i32, i32* %select.ptr.564, align 4
   %1651 = ashr i32 %1650, 1
   %1652 = load i1, i1* %out.78
-  %1653 = icmp slt i64 2, %len.
+  %1653 = icmp slt i64 2, %N
   %1654 = bitcast i64* %shadow to i32*
   %safe.565 = or i1 %1652, %1653
   %select.ptr.566 = select i1 %safe.565, i32* %1646, i32* %1654
@@ -2810,7 +2810,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %1711, i1* %out.80
   %1712 = getelementptr inbounds i32, i32* %0, i64 1
   %1713 = load i1, i1* %out.80
-  %1714 = icmp slt i64 1, %len.
+  %1714 = icmp slt i64 1, %N
   %1715 = bitcast i64* %shadow to i32*
   %safe.588 = or i1 %1713, %1714
   %select.ptr.589 = select i1 %safe.588, i32* %1712, i32* %1715
@@ -2846,7 +2846,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %1735, i1* %out.82
   %1736 = getelementptr inbounds i32, i32* %0, i64 2
   %1737 = load i1, i1* %out.82
-  %1738 = icmp slt i64 2, %len.
+  %1738 = icmp slt i64 2, %N
   %1739 = bitcast i64* %shadow to i32*
   %safe.595 = or i1 %1737, %1738
   %select.ptr.596 = select i1 %safe.595, i32* %1736, i32* %1739
@@ -2889,14 +2889,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.602, i32* %0, align 4
   %1765 = getelementptr inbounds i32, i32* %0, i64 1
   %1766 = load i1, i1* %out.84
-  %1767 = icmp slt i64 1, %len.
+  %1767 = icmp slt i64 1, %N
   %1768 = bitcast i64* %shadow to i32*
   %safe.603 = or i1 %1766, %1767
   %select.ptr.604 = select i1 %safe.603, i32* %1765, i32* %1768
   %1769 = load i32, i32* %select.ptr.604, align 4
   %1770 = ashr i32 %1769, 1
   %1771 = load i1, i1* %out.84
-  %1772 = icmp slt i64 1, %len.
+  %1772 = icmp slt i64 1, %N
   %1773 = bitcast i64* %shadow to i32*
   %safe.605 = or i1 %1771, %1772
   %select.ptr.606 = select i1 %safe.605, i32* %1765, i32* %1773
@@ -2905,14 +2905,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.607, i32* %select.ptr.606, align 4
   %1775 = getelementptr inbounds i32, i32* %0, i64 2
   %1776 = load i1, i1* %out.84
-  %1777 = icmp slt i64 2, %len.
+  %1777 = icmp slt i64 2, %N
   %1778 = bitcast i64* %shadow to i32*
   %safe.608 = or i1 %1776, %1777
   %select.ptr.609 = select i1 %safe.608, i32* %1775, i32* %1778
   %1779 = load i32, i32* %select.ptr.609, align 4
   %1780 = ashr i32 %1779, 1
   %1781 = load i1, i1* %out.84
-  %1782 = icmp slt i64 2, %len.
+  %1782 = icmp slt i64 2, %N
   %1783 = bitcast i64* %shadow to i32*
   %safe.610 = or i1 %1781, %1782
   %select.ptr.611 = select i1 %safe.610, i32* %1775, i32* %1783
@@ -3005,7 +3005,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %1840, i1* %out.86
   %1841 = getelementptr inbounds i32, i32* %0, i64 1
   %1842 = load i1, i1* %out.86
-  %1843 = icmp slt i64 1, %len.
+  %1843 = icmp slt i64 1, %N
   %1844 = bitcast i64* %shadow to i32*
   %safe.633 = or i1 %1842, %1843
   %select.ptr.634 = select i1 %safe.633, i32* %1841, i32* %1844
@@ -3041,7 +3041,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %1864, i1* %out.88
   %1865 = getelementptr inbounds i32, i32* %0, i64 2
   %1866 = load i1, i1* %out.88
-  %1867 = icmp slt i64 2, %len.
+  %1867 = icmp slt i64 2, %N
   %1868 = bitcast i64* %shadow to i32*
   %safe.640 = or i1 %1866, %1867
   %select.ptr.641 = select i1 %safe.640, i32* %1865, i32* %1868
@@ -3084,14 +3084,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.647, i32* %0, align 4
   %1894 = getelementptr inbounds i32, i32* %0, i64 1
   %1895 = load i1, i1* %out.90
-  %1896 = icmp slt i64 1, %len.
+  %1896 = icmp slt i64 1, %N
   %1897 = bitcast i64* %shadow to i32*
   %safe.648 = or i1 %1895, %1896
   %select.ptr.649 = select i1 %safe.648, i32* %1894, i32* %1897
   %1898 = load i32, i32* %select.ptr.649, align 4
   %1899 = ashr i32 %1898, 1
   %1900 = load i1, i1* %out.90
-  %1901 = icmp slt i64 1, %len.
+  %1901 = icmp slt i64 1, %N
   %1902 = bitcast i64* %shadow to i32*
   %safe.650 = or i1 %1900, %1901
   %select.ptr.651 = select i1 %safe.650, i32* %1894, i32* %1902
@@ -3100,14 +3100,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.652, i32* %select.ptr.651, align 4
   %1904 = getelementptr inbounds i32, i32* %0, i64 2
   %1905 = load i1, i1* %out.90
-  %1906 = icmp slt i64 2, %len.
+  %1906 = icmp slt i64 2, %N
   %1907 = bitcast i64* %shadow to i32*
   %safe.653 = or i1 %1905, %1906
   %select.ptr.654 = select i1 %safe.653, i32* %1904, i32* %1907
   %1908 = load i32, i32* %select.ptr.654, align 4
   %1909 = ashr i32 %1908, 1
   %1910 = load i1, i1* %out.90
-  %1911 = icmp slt i64 2, %len.
+  %1911 = icmp slt i64 2, %N
   %1912 = bitcast i64* %shadow to i32*
   %safe.655 = or i1 %1910, %1911
   %select.ptr.656 = select i1 %safe.655, i32* %1904, i32* %1912
@@ -3200,7 +3200,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %1969, i1* %out.92
   %1970 = getelementptr inbounds i32, i32* %0, i64 1
   %1971 = load i1, i1* %out.92
-  %1972 = icmp slt i64 1, %len.
+  %1972 = icmp slt i64 1, %N
   %1973 = bitcast i64* %shadow to i32*
   %safe.678 = or i1 %1971, %1972
   %select.ptr.679 = select i1 %safe.678, i32* %1970, i32* %1973
@@ -3236,7 +3236,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %1993, i1* %out.94
   %1994 = getelementptr inbounds i32, i32* %0, i64 2
   %1995 = load i1, i1* %out.94
-  %1996 = icmp slt i64 2, %len.
+  %1996 = icmp slt i64 2, %N
   %1997 = bitcast i64* %shadow to i32*
   %safe.685 = or i1 %1995, %1996
   %select.ptr.686 = select i1 %safe.685, i32* %1994, i32* %1997
@@ -3279,14 +3279,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.692, i32* %0, align 4
   %2023 = getelementptr inbounds i32, i32* %0, i64 1
   %2024 = load i1, i1* %out.96
-  %2025 = icmp slt i64 1, %len.
+  %2025 = icmp slt i64 1, %N
   %2026 = bitcast i64* %shadow to i32*
   %safe.693 = or i1 %2024, %2025
   %select.ptr.694 = select i1 %safe.693, i32* %2023, i32* %2026
   %2027 = load i32, i32* %select.ptr.694, align 4
   %2028 = ashr i32 %2027, 1
   %2029 = load i1, i1* %out.96
-  %2030 = icmp slt i64 1, %len.
+  %2030 = icmp slt i64 1, %N
   %2031 = bitcast i64* %shadow to i32*
   %safe.695 = or i1 %2029, %2030
   %select.ptr.696 = select i1 %safe.695, i32* %2023, i32* %2031
@@ -3295,14 +3295,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.697, i32* %select.ptr.696, align 4
   %2033 = getelementptr inbounds i32, i32* %0, i64 2
   %2034 = load i1, i1* %out.96
-  %2035 = icmp slt i64 2, %len.
+  %2035 = icmp slt i64 2, %N
   %2036 = bitcast i64* %shadow to i32*
   %safe.698 = or i1 %2034, %2035
   %select.ptr.699 = select i1 %safe.698, i32* %2033, i32* %2036
   %2037 = load i32, i32* %select.ptr.699, align 4
   %2038 = ashr i32 %2037, 1
   %2039 = load i1, i1* %out.96
-  %2040 = icmp slt i64 2, %len.
+  %2040 = icmp slt i64 2, %N
   %2041 = bitcast i64* %shadow to i32*
   %safe.700 = or i1 %2039, %2040
   %select.ptr.701 = select i1 %safe.700, i32* %2033, i32* %2041
@@ -3395,7 +3395,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %2098, i1* %out.98
   %2099 = getelementptr inbounds i32, i32* %0, i64 1
   %2100 = load i1, i1* %out.98
-  %2101 = icmp slt i64 1, %len.
+  %2101 = icmp slt i64 1, %N
   %2102 = bitcast i64* %shadow to i32*
   %safe.723 = or i1 %2100, %2101
   %select.ptr.724 = select i1 %safe.723, i32* %2099, i32* %2102
@@ -3431,7 +3431,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %2122, i1* %out.100
   %2123 = getelementptr inbounds i32, i32* %0, i64 2
   %2124 = load i1, i1* %out.100
-  %2125 = icmp slt i64 2, %len.
+  %2125 = icmp slt i64 2, %N
   %2126 = bitcast i64* %shadow to i32*
   %safe.730 = or i1 %2124, %2125
   %select.ptr.731 = select i1 %safe.730, i32* %2123, i32* %2126
@@ -3474,14 +3474,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.737, i32* %0, align 4
   %2152 = getelementptr inbounds i32, i32* %0, i64 1
   %2153 = load i1, i1* %out.102
-  %2154 = icmp slt i64 1, %len.
+  %2154 = icmp slt i64 1, %N
   %2155 = bitcast i64* %shadow to i32*
   %safe.738 = or i1 %2153, %2154
   %select.ptr.739 = select i1 %safe.738, i32* %2152, i32* %2155
   %2156 = load i32, i32* %select.ptr.739, align 4
   %2157 = ashr i32 %2156, 1
   %2158 = load i1, i1* %out.102
-  %2159 = icmp slt i64 1, %len.
+  %2159 = icmp slt i64 1, %N
   %2160 = bitcast i64* %shadow to i32*
   %safe.740 = or i1 %2158, %2159
   %select.ptr.741 = select i1 %safe.740, i32* %2152, i32* %2160
@@ -3490,14 +3490,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.742, i32* %select.ptr.741, align 4
   %2162 = getelementptr inbounds i32, i32* %0, i64 2
   %2163 = load i1, i1* %out.102
-  %2164 = icmp slt i64 2, %len.
+  %2164 = icmp slt i64 2, %N
   %2165 = bitcast i64* %shadow to i32*
   %safe.743 = or i1 %2163, %2164
   %select.ptr.744 = select i1 %safe.743, i32* %2162, i32* %2165
   %2166 = load i32, i32* %select.ptr.744, align 4
   %2167 = ashr i32 %2166, 1
   %2168 = load i1, i1* %out.102
-  %2169 = icmp slt i64 2, %len.
+  %2169 = icmp slt i64 2, %N
   %2170 = bitcast i64* %shadow to i32*
   %safe.745 = or i1 %2168, %2169
   %select.ptr.746 = select i1 %safe.745, i32* %2162, i32* %2170
@@ -3590,7 +3590,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %2227, i1* %out.104
   %2228 = getelementptr inbounds i32, i32* %0, i64 1
   %2229 = load i1, i1* %out.104
-  %2230 = icmp slt i64 1, %len.
+  %2230 = icmp slt i64 1, %N
   %2231 = bitcast i64* %shadow to i32*
   %safe.768 = or i1 %2229, %2230
   %select.ptr.769 = select i1 %safe.768, i32* %2228, i32* %2231
@@ -3626,7 +3626,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %2251, i1* %out.106
   %2252 = getelementptr inbounds i32, i32* %0, i64 2
   %2253 = load i1, i1* %out.106
-  %2254 = icmp slt i64 2, %len.
+  %2254 = icmp slt i64 2, %N
   %2255 = bitcast i64* %shadow to i32*
   %safe.775 = or i1 %2253, %2254
   %select.ptr.776 = select i1 %safe.775, i32* %2252, i32* %2255
@@ -3669,14 +3669,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.782, i32* %0, align 4
   %2281 = getelementptr inbounds i32, i32* %0, i64 1
   %2282 = load i1, i1* %out.108
-  %2283 = icmp slt i64 1, %len.
+  %2283 = icmp slt i64 1, %N
   %2284 = bitcast i64* %shadow to i32*
   %safe.783 = or i1 %2282, %2283
   %select.ptr.784 = select i1 %safe.783, i32* %2281, i32* %2284
   %2285 = load i32, i32* %select.ptr.784, align 4
   %2286 = ashr i32 %2285, 1
   %2287 = load i1, i1* %out.108
-  %2288 = icmp slt i64 1, %len.
+  %2288 = icmp slt i64 1, %N
   %2289 = bitcast i64* %shadow to i32*
   %safe.785 = or i1 %2287, %2288
   %select.ptr.786 = select i1 %safe.785, i32* %2281, i32* %2289
@@ -3685,14 +3685,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.787, i32* %select.ptr.786, align 4
   %2291 = getelementptr inbounds i32, i32* %0, i64 2
   %2292 = load i1, i1* %out.108
-  %2293 = icmp slt i64 2, %len.
+  %2293 = icmp slt i64 2, %N
   %2294 = bitcast i64* %shadow to i32*
   %safe.788 = or i1 %2292, %2293
   %select.ptr.789 = select i1 %safe.788, i32* %2291, i32* %2294
   %2295 = load i32, i32* %select.ptr.789, align 4
   %2296 = ashr i32 %2295, 1
   %2297 = load i1, i1* %out.108
-  %2298 = icmp slt i64 2, %len.
+  %2298 = icmp slt i64 2, %N
   %2299 = bitcast i64* %shadow to i32*
   %safe.790 = or i1 %2297, %2298
   %select.ptr.791 = select i1 %safe.790, i32* %2291, i32* %2299
@@ -3785,7 +3785,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %2356, i1* %out.110
   %2357 = getelementptr inbounds i32, i32* %0, i64 1
   %2358 = load i1, i1* %out.110
-  %2359 = icmp slt i64 1, %len.
+  %2359 = icmp slt i64 1, %N
   %2360 = bitcast i64* %shadow to i32*
   %safe.813 = or i1 %2358, %2359
   %select.ptr.814 = select i1 %safe.813, i32* %2357, i32* %2360
@@ -3821,7 +3821,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %2380, i1* %out.112
   %2381 = getelementptr inbounds i32, i32* %0, i64 2
   %2382 = load i1, i1* %out.112
-  %2383 = icmp slt i64 2, %len.
+  %2383 = icmp slt i64 2, %N
   %2384 = bitcast i64* %shadow to i32*
   %safe.820 = or i1 %2382, %2383
   %select.ptr.821 = select i1 %safe.820, i32* %2381, i32* %2384
@@ -3864,14 +3864,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.827, i32* %0, align 4
   %2410 = getelementptr inbounds i32, i32* %0, i64 1
   %2411 = load i1, i1* %out.114
-  %2412 = icmp slt i64 1, %len.
+  %2412 = icmp slt i64 1, %N
   %2413 = bitcast i64* %shadow to i32*
   %safe.828 = or i1 %2411, %2412
   %select.ptr.829 = select i1 %safe.828, i32* %2410, i32* %2413
   %2414 = load i32, i32* %select.ptr.829, align 4
   %2415 = ashr i32 %2414, 1
   %2416 = load i1, i1* %out.114
-  %2417 = icmp slt i64 1, %len.
+  %2417 = icmp slt i64 1, %N
   %2418 = bitcast i64* %shadow to i32*
   %safe.830 = or i1 %2416, %2417
   %select.ptr.831 = select i1 %safe.830, i32* %2410, i32* %2418
@@ -3880,14 +3880,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.832, i32* %select.ptr.831, align 4
   %2420 = getelementptr inbounds i32, i32* %0, i64 2
   %2421 = load i1, i1* %out.114
-  %2422 = icmp slt i64 2, %len.
+  %2422 = icmp slt i64 2, %N
   %2423 = bitcast i64* %shadow to i32*
   %safe.833 = or i1 %2421, %2422
   %select.ptr.834 = select i1 %safe.833, i32* %2420, i32* %2423
   %2424 = load i32, i32* %select.ptr.834, align 4
   %2425 = ashr i32 %2424, 1
   %2426 = load i1, i1* %out.114
-  %2427 = icmp slt i64 2, %len.
+  %2427 = icmp slt i64 2, %N
   %2428 = bitcast i64* %shadow to i32*
   %safe.835 = or i1 %2426, %2427
   %select.ptr.836 = select i1 %safe.835, i32* %2420, i32* %2428
@@ -3980,7 +3980,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %2485, i1* %out.116
   %2486 = getelementptr inbounds i32, i32* %0, i64 1
   %2487 = load i1, i1* %out.116
-  %2488 = icmp slt i64 1, %len.
+  %2488 = icmp slt i64 1, %N
   %2489 = bitcast i64* %shadow to i32*
   %safe.858 = or i1 %2487, %2488
   %select.ptr.859 = select i1 %safe.858, i32* %2486, i32* %2489
@@ -4016,7 +4016,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %2509, i1* %out.118
   %2510 = getelementptr inbounds i32, i32* %0, i64 2
   %2511 = load i1, i1* %out.118
-  %2512 = icmp slt i64 2, %len.
+  %2512 = icmp slt i64 2, %N
   %2513 = bitcast i64* %shadow to i32*
   %safe.865 = or i1 %2511, %2512
   %select.ptr.866 = select i1 %safe.865, i32* %2510, i32* %2513
@@ -4059,14 +4059,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.872, i32* %0, align 4
   %2539 = getelementptr inbounds i32, i32* %0, i64 1
   %2540 = load i1, i1* %out.120
-  %2541 = icmp slt i64 1, %len.
+  %2541 = icmp slt i64 1, %N
   %2542 = bitcast i64* %shadow to i32*
   %safe.873 = or i1 %2540, %2541
   %select.ptr.874 = select i1 %safe.873, i32* %2539, i32* %2542
   %2543 = load i32, i32* %select.ptr.874, align 4
   %2544 = ashr i32 %2543, 1
   %2545 = load i1, i1* %out.120
-  %2546 = icmp slt i64 1, %len.
+  %2546 = icmp slt i64 1, %N
   %2547 = bitcast i64* %shadow to i32*
   %safe.875 = or i1 %2545, %2546
   %select.ptr.876 = select i1 %safe.875, i32* %2539, i32* %2547
@@ -4075,14 +4075,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.877, i32* %select.ptr.876, align 4
   %2549 = getelementptr inbounds i32, i32* %0, i64 2
   %2550 = load i1, i1* %out.120
-  %2551 = icmp slt i64 2, %len.
+  %2551 = icmp slt i64 2, %N
   %2552 = bitcast i64* %shadow to i32*
   %safe.878 = or i1 %2550, %2551
   %select.ptr.879 = select i1 %safe.878, i32* %2549, i32* %2552
   %2553 = load i32, i32* %select.ptr.879, align 4
   %2554 = ashr i32 %2553, 1
   %2555 = load i1, i1* %out.120
-  %2556 = icmp slt i64 2, %len.
+  %2556 = icmp slt i64 2, %N
   %2557 = bitcast i64* %shadow to i32*
   %safe.880 = or i1 %2555, %2556
   %select.ptr.881 = select i1 %safe.880, i32* %2549, i32* %2557
@@ -4175,7 +4175,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %2614, i1* %out.122
   %2615 = getelementptr inbounds i32, i32* %0, i64 1
   %2616 = load i1, i1* %out.122
-  %2617 = icmp slt i64 1, %len.
+  %2617 = icmp slt i64 1, %N
   %2618 = bitcast i64* %shadow to i32*
   %safe.903 = or i1 %2616, %2617
   %select.ptr.904 = select i1 %safe.903, i32* %2615, i32* %2618
@@ -4211,7 +4211,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %2638, i1* %out.124
   %2639 = getelementptr inbounds i32, i32* %0, i64 2
   %2640 = load i1, i1* %out.124
-  %2641 = icmp slt i64 2, %len.
+  %2641 = icmp slt i64 2, %N
   %2642 = bitcast i64* %shadow to i32*
   %safe.910 = or i1 %2640, %2641
   %select.ptr.911 = select i1 %safe.910, i32* %2639, i32* %2642
@@ -4254,14 +4254,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.917, i32* %0, align 4
   %2668 = getelementptr inbounds i32, i32* %0, i64 1
   %2669 = load i1, i1* %out.126
-  %2670 = icmp slt i64 1, %len.
+  %2670 = icmp slt i64 1, %N
   %2671 = bitcast i64* %shadow to i32*
   %safe.918 = or i1 %2669, %2670
   %select.ptr.919 = select i1 %safe.918, i32* %2668, i32* %2671
   %2672 = load i32, i32* %select.ptr.919, align 4
   %2673 = ashr i32 %2672, 1
   %2674 = load i1, i1* %out.126
-  %2675 = icmp slt i64 1, %len.
+  %2675 = icmp slt i64 1, %N
   %2676 = bitcast i64* %shadow to i32*
   %safe.920 = or i1 %2674, %2675
   %select.ptr.921 = select i1 %safe.920, i32* %2668, i32* %2676
@@ -4270,14 +4270,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.922, i32* %select.ptr.921, align 4
   %2678 = getelementptr inbounds i32, i32* %0, i64 2
   %2679 = load i1, i1* %out.126
-  %2680 = icmp slt i64 2, %len.
+  %2680 = icmp slt i64 2, %N
   %2681 = bitcast i64* %shadow to i32*
   %safe.923 = or i1 %2679, %2680
   %select.ptr.924 = select i1 %safe.923, i32* %2678, i32* %2681
   %2682 = load i32, i32* %select.ptr.924, align 4
   %2683 = ashr i32 %2682, 1
   %2684 = load i1, i1* %out.126
-  %2685 = icmp slt i64 2, %len.
+  %2685 = icmp slt i64 2, %N
   %2686 = bitcast i64* %shadow to i32*
   %safe.925 = or i1 %2684, %2685
   %select.ptr.926 = select i1 %safe.925, i32* %2678, i32* %2686
@@ -4370,7 +4370,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %2743, i1* %out.128
   %2744 = getelementptr inbounds i32, i32* %0, i64 1
   %2745 = load i1, i1* %out.128
-  %2746 = icmp slt i64 1, %len.
+  %2746 = icmp slt i64 1, %N
   %2747 = bitcast i64* %shadow to i32*
   %safe.948 = or i1 %2745, %2746
   %select.ptr.949 = select i1 %safe.948, i32* %2744, i32* %2747
@@ -4406,7 +4406,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %2767, i1* %out.130
   %2768 = getelementptr inbounds i32, i32* %0, i64 2
   %2769 = load i1, i1* %out.130
-  %2770 = icmp slt i64 2, %len.
+  %2770 = icmp slt i64 2, %N
   %2771 = bitcast i64* %shadow to i32*
   %safe.955 = or i1 %2769, %2770
   %select.ptr.956 = select i1 %safe.955, i32* %2768, i32* %2771
@@ -4449,14 +4449,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.962, i32* %0, align 4
   %2797 = getelementptr inbounds i32, i32* %0, i64 1
   %2798 = load i1, i1* %out.132
-  %2799 = icmp slt i64 1, %len.
+  %2799 = icmp slt i64 1, %N
   %2800 = bitcast i64* %shadow to i32*
   %safe.963 = or i1 %2798, %2799
   %select.ptr.964 = select i1 %safe.963, i32* %2797, i32* %2800
   %2801 = load i32, i32* %select.ptr.964, align 4
   %2802 = ashr i32 %2801, 1
   %2803 = load i1, i1* %out.132
-  %2804 = icmp slt i64 1, %len.
+  %2804 = icmp slt i64 1, %N
   %2805 = bitcast i64* %shadow to i32*
   %safe.965 = or i1 %2803, %2804
   %select.ptr.966 = select i1 %safe.965, i32* %2797, i32* %2805
@@ -4465,14 +4465,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.967, i32* %select.ptr.966, align 4
   %2807 = getelementptr inbounds i32, i32* %0, i64 2
   %2808 = load i1, i1* %out.132
-  %2809 = icmp slt i64 2, %len.
+  %2809 = icmp slt i64 2, %N
   %2810 = bitcast i64* %shadow to i32*
   %safe.968 = or i1 %2808, %2809
   %select.ptr.969 = select i1 %safe.968, i32* %2807, i32* %2810
   %2811 = load i32, i32* %select.ptr.969, align 4
   %2812 = ashr i32 %2811, 1
   %2813 = load i1, i1* %out.132
-  %2814 = icmp slt i64 2, %len.
+  %2814 = icmp slt i64 2, %N
   %2815 = bitcast i64* %shadow to i32*
   %safe.970 = or i1 %2813, %2814
   %select.ptr.971 = select i1 %safe.970, i32* %2807, i32* %2815
@@ -4565,7 +4565,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %2872, i1* %out.134
   %2873 = getelementptr inbounds i32, i32* %0, i64 1
   %2874 = load i1, i1* %out.134
-  %2875 = icmp slt i64 1, %len.
+  %2875 = icmp slt i64 1, %N
   %2876 = bitcast i64* %shadow to i32*
   %safe.993 = or i1 %2874, %2875
   %select.ptr.994 = select i1 %safe.993, i32* %2873, i32* %2876
@@ -4601,7 +4601,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %2896, i1* %out.136
   %2897 = getelementptr inbounds i32, i32* %0, i64 2
   %2898 = load i1, i1* %out.136
-  %2899 = icmp slt i64 2, %len.
+  %2899 = icmp slt i64 2, %N
   %2900 = bitcast i64* %shadow to i32*
   %safe.1000 = or i1 %2898, %2899
   %select.ptr.1001 = select i1 %safe.1000, i32* %2897, i32* %2900
@@ -4644,14 +4644,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.1007, i32* %0, align 4
   %2926 = getelementptr inbounds i32, i32* %0, i64 1
   %2927 = load i1, i1* %out.138
-  %2928 = icmp slt i64 1, %len.
+  %2928 = icmp slt i64 1, %N
   %2929 = bitcast i64* %shadow to i32*
   %safe.1008 = or i1 %2927, %2928
   %select.ptr.1009 = select i1 %safe.1008, i32* %2926, i32* %2929
   %2930 = load i32, i32* %select.ptr.1009, align 4
   %2931 = ashr i32 %2930, 1
   %2932 = load i1, i1* %out.138
-  %2933 = icmp slt i64 1, %len.
+  %2933 = icmp slt i64 1, %N
   %2934 = bitcast i64* %shadow to i32*
   %safe.1010 = or i1 %2932, %2933
   %select.ptr.1011 = select i1 %safe.1010, i32* %2926, i32* %2934
@@ -4660,14 +4660,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.1012, i32* %select.ptr.1011, align 4
   %2936 = getelementptr inbounds i32, i32* %0, i64 2
   %2937 = load i1, i1* %out.138
-  %2938 = icmp slt i64 2, %len.
+  %2938 = icmp slt i64 2, %N
   %2939 = bitcast i64* %shadow to i32*
   %safe.1013 = or i1 %2937, %2938
   %select.ptr.1014 = select i1 %safe.1013, i32* %2936, i32* %2939
   %2940 = load i32, i32* %select.ptr.1014, align 4
   %2941 = ashr i32 %2940, 1
   %2942 = load i1, i1* %out.138
-  %2943 = icmp slt i64 2, %len.
+  %2943 = icmp slt i64 2, %N
   %2944 = bitcast i64* %shadow to i32*
   %safe.1015 = or i1 %2942, %2943
   %select.ptr.1016 = select i1 %safe.1015, i32* %2936, i32* %2944
@@ -4760,7 +4760,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %3001, i1* %out.140
   %3002 = getelementptr inbounds i32, i32* %0, i64 1
   %3003 = load i1, i1* %out.140
-  %3004 = icmp slt i64 1, %len.
+  %3004 = icmp slt i64 1, %N
   %3005 = bitcast i64* %shadow to i32*
   %safe.1038 = or i1 %3003, %3004
   %select.ptr.1039 = select i1 %safe.1038, i32* %3002, i32* %3005
@@ -4796,7 +4796,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %3025, i1* %out.142
   %3026 = getelementptr inbounds i32, i32* %0, i64 2
   %3027 = load i1, i1* %out.142
-  %3028 = icmp slt i64 2, %len.
+  %3028 = icmp slt i64 2, %N
   %3029 = bitcast i64* %shadow to i32*
   %safe.1045 = or i1 %3027, %3028
   %select.ptr.1046 = select i1 %safe.1045, i32* %3026, i32* %3029
@@ -4839,14 +4839,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.1052, i32* %0, align 4
   %3055 = getelementptr inbounds i32, i32* %0, i64 1
   %3056 = load i1, i1* %out.144
-  %3057 = icmp slt i64 1, %len.
+  %3057 = icmp slt i64 1, %N
   %3058 = bitcast i64* %shadow to i32*
   %safe.1053 = or i1 %3056, %3057
   %select.ptr.1054 = select i1 %safe.1053, i32* %3055, i32* %3058
   %3059 = load i32, i32* %select.ptr.1054, align 4
   %3060 = ashr i32 %3059, 1
   %3061 = load i1, i1* %out.144
-  %3062 = icmp slt i64 1, %len.
+  %3062 = icmp slt i64 1, %N
   %3063 = bitcast i64* %shadow to i32*
   %safe.1055 = or i1 %3061, %3062
   %select.ptr.1056 = select i1 %safe.1055, i32* %3055, i32* %3063
@@ -4855,14 +4855,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.1057, i32* %select.ptr.1056, align 4
   %3065 = getelementptr inbounds i32, i32* %0, i64 2
   %3066 = load i1, i1* %out.144
-  %3067 = icmp slt i64 2, %len.
+  %3067 = icmp slt i64 2, %N
   %3068 = bitcast i64* %shadow to i32*
   %safe.1058 = or i1 %3066, %3067
   %select.ptr.1059 = select i1 %safe.1058, i32* %3065, i32* %3068
   %3069 = load i32, i32* %select.ptr.1059, align 4
   %3070 = ashr i32 %3069, 1
   %3071 = load i1, i1* %out.144
-  %3072 = icmp slt i64 2, %len.
+  %3072 = icmp slt i64 2, %N
   %3073 = bitcast i64* %shadow to i32*
   %safe.1060 = or i1 %3071, %3072
   %select.ptr.1061 = select i1 %safe.1060, i32* %3065, i32* %3073
@@ -4955,7 +4955,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %3130, i1* %out.146
   %3131 = getelementptr inbounds i32, i32* %0, i64 1
   %3132 = load i1, i1* %out.146
-  %3133 = icmp slt i64 1, %len.
+  %3133 = icmp slt i64 1, %N
   %3134 = bitcast i64* %shadow to i32*
   %safe.1083 = or i1 %3132, %3133
   %select.ptr.1084 = select i1 %safe.1083, i32* %3131, i32* %3134
@@ -4991,7 +4991,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %3154, i1* %out.148
   %3155 = getelementptr inbounds i32, i32* %0, i64 2
   %3156 = load i1, i1* %out.148
-  %3157 = icmp slt i64 2, %len.
+  %3157 = icmp slt i64 2, %N
   %3158 = bitcast i64* %shadow to i32*
   %safe.1090 = or i1 %3156, %3157
   %select.ptr.1091 = select i1 %safe.1090, i32* %3155, i32* %3158
@@ -5034,14 +5034,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.1097, i32* %0, align 4
   %3184 = getelementptr inbounds i32, i32* %0, i64 1
   %3185 = load i1, i1* %out.150
-  %3186 = icmp slt i64 1, %len.
+  %3186 = icmp slt i64 1, %N
   %3187 = bitcast i64* %shadow to i32*
   %safe.1098 = or i1 %3185, %3186
   %select.ptr.1099 = select i1 %safe.1098, i32* %3184, i32* %3187
   %3188 = load i32, i32* %select.ptr.1099, align 4
   %3189 = ashr i32 %3188, 1
   %3190 = load i1, i1* %out.150
-  %3191 = icmp slt i64 1, %len.
+  %3191 = icmp slt i64 1, %N
   %3192 = bitcast i64* %shadow to i32*
   %safe.1100 = or i1 %3190, %3191
   %select.ptr.1101 = select i1 %safe.1100, i32* %3184, i32* %3192
@@ -5050,14 +5050,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.1102, i32* %select.ptr.1101, align 4
   %3194 = getelementptr inbounds i32, i32* %0, i64 2
   %3195 = load i1, i1* %out.150
-  %3196 = icmp slt i64 2, %len.
+  %3196 = icmp slt i64 2, %N
   %3197 = bitcast i64* %shadow to i32*
   %safe.1103 = or i1 %3195, %3196
   %select.ptr.1104 = select i1 %safe.1103, i32* %3194, i32* %3197
   %3198 = load i32, i32* %select.ptr.1104, align 4
   %3199 = ashr i32 %3198, 1
   %3200 = load i1, i1* %out.150
-  %3201 = icmp slt i64 2, %len.
+  %3201 = icmp slt i64 2, %N
   %3202 = bitcast i64* %shadow to i32*
   %safe.1105 = or i1 %3200, %3201
   %select.ptr.1106 = select i1 %safe.1105, i32* %3194, i32* %3202
@@ -5150,7 +5150,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %3259, i1* %out.152
   %3260 = getelementptr inbounds i32, i32* %0, i64 1
   %3261 = load i1, i1* %out.152
-  %3262 = icmp slt i64 1, %len.
+  %3262 = icmp slt i64 1, %N
   %3263 = bitcast i64* %shadow to i32*
   %safe.1128 = or i1 %3261, %3262
   %select.ptr.1129 = select i1 %safe.1128, i32* %3260, i32* %3263
@@ -5186,7 +5186,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %3283, i1* %out.154
   %3284 = getelementptr inbounds i32, i32* %0, i64 2
   %3285 = load i1, i1* %out.154
-  %3286 = icmp slt i64 2, %len.
+  %3286 = icmp slt i64 2, %N
   %3287 = bitcast i64* %shadow to i32*
   %safe.1135 = or i1 %3285, %3286
   %select.ptr.1136 = select i1 %safe.1135, i32* %3284, i32* %3287
@@ -5229,14 +5229,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.1142, i32* %0, align 4
   %3313 = getelementptr inbounds i32, i32* %0, i64 1
   %3314 = load i1, i1* %out.156
-  %3315 = icmp slt i64 1, %len.
+  %3315 = icmp slt i64 1, %N
   %3316 = bitcast i64* %shadow to i32*
   %safe.1143 = or i1 %3314, %3315
   %select.ptr.1144 = select i1 %safe.1143, i32* %3313, i32* %3316
   %3317 = load i32, i32* %select.ptr.1144, align 4
   %3318 = ashr i32 %3317, 1
   %3319 = load i1, i1* %out.156
-  %3320 = icmp slt i64 1, %len.
+  %3320 = icmp slt i64 1, %N
   %3321 = bitcast i64* %shadow to i32*
   %safe.1145 = or i1 %3319, %3320
   %select.ptr.1146 = select i1 %safe.1145, i32* %3313, i32* %3321
@@ -5245,14 +5245,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.1147, i32* %select.ptr.1146, align 4
   %3323 = getelementptr inbounds i32, i32* %0, i64 2
   %3324 = load i1, i1* %out.156
-  %3325 = icmp slt i64 2, %len.
+  %3325 = icmp slt i64 2, %N
   %3326 = bitcast i64* %shadow to i32*
   %safe.1148 = or i1 %3324, %3325
   %select.ptr.1149 = select i1 %safe.1148, i32* %3323, i32* %3326
   %3327 = load i32, i32* %select.ptr.1149, align 4
   %3328 = ashr i32 %3327, 1
   %3329 = load i1, i1* %out.156
-  %3330 = icmp slt i64 2, %len.
+  %3330 = icmp slt i64 2, %N
   %3331 = bitcast i64* %shadow to i32*
   %safe.1150 = or i1 %3329, %3330
   %select.ptr.1151 = select i1 %safe.1150, i32* %3323, i32* %3331
@@ -5345,7 +5345,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %3388, i1* %out.158
   %3389 = getelementptr inbounds i32, i32* %0, i64 1
   %3390 = load i1, i1* %out.158
-  %3391 = icmp slt i64 1, %len.
+  %3391 = icmp slt i64 1, %N
   %3392 = bitcast i64* %shadow to i32*
   %safe.1173 = or i1 %3390, %3391
   %select.ptr.1174 = select i1 %safe.1173, i32* %3389, i32* %3392
@@ -5381,7 +5381,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %3412, i1* %out.160
   %3413 = getelementptr inbounds i32, i32* %0, i64 2
   %3414 = load i1, i1* %out.160
-  %3415 = icmp slt i64 2, %len.
+  %3415 = icmp slt i64 2, %N
   %3416 = bitcast i64* %shadow to i32*
   %safe.1180 = or i1 %3414, %3415
   %select.ptr.1181 = select i1 %safe.1180, i32* %3413, i32* %3416
@@ -5424,14 +5424,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.1187, i32* %0, align 4
   %3442 = getelementptr inbounds i32, i32* %0, i64 1
   %3443 = load i1, i1* %out.162
-  %3444 = icmp slt i64 1, %len.
+  %3444 = icmp slt i64 1, %N
   %3445 = bitcast i64* %shadow to i32*
   %safe.1188 = or i1 %3443, %3444
   %select.ptr.1189 = select i1 %safe.1188, i32* %3442, i32* %3445
   %3446 = load i32, i32* %select.ptr.1189, align 4
   %3447 = ashr i32 %3446, 1
   %3448 = load i1, i1* %out.162
-  %3449 = icmp slt i64 1, %len.
+  %3449 = icmp slt i64 1, %N
   %3450 = bitcast i64* %shadow to i32*
   %safe.1190 = or i1 %3448, %3449
   %select.ptr.1191 = select i1 %safe.1190, i32* %3442, i32* %3450
@@ -5440,14 +5440,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.1192, i32* %select.ptr.1191, align 4
   %3452 = getelementptr inbounds i32, i32* %0, i64 2
   %3453 = load i1, i1* %out.162
-  %3454 = icmp slt i64 2, %len.
+  %3454 = icmp slt i64 2, %N
   %3455 = bitcast i64* %shadow to i32*
   %safe.1193 = or i1 %3453, %3454
   %select.ptr.1194 = select i1 %safe.1193, i32* %3452, i32* %3455
   %3456 = load i32, i32* %select.ptr.1194, align 4
   %3457 = ashr i32 %3456, 1
   %3458 = load i1, i1* %out.162
-  %3459 = icmp slt i64 2, %len.
+  %3459 = icmp slt i64 2, %N
   %3460 = bitcast i64* %shadow to i32*
   %safe.1195 = or i1 %3458, %3459
   %select.ptr.1196 = select i1 %safe.1195, i32* %3452, i32* %3460
@@ -5540,7 +5540,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %3517, i1* %out.164
   %3518 = getelementptr inbounds i32, i32* %0, i64 1
   %3519 = load i1, i1* %out.164
-  %3520 = icmp slt i64 1, %len.
+  %3520 = icmp slt i64 1, %N
   %3521 = bitcast i64* %shadow to i32*
   %safe.1218 = or i1 %3519, %3520
   %select.ptr.1219 = select i1 %safe.1218, i32* %3518, i32* %3521
@@ -5576,7 +5576,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %3541, i1* %out.166
   %3542 = getelementptr inbounds i32, i32* %0, i64 2
   %3543 = load i1, i1* %out.166
-  %3544 = icmp slt i64 2, %len.
+  %3544 = icmp slt i64 2, %N
   %3545 = bitcast i64* %shadow to i32*
   %safe.1225 = or i1 %3543, %3544
   %select.ptr.1226 = select i1 %safe.1225, i32* %3542, i32* %3545
@@ -5619,14 +5619,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.1232, i32* %0, align 4
   %3571 = getelementptr inbounds i32, i32* %0, i64 1
   %3572 = load i1, i1* %out.168
-  %3573 = icmp slt i64 1, %len.
+  %3573 = icmp slt i64 1, %N
   %3574 = bitcast i64* %shadow to i32*
   %safe.1233 = or i1 %3572, %3573
   %select.ptr.1234 = select i1 %safe.1233, i32* %3571, i32* %3574
   %3575 = load i32, i32* %select.ptr.1234, align 4
   %3576 = ashr i32 %3575, 1
   %3577 = load i1, i1* %out.168
-  %3578 = icmp slt i64 1, %len.
+  %3578 = icmp slt i64 1, %N
   %3579 = bitcast i64* %shadow to i32*
   %safe.1235 = or i1 %3577, %3578
   %select.ptr.1236 = select i1 %safe.1235, i32* %3571, i32* %3579
@@ -5635,14 +5635,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.1237, i32* %select.ptr.1236, align 4
   %3581 = getelementptr inbounds i32, i32* %0, i64 2
   %3582 = load i1, i1* %out.168
-  %3583 = icmp slt i64 2, %len.
+  %3583 = icmp slt i64 2, %N
   %3584 = bitcast i64* %shadow to i32*
   %safe.1238 = or i1 %3582, %3583
   %select.ptr.1239 = select i1 %safe.1238, i32* %3581, i32* %3584
   %3585 = load i32, i32* %select.ptr.1239, align 4
   %3586 = ashr i32 %3585, 1
   %3587 = load i1, i1* %out.168
-  %3588 = icmp slt i64 2, %len.
+  %3588 = icmp slt i64 2, %N
   %3589 = bitcast i64* %shadow to i32*
   %safe.1240 = or i1 %3587, %3588
   %select.ptr.1241 = select i1 %safe.1240, i32* %3581, i32* %3589
@@ -5735,7 +5735,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %3646, i1* %out.170
   %3647 = getelementptr inbounds i32, i32* %0, i64 1
   %3648 = load i1, i1* %out.170
-  %3649 = icmp slt i64 1, %len.
+  %3649 = icmp slt i64 1, %N
   %3650 = bitcast i64* %shadow to i32*
   %safe.1263 = or i1 %3648, %3649
   %select.ptr.1264 = select i1 %safe.1263, i32* %3647, i32* %3650
@@ -5771,7 +5771,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %3670, i1* %out.172
   %3671 = getelementptr inbounds i32, i32* %0, i64 2
   %3672 = load i1, i1* %out.172
-  %3673 = icmp slt i64 2, %len.
+  %3673 = icmp slt i64 2, %N
   %3674 = bitcast i64* %shadow to i32*
   %safe.1270 = or i1 %3672, %3673
   %select.ptr.1271 = select i1 %safe.1270, i32* %3671, i32* %3674
@@ -5814,14 +5814,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.1277, i32* %0, align 4
   %3700 = getelementptr inbounds i32, i32* %0, i64 1
   %3701 = load i1, i1* %out.174
-  %3702 = icmp slt i64 1, %len.
+  %3702 = icmp slt i64 1, %N
   %3703 = bitcast i64* %shadow to i32*
   %safe.1278 = or i1 %3701, %3702
   %select.ptr.1279 = select i1 %safe.1278, i32* %3700, i32* %3703
   %3704 = load i32, i32* %select.ptr.1279, align 4
   %3705 = ashr i32 %3704, 1
   %3706 = load i1, i1* %out.174
-  %3707 = icmp slt i64 1, %len.
+  %3707 = icmp slt i64 1, %N
   %3708 = bitcast i64* %shadow to i32*
   %safe.1280 = or i1 %3706, %3707
   %select.ptr.1281 = select i1 %safe.1280, i32* %3700, i32* %3708
@@ -5830,14 +5830,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.1282, i32* %select.ptr.1281, align 4
   %3710 = getelementptr inbounds i32, i32* %0, i64 2
   %3711 = load i1, i1* %out.174
-  %3712 = icmp slt i64 2, %len.
+  %3712 = icmp slt i64 2, %N
   %3713 = bitcast i64* %shadow to i32*
   %safe.1283 = or i1 %3711, %3712
   %select.ptr.1284 = select i1 %safe.1283, i32* %3710, i32* %3713
   %3714 = load i32, i32* %select.ptr.1284, align 4
   %3715 = ashr i32 %3714, 1
   %3716 = load i1, i1* %out.174
-  %3717 = icmp slt i64 2, %len.
+  %3717 = icmp slt i64 2, %N
   %3718 = bitcast i64* %shadow to i32*
   %safe.1285 = or i1 %3716, %3717
   %select.ptr.1286 = select i1 %safe.1285, i32* %3710, i32* %3718
@@ -5930,7 +5930,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %3775, i1* %out.176
   %3776 = getelementptr inbounds i32, i32* %0, i64 1
   %3777 = load i1, i1* %out.176
-  %3778 = icmp slt i64 1, %len.
+  %3778 = icmp slt i64 1, %N
   %3779 = bitcast i64* %shadow to i32*
   %safe.1308 = or i1 %3777, %3778
   %select.ptr.1309 = select i1 %safe.1308, i32* %3776, i32* %3779
@@ -5966,7 +5966,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %3799, i1* %out.178
   %3800 = getelementptr inbounds i32, i32* %0, i64 2
   %3801 = load i1, i1* %out.178
-  %3802 = icmp slt i64 2, %len.
+  %3802 = icmp slt i64 2, %N
   %3803 = bitcast i64* %shadow to i32*
   %safe.1315 = or i1 %3801, %3802
   %select.ptr.1316 = select i1 %safe.1315, i32* %3800, i32* %3803
@@ -6009,14 +6009,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.1322, i32* %0, align 4
   %3829 = getelementptr inbounds i32, i32* %0, i64 1
   %3830 = load i1, i1* %out.180
-  %3831 = icmp slt i64 1, %len.
+  %3831 = icmp slt i64 1, %N
   %3832 = bitcast i64* %shadow to i32*
   %safe.1323 = or i1 %3830, %3831
   %select.ptr.1324 = select i1 %safe.1323, i32* %3829, i32* %3832
   %3833 = load i32, i32* %select.ptr.1324, align 4
   %3834 = ashr i32 %3833, 1
   %3835 = load i1, i1* %out.180
-  %3836 = icmp slt i64 1, %len.
+  %3836 = icmp slt i64 1, %N
   %3837 = bitcast i64* %shadow to i32*
   %safe.1325 = or i1 %3835, %3836
   %select.ptr.1326 = select i1 %safe.1325, i32* %3829, i32* %3837
@@ -6025,14 +6025,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.1327, i32* %select.ptr.1326, align 4
   %3839 = getelementptr inbounds i32, i32* %0, i64 2
   %3840 = load i1, i1* %out.180
-  %3841 = icmp slt i64 2, %len.
+  %3841 = icmp slt i64 2, %N
   %3842 = bitcast i64* %shadow to i32*
   %safe.1328 = or i1 %3840, %3841
   %select.ptr.1329 = select i1 %safe.1328, i32* %3839, i32* %3842
   %3843 = load i32, i32* %select.ptr.1329, align 4
   %3844 = ashr i32 %3843, 1
   %3845 = load i1, i1* %out.180
-  %3846 = icmp slt i64 2, %len.
+  %3846 = icmp slt i64 2, %N
   %3847 = bitcast i64* %shadow to i32*
   %safe.1330 = or i1 %3845, %3846
   %select.ptr.1331 = select i1 %safe.1330, i32* %3839, i32* %3847
@@ -6125,7 +6125,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %3904, i1* %out.182
   %3905 = getelementptr inbounds i32, i32* %0, i64 1
   %3906 = load i1, i1* %out.182
-  %3907 = icmp slt i64 1, %len.
+  %3907 = icmp slt i64 1, %N
   %3908 = bitcast i64* %shadow to i32*
   %safe.1353 = or i1 %3906, %3907
   %select.ptr.1354 = select i1 %safe.1353, i32* %3905, i32* %3908
@@ -6161,7 +6161,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %3928, i1* %out.184
   %3929 = getelementptr inbounds i32, i32* %0, i64 2
   %3930 = load i1, i1* %out.184
-  %3931 = icmp slt i64 2, %len.
+  %3931 = icmp slt i64 2, %N
   %3932 = bitcast i64* %shadow to i32*
   %safe.1360 = or i1 %3930, %3931
   %select.ptr.1361 = select i1 %safe.1360, i32* %3929, i32* %3932
@@ -6204,14 +6204,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.1367, i32* %0, align 4
   %3958 = getelementptr inbounds i32, i32* %0, i64 1
   %3959 = load i1, i1* %out.186
-  %3960 = icmp slt i64 1, %len.
+  %3960 = icmp slt i64 1, %N
   %3961 = bitcast i64* %shadow to i32*
   %safe.1368 = or i1 %3959, %3960
   %select.ptr.1369 = select i1 %safe.1368, i32* %3958, i32* %3961
   %3962 = load i32, i32* %select.ptr.1369, align 4
   %3963 = ashr i32 %3962, 1
   %3964 = load i1, i1* %out.186
-  %3965 = icmp slt i64 1, %len.
+  %3965 = icmp slt i64 1, %N
   %3966 = bitcast i64* %shadow to i32*
   %safe.1370 = or i1 %3964, %3965
   %select.ptr.1371 = select i1 %safe.1370, i32* %3958, i32* %3966
@@ -6220,14 +6220,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.1372, i32* %select.ptr.1371, align 4
   %3968 = getelementptr inbounds i32, i32* %0, i64 2
   %3969 = load i1, i1* %out.186
-  %3970 = icmp slt i64 2, %len.
+  %3970 = icmp slt i64 2, %N
   %3971 = bitcast i64* %shadow to i32*
   %safe.1373 = or i1 %3969, %3970
   %select.ptr.1374 = select i1 %safe.1373, i32* %3968, i32* %3971
   %3972 = load i32, i32* %select.ptr.1374, align 4
   %3973 = ashr i32 %3972, 1
   %3974 = load i1, i1* %out.186
-  %3975 = icmp slt i64 2, %len.
+  %3975 = icmp slt i64 2, %N
   %3976 = bitcast i64* %shadow to i32*
   %safe.1375 = or i1 %3974, %3975
   %select.ptr.1376 = select i1 %safe.1375, i32* %3968, i32* %3976
@@ -6320,7 +6320,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %4033, i1* %out.188
   %4034 = getelementptr inbounds i32, i32* %0, i64 1
   %4035 = load i1, i1* %out.188
-  %4036 = icmp slt i64 1, %len.
+  %4036 = icmp slt i64 1, %N
   %4037 = bitcast i64* %shadow to i32*
   %safe.1398 = or i1 %4035, %4036
   %select.ptr.1399 = select i1 %safe.1398, i32* %4034, i32* %4037
@@ -6356,7 +6356,7 @@ define void @mu(i32* %0, i64 %len.) {
   store i1 %4057, i1* %out.190
   %4058 = getelementptr inbounds i32, i32* %0, i64 2
   %4059 = load i1, i1* %out.190
-  %4060 = icmp slt i64 2, %len.
+  %4060 = icmp slt i64 2, %N
   %4061 = bitcast i64* %shadow to i32*
   %safe.1405 = or i1 %4059, %4060
   %select.ptr.1406 = select i1 %safe.1405, i32* %4058, i32* %4061
@@ -6399,14 +6399,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.1412, i32* %0, align 4
   %4087 = getelementptr inbounds i32, i32* %0, i64 1
   %4088 = load i1, i1* %out.192
-  %4089 = icmp slt i64 1, %len.
+  %4089 = icmp slt i64 1, %N
   %4090 = bitcast i64* %shadow to i32*
   %safe.1413 = or i1 %4088, %4089
   %select.ptr.1414 = select i1 %safe.1413, i32* %4087, i32* %4090
   %4091 = load i32, i32* %select.ptr.1414, align 4
   %4092 = ashr i32 %4091, 1
   %4093 = load i1, i1* %out.192
-  %4094 = icmp slt i64 1, %len.
+  %4094 = icmp slt i64 1, %N
   %4095 = bitcast i64* %shadow to i32*
   %safe.1415 = or i1 %4093, %4094
   %select.ptr.1416 = select i1 %safe.1415, i32* %4087, i32* %4095
@@ -6415,14 +6415,14 @@ define void @mu(i32* %0, i64 %len.) {
   store i32 %select.val.1417, i32* %select.ptr.1416, align 4
   %4097 = getelementptr inbounds i32, i32* %0, i64 2
   %4098 = load i1, i1* %out.192
-  %4099 = icmp slt i64 2, %len.
+  %4099 = icmp slt i64 2, %N
   %4100 = bitcast i64* %shadow to i32*
   %safe.1418 = or i1 %4098, %4099
   %select.ptr.1419 = select i1 %safe.1418, i32* %4097, i32* %4100
   %4101 = load i32, i32* %select.ptr.1419, align 4
   %4102 = ashr i32 %4101, 1
   %4103 = load i1, i1* %out.192
-  %4104 = icmp slt i64 2, %len.
+  %4104 = icmp slt i64 2, %N
   %4105 = bitcast i64* %shadow to i32*
   %safe.1420 = or i1 %4103, %4104
   %select.ptr.1421 = select i1 %safe.1420, i32* %4097, i32* %4105
@@ -6450,7 +6450,7 @@ define void @mu(i32* %0, i64 %len.) {
   %4119 = load i32, i32* %select.ptr.1427, align 4
   %4120 = getelementptr inbounds i32, i32* %0, i64 1
   %4121 = load i1, i1* %out.192
-  %4122 = icmp slt i64 1, %len.
+  %4122 = icmp slt i64 1, %N
   %4123 = bitcast i64* %shadow to i32*
   %safe.1428 = or i1 %4121, %4122
   %select.ptr.1429 = select i1 %safe.1428, i32* %4120, i32* %4123
@@ -6467,7 +6467,7 @@ define void @mu(i32* %0, i64 %len.) {
   %4130 = load i32, i32* %select.ptr.1432, align 4
   %4131 = getelementptr inbounds i32, i32* %0, i64 2
   %4132 = load i1, i1* %out.192
-  %4133 = icmp slt i64 2, %len.
+  %4133 = icmp slt i64 2, %N
   %4134 = bitcast i64* %shadow to i32*
   %safe.1433 = or i1 %4132, %4133
   %select.ptr.1434 = select i1 %safe.1433, i32* %4131, i32* %4134

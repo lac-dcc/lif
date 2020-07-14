@@ -19,6 +19,6 @@ int main() {
         214
     };
 
-    printf("%d\n", do_one_computation(input_data, 0 /* nothing */));
+    printf("%d\n", do_one_computation(input_data));
     return 0;
 }

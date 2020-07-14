@@ -45,7 +45,7 @@ declare void @llvm.memcpy.p0i8.p0i8.i64(i8* noalias nocapture writeonly, i8* noa
 
 declare i32 @printf(i8*, ...) #2
 
-define i8 @do_one_computation(i8* %0, i64 %len., i32 %1) {
+define i8 @do_one_computation(i8* %0, i64 %N, i32 %1) {
   %3 = alloca [16 x i8], align 16
   %4 = alloca [16 x i8], align 16
   %5 = bitcast [16 x i8]* %3 to i8*
@@ -345,8 +345,8 @@ define dso_local void @init_dut() #0 {
   ret void
 }
 
-define void @prepare_inputs(i8* %0, i64 %len., i8* %1, i64 %len.1) {
-  call void @randombytes(i8* %0, i64 %len., i64 16)
+define void @prepare_inputs(i8* %0, i64 %N, i8* %1, i64 %N1) {
+  call void @randombytes(i8* %0, i64 %N, i64 16)
   %3 = call zeroext i8 @randombit()
   store i8 %3, i8* %1, align 1
   %4 = load i8, i8* %1, align 1
@@ -362,7 +362,7 @@ define void @prepare_inputs(i8* %0, i64 %len., i8* %1, i64 %len.1) {
   ret void
 }
 
-define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) {
+define i32 @rijndaelKeySetupEnc(i32* %0, i64 %N, i8* %1, i64 %N1, i32 %2) {
 .preheader8:
   %out. = alloca i1
   store i1 true, i1* %out.
@@ -473,7 +473,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %94 = getelementptr inbounds i8, i8* %1, i64 16
   %95 = getelementptr inbounds i8, i8* %94, i64 0
   %96 = load i1, i1* %out.2
-  %97 = icmp slt i64 0, %len.1
+  %97 = icmp slt i64 0, %N1
   %98 = bitcast i64* %shadow to i8*
   %safe.357 = or i1 %96, %97
   %select.ptr.358 = select i1 %safe.357, i8* %95, i8* %98
@@ -483,7 +483,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %102 = getelementptr inbounds i8, i8* %1, i64 16
   %103 = getelementptr inbounds i8, i8* %102, i64 1
   %104 = load i1, i1* %out.2
-  %105 = icmp slt i64 1, %len.1
+  %105 = icmp slt i64 1, %N1
   %106 = bitcast i64* %shadow to i8*
   %safe.359 = or i1 %104, %105
   %select.ptr.360 = select i1 %safe.359, i8* %103, i8* %106
@@ -494,7 +494,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %111 = getelementptr inbounds i8, i8* %1, i64 16
   %112 = getelementptr inbounds i8, i8* %111, i64 2
   %113 = load i1, i1* %out.2
-  %114 = icmp slt i64 2, %len.1
+  %114 = icmp slt i64 2, %N1
   %115 = bitcast i64* %shadow to i8*
   %safe.361 = or i1 %113, %114
   %select.ptr.362 = select i1 %safe.361, i8* %112, i8* %115
@@ -505,7 +505,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %120 = getelementptr inbounds i8, i8* %1, i64 16
   %121 = getelementptr inbounds i8, i8* %120, i64 3
   %122 = load i1, i1* %out.2
-  %123 = icmp slt i64 3, %len.1
+  %123 = icmp slt i64 3, %N1
   %124 = bitcast i64* %shadow to i8*
   %safe.363 = or i1 %122, %123
   %select.ptr.364 = select i1 %safe.363, i8* %121, i8* %124
@@ -514,7 +514,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %127 = xor i32 %119, %126
   %128 = getelementptr inbounds i32, i32* %0, i64 4
   %129 = load i1, i1* %out.2
-  %130 = icmp slt i64 4, %len.
+  %130 = icmp slt i64 4, %N
   %131 = bitcast i64* %shadow to i32*
   %safe.365 = or i1 %129, %130
   %select.ptr.366 = select i1 %safe.365, i32* %128, i32* %131
@@ -524,7 +524,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %133 = getelementptr inbounds i8, i8* %1, i64 20
   %134 = getelementptr inbounds i8, i8* %133, i64 0
   %135 = load i1, i1* %out.2
-  %136 = icmp slt i64 0, %len.1
+  %136 = icmp slt i64 0, %N1
   %137 = bitcast i64* %shadow to i8*
   %safe.368 = or i1 %135, %136
   %select.ptr.369 = select i1 %safe.368, i8* %134, i8* %137
@@ -534,7 +534,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %141 = getelementptr inbounds i8, i8* %1, i64 20
   %142 = getelementptr inbounds i8, i8* %141, i64 1
   %143 = load i1, i1* %out.2
-  %144 = icmp slt i64 1, %len.1
+  %144 = icmp slt i64 1, %N1
   %145 = bitcast i64* %shadow to i8*
   %safe.370 = or i1 %143, %144
   %select.ptr.371 = select i1 %safe.370, i8* %142, i8* %145
@@ -545,7 +545,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %150 = getelementptr inbounds i8, i8* %1, i64 20
   %151 = getelementptr inbounds i8, i8* %150, i64 2
   %152 = load i1, i1* %out.2
-  %153 = icmp slt i64 2, %len.1
+  %153 = icmp slt i64 2, %N1
   %154 = bitcast i64* %shadow to i8*
   %safe.372 = or i1 %152, %153
   %select.ptr.373 = select i1 %safe.372, i8* %151, i8* %154
@@ -556,7 +556,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %159 = getelementptr inbounds i8, i8* %1, i64 20
   %160 = getelementptr inbounds i8, i8* %159, i64 3
   %161 = load i1, i1* %out.2
-  %162 = icmp slt i64 3, %len.1
+  %162 = icmp slt i64 3, %N1
   %163 = bitcast i64* %shadow to i8*
   %safe.374 = or i1 %161, %162
   %select.ptr.375 = select i1 %safe.374, i8* %160, i8* %163
@@ -565,7 +565,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %166 = xor i32 %158, %165
   %167 = getelementptr inbounds i32, i32* %0, i64 5
   %168 = load i1, i1* %out.2
-  %169 = icmp slt i64 5, %len.
+  %169 = icmp slt i64 5, %N
   %170 = bitcast i64* %shadow to i32*
   %safe.376 = or i1 %168, %169
   %select.ptr.377 = select i1 %safe.376, i32* %167, i32* %170
@@ -580,7 +580,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %175 = getelementptr inbounds i8, i8* %1, i64 24
   %176 = getelementptr inbounds i8, i8* %175, i64 0
   %177 = load i1, i1* %out.4
-  %178 = icmp slt i64 0, %len.1
+  %178 = icmp slt i64 0, %N1
   %179 = bitcast i64* %shadow to i8*
   %safe.763 = or i1 %177, %178
   %select.ptr.764 = select i1 %safe.763, i8* %176, i8* %179
@@ -590,7 +590,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %183 = getelementptr inbounds i8, i8* %1, i64 24
   %184 = getelementptr inbounds i8, i8* %183, i64 1
   %185 = load i1, i1* %out.4
-  %186 = icmp slt i64 1, %len.1
+  %186 = icmp slt i64 1, %N1
   %187 = bitcast i64* %shadow to i8*
   %safe.765 = or i1 %185, %186
   %select.ptr.766 = select i1 %safe.765, i8* %184, i8* %187
@@ -601,7 +601,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %192 = getelementptr inbounds i8, i8* %1, i64 24
   %193 = getelementptr inbounds i8, i8* %192, i64 2
   %194 = load i1, i1* %out.4
-  %195 = icmp slt i64 2, %len.1
+  %195 = icmp slt i64 2, %N1
   %196 = bitcast i64* %shadow to i8*
   %safe.767 = or i1 %194, %195
   %select.ptr.768 = select i1 %safe.767, i8* %193, i8* %196
@@ -612,7 +612,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %201 = getelementptr inbounds i8, i8* %1, i64 24
   %202 = getelementptr inbounds i8, i8* %201, i64 3
   %203 = load i1, i1* %out.4
-  %204 = icmp slt i64 3, %len.1
+  %204 = icmp slt i64 3, %N1
   %205 = bitcast i64* %shadow to i8*
   %safe.769 = or i1 %203, %204
   %select.ptr.770 = select i1 %safe.769, i8* %202, i8* %205
@@ -621,7 +621,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %208 = xor i32 %200, %207
   %209 = getelementptr inbounds i32, i32* %0, i64 6
   %210 = load i1, i1* %out.4
-  %211 = icmp slt i64 6, %len.
+  %211 = icmp slt i64 6, %N
   %212 = bitcast i64* %shadow to i32*
   %safe.771 = or i1 %210, %211
   %select.ptr.772 = select i1 %safe.771, i32* %209, i32* %212
@@ -631,7 +631,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %214 = getelementptr inbounds i8, i8* %1, i64 28
   %215 = getelementptr inbounds i8, i8* %214, i64 0
   %216 = load i1, i1* %out.4
-  %217 = icmp slt i64 0, %len.1
+  %217 = icmp slt i64 0, %N1
   %218 = bitcast i64* %shadow to i8*
   %safe.774 = or i1 %216, %217
   %select.ptr.775 = select i1 %safe.774, i8* %215, i8* %218
@@ -641,7 +641,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %222 = getelementptr inbounds i8, i8* %1, i64 28
   %223 = getelementptr inbounds i8, i8* %222, i64 1
   %224 = load i1, i1* %out.4
-  %225 = icmp slt i64 1, %len.1
+  %225 = icmp slt i64 1, %N1
   %226 = bitcast i64* %shadow to i8*
   %safe.776 = or i1 %224, %225
   %select.ptr.777 = select i1 %safe.776, i8* %223, i8* %226
@@ -652,7 +652,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %231 = getelementptr inbounds i8, i8* %1, i64 28
   %232 = getelementptr inbounds i8, i8* %231, i64 2
   %233 = load i1, i1* %out.4
-  %234 = icmp slt i64 2, %len.1
+  %234 = icmp slt i64 2, %N1
   %235 = bitcast i64* %shadow to i8*
   %safe.778 = or i1 %233, %234
   %select.ptr.779 = select i1 %safe.778, i8* %232, i8* %235
@@ -663,7 +663,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %240 = getelementptr inbounds i8, i8* %1, i64 28
   %241 = getelementptr inbounds i8, i8* %240, i64 3
   %242 = load i1, i1* %out.4
-  %243 = icmp slt i64 3, %len.1
+  %243 = icmp slt i64 3, %N1
   %244 = bitcast i64* %shadow to i8*
   %safe.780 = or i1 %242, %243
   %select.ptr.781 = select i1 %safe.780, i8* %241, i8* %244
@@ -672,7 +672,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %247 = xor i32 %239, %246
   %248 = getelementptr inbounds i32, i32* %0, i64 7
   %249 = load i1, i1* %out.4
-  %250 = icmp slt i64 7, %len.
+  %250 = icmp slt i64 7, %N
   %251 = bitcast i64* %shadow to i32*
   %safe.782 = or i1 %249, %250
   %select.ptr.783 = select i1 %safe.782, i32* %248, i32* %251
@@ -685,7 +685,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i1 %in.10, i1* %out.5
   %255 = getelementptr inbounds i32, i32* %0, i64 7
   %256 = load i1, i1* %out.5
-  %257 = icmp slt i64 7, %len.
+  %257 = icmp slt i64 7, %N
   %258 = bitcast i64* %shadow to i32*
   %safe.785 = or i1 %256, %257
   %select.ptr.786 = select i1 %safe.785, i32* %255, i32* %258
@@ -745,7 +745,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %304 = xor i32 %303, 16777216
   %305 = getelementptr inbounds i32, i32* %0, i64 8
   %306 = load i1, i1* %out.5
-  %307 = icmp slt i64 8, %len.
+  %307 = icmp slt i64 8, %N
   %308 = bitcast i64* %shadow to i32*
   %safe.795 = or i1 %306, %307
   %select.ptr.796 = select i1 %safe.795, i32* %305, i32* %308
@@ -754,14 +754,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.797, i32* %select.ptr.796, align 4
   %310 = getelementptr inbounds i32, i32* %0, i64 1
   %311 = load i1, i1* %out.5
-  %312 = icmp slt i64 1, %len.
+  %312 = icmp slt i64 1, %N
   %313 = bitcast i64* %shadow to i32*
   %safe.798 = or i1 %311, %312
   %select.ptr.799 = select i1 %safe.798, i32* %310, i32* %313
   %314 = load i32, i32* %select.ptr.799, align 4
   %315 = getelementptr inbounds i32, i32* %0, i64 8
   %316 = load i1, i1* %out.5
-  %317 = icmp slt i64 8, %len.
+  %317 = icmp slt i64 8, %N
   %318 = bitcast i64* %shadow to i32*
   %safe.800 = or i1 %316, %317
   %select.ptr.801 = select i1 %safe.800, i32* %315, i32* %318
@@ -769,7 +769,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %320 = xor i32 %314, %319
   %321 = getelementptr inbounds i32, i32* %0, i64 9
   %322 = load i1, i1* %out.5
-  %323 = icmp slt i64 9, %len.
+  %323 = icmp slt i64 9, %N
   %324 = bitcast i64* %shadow to i32*
   %safe.802 = or i1 %322, %323
   %select.ptr.803 = select i1 %safe.802, i32* %321, i32* %324
@@ -778,14 +778,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.804, i32* %select.ptr.803, align 4
   %326 = getelementptr inbounds i32, i32* %0, i64 2
   %327 = load i1, i1* %out.5
-  %328 = icmp slt i64 2, %len.
+  %328 = icmp slt i64 2, %N
   %329 = bitcast i64* %shadow to i32*
   %safe.805 = or i1 %327, %328
   %select.ptr.806 = select i1 %safe.805, i32* %326, i32* %329
   %330 = load i32, i32* %select.ptr.806, align 4
   %331 = getelementptr inbounds i32, i32* %0, i64 9
   %332 = load i1, i1* %out.5
-  %333 = icmp slt i64 9, %len.
+  %333 = icmp slt i64 9, %N
   %334 = bitcast i64* %shadow to i32*
   %safe.807 = or i1 %332, %333
   %select.ptr.808 = select i1 %safe.807, i32* %331, i32* %334
@@ -793,7 +793,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %336 = xor i32 %330, %335
   %337 = getelementptr inbounds i32, i32* %0, i64 10
   %338 = load i1, i1* %out.5
-  %339 = icmp slt i64 10, %len.
+  %339 = icmp slt i64 10, %N
   %340 = bitcast i64* %shadow to i32*
   %safe.809 = or i1 %338, %339
   %select.ptr.810 = select i1 %safe.809, i32* %337, i32* %340
@@ -802,14 +802,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.811, i32* %select.ptr.810, align 4
   %342 = getelementptr inbounds i32, i32* %0, i64 3
   %343 = load i1, i1* %out.5
-  %344 = icmp slt i64 3, %len.
+  %344 = icmp slt i64 3, %N
   %345 = bitcast i64* %shadow to i32*
   %safe.812 = or i1 %343, %344
   %select.ptr.813 = select i1 %safe.812, i32* %342, i32* %345
   %346 = load i32, i32* %select.ptr.813, align 4
   %347 = getelementptr inbounds i32, i32* %0, i64 10
   %348 = load i1, i1* %out.5
-  %349 = icmp slt i64 10, %len.
+  %349 = icmp slt i64 10, %N
   %350 = bitcast i64* %shadow to i32*
   %safe.814 = or i1 %348, %349
   %select.ptr.815 = select i1 %safe.814, i32* %347, i32* %350
@@ -817,7 +817,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %352 = xor i32 %346, %351
   %353 = getelementptr inbounds i32, i32* %0, i64 11
   %354 = load i1, i1* %out.5
-  %355 = icmp slt i64 11, %len.
+  %355 = icmp slt i64 11, %N
   %356 = bitcast i64* %shadow to i32*
   %safe.816 = or i1 %354, %355
   %select.ptr.817 = select i1 %safe.816, i32* %353, i32* %356
@@ -826,14 +826,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.818, i32* %select.ptr.817, align 4
   %358 = getelementptr inbounds i32, i32* %0, i64 11
   %359 = load i1, i1* %out.5
-  %360 = icmp slt i64 11, %len.
+  %360 = icmp slt i64 11, %N
   %361 = bitcast i64* %shadow to i32*
   %safe.819 = or i1 %359, %360
   %select.ptr.820 = select i1 %safe.819, i32* %358, i32* %361
   %362 = load i32, i32* %select.ptr.820, align 4
   %363 = getelementptr inbounds i32, i32* %0, i64 4
   %364 = load i1, i1* %out.5
-  %365 = icmp slt i64 4, %len.
+  %365 = icmp slt i64 4, %N
   %366 = bitcast i64* %shadow to i32*
   %safe.821 = or i1 %364, %365
   %select.ptr.822 = select i1 %safe.821, i32* %363, i32* %366
@@ -890,7 +890,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %409 = xor i32 %399, %408
   %410 = getelementptr inbounds i32, i32* %0, i64 12
   %411 = load i1, i1* %out.5
-  %412 = icmp slt i64 12, %len.
+  %412 = icmp slt i64 12, %N
   %413 = bitcast i64* %shadow to i32*
   %safe.831 = or i1 %411, %412
   %select.ptr.832 = select i1 %safe.831, i32* %410, i32* %413
@@ -899,14 +899,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.833, i32* %select.ptr.832, align 4
   %415 = getelementptr inbounds i32, i32* %0, i64 5
   %416 = load i1, i1* %out.5
-  %417 = icmp slt i64 5, %len.
+  %417 = icmp slt i64 5, %N
   %418 = bitcast i64* %shadow to i32*
   %safe.834 = or i1 %416, %417
   %select.ptr.835 = select i1 %safe.834, i32* %415, i32* %418
   %419 = load i32, i32* %select.ptr.835, align 4
   %420 = getelementptr inbounds i32, i32* %0, i64 12
   %421 = load i1, i1* %out.5
-  %422 = icmp slt i64 12, %len.
+  %422 = icmp slt i64 12, %N
   %423 = bitcast i64* %shadow to i32*
   %safe.836 = or i1 %421, %422
   %select.ptr.837 = select i1 %safe.836, i32* %420, i32* %423
@@ -914,7 +914,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %425 = xor i32 %419, %424
   %426 = getelementptr inbounds i32, i32* %0, i64 13
   %427 = load i1, i1* %out.5
-  %428 = icmp slt i64 13, %len.
+  %428 = icmp slt i64 13, %N
   %429 = bitcast i64* %shadow to i32*
   %safe.838 = or i1 %427, %428
   %select.ptr.839 = select i1 %safe.838, i32* %426, i32* %429
@@ -923,14 +923,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.840, i32* %select.ptr.839, align 4
   %431 = getelementptr inbounds i32, i32* %0, i64 6
   %432 = load i1, i1* %out.5
-  %433 = icmp slt i64 6, %len.
+  %433 = icmp slt i64 6, %N
   %434 = bitcast i64* %shadow to i32*
   %safe.841 = or i1 %432, %433
   %select.ptr.842 = select i1 %safe.841, i32* %431, i32* %434
   %435 = load i32, i32* %select.ptr.842, align 4
   %436 = getelementptr inbounds i32, i32* %0, i64 13
   %437 = load i1, i1* %out.5
-  %438 = icmp slt i64 13, %len.
+  %438 = icmp slt i64 13, %N
   %439 = bitcast i64* %shadow to i32*
   %safe.843 = or i1 %437, %438
   %select.ptr.844 = select i1 %safe.843, i32* %436, i32* %439
@@ -938,7 +938,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %441 = xor i32 %435, %440
   %442 = getelementptr inbounds i32, i32* %0, i64 14
   %443 = load i1, i1* %out.5
-  %444 = icmp slt i64 14, %len.
+  %444 = icmp slt i64 14, %N
   %445 = bitcast i64* %shadow to i32*
   %safe.845 = or i1 %443, %444
   %select.ptr.846 = select i1 %safe.845, i32* %442, i32* %445
@@ -947,14 +947,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.847, i32* %select.ptr.846, align 4
   %447 = getelementptr inbounds i32, i32* %0, i64 7
   %448 = load i1, i1* %out.5
-  %449 = icmp slt i64 7, %len.
+  %449 = icmp slt i64 7, %N
   %450 = bitcast i64* %shadow to i32*
   %safe.848 = or i1 %448, %449
   %select.ptr.849 = select i1 %safe.848, i32* %447, i32* %450
   %451 = load i32, i32* %select.ptr.849, align 4
   %452 = getelementptr inbounds i32, i32* %0, i64 14
   %453 = load i1, i1* %out.5
-  %454 = icmp slt i64 14, %len.
+  %454 = icmp slt i64 14, %N
   %455 = bitcast i64* %shadow to i32*
   %safe.850 = or i1 %453, %454
   %select.ptr.851 = select i1 %safe.850, i32* %452, i32* %455
@@ -962,7 +962,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %457 = xor i32 %451, %456
   %458 = getelementptr inbounds i32, i32* %0, i64 15
   %459 = load i1, i1* %out.5
-  %460 = icmp slt i64 15, %len.
+  %460 = icmp slt i64 15, %N
   %461 = bitcast i64* %shadow to i32*
   %safe.852 = or i1 %459, %460
   %select.ptr.853 = select i1 %safe.852, i32* %458, i32* %461
@@ -972,13 +972,13 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %463 = getelementptr inbounds i32, i32* %0, i64 8
   %464 = getelementptr inbounds i32, i32* %463, i64 7
   %465 = load i1, i1* %out.5
-  %466 = icmp slt i64 7, %len.
+  %466 = icmp slt i64 7, %N
   %467 = bitcast i64* %shadow to i32*
   %safe.855 = or i1 %465, %466
   %select.ptr.856 = select i1 %safe.855, i32* %464, i32* %467
   %468 = load i32, i32* %select.ptr.856, align 4
   %469 = load i1, i1* %out.5
-  %470 = icmp slt i64 8, %len.
+  %470 = icmp slt i64 8, %N
   %471 = bitcast i64* %shadow to i32*
   %safe.857 = or i1 %469, %470
   %select.ptr.858 = select i1 %safe.857, i32* %463, i32* %471
@@ -1036,7 +1036,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %515 = xor i32 %514, 33554432
   %516 = getelementptr inbounds i32, i32* %463, i64 8
   %517 = load i1, i1* %out.5
-  %518 = icmp slt i64 8, %len.
+  %518 = icmp slt i64 8, %N
   %519 = bitcast i64* %shadow to i32*
   %safe.867 = or i1 %517, %518
   %select.ptr.868 = select i1 %safe.867, i32* %516, i32* %519
@@ -1045,14 +1045,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.869, i32* %select.ptr.868, align 4
   %521 = getelementptr inbounds i32, i32* %463, i64 1
   %522 = load i1, i1* %out.5
-  %523 = icmp slt i64 1, %len.
+  %523 = icmp slt i64 1, %N
   %524 = bitcast i64* %shadow to i32*
   %safe.870 = or i1 %522, %523
   %select.ptr.871 = select i1 %safe.870, i32* %521, i32* %524
   %525 = load i32, i32* %select.ptr.871, align 4
   %526 = getelementptr inbounds i32, i32* %463, i64 8
   %527 = load i1, i1* %out.5
-  %528 = icmp slt i64 8, %len.
+  %528 = icmp slt i64 8, %N
   %529 = bitcast i64* %shadow to i32*
   %safe.872 = or i1 %527, %528
   %select.ptr.873 = select i1 %safe.872, i32* %526, i32* %529
@@ -1060,7 +1060,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %531 = xor i32 %525, %530
   %532 = getelementptr inbounds i32, i32* %463, i64 9
   %533 = load i1, i1* %out.5
-  %534 = icmp slt i64 9, %len.
+  %534 = icmp slt i64 9, %N
   %535 = bitcast i64* %shadow to i32*
   %safe.874 = or i1 %533, %534
   %select.ptr.875 = select i1 %safe.874, i32* %532, i32* %535
@@ -1069,14 +1069,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.876, i32* %select.ptr.875, align 4
   %537 = getelementptr inbounds i32, i32* %463, i64 2
   %538 = load i1, i1* %out.5
-  %539 = icmp slt i64 2, %len.
+  %539 = icmp slt i64 2, %N
   %540 = bitcast i64* %shadow to i32*
   %safe.877 = or i1 %538, %539
   %select.ptr.878 = select i1 %safe.877, i32* %537, i32* %540
   %541 = load i32, i32* %select.ptr.878, align 4
   %542 = getelementptr inbounds i32, i32* %463, i64 9
   %543 = load i1, i1* %out.5
-  %544 = icmp slt i64 9, %len.
+  %544 = icmp slt i64 9, %N
   %545 = bitcast i64* %shadow to i32*
   %safe.879 = or i1 %543, %544
   %select.ptr.880 = select i1 %safe.879, i32* %542, i32* %545
@@ -1084,7 +1084,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %547 = xor i32 %541, %546
   %548 = getelementptr inbounds i32, i32* %463, i64 10
   %549 = load i1, i1* %out.5
-  %550 = icmp slt i64 10, %len.
+  %550 = icmp slt i64 10, %N
   %551 = bitcast i64* %shadow to i32*
   %safe.881 = or i1 %549, %550
   %select.ptr.882 = select i1 %safe.881, i32* %548, i32* %551
@@ -1093,14 +1093,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.883, i32* %select.ptr.882, align 4
   %553 = getelementptr inbounds i32, i32* %463, i64 3
   %554 = load i1, i1* %out.5
-  %555 = icmp slt i64 3, %len.
+  %555 = icmp slt i64 3, %N
   %556 = bitcast i64* %shadow to i32*
   %safe.884 = or i1 %554, %555
   %select.ptr.885 = select i1 %safe.884, i32* %553, i32* %556
   %557 = load i32, i32* %select.ptr.885, align 4
   %558 = getelementptr inbounds i32, i32* %463, i64 10
   %559 = load i1, i1* %out.5
-  %560 = icmp slt i64 10, %len.
+  %560 = icmp slt i64 10, %N
   %561 = bitcast i64* %shadow to i32*
   %safe.886 = or i1 %559, %560
   %select.ptr.887 = select i1 %safe.886, i32* %558, i32* %561
@@ -1108,7 +1108,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %563 = xor i32 %557, %562
   %564 = getelementptr inbounds i32, i32* %463, i64 11
   %565 = load i1, i1* %out.5
-  %566 = icmp slt i64 11, %len.
+  %566 = icmp slt i64 11, %N
   %567 = bitcast i64* %shadow to i32*
   %safe.888 = or i1 %565, %566
   %select.ptr.889 = select i1 %safe.888, i32* %564, i32* %567
@@ -1117,14 +1117,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.890, i32* %select.ptr.889, align 4
   %569 = getelementptr inbounds i32, i32* %463, i64 11
   %570 = load i1, i1* %out.5
-  %571 = icmp slt i64 11, %len.
+  %571 = icmp slt i64 11, %N
   %572 = bitcast i64* %shadow to i32*
   %safe.891 = or i1 %570, %571
   %select.ptr.892 = select i1 %safe.891, i32* %569, i32* %572
   %573 = load i32, i32* %select.ptr.892, align 4
   %574 = getelementptr inbounds i32, i32* %463, i64 4
   %575 = load i1, i1* %out.5
-  %576 = icmp slt i64 4, %len.
+  %576 = icmp slt i64 4, %N
   %577 = bitcast i64* %shadow to i32*
   %safe.893 = or i1 %575, %576
   %select.ptr.894 = select i1 %safe.893, i32* %574, i32* %577
@@ -1181,7 +1181,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %620 = xor i32 %610, %619
   %621 = getelementptr inbounds i32, i32* %463, i64 12
   %622 = load i1, i1* %out.5
-  %623 = icmp slt i64 12, %len.
+  %623 = icmp slt i64 12, %N
   %624 = bitcast i64* %shadow to i32*
   %safe.903 = or i1 %622, %623
   %select.ptr.904 = select i1 %safe.903, i32* %621, i32* %624
@@ -1190,14 +1190,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.905, i32* %select.ptr.904, align 4
   %626 = getelementptr inbounds i32, i32* %463, i64 5
   %627 = load i1, i1* %out.5
-  %628 = icmp slt i64 5, %len.
+  %628 = icmp slt i64 5, %N
   %629 = bitcast i64* %shadow to i32*
   %safe.906 = or i1 %627, %628
   %select.ptr.907 = select i1 %safe.906, i32* %626, i32* %629
   %630 = load i32, i32* %select.ptr.907, align 4
   %631 = getelementptr inbounds i32, i32* %463, i64 12
   %632 = load i1, i1* %out.5
-  %633 = icmp slt i64 12, %len.
+  %633 = icmp slt i64 12, %N
   %634 = bitcast i64* %shadow to i32*
   %safe.908 = or i1 %632, %633
   %select.ptr.909 = select i1 %safe.908, i32* %631, i32* %634
@@ -1205,7 +1205,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %636 = xor i32 %630, %635
   %637 = getelementptr inbounds i32, i32* %463, i64 13
   %638 = load i1, i1* %out.5
-  %639 = icmp slt i64 13, %len.
+  %639 = icmp slt i64 13, %N
   %640 = bitcast i64* %shadow to i32*
   %safe.910 = or i1 %638, %639
   %select.ptr.911 = select i1 %safe.910, i32* %637, i32* %640
@@ -1214,14 +1214,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.912, i32* %select.ptr.911, align 4
   %642 = getelementptr inbounds i32, i32* %463, i64 6
   %643 = load i1, i1* %out.5
-  %644 = icmp slt i64 6, %len.
+  %644 = icmp slt i64 6, %N
   %645 = bitcast i64* %shadow to i32*
   %safe.913 = or i1 %643, %644
   %select.ptr.914 = select i1 %safe.913, i32* %642, i32* %645
   %646 = load i32, i32* %select.ptr.914, align 4
   %647 = getelementptr inbounds i32, i32* %463, i64 13
   %648 = load i1, i1* %out.5
-  %649 = icmp slt i64 13, %len.
+  %649 = icmp slt i64 13, %N
   %650 = bitcast i64* %shadow to i32*
   %safe.915 = or i1 %648, %649
   %select.ptr.916 = select i1 %safe.915, i32* %647, i32* %650
@@ -1229,7 +1229,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %652 = xor i32 %646, %651
   %653 = getelementptr inbounds i32, i32* %463, i64 14
   %654 = load i1, i1* %out.5
-  %655 = icmp slt i64 14, %len.
+  %655 = icmp slt i64 14, %N
   %656 = bitcast i64* %shadow to i32*
   %safe.917 = or i1 %654, %655
   %select.ptr.918 = select i1 %safe.917, i32* %653, i32* %656
@@ -1238,14 +1238,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.919, i32* %select.ptr.918, align 4
   %658 = getelementptr inbounds i32, i32* %463, i64 7
   %659 = load i1, i1* %out.5
-  %660 = icmp slt i64 7, %len.
+  %660 = icmp slt i64 7, %N
   %661 = bitcast i64* %shadow to i32*
   %safe.920 = or i1 %659, %660
   %select.ptr.921 = select i1 %safe.920, i32* %658, i32* %661
   %662 = load i32, i32* %select.ptr.921, align 4
   %663 = getelementptr inbounds i32, i32* %463, i64 14
   %664 = load i1, i1* %out.5
-  %665 = icmp slt i64 14, %len.
+  %665 = icmp slt i64 14, %N
   %666 = bitcast i64* %shadow to i32*
   %safe.922 = or i1 %664, %665
   %select.ptr.923 = select i1 %safe.922, i32* %663, i32* %666
@@ -1253,7 +1253,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %668 = xor i32 %662, %667
   %669 = getelementptr inbounds i32, i32* %463, i64 15
   %670 = load i1, i1* %out.5
-  %671 = icmp slt i64 15, %len.
+  %671 = icmp slt i64 15, %N
   %672 = bitcast i64* %shadow to i32*
   %safe.924 = or i1 %670, %671
   %select.ptr.925 = select i1 %safe.924, i32* %669, i32* %672
@@ -1263,13 +1263,13 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %674 = getelementptr inbounds i32, i32* %463, i64 8
   %675 = getelementptr inbounds i32, i32* %674, i64 7
   %676 = load i1, i1* %out.5
-  %677 = icmp slt i64 7, %len.
+  %677 = icmp slt i64 7, %N
   %678 = bitcast i64* %shadow to i32*
   %safe.927 = or i1 %676, %677
   %select.ptr.928 = select i1 %safe.927, i32* %675, i32* %678
   %679 = load i32, i32* %select.ptr.928, align 4
   %680 = load i1, i1* %out.5
-  %681 = icmp slt i64 8, %len.
+  %681 = icmp slt i64 8, %N
   %682 = bitcast i64* %shadow to i32*
   %safe.929 = or i1 %680, %681
   %select.ptr.930 = select i1 %safe.929, i32* %674, i32* %682
@@ -1327,7 +1327,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %726 = xor i32 %725, 67108864
   %727 = getelementptr inbounds i32, i32* %674, i64 8
   %728 = load i1, i1* %out.5
-  %729 = icmp slt i64 8, %len.
+  %729 = icmp slt i64 8, %N
   %730 = bitcast i64* %shadow to i32*
   %safe.939 = or i1 %728, %729
   %select.ptr.940 = select i1 %safe.939, i32* %727, i32* %730
@@ -1336,14 +1336,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.941, i32* %select.ptr.940, align 4
   %732 = getelementptr inbounds i32, i32* %674, i64 1
   %733 = load i1, i1* %out.5
-  %734 = icmp slt i64 1, %len.
+  %734 = icmp slt i64 1, %N
   %735 = bitcast i64* %shadow to i32*
   %safe.942 = or i1 %733, %734
   %select.ptr.943 = select i1 %safe.942, i32* %732, i32* %735
   %736 = load i32, i32* %select.ptr.943, align 4
   %737 = getelementptr inbounds i32, i32* %674, i64 8
   %738 = load i1, i1* %out.5
-  %739 = icmp slt i64 8, %len.
+  %739 = icmp slt i64 8, %N
   %740 = bitcast i64* %shadow to i32*
   %safe.944 = or i1 %738, %739
   %select.ptr.945 = select i1 %safe.944, i32* %737, i32* %740
@@ -1351,7 +1351,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %742 = xor i32 %736, %741
   %743 = getelementptr inbounds i32, i32* %674, i64 9
   %744 = load i1, i1* %out.5
-  %745 = icmp slt i64 9, %len.
+  %745 = icmp slt i64 9, %N
   %746 = bitcast i64* %shadow to i32*
   %safe.946 = or i1 %744, %745
   %select.ptr.947 = select i1 %safe.946, i32* %743, i32* %746
@@ -1360,14 +1360,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.948, i32* %select.ptr.947, align 4
   %748 = getelementptr inbounds i32, i32* %674, i64 2
   %749 = load i1, i1* %out.5
-  %750 = icmp slt i64 2, %len.
+  %750 = icmp slt i64 2, %N
   %751 = bitcast i64* %shadow to i32*
   %safe.949 = or i1 %749, %750
   %select.ptr.950 = select i1 %safe.949, i32* %748, i32* %751
   %752 = load i32, i32* %select.ptr.950, align 4
   %753 = getelementptr inbounds i32, i32* %674, i64 9
   %754 = load i1, i1* %out.5
-  %755 = icmp slt i64 9, %len.
+  %755 = icmp slt i64 9, %N
   %756 = bitcast i64* %shadow to i32*
   %safe.951 = or i1 %754, %755
   %select.ptr.952 = select i1 %safe.951, i32* %753, i32* %756
@@ -1375,7 +1375,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %758 = xor i32 %752, %757
   %759 = getelementptr inbounds i32, i32* %674, i64 10
   %760 = load i1, i1* %out.5
-  %761 = icmp slt i64 10, %len.
+  %761 = icmp slt i64 10, %N
   %762 = bitcast i64* %shadow to i32*
   %safe.953 = or i1 %760, %761
   %select.ptr.954 = select i1 %safe.953, i32* %759, i32* %762
@@ -1384,14 +1384,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.955, i32* %select.ptr.954, align 4
   %764 = getelementptr inbounds i32, i32* %674, i64 3
   %765 = load i1, i1* %out.5
-  %766 = icmp slt i64 3, %len.
+  %766 = icmp slt i64 3, %N
   %767 = bitcast i64* %shadow to i32*
   %safe.956 = or i1 %765, %766
   %select.ptr.957 = select i1 %safe.956, i32* %764, i32* %767
   %768 = load i32, i32* %select.ptr.957, align 4
   %769 = getelementptr inbounds i32, i32* %674, i64 10
   %770 = load i1, i1* %out.5
-  %771 = icmp slt i64 10, %len.
+  %771 = icmp slt i64 10, %N
   %772 = bitcast i64* %shadow to i32*
   %safe.958 = or i1 %770, %771
   %select.ptr.959 = select i1 %safe.958, i32* %769, i32* %772
@@ -1399,7 +1399,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %774 = xor i32 %768, %773
   %775 = getelementptr inbounds i32, i32* %674, i64 11
   %776 = load i1, i1* %out.5
-  %777 = icmp slt i64 11, %len.
+  %777 = icmp slt i64 11, %N
   %778 = bitcast i64* %shadow to i32*
   %safe.960 = or i1 %776, %777
   %select.ptr.961 = select i1 %safe.960, i32* %775, i32* %778
@@ -1408,14 +1408,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.962, i32* %select.ptr.961, align 4
   %780 = getelementptr inbounds i32, i32* %674, i64 11
   %781 = load i1, i1* %out.5
-  %782 = icmp slt i64 11, %len.
+  %782 = icmp slt i64 11, %N
   %783 = bitcast i64* %shadow to i32*
   %safe.963 = or i1 %781, %782
   %select.ptr.964 = select i1 %safe.963, i32* %780, i32* %783
   %784 = load i32, i32* %select.ptr.964, align 4
   %785 = getelementptr inbounds i32, i32* %674, i64 4
   %786 = load i1, i1* %out.5
-  %787 = icmp slt i64 4, %len.
+  %787 = icmp slt i64 4, %N
   %788 = bitcast i64* %shadow to i32*
   %safe.965 = or i1 %786, %787
   %select.ptr.966 = select i1 %safe.965, i32* %785, i32* %788
@@ -1472,7 +1472,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %831 = xor i32 %821, %830
   %832 = getelementptr inbounds i32, i32* %674, i64 12
   %833 = load i1, i1* %out.5
-  %834 = icmp slt i64 12, %len.
+  %834 = icmp slt i64 12, %N
   %835 = bitcast i64* %shadow to i32*
   %safe.975 = or i1 %833, %834
   %select.ptr.976 = select i1 %safe.975, i32* %832, i32* %835
@@ -1481,14 +1481,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.977, i32* %select.ptr.976, align 4
   %837 = getelementptr inbounds i32, i32* %674, i64 5
   %838 = load i1, i1* %out.5
-  %839 = icmp slt i64 5, %len.
+  %839 = icmp slt i64 5, %N
   %840 = bitcast i64* %shadow to i32*
   %safe.978 = or i1 %838, %839
   %select.ptr.979 = select i1 %safe.978, i32* %837, i32* %840
   %841 = load i32, i32* %select.ptr.979, align 4
   %842 = getelementptr inbounds i32, i32* %674, i64 12
   %843 = load i1, i1* %out.5
-  %844 = icmp slt i64 12, %len.
+  %844 = icmp slt i64 12, %N
   %845 = bitcast i64* %shadow to i32*
   %safe.980 = or i1 %843, %844
   %select.ptr.981 = select i1 %safe.980, i32* %842, i32* %845
@@ -1496,7 +1496,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %847 = xor i32 %841, %846
   %848 = getelementptr inbounds i32, i32* %674, i64 13
   %849 = load i1, i1* %out.5
-  %850 = icmp slt i64 13, %len.
+  %850 = icmp slt i64 13, %N
   %851 = bitcast i64* %shadow to i32*
   %safe.982 = or i1 %849, %850
   %select.ptr.983 = select i1 %safe.982, i32* %848, i32* %851
@@ -1505,14 +1505,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.984, i32* %select.ptr.983, align 4
   %853 = getelementptr inbounds i32, i32* %674, i64 6
   %854 = load i1, i1* %out.5
-  %855 = icmp slt i64 6, %len.
+  %855 = icmp slt i64 6, %N
   %856 = bitcast i64* %shadow to i32*
   %safe.985 = or i1 %854, %855
   %select.ptr.986 = select i1 %safe.985, i32* %853, i32* %856
   %857 = load i32, i32* %select.ptr.986, align 4
   %858 = getelementptr inbounds i32, i32* %674, i64 13
   %859 = load i1, i1* %out.5
-  %860 = icmp slt i64 13, %len.
+  %860 = icmp slt i64 13, %N
   %861 = bitcast i64* %shadow to i32*
   %safe.987 = or i1 %859, %860
   %select.ptr.988 = select i1 %safe.987, i32* %858, i32* %861
@@ -1520,7 +1520,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %863 = xor i32 %857, %862
   %864 = getelementptr inbounds i32, i32* %674, i64 14
   %865 = load i1, i1* %out.5
-  %866 = icmp slt i64 14, %len.
+  %866 = icmp slt i64 14, %N
   %867 = bitcast i64* %shadow to i32*
   %safe.989 = or i1 %865, %866
   %select.ptr.990 = select i1 %safe.989, i32* %864, i32* %867
@@ -1529,14 +1529,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.991, i32* %select.ptr.990, align 4
   %869 = getelementptr inbounds i32, i32* %674, i64 7
   %870 = load i1, i1* %out.5
-  %871 = icmp slt i64 7, %len.
+  %871 = icmp slt i64 7, %N
   %872 = bitcast i64* %shadow to i32*
   %safe.992 = or i1 %870, %871
   %select.ptr.993 = select i1 %safe.992, i32* %869, i32* %872
   %873 = load i32, i32* %select.ptr.993, align 4
   %874 = getelementptr inbounds i32, i32* %674, i64 14
   %875 = load i1, i1* %out.5
-  %876 = icmp slt i64 14, %len.
+  %876 = icmp slt i64 14, %N
   %877 = bitcast i64* %shadow to i32*
   %safe.994 = or i1 %875, %876
   %select.ptr.995 = select i1 %safe.994, i32* %874, i32* %877
@@ -1544,7 +1544,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %879 = xor i32 %873, %878
   %880 = getelementptr inbounds i32, i32* %674, i64 15
   %881 = load i1, i1* %out.5
-  %882 = icmp slt i64 15, %len.
+  %882 = icmp slt i64 15, %N
   %883 = bitcast i64* %shadow to i32*
   %safe.996 = or i1 %881, %882
   %select.ptr.997 = select i1 %safe.996, i32* %880, i32* %883
@@ -1554,13 +1554,13 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %885 = getelementptr inbounds i32, i32* %674, i64 8
   %886 = getelementptr inbounds i32, i32* %885, i64 7
   %887 = load i1, i1* %out.5
-  %888 = icmp slt i64 7, %len.
+  %888 = icmp slt i64 7, %N
   %889 = bitcast i64* %shadow to i32*
   %safe.999 = or i1 %887, %888
   %select.ptr.1000 = select i1 %safe.999, i32* %886, i32* %889
   %890 = load i32, i32* %select.ptr.1000, align 4
   %891 = load i1, i1* %out.5
-  %892 = icmp slt i64 8, %len.
+  %892 = icmp slt i64 8, %N
   %893 = bitcast i64* %shadow to i32*
   %safe.1001 = or i1 %891, %892
   %select.ptr.1002 = select i1 %safe.1001, i32* %885, i32* %893
@@ -1618,7 +1618,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %937 = xor i32 %936, 134217728
   %938 = getelementptr inbounds i32, i32* %885, i64 8
   %939 = load i1, i1* %out.5
-  %940 = icmp slt i64 8, %len.
+  %940 = icmp slt i64 8, %N
   %941 = bitcast i64* %shadow to i32*
   %safe.1011 = or i1 %939, %940
   %select.ptr.1012 = select i1 %safe.1011, i32* %938, i32* %941
@@ -1627,14 +1627,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1013, i32* %select.ptr.1012, align 4
   %943 = getelementptr inbounds i32, i32* %885, i64 1
   %944 = load i1, i1* %out.5
-  %945 = icmp slt i64 1, %len.
+  %945 = icmp slt i64 1, %N
   %946 = bitcast i64* %shadow to i32*
   %safe.1014 = or i1 %944, %945
   %select.ptr.1015 = select i1 %safe.1014, i32* %943, i32* %946
   %947 = load i32, i32* %select.ptr.1015, align 4
   %948 = getelementptr inbounds i32, i32* %885, i64 8
   %949 = load i1, i1* %out.5
-  %950 = icmp slt i64 8, %len.
+  %950 = icmp slt i64 8, %N
   %951 = bitcast i64* %shadow to i32*
   %safe.1016 = or i1 %949, %950
   %select.ptr.1017 = select i1 %safe.1016, i32* %948, i32* %951
@@ -1642,7 +1642,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %953 = xor i32 %947, %952
   %954 = getelementptr inbounds i32, i32* %885, i64 9
   %955 = load i1, i1* %out.5
-  %956 = icmp slt i64 9, %len.
+  %956 = icmp slt i64 9, %N
   %957 = bitcast i64* %shadow to i32*
   %safe.1018 = or i1 %955, %956
   %select.ptr.1019 = select i1 %safe.1018, i32* %954, i32* %957
@@ -1651,14 +1651,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1020, i32* %select.ptr.1019, align 4
   %959 = getelementptr inbounds i32, i32* %885, i64 2
   %960 = load i1, i1* %out.5
-  %961 = icmp slt i64 2, %len.
+  %961 = icmp slt i64 2, %N
   %962 = bitcast i64* %shadow to i32*
   %safe.1021 = or i1 %960, %961
   %select.ptr.1022 = select i1 %safe.1021, i32* %959, i32* %962
   %963 = load i32, i32* %select.ptr.1022, align 4
   %964 = getelementptr inbounds i32, i32* %885, i64 9
   %965 = load i1, i1* %out.5
-  %966 = icmp slt i64 9, %len.
+  %966 = icmp slt i64 9, %N
   %967 = bitcast i64* %shadow to i32*
   %safe.1023 = or i1 %965, %966
   %select.ptr.1024 = select i1 %safe.1023, i32* %964, i32* %967
@@ -1666,7 +1666,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %969 = xor i32 %963, %968
   %970 = getelementptr inbounds i32, i32* %885, i64 10
   %971 = load i1, i1* %out.5
-  %972 = icmp slt i64 10, %len.
+  %972 = icmp slt i64 10, %N
   %973 = bitcast i64* %shadow to i32*
   %safe.1025 = or i1 %971, %972
   %select.ptr.1026 = select i1 %safe.1025, i32* %970, i32* %973
@@ -1675,14 +1675,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1027, i32* %select.ptr.1026, align 4
   %975 = getelementptr inbounds i32, i32* %885, i64 3
   %976 = load i1, i1* %out.5
-  %977 = icmp slt i64 3, %len.
+  %977 = icmp slt i64 3, %N
   %978 = bitcast i64* %shadow to i32*
   %safe.1028 = or i1 %976, %977
   %select.ptr.1029 = select i1 %safe.1028, i32* %975, i32* %978
   %979 = load i32, i32* %select.ptr.1029, align 4
   %980 = getelementptr inbounds i32, i32* %885, i64 10
   %981 = load i1, i1* %out.5
-  %982 = icmp slt i64 10, %len.
+  %982 = icmp slt i64 10, %N
   %983 = bitcast i64* %shadow to i32*
   %safe.1030 = or i1 %981, %982
   %select.ptr.1031 = select i1 %safe.1030, i32* %980, i32* %983
@@ -1690,7 +1690,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %985 = xor i32 %979, %984
   %986 = getelementptr inbounds i32, i32* %885, i64 11
   %987 = load i1, i1* %out.5
-  %988 = icmp slt i64 11, %len.
+  %988 = icmp slt i64 11, %N
   %989 = bitcast i64* %shadow to i32*
   %safe.1032 = or i1 %987, %988
   %select.ptr.1033 = select i1 %safe.1032, i32* %986, i32* %989
@@ -1699,14 +1699,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1034, i32* %select.ptr.1033, align 4
   %991 = getelementptr inbounds i32, i32* %885, i64 11
   %992 = load i1, i1* %out.5
-  %993 = icmp slt i64 11, %len.
+  %993 = icmp slt i64 11, %N
   %994 = bitcast i64* %shadow to i32*
   %safe.1035 = or i1 %992, %993
   %select.ptr.1036 = select i1 %safe.1035, i32* %991, i32* %994
   %995 = load i32, i32* %select.ptr.1036, align 4
   %996 = getelementptr inbounds i32, i32* %885, i64 4
   %997 = load i1, i1* %out.5
-  %998 = icmp slt i64 4, %len.
+  %998 = icmp slt i64 4, %N
   %999 = bitcast i64* %shadow to i32*
   %safe.1037 = or i1 %997, %998
   %select.ptr.1038 = select i1 %safe.1037, i32* %996, i32* %999
@@ -1763,7 +1763,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1042 = xor i32 %1032, %1041
   %1043 = getelementptr inbounds i32, i32* %885, i64 12
   %1044 = load i1, i1* %out.5
-  %1045 = icmp slt i64 12, %len.
+  %1045 = icmp slt i64 12, %N
   %1046 = bitcast i64* %shadow to i32*
   %safe.1047 = or i1 %1044, %1045
   %select.ptr.1048 = select i1 %safe.1047, i32* %1043, i32* %1046
@@ -1772,14 +1772,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1049, i32* %select.ptr.1048, align 4
   %1048 = getelementptr inbounds i32, i32* %885, i64 5
   %1049 = load i1, i1* %out.5
-  %1050 = icmp slt i64 5, %len.
+  %1050 = icmp slt i64 5, %N
   %1051 = bitcast i64* %shadow to i32*
   %safe.1050 = or i1 %1049, %1050
   %select.ptr.1051 = select i1 %safe.1050, i32* %1048, i32* %1051
   %1052 = load i32, i32* %select.ptr.1051, align 4
   %1053 = getelementptr inbounds i32, i32* %885, i64 12
   %1054 = load i1, i1* %out.5
-  %1055 = icmp slt i64 12, %len.
+  %1055 = icmp slt i64 12, %N
   %1056 = bitcast i64* %shadow to i32*
   %safe.1052 = or i1 %1054, %1055
   %select.ptr.1053 = select i1 %safe.1052, i32* %1053, i32* %1056
@@ -1787,7 +1787,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1058 = xor i32 %1052, %1057
   %1059 = getelementptr inbounds i32, i32* %885, i64 13
   %1060 = load i1, i1* %out.5
-  %1061 = icmp slt i64 13, %len.
+  %1061 = icmp slt i64 13, %N
   %1062 = bitcast i64* %shadow to i32*
   %safe.1054 = or i1 %1060, %1061
   %select.ptr.1055 = select i1 %safe.1054, i32* %1059, i32* %1062
@@ -1796,14 +1796,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1056, i32* %select.ptr.1055, align 4
   %1064 = getelementptr inbounds i32, i32* %885, i64 6
   %1065 = load i1, i1* %out.5
-  %1066 = icmp slt i64 6, %len.
+  %1066 = icmp slt i64 6, %N
   %1067 = bitcast i64* %shadow to i32*
   %safe.1057 = or i1 %1065, %1066
   %select.ptr.1058 = select i1 %safe.1057, i32* %1064, i32* %1067
   %1068 = load i32, i32* %select.ptr.1058, align 4
   %1069 = getelementptr inbounds i32, i32* %885, i64 13
   %1070 = load i1, i1* %out.5
-  %1071 = icmp slt i64 13, %len.
+  %1071 = icmp slt i64 13, %N
   %1072 = bitcast i64* %shadow to i32*
   %safe.1059 = or i1 %1070, %1071
   %select.ptr.1060 = select i1 %safe.1059, i32* %1069, i32* %1072
@@ -1811,7 +1811,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1074 = xor i32 %1068, %1073
   %1075 = getelementptr inbounds i32, i32* %885, i64 14
   %1076 = load i1, i1* %out.5
-  %1077 = icmp slt i64 14, %len.
+  %1077 = icmp slt i64 14, %N
   %1078 = bitcast i64* %shadow to i32*
   %safe.1061 = or i1 %1076, %1077
   %select.ptr.1062 = select i1 %safe.1061, i32* %1075, i32* %1078
@@ -1820,14 +1820,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1063, i32* %select.ptr.1062, align 4
   %1080 = getelementptr inbounds i32, i32* %885, i64 7
   %1081 = load i1, i1* %out.5
-  %1082 = icmp slt i64 7, %len.
+  %1082 = icmp slt i64 7, %N
   %1083 = bitcast i64* %shadow to i32*
   %safe.1064 = or i1 %1081, %1082
   %select.ptr.1065 = select i1 %safe.1064, i32* %1080, i32* %1083
   %1084 = load i32, i32* %select.ptr.1065, align 4
   %1085 = getelementptr inbounds i32, i32* %885, i64 14
   %1086 = load i1, i1* %out.5
-  %1087 = icmp slt i64 14, %len.
+  %1087 = icmp slt i64 14, %N
   %1088 = bitcast i64* %shadow to i32*
   %safe.1066 = or i1 %1086, %1087
   %select.ptr.1067 = select i1 %safe.1066, i32* %1085, i32* %1088
@@ -1835,7 +1835,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1090 = xor i32 %1084, %1089
   %1091 = getelementptr inbounds i32, i32* %885, i64 15
   %1092 = load i1, i1* %out.5
-  %1093 = icmp slt i64 15, %len.
+  %1093 = icmp slt i64 15, %N
   %1094 = bitcast i64* %shadow to i32*
   %safe.1068 = or i1 %1092, %1093
   %select.ptr.1069 = select i1 %safe.1068, i32* %1091, i32* %1094
@@ -1845,13 +1845,13 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1096 = getelementptr inbounds i32, i32* %885, i64 8
   %1097 = getelementptr inbounds i32, i32* %1096, i64 7
   %1098 = load i1, i1* %out.5
-  %1099 = icmp slt i64 7, %len.
+  %1099 = icmp slt i64 7, %N
   %1100 = bitcast i64* %shadow to i32*
   %safe.1071 = or i1 %1098, %1099
   %select.ptr.1072 = select i1 %safe.1071, i32* %1097, i32* %1100
   %1101 = load i32, i32* %select.ptr.1072, align 4
   %1102 = load i1, i1* %out.5
-  %1103 = icmp slt i64 8, %len.
+  %1103 = icmp slt i64 8, %N
   %1104 = bitcast i64* %shadow to i32*
   %safe.1073 = or i1 %1102, %1103
   %select.ptr.1074 = select i1 %safe.1073, i32* %1096, i32* %1104
@@ -1909,7 +1909,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1148 = xor i32 %1147, 268435456
   %1149 = getelementptr inbounds i32, i32* %1096, i64 8
   %1150 = load i1, i1* %out.5
-  %1151 = icmp slt i64 8, %len.
+  %1151 = icmp slt i64 8, %N
   %1152 = bitcast i64* %shadow to i32*
   %safe.1083 = or i1 %1150, %1151
   %select.ptr.1084 = select i1 %safe.1083, i32* %1149, i32* %1152
@@ -1918,14 +1918,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1085, i32* %select.ptr.1084, align 4
   %1154 = getelementptr inbounds i32, i32* %1096, i64 1
   %1155 = load i1, i1* %out.5
-  %1156 = icmp slt i64 1, %len.
+  %1156 = icmp slt i64 1, %N
   %1157 = bitcast i64* %shadow to i32*
   %safe.1086 = or i1 %1155, %1156
   %select.ptr.1087 = select i1 %safe.1086, i32* %1154, i32* %1157
   %1158 = load i32, i32* %select.ptr.1087, align 4
   %1159 = getelementptr inbounds i32, i32* %1096, i64 8
   %1160 = load i1, i1* %out.5
-  %1161 = icmp slt i64 8, %len.
+  %1161 = icmp slt i64 8, %N
   %1162 = bitcast i64* %shadow to i32*
   %safe.1088 = or i1 %1160, %1161
   %select.ptr.1089 = select i1 %safe.1088, i32* %1159, i32* %1162
@@ -1933,7 +1933,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1164 = xor i32 %1158, %1163
   %1165 = getelementptr inbounds i32, i32* %1096, i64 9
   %1166 = load i1, i1* %out.5
-  %1167 = icmp slt i64 9, %len.
+  %1167 = icmp slt i64 9, %N
   %1168 = bitcast i64* %shadow to i32*
   %safe.1090 = or i1 %1166, %1167
   %select.ptr.1091 = select i1 %safe.1090, i32* %1165, i32* %1168
@@ -1942,14 +1942,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1092, i32* %select.ptr.1091, align 4
   %1170 = getelementptr inbounds i32, i32* %1096, i64 2
   %1171 = load i1, i1* %out.5
-  %1172 = icmp slt i64 2, %len.
+  %1172 = icmp slt i64 2, %N
   %1173 = bitcast i64* %shadow to i32*
   %safe.1093 = or i1 %1171, %1172
   %select.ptr.1094 = select i1 %safe.1093, i32* %1170, i32* %1173
   %1174 = load i32, i32* %select.ptr.1094, align 4
   %1175 = getelementptr inbounds i32, i32* %1096, i64 9
   %1176 = load i1, i1* %out.5
-  %1177 = icmp slt i64 9, %len.
+  %1177 = icmp slt i64 9, %N
   %1178 = bitcast i64* %shadow to i32*
   %safe.1095 = or i1 %1176, %1177
   %select.ptr.1096 = select i1 %safe.1095, i32* %1175, i32* %1178
@@ -1957,7 +1957,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1180 = xor i32 %1174, %1179
   %1181 = getelementptr inbounds i32, i32* %1096, i64 10
   %1182 = load i1, i1* %out.5
-  %1183 = icmp slt i64 10, %len.
+  %1183 = icmp slt i64 10, %N
   %1184 = bitcast i64* %shadow to i32*
   %safe.1097 = or i1 %1182, %1183
   %select.ptr.1098 = select i1 %safe.1097, i32* %1181, i32* %1184
@@ -1966,14 +1966,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1099, i32* %select.ptr.1098, align 4
   %1186 = getelementptr inbounds i32, i32* %1096, i64 3
   %1187 = load i1, i1* %out.5
-  %1188 = icmp slt i64 3, %len.
+  %1188 = icmp slt i64 3, %N
   %1189 = bitcast i64* %shadow to i32*
   %safe.1100 = or i1 %1187, %1188
   %select.ptr.1101 = select i1 %safe.1100, i32* %1186, i32* %1189
   %1190 = load i32, i32* %select.ptr.1101, align 4
   %1191 = getelementptr inbounds i32, i32* %1096, i64 10
   %1192 = load i1, i1* %out.5
-  %1193 = icmp slt i64 10, %len.
+  %1193 = icmp slt i64 10, %N
   %1194 = bitcast i64* %shadow to i32*
   %safe.1102 = or i1 %1192, %1193
   %select.ptr.1103 = select i1 %safe.1102, i32* %1191, i32* %1194
@@ -1981,7 +1981,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1196 = xor i32 %1190, %1195
   %1197 = getelementptr inbounds i32, i32* %1096, i64 11
   %1198 = load i1, i1* %out.5
-  %1199 = icmp slt i64 11, %len.
+  %1199 = icmp slt i64 11, %N
   %1200 = bitcast i64* %shadow to i32*
   %safe.1104 = or i1 %1198, %1199
   %select.ptr.1105 = select i1 %safe.1104, i32* %1197, i32* %1200
@@ -1990,14 +1990,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1106, i32* %select.ptr.1105, align 4
   %1202 = getelementptr inbounds i32, i32* %1096, i64 11
   %1203 = load i1, i1* %out.5
-  %1204 = icmp slt i64 11, %len.
+  %1204 = icmp slt i64 11, %N
   %1205 = bitcast i64* %shadow to i32*
   %safe.1107 = or i1 %1203, %1204
   %select.ptr.1108 = select i1 %safe.1107, i32* %1202, i32* %1205
   %1206 = load i32, i32* %select.ptr.1108, align 4
   %1207 = getelementptr inbounds i32, i32* %1096, i64 4
   %1208 = load i1, i1* %out.5
-  %1209 = icmp slt i64 4, %len.
+  %1209 = icmp slt i64 4, %N
   %1210 = bitcast i64* %shadow to i32*
   %safe.1109 = or i1 %1208, %1209
   %select.ptr.1110 = select i1 %safe.1109, i32* %1207, i32* %1210
@@ -2054,7 +2054,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1253 = xor i32 %1243, %1252
   %1254 = getelementptr inbounds i32, i32* %1096, i64 12
   %1255 = load i1, i1* %out.5
-  %1256 = icmp slt i64 12, %len.
+  %1256 = icmp slt i64 12, %N
   %1257 = bitcast i64* %shadow to i32*
   %safe.1119 = or i1 %1255, %1256
   %select.ptr.1120 = select i1 %safe.1119, i32* %1254, i32* %1257
@@ -2063,14 +2063,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1121, i32* %select.ptr.1120, align 4
   %1259 = getelementptr inbounds i32, i32* %1096, i64 5
   %1260 = load i1, i1* %out.5
-  %1261 = icmp slt i64 5, %len.
+  %1261 = icmp slt i64 5, %N
   %1262 = bitcast i64* %shadow to i32*
   %safe.1122 = or i1 %1260, %1261
   %select.ptr.1123 = select i1 %safe.1122, i32* %1259, i32* %1262
   %1263 = load i32, i32* %select.ptr.1123, align 4
   %1264 = getelementptr inbounds i32, i32* %1096, i64 12
   %1265 = load i1, i1* %out.5
-  %1266 = icmp slt i64 12, %len.
+  %1266 = icmp slt i64 12, %N
   %1267 = bitcast i64* %shadow to i32*
   %safe.1124 = or i1 %1265, %1266
   %select.ptr.1125 = select i1 %safe.1124, i32* %1264, i32* %1267
@@ -2078,7 +2078,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1269 = xor i32 %1263, %1268
   %1270 = getelementptr inbounds i32, i32* %1096, i64 13
   %1271 = load i1, i1* %out.5
-  %1272 = icmp slt i64 13, %len.
+  %1272 = icmp slt i64 13, %N
   %1273 = bitcast i64* %shadow to i32*
   %safe.1126 = or i1 %1271, %1272
   %select.ptr.1127 = select i1 %safe.1126, i32* %1270, i32* %1273
@@ -2087,14 +2087,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1128, i32* %select.ptr.1127, align 4
   %1275 = getelementptr inbounds i32, i32* %1096, i64 6
   %1276 = load i1, i1* %out.5
-  %1277 = icmp slt i64 6, %len.
+  %1277 = icmp slt i64 6, %N
   %1278 = bitcast i64* %shadow to i32*
   %safe.1129 = or i1 %1276, %1277
   %select.ptr.1130 = select i1 %safe.1129, i32* %1275, i32* %1278
   %1279 = load i32, i32* %select.ptr.1130, align 4
   %1280 = getelementptr inbounds i32, i32* %1096, i64 13
   %1281 = load i1, i1* %out.5
-  %1282 = icmp slt i64 13, %len.
+  %1282 = icmp slt i64 13, %N
   %1283 = bitcast i64* %shadow to i32*
   %safe.1131 = or i1 %1281, %1282
   %select.ptr.1132 = select i1 %safe.1131, i32* %1280, i32* %1283
@@ -2102,7 +2102,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1285 = xor i32 %1279, %1284
   %1286 = getelementptr inbounds i32, i32* %1096, i64 14
   %1287 = load i1, i1* %out.5
-  %1288 = icmp slt i64 14, %len.
+  %1288 = icmp slt i64 14, %N
   %1289 = bitcast i64* %shadow to i32*
   %safe.1133 = or i1 %1287, %1288
   %select.ptr.1134 = select i1 %safe.1133, i32* %1286, i32* %1289
@@ -2111,14 +2111,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1135, i32* %select.ptr.1134, align 4
   %1291 = getelementptr inbounds i32, i32* %1096, i64 7
   %1292 = load i1, i1* %out.5
-  %1293 = icmp slt i64 7, %len.
+  %1293 = icmp slt i64 7, %N
   %1294 = bitcast i64* %shadow to i32*
   %safe.1136 = or i1 %1292, %1293
   %select.ptr.1137 = select i1 %safe.1136, i32* %1291, i32* %1294
   %1295 = load i32, i32* %select.ptr.1137, align 4
   %1296 = getelementptr inbounds i32, i32* %1096, i64 14
   %1297 = load i1, i1* %out.5
-  %1298 = icmp slt i64 14, %len.
+  %1298 = icmp slt i64 14, %N
   %1299 = bitcast i64* %shadow to i32*
   %safe.1138 = or i1 %1297, %1298
   %select.ptr.1139 = select i1 %safe.1138, i32* %1296, i32* %1299
@@ -2126,7 +2126,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1301 = xor i32 %1295, %1300
   %1302 = getelementptr inbounds i32, i32* %1096, i64 15
   %1303 = load i1, i1* %out.5
-  %1304 = icmp slt i64 15, %len.
+  %1304 = icmp slt i64 15, %N
   %1305 = bitcast i64* %shadow to i32*
   %safe.1140 = or i1 %1303, %1304
   %select.ptr.1141 = select i1 %safe.1140, i32* %1302, i32* %1305
@@ -2136,13 +2136,13 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1307 = getelementptr inbounds i32, i32* %1096, i64 8
   %1308 = getelementptr inbounds i32, i32* %1307, i64 7
   %1309 = load i1, i1* %out.5
-  %1310 = icmp slt i64 7, %len.
+  %1310 = icmp slt i64 7, %N
   %1311 = bitcast i64* %shadow to i32*
   %safe.1143 = or i1 %1309, %1310
   %select.ptr.1144 = select i1 %safe.1143, i32* %1308, i32* %1311
   %1312 = load i32, i32* %select.ptr.1144, align 4
   %1313 = load i1, i1* %out.5
-  %1314 = icmp slt i64 8, %len.
+  %1314 = icmp slt i64 8, %N
   %1315 = bitcast i64* %shadow to i32*
   %safe.1145 = or i1 %1313, %1314
   %select.ptr.1146 = select i1 %safe.1145, i32* %1307, i32* %1315
@@ -2200,7 +2200,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1359 = xor i32 %1358, 536870912
   %1360 = getelementptr inbounds i32, i32* %1307, i64 8
   %1361 = load i1, i1* %out.5
-  %1362 = icmp slt i64 8, %len.
+  %1362 = icmp slt i64 8, %N
   %1363 = bitcast i64* %shadow to i32*
   %safe.1155 = or i1 %1361, %1362
   %select.ptr.1156 = select i1 %safe.1155, i32* %1360, i32* %1363
@@ -2209,14 +2209,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1157, i32* %select.ptr.1156, align 4
   %1365 = getelementptr inbounds i32, i32* %1307, i64 1
   %1366 = load i1, i1* %out.5
-  %1367 = icmp slt i64 1, %len.
+  %1367 = icmp slt i64 1, %N
   %1368 = bitcast i64* %shadow to i32*
   %safe.1158 = or i1 %1366, %1367
   %select.ptr.1159 = select i1 %safe.1158, i32* %1365, i32* %1368
   %1369 = load i32, i32* %select.ptr.1159, align 4
   %1370 = getelementptr inbounds i32, i32* %1307, i64 8
   %1371 = load i1, i1* %out.5
-  %1372 = icmp slt i64 8, %len.
+  %1372 = icmp slt i64 8, %N
   %1373 = bitcast i64* %shadow to i32*
   %safe.1160 = or i1 %1371, %1372
   %select.ptr.1161 = select i1 %safe.1160, i32* %1370, i32* %1373
@@ -2224,7 +2224,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1375 = xor i32 %1369, %1374
   %1376 = getelementptr inbounds i32, i32* %1307, i64 9
   %1377 = load i1, i1* %out.5
-  %1378 = icmp slt i64 9, %len.
+  %1378 = icmp slt i64 9, %N
   %1379 = bitcast i64* %shadow to i32*
   %safe.1162 = or i1 %1377, %1378
   %select.ptr.1163 = select i1 %safe.1162, i32* %1376, i32* %1379
@@ -2233,14 +2233,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1164, i32* %select.ptr.1163, align 4
   %1381 = getelementptr inbounds i32, i32* %1307, i64 2
   %1382 = load i1, i1* %out.5
-  %1383 = icmp slt i64 2, %len.
+  %1383 = icmp slt i64 2, %N
   %1384 = bitcast i64* %shadow to i32*
   %safe.1165 = or i1 %1382, %1383
   %select.ptr.1166 = select i1 %safe.1165, i32* %1381, i32* %1384
   %1385 = load i32, i32* %select.ptr.1166, align 4
   %1386 = getelementptr inbounds i32, i32* %1307, i64 9
   %1387 = load i1, i1* %out.5
-  %1388 = icmp slt i64 9, %len.
+  %1388 = icmp slt i64 9, %N
   %1389 = bitcast i64* %shadow to i32*
   %safe.1167 = or i1 %1387, %1388
   %select.ptr.1168 = select i1 %safe.1167, i32* %1386, i32* %1389
@@ -2248,7 +2248,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1391 = xor i32 %1385, %1390
   %1392 = getelementptr inbounds i32, i32* %1307, i64 10
   %1393 = load i1, i1* %out.5
-  %1394 = icmp slt i64 10, %len.
+  %1394 = icmp slt i64 10, %N
   %1395 = bitcast i64* %shadow to i32*
   %safe.1169 = or i1 %1393, %1394
   %select.ptr.1170 = select i1 %safe.1169, i32* %1392, i32* %1395
@@ -2257,14 +2257,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1171, i32* %select.ptr.1170, align 4
   %1397 = getelementptr inbounds i32, i32* %1307, i64 3
   %1398 = load i1, i1* %out.5
-  %1399 = icmp slt i64 3, %len.
+  %1399 = icmp slt i64 3, %N
   %1400 = bitcast i64* %shadow to i32*
   %safe.1172 = or i1 %1398, %1399
   %select.ptr.1173 = select i1 %safe.1172, i32* %1397, i32* %1400
   %1401 = load i32, i32* %select.ptr.1173, align 4
   %1402 = getelementptr inbounds i32, i32* %1307, i64 10
   %1403 = load i1, i1* %out.5
-  %1404 = icmp slt i64 10, %len.
+  %1404 = icmp slt i64 10, %N
   %1405 = bitcast i64* %shadow to i32*
   %safe.1174 = or i1 %1403, %1404
   %select.ptr.1175 = select i1 %safe.1174, i32* %1402, i32* %1405
@@ -2272,7 +2272,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1407 = xor i32 %1401, %1406
   %1408 = getelementptr inbounds i32, i32* %1307, i64 11
   %1409 = load i1, i1* %out.5
-  %1410 = icmp slt i64 11, %len.
+  %1410 = icmp slt i64 11, %N
   %1411 = bitcast i64* %shadow to i32*
   %safe.1176 = or i1 %1409, %1410
   %select.ptr.1177 = select i1 %safe.1176, i32* %1408, i32* %1411
@@ -2281,14 +2281,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1178, i32* %select.ptr.1177, align 4
   %1413 = getelementptr inbounds i32, i32* %1307, i64 11
   %1414 = load i1, i1* %out.5
-  %1415 = icmp slt i64 11, %len.
+  %1415 = icmp slt i64 11, %N
   %1416 = bitcast i64* %shadow to i32*
   %safe.1179 = or i1 %1414, %1415
   %select.ptr.1180 = select i1 %safe.1179, i32* %1413, i32* %1416
   %1417 = load i32, i32* %select.ptr.1180, align 4
   %1418 = getelementptr inbounds i32, i32* %1307, i64 4
   %1419 = load i1, i1* %out.5
-  %1420 = icmp slt i64 4, %len.
+  %1420 = icmp slt i64 4, %N
   %1421 = bitcast i64* %shadow to i32*
   %safe.1181 = or i1 %1419, %1420
   %select.ptr.1182 = select i1 %safe.1181, i32* %1418, i32* %1421
@@ -2345,7 +2345,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1464 = xor i32 %1454, %1463
   %1465 = getelementptr inbounds i32, i32* %1307, i64 12
   %1466 = load i1, i1* %out.5
-  %1467 = icmp slt i64 12, %len.
+  %1467 = icmp slt i64 12, %N
   %1468 = bitcast i64* %shadow to i32*
   %safe.1191 = or i1 %1466, %1467
   %select.ptr.1192 = select i1 %safe.1191, i32* %1465, i32* %1468
@@ -2354,14 +2354,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1193, i32* %select.ptr.1192, align 4
   %1470 = getelementptr inbounds i32, i32* %1307, i64 5
   %1471 = load i1, i1* %out.5
-  %1472 = icmp slt i64 5, %len.
+  %1472 = icmp slt i64 5, %N
   %1473 = bitcast i64* %shadow to i32*
   %safe.1194 = or i1 %1471, %1472
   %select.ptr.1195 = select i1 %safe.1194, i32* %1470, i32* %1473
   %1474 = load i32, i32* %select.ptr.1195, align 4
   %1475 = getelementptr inbounds i32, i32* %1307, i64 12
   %1476 = load i1, i1* %out.5
-  %1477 = icmp slt i64 12, %len.
+  %1477 = icmp slt i64 12, %N
   %1478 = bitcast i64* %shadow to i32*
   %safe.1196 = or i1 %1476, %1477
   %select.ptr.1197 = select i1 %safe.1196, i32* %1475, i32* %1478
@@ -2369,7 +2369,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1480 = xor i32 %1474, %1479
   %1481 = getelementptr inbounds i32, i32* %1307, i64 13
   %1482 = load i1, i1* %out.5
-  %1483 = icmp slt i64 13, %len.
+  %1483 = icmp slt i64 13, %N
   %1484 = bitcast i64* %shadow to i32*
   %safe.1198 = or i1 %1482, %1483
   %select.ptr.1199 = select i1 %safe.1198, i32* %1481, i32* %1484
@@ -2378,14 +2378,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1200, i32* %select.ptr.1199, align 4
   %1486 = getelementptr inbounds i32, i32* %1307, i64 6
   %1487 = load i1, i1* %out.5
-  %1488 = icmp slt i64 6, %len.
+  %1488 = icmp slt i64 6, %N
   %1489 = bitcast i64* %shadow to i32*
   %safe.1201 = or i1 %1487, %1488
   %select.ptr.1202 = select i1 %safe.1201, i32* %1486, i32* %1489
   %1490 = load i32, i32* %select.ptr.1202, align 4
   %1491 = getelementptr inbounds i32, i32* %1307, i64 13
   %1492 = load i1, i1* %out.5
-  %1493 = icmp slt i64 13, %len.
+  %1493 = icmp slt i64 13, %N
   %1494 = bitcast i64* %shadow to i32*
   %safe.1203 = or i1 %1492, %1493
   %select.ptr.1204 = select i1 %safe.1203, i32* %1491, i32* %1494
@@ -2393,7 +2393,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1496 = xor i32 %1490, %1495
   %1497 = getelementptr inbounds i32, i32* %1307, i64 14
   %1498 = load i1, i1* %out.5
-  %1499 = icmp slt i64 14, %len.
+  %1499 = icmp slt i64 14, %N
   %1500 = bitcast i64* %shadow to i32*
   %safe.1205 = or i1 %1498, %1499
   %select.ptr.1206 = select i1 %safe.1205, i32* %1497, i32* %1500
@@ -2402,14 +2402,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1207, i32* %select.ptr.1206, align 4
   %1502 = getelementptr inbounds i32, i32* %1307, i64 7
   %1503 = load i1, i1* %out.5
-  %1504 = icmp slt i64 7, %len.
+  %1504 = icmp slt i64 7, %N
   %1505 = bitcast i64* %shadow to i32*
   %safe.1208 = or i1 %1503, %1504
   %select.ptr.1209 = select i1 %safe.1208, i32* %1502, i32* %1505
   %1506 = load i32, i32* %select.ptr.1209, align 4
   %1507 = getelementptr inbounds i32, i32* %1307, i64 14
   %1508 = load i1, i1* %out.5
-  %1509 = icmp slt i64 14, %len.
+  %1509 = icmp slt i64 14, %N
   %1510 = bitcast i64* %shadow to i32*
   %safe.1210 = or i1 %1508, %1509
   %select.ptr.1211 = select i1 %safe.1210, i32* %1507, i32* %1510
@@ -2417,7 +2417,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1512 = xor i32 %1506, %1511
   %1513 = getelementptr inbounds i32, i32* %1307, i64 15
   %1514 = load i1, i1* %out.5
-  %1515 = icmp slt i64 15, %len.
+  %1515 = icmp slt i64 15, %N
   %1516 = bitcast i64* %shadow to i32*
   %safe.1212 = or i1 %1514, %1515
   %select.ptr.1213 = select i1 %safe.1212, i32* %1513, i32* %1516
@@ -2427,13 +2427,13 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1518 = getelementptr inbounds i32, i32* %1307, i64 8
   %1519 = getelementptr inbounds i32, i32* %1518, i64 7
   %1520 = load i1, i1* %out.5
-  %1521 = icmp slt i64 7, %len.
+  %1521 = icmp slt i64 7, %N
   %1522 = bitcast i64* %shadow to i32*
   %safe.1215 = or i1 %1520, %1521
   %select.ptr.1216 = select i1 %safe.1215, i32* %1519, i32* %1522
   %1523 = load i32, i32* %select.ptr.1216, align 4
   %1524 = load i1, i1* %out.5
-  %1525 = icmp slt i64 8, %len.
+  %1525 = icmp slt i64 8, %N
   %1526 = bitcast i64* %shadow to i32*
   %safe.1217 = or i1 %1524, %1525
   %select.ptr.1218 = select i1 %safe.1217, i32* %1518, i32* %1526
@@ -2491,7 +2491,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1570 = xor i32 %1569, 1073741824
   %1571 = getelementptr inbounds i32, i32* %1518, i64 8
   %1572 = load i1, i1* %out.5
-  %1573 = icmp slt i64 8, %len.
+  %1573 = icmp slt i64 8, %N
   %1574 = bitcast i64* %shadow to i32*
   %safe.1227 = or i1 %1572, %1573
   %select.ptr.1228 = select i1 %safe.1227, i32* %1571, i32* %1574
@@ -2500,14 +2500,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1229, i32* %select.ptr.1228, align 4
   %1576 = getelementptr inbounds i32, i32* %1518, i64 1
   %1577 = load i1, i1* %out.5
-  %1578 = icmp slt i64 1, %len.
+  %1578 = icmp slt i64 1, %N
   %1579 = bitcast i64* %shadow to i32*
   %safe.1230 = or i1 %1577, %1578
   %select.ptr.1231 = select i1 %safe.1230, i32* %1576, i32* %1579
   %1580 = load i32, i32* %select.ptr.1231, align 4
   %1581 = getelementptr inbounds i32, i32* %1518, i64 8
   %1582 = load i1, i1* %out.5
-  %1583 = icmp slt i64 8, %len.
+  %1583 = icmp slt i64 8, %N
   %1584 = bitcast i64* %shadow to i32*
   %safe.1232 = or i1 %1582, %1583
   %select.ptr.1233 = select i1 %safe.1232, i32* %1581, i32* %1584
@@ -2515,7 +2515,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1586 = xor i32 %1580, %1585
   %1587 = getelementptr inbounds i32, i32* %1518, i64 9
   %1588 = load i1, i1* %out.5
-  %1589 = icmp slt i64 9, %len.
+  %1589 = icmp slt i64 9, %N
   %1590 = bitcast i64* %shadow to i32*
   %safe.1234 = or i1 %1588, %1589
   %select.ptr.1235 = select i1 %safe.1234, i32* %1587, i32* %1590
@@ -2524,14 +2524,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1236, i32* %select.ptr.1235, align 4
   %1592 = getelementptr inbounds i32, i32* %1518, i64 2
   %1593 = load i1, i1* %out.5
-  %1594 = icmp slt i64 2, %len.
+  %1594 = icmp slt i64 2, %N
   %1595 = bitcast i64* %shadow to i32*
   %safe.1237 = or i1 %1593, %1594
   %select.ptr.1238 = select i1 %safe.1237, i32* %1592, i32* %1595
   %1596 = load i32, i32* %select.ptr.1238, align 4
   %1597 = getelementptr inbounds i32, i32* %1518, i64 9
   %1598 = load i1, i1* %out.5
-  %1599 = icmp slt i64 9, %len.
+  %1599 = icmp slt i64 9, %N
   %1600 = bitcast i64* %shadow to i32*
   %safe.1239 = or i1 %1598, %1599
   %select.ptr.1240 = select i1 %safe.1239, i32* %1597, i32* %1600
@@ -2539,7 +2539,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1602 = xor i32 %1596, %1601
   %1603 = getelementptr inbounds i32, i32* %1518, i64 10
   %1604 = load i1, i1* %out.5
-  %1605 = icmp slt i64 10, %len.
+  %1605 = icmp slt i64 10, %N
   %1606 = bitcast i64* %shadow to i32*
   %safe.1241 = or i1 %1604, %1605
   %select.ptr.1242 = select i1 %safe.1241, i32* %1603, i32* %1606
@@ -2548,14 +2548,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.1243, i32* %select.ptr.1242, align 4
   %1608 = getelementptr inbounds i32, i32* %1518, i64 3
   %1609 = load i1, i1* %out.5
-  %1610 = icmp slt i64 3, %len.
+  %1610 = icmp slt i64 3, %N
   %1611 = bitcast i64* %shadow to i32*
   %safe.1244 = or i1 %1609, %1610
   %select.ptr.1245 = select i1 %safe.1244, i32* %1608, i32* %1611
   %1612 = load i32, i32* %select.ptr.1245, align 4
   %1613 = getelementptr inbounds i32, i32* %1518, i64 10
   %1614 = load i1, i1* %out.5
-  %1615 = icmp slt i64 10, %len.
+  %1615 = icmp slt i64 10, %N
   %1616 = bitcast i64* %shadow to i32*
   %safe.1246 = or i1 %1614, %1615
   %select.ptr.1247 = select i1 %safe.1246, i32* %1613, i32* %1616
@@ -2563,7 +2563,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1618 = xor i32 %1612, %1617
   %1619 = getelementptr inbounds i32, i32* %1518, i64 11
   %1620 = load i1, i1* %out.5
-  %1621 = icmp slt i64 11, %len.
+  %1621 = icmp slt i64 11, %N
   %1622 = bitcast i64* %shadow to i32*
   %safe.1248 = or i1 %1620, %1621
   %select.ptr.1249 = select i1 %safe.1248, i32* %1619, i32* %1622
@@ -2575,7 +2575,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i1 %in.8, i1* %out.3
   %1625 = getelementptr inbounds i32, i32* %0, i64 5
   %1626 = load i1, i1* %out.3
-  %1627 = icmp slt i64 5, %len.
+  %1627 = icmp slt i64 5, %N
   %1628 = bitcast i64* %shadow to i32*
   %safe.379 = or i1 %1626, %1627
   %select.ptr.380 = select i1 %safe.379, i32* %1625, i32* %1628
@@ -2635,7 +2635,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1674 = xor i32 %1673, 16777216
   %1675 = getelementptr inbounds i32, i32* %0, i64 6
   %1676 = load i1, i1* %out.3
-  %1677 = icmp slt i64 6, %len.
+  %1677 = icmp slt i64 6, %N
   %1678 = bitcast i64* %shadow to i32*
   %safe.389 = or i1 %1676, %1677
   %select.ptr.390 = select i1 %safe.389, i32* %1675, i32* %1678
@@ -2644,14 +2644,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.391, i32* %select.ptr.390, align 4
   %1680 = getelementptr inbounds i32, i32* %0, i64 1
   %1681 = load i1, i1* %out.3
-  %1682 = icmp slt i64 1, %len.
+  %1682 = icmp slt i64 1, %N
   %1683 = bitcast i64* %shadow to i32*
   %safe.392 = or i1 %1681, %1682
   %select.ptr.393 = select i1 %safe.392, i32* %1680, i32* %1683
   %1684 = load i32, i32* %select.ptr.393, align 4
   %1685 = getelementptr inbounds i32, i32* %0, i64 6
   %1686 = load i1, i1* %out.3
-  %1687 = icmp slt i64 6, %len.
+  %1687 = icmp slt i64 6, %N
   %1688 = bitcast i64* %shadow to i32*
   %safe.394 = or i1 %1686, %1687
   %select.ptr.395 = select i1 %safe.394, i32* %1685, i32* %1688
@@ -2659,7 +2659,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1690 = xor i32 %1684, %1689
   %1691 = getelementptr inbounds i32, i32* %0, i64 7
   %1692 = load i1, i1* %out.3
-  %1693 = icmp slt i64 7, %len.
+  %1693 = icmp slt i64 7, %N
   %1694 = bitcast i64* %shadow to i32*
   %safe.396 = or i1 %1692, %1693
   %select.ptr.397 = select i1 %safe.396, i32* %1691, i32* %1694
@@ -2668,14 +2668,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.398, i32* %select.ptr.397, align 4
   %1696 = getelementptr inbounds i32, i32* %0, i64 2
   %1697 = load i1, i1* %out.3
-  %1698 = icmp slt i64 2, %len.
+  %1698 = icmp slt i64 2, %N
   %1699 = bitcast i64* %shadow to i32*
   %safe.399 = or i1 %1697, %1698
   %select.ptr.400 = select i1 %safe.399, i32* %1696, i32* %1699
   %1700 = load i32, i32* %select.ptr.400, align 4
   %1701 = getelementptr inbounds i32, i32* %0, i64 7
   %1702 = load i1, i1* %out.3
-  %1703 = icmp slt i64 7, %len.
+  %1703 = icmp slt i64 7, %N
   %1704 = bitcast i64* %shadow to i32*
   %safe.401 = or i1 %1702, %1703
   %select.ptr.402 = select i1 %safe.401, i32* %1701, i32* %1704
@@ -2683,7 +2683,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1706 = xor i32 %1700, %1705
   %1707 = getelementptr inbounds i32, i32* %0, i64 8
   %1708 = load i1, i1* %out.3
-  %1709 = icmp slt i64 8, %len.
+  %1709 = icmp slt i64 8, %N
   %1710 = bitcast i64* %shadow to i32*
   %safe.403 = or i1 %1708, %1709
   %select.ptr.404 = select i1 %safe.403, i32* %1707, i32* %1710
@@ -2692,14 +2692,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.405, i32* %select.ptr.404, align 4
   %1712 = getelementptr inbounds i32, i32* %0, i64 3
   %1713 = load i1, i1* %out.3
-  %1714 = icmp slt i64 3, %len.
+  %1714 = icmp slt i64 3, %N
   %1715 = bitcast i64* %shadow to i32*
   %safe.406 = or i1 %1713, %1714
   %select.ptr.407 = select i1 %safe.406, i32* %1712, i32* %1715
   %1716 = load i32, i32* %select.ptr.407, align 4
   %1717 = getelementptr inbounds i32, i32* %0, i64 8
   %1718 = load i1, i1* %out.3
-  %1719 = icmp slt i64 8, %len.
+  %1719 = icmp slt i64 8, %N
   %1720 = bitcast i64* %shadow to i32*
   %safe.408 = or i1 %1718, %1719
   %select.ptr.409 = select i1 %safe.408, i32* %1717, i32* %1720
@@ -2707,7 +2707,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1722 = xor i32 %1716, %1721
   %1723 = getelementptr inbounds i32, i32* %0, i64 9
   %1724 = load i1, i1* %out.3
-  %1725 = icmp slt i64 9, %len.
+  %1725 = icmp slt i64 9, %N
   %1726 = bitcast i64* %shadow to i32*
   %safe.410 = or i1 %1724, %1725
   %select.ptr.411 = select i1 %safe.410, i32* %1723, i32* %1726
@@ -2716,14 +2716,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.412, i32* %select.ptr.411, align 4
   %1728 = getelementptr inbounds i32, i32* %0, i64 4
   %1729 = load i1, i1* %out.3
-  %1730 = icmp slt i64 4, %len.
+  %1730 = icmp slt i64 4, %N
   %1731 = bitcast i64* %shadow to i32*
   %safe.413 = or i1 %1729, %1730
   %select.ptr.414 = select i1 %safe.413, i32* %1728, i32* %1731
   %1732 = load i32, i32* %select.ptr.414, align 4
   %1733 = getelementptr inbounds i32, i32* %0, i64 9
   %1734 = load i1, i1* %out.3
-  %1735 = icmp slt i64 9, %len.
+  %1735 = icmp slt i64 9, %N
   %1736 = bitcast i64* %shadow to i32*
   %safe.415 = or i1 %1734, %1735
   %select.ptr.416 = select i1 %safe.415, i32* %1733, i32* %1736
@@ -2731,7 +2731,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1738 = xor i32 %1732, %1737
   %1739 = getelementptr inbounds i32, i32* %0, i64 10
   %1740 = load i1, i1* %out.3
-  %1741 = icmp slt i64 10, %len.
+  %1741 = icmp slt i64 10, %N
   %1742 = bitcast i64* %shadow to i32*
   %safe.417 = or i1 %1740, %1741
   %select.ptr.418 = select i1 %safe.417, i32* %1739, i32* %1742
@@ -2740,14 +2740,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.419, i32* %select.ptr.418, align 4
   %1744 = getelementptr inbounds i32, i32* %0, i64 5
   %1745 = load i1, i1* %out.3
-  %1746 = icmp slt i64 5, %len.
+  %1746 = icmp slt i64 5, %N
   %1747 = bitcast i64* %shadow to i32*
   %safe.420 = or i1 %1745, %1746
   %select.ptr.421 = select i1 %safe.420, i32* %1744, i32* %1747
   %1748 = load i32, i32* %select.ptr.421, align 4
   %1749 = getelementptr inbounds i32, i32* %0, i64 10
   %1750 = load i1, i1* %out.3
-  %1751 = icmp slt i64 10, %len.
+  %1751 = icmp slt i64 10, %N
   %1752 = bitcast i64* %shadow to i32*
   %safe.422 = or i1 %1750, %1751
   %select.ptr.423 = select i1 %safe.422, i32* %1749, i32* %1752
@@ -2755,7 +2755,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1754 = xor i32 %1748, %1753
   %1755 = getelementptr inbounds i32, i32* %0, i64 11
   %1756 = load i1, i1* %out.3
-  %1757 = icmp slt i64 11, %len.
+  %1757 = icmp slt i64 11, %N
   %1758 = bitcast i64* %shadow to i32*
   %safe.424 = or i1 %1756, %1757
   %select.ptr.425 = select i1 %safe.424, i32* %1755, i32* %1758
@@ -2765,13 +2765,13 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1760 = getelementptr inbounds i32, i32* %0, i64 6
   %1761 = getelementptr inbounds i32, i32* %1760, i64 5
   %1762 = load i1, i1* %out.3
-  %1763 = icmp slt i64 5, %len.
+  %1763 = icmp slt i64 5, %N
   %1764 = bitcast i64* %shadow to i32*
   %safe.427 = or i1 %1762, %1763
   %select.ptr.428 = select i1 %safe.427, i32* %1761, i32* %1764
   %1765 = load i32, i32* %select.ptr.428, align 4
   %1766 = load i1, i1* %out.3
-  %1767 = icmp slt i64 6, %len.
+  %1767 = icmp slt i64 6, %N
   %1768 = bitcast i64* %shadow to i32*
   %safe.429 = or i1 %1766, %1767
   %select.ptr.430 = select i1 %safe.429, i32* %1760, i32* %1768
@@ -2829,7 +2829,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1812 = xor i32 %1811, 33554432
   %1813 = getelementptr inbounds i32, i32* %1760, i64 6
   %1814 = load i1, i1* %out.3
-  %1815 = icmp slt i64 6, %len.
+  %1815 = icmp slt i64 6, %N
   %1816 = bitcast i64* %shadow to i32*
   %safe.439 = or i1 %1814, %1815
   %select.ptr.440 = select i1 %safe.439, i32* %1813, i32* %1816
@@ -2838,14 +2838,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.441, i32* %select.ptr.440, align 4
   %1818 = getelementptr inbounds i32, i32* %1760, i64 1
   %1819 = load i1, i1* %out.3
-  %1820 = icmp slt i64 1, %len.
+  %1820 = icmp slt i64 1, %N
   %1821 = bitcast i64* %shadow to i32*
   %safe.442 = or i1 %1819, %1820
   %select.ptr.443 = select i1 %safe.442, i32* %1818, i32* %1821
   %1822 = load i32, i32* %select.ptr.443, align 4
   %1823 = getelementptr inbounds i32, i32* %1760, i64 6
   %1824 = load i1, i1* %out.3
-  %1825 = icmp slt i64 6, %len.
+  %1825 = icmp slt i64 6, %N
   %1826 = bitcast i64* %shadow to i32*
   %safe.444 = or i1 %1824, %1825
   %select.ptr.445 = select i1 %safe.444, i32* %1823, i32* %1826
@@ -2853,7 +2853,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1828 = xor i32 %1822, %1827
   %1829 = getelementptr inbounds i32, i32* %1760, i64 7
   %1830 = load i1, i1* %out.3
-  %1831 = icmp slt i64 7, %len.
+  %1831 = icmp slt i64 7, %N
   %1832 = bitcast i64* %shadow to i32*
   %safe.446 = or i1 %1830, %1831
   %select.ptr.447 = select i1 %safe.446, i32* %1829, i32* %1832
@@ -2862,14 +2862,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.448, i32* %select.ptr.447, align 4
   %1834 = getelementptr inbounds i32, i32* %1760, i64 2
   %1835 = load i1, i1* %out.3
-  %1836 = icmp slt i64 2, %len.
+  %1836 = icmp slt i64 2, %N
   %1837 = bitcast i64* %shadow to i32*
   %safe.449 = or i1 %1835, %1836
   %select.ptr.450 = select i1 %safe.449, i32* %1834, i32* %1837
   %1838 = load i32, i32* %select.ptr.450, align 4
   %1839 = getelementptr inbounds i32, i32* %1760, i64 7
   %1840 = load i1, i1* %out.3
-  %1841 = icmp slt i64 7, %len.
+  %1841 = icmp slt i64 7, %N
   %1842 = bitcast i64* %shadow to i32*
   %safe.451 = or i1 %1840, %1841
   %select.ptr.452 = select i1 %safe.451, i32* %1839, i32* %1842
@@ -2877,7 +2877,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1844 = xor i32 %1838, %1843
   %1845 = getelementptr inbounds i32, i32* %1760, i64 8
   %1846 = load i1, i1* %out.3
-  %1847 = icmp slt i64 8, %len.
+  %1847 = icmp slt i64 8, %N
   %1848 = bitcast i64* %shadow to i32*
   %safe.453 = or i1 %1846, %1847
   %select.ptr.454 = select i1 %safe.453, i32* %1845, i32* %1848
@@ -2886,14 +2886,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.455, i32* %select.ptr.454, align 4
   %1850 = getelementptr inbounds i32, i32* %1760, i64 3
   %1851 = load i1, i1* %out.3
-  %1852 = icmp slt i64 3, %len.
+  %1852 = icmp slt i64 3, %N
   %1853 = bitcast i64* %shadow to i32*
   %safe.456 = or i1 %1851, %1852
   %select.ptr.457 = select i1 %safe.456, i32* %1850, i32* %1853
   %1854 = load i32, i32* %select.ptr.457, align 4
   %1855 = getelementptr inbounds i32, i32* %1760, i64 8
   %1856 = load i1, i1* %out.3
-  %1857 = icmp slt i64 8, %len.
+  %1857 = icmp slt i64 8, %N
   %1858 = bitcast i64* %shadow to i32*
   %safe.458 = or i1 %1856, %1857
   %select.ptr.459 = select i1 %safe.458, i32* %1855, i32* %1858
@@ -2901,7 +2901,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1860 = xor i32 %1854, %1859
   %1861 = getelementptr inbounds i32, i32* %1760, i64 9
   %1862 = load i1, i1* %out.3
-  %1863 = icmp slt i64 9, %len.
+  %1863 = icmp slt i64 9, %N
   %1864 = bitcast i64* %shadow to i32*
   %safe.460 = or i1 %1862, %1863
   %select.ptr.461 = select i1 %safe.460, i32* %1861, i32* %1864
@@ -2910,14 +2910,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.462, i32* %select.ptr.461, align 4
   %1866 = getelementptr inbounds i32, i32* %1760, i64 4
   %1867 = load i1, i1* %out.3
-  %1868 = icmp slt i64 4, %len.
+  %1868 = icmp slt i64 4, %N
   %1869 = bitcast i64* %shadow to i32*
   %safe.463 = or i1 %1867, %1868
   %select.ptr.464 = select i1 %safe.463, i32* %1866, i32* %1869
   %1870 = load i32, i32* %select.ptr.464, align 4
   %1871 = getelementptr inbounds i32, i32* %1760, i64 9
   %1872 = load i1, i1* %out.3
-  %1873 = icmp slt i64 9, %len.
+  %1873 = icmp slt i64 9, %N
   %1874 = bitcast i64* %shadow to i32*
   %safe.465 = or i1 %1872, %1873
   %select.ptr.466 = select i1 %safe.465, i32* %1871, i32* %1874
@@ -2925,7 +2925,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1876 = xor i32 %1870, %1875
   %1877 = getelementptr inbounds i32, i32* %1760, i64 10
   %1878 = load i1, i1* %out.3
-  %1879 = icmp slt i64 10, %len.
+  %1879 = icmp slt i64 10, %N
   %1880 = bitcast i64* %shadow to i32*
   %safe.467 = or i1 %1878, %1879
   %select.ptr.468 = select i1 %safe.467, i32* %1877, i32* %1880
@@ -2934,14 +2934,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.469, i32* %select.ptr.468, align 4
   %1882 = getelementptr inbounds i32, i32* %1760, i64 5
   %1883 = load i1, i1* %out.3
-  %1884 = icmp slt i64 5, %len.
+  %1884 = icmp slt i64 5, %N
   %1885 = bitcast i64* %shadow to i32*
   %safe.470 = or i1 %1883, %1884
   %select.ptr.471 = select i1 %safe.470, i32* %1882, i32* %1885
   %1886 = load i32, i32* %select.ptr.471, align 4
   %1887 = getelementptr inbounds i32, i32* %1760, i64 10
   %1888 = load i1, i1* %out.3
-  %1889 = icmp slt i64 10, %len.
+  %1889 = icmp slt i64 10, %N
   %1890 = bitcast i64* %shadow to i32*
   %safe.472 = or i1 %1888, %1889
   %select.ptr.473 = select i1 %safe.472, i32* %1887, i32* %1890
@@ -2949,7 +2949,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1892 = xor i32 %1886, %1891
   %1893 = getelementptr inbounds i32, i32* %1760, i64 11
   %1894 = load i1, i1* %out.3
-  %1895 = icmp slt i64 11, %len.
+  %1895 = icmp slt i64 11, %N
   %1896 = bitcast i64* %shadow to i32*
   %safe.474 = or i1 %1894, %1895
   %select.ptr.475 = select i1 %safe.474, i32* %1893, i32* %1896
@@ -2959,13 +2959,13 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1898 = getelementptr inbounds i32, i32* %1760, i64 6
   %1899 = getelementptr inbounds i32, i32* %1898, i64 5
   %1900 = load i1, i1* %out.3
-  %1901 = icmp slt i64 5, %len.
+  %1901 = icmp slt i64 5, %N
   %1902 = bitcast i64* %shadow to i32*
   %safe.477 = or i1 %1900, %1901
   %select.ptr.478 = select i1 %safe.477, i32* %1899, i32* %1902
   %1903 = load i32, i32* %select.ptr.478, align 4
   %1904 = load i1, i1* %out.3
-  %1905 = icmp slt i64 6, %len.
+  %1905 = icmp slt i64 6, %N
   %1906 = bitcast i64* %shadow to i32*
   %safe.479 = or i1 %1904, %1905
   %select.ptr.480 = select i1 %safe.479, i32* %1898, i32* %1906
@@ -3023,7 +3023,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1950 = xor i32 %1949, 67108864
   %1951 = getelementptr inbounds i32, i32* %1898, i64 6
   %1952 = load i1, i1* %out.3
-  %1953 = icmp slt i64 6, %len.
+  %1953 = icmp slt i64 6, %N
   %1954 = bitcast i64* %shadow to i32*
   %safe.489 = or i1 %1952, %1953
   %select.ptr.490 = select i1 %safe.489, i32* %1951, i32* %1954
@@ -3032,14 +3032,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.491, i32* %select.ptr.490, align 4
   %1956 = getelementptr inbounds i32, i32* %1898, i64 1
   %1957 = load i1, i1* %out.3
-  %1958 = icmp slt i64 1, %len.
+  %1958 = icmp slt i64 1, %N
   %1959 = bitcast i64* %shadow to i32*
   %safe.492 = or i1 %1957, %1958
   %select.ptr.493 = select i1 %safe.492, i32* %1956, i32* %1959
   %1960 = load i32, i32* %select.ptr.493, align 4
   %1961 = getelementptr inbounds i32, i32* %1898, i64 6
   %1962 = load i1, i1* %out.3
-  %1963 = icmp slt i64 6, %len.
+  %1963 = icmp slt i64 6, %N
   %1964 = bitcast i64* %shadow to i32*
   %safe.494 = or i1 %1962, %1963
   %select.ptr.495 = select i1 %safe.494, i32* %1961, i32* %1964
@@ -3047,7 +3047,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1966 = xor i32 %1960, %1965
   %1967 = getelementptr inbounds i32, i32* %1898, i64 7
   %1968 = load i1, i1* %out.3
-  %1969 = icmp slt i64 7, %len.
+  %1969 = icmp slt i64 7, %N
   %1970 = bitcast i64* %shadow to i32*
   %safe.496 = or i1 %1968, %1969
   %select.ptr.497 = select i1 %safe.496, i32* %1967, i32* %1970
@@ -3056,14 +3056,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.498, i32* %select.ptr.497, align 4
   %1972 = getelementptr inbounds i32, i32* %1898, i64 2
   %1973 = load i1, i1* %out.3
-  %1974 = icmp slt i64 2, %len.
+  %1974 = icmp slt i64 2, %N
   %1975 = bitcast i64* %shadow to i32*
   %safe.499 = or i1 %1973, %1974
   %select.ptr.500 = select i1 %safe.499, i32* %1972, i32* %1975
   %1976 = load i32, i32* %select.ptr.500, align 4
   %1977 = getelementptr inbounds i32, i32* %1898, i64 7
   %1978 = load i1, i1* %out.3
-  %1979 = icmp slt i64 7, %len.
+  %1979 = icmp slt i64 7, %N
   %1980 = bitcast i64* %shadow to i32*
   %safe.501 = or i1 %1978, %1979
   %select.ptr.502 = select i1 %safe.501, i32* %1977, i32* %1980
@@ -3071,7 +3071,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1982 = xor i32 %1976, %1981
   %1983 = getelementptr inbounds i32, i32* %1898, i64 8
   %1984 = load i1, i1* %out.3
-  %1985 = icmp slt i64 8, %len.
+  %1985 = icmp slt i64 8, %N
   %1986 = bitcast i64* %shadow to i32*
   %safe.503 = or i1 %1984, %1985
   %select.ptr.504 = select i1 %safe.503, i32* %1983, i32* %1986
@@ -3080,14 +3080,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.505, i32* %select.ptr.504, align 4
   %1988 = getelementptr inbounds i32, i32* %1898, i64 3
   %1989 = load i1, i1* %out.3
-  %1990 = icmp slt i64 3, %len.
+  %1990 = icmp slt i64 3, %N
   %1991 = bitcast i64* %shadow to i32*
   %safe.506 = or i1 %1989, %1990
   %select.ptr.507 = select i1 %safe.506, i32* %1988, i32* %1991
   %1992 = load i32, i32* %select.ptr.507, align 4
   %1993 = getelementptr inbounds i32, i32* %1898, i64 8
   %1994 = load i1, i1* %out.3
-  %1995 = icmp slt i64 8, %len.
+  %1995 = icmp slt i64 8, %N
   %1996 = bitcast i64* %shadow to i32*
   %safe.508 = or i1 %1994, %1995
   %select.ptr.509 = select i1 %safe.508, i32* %1993, i32* %1996
@@ -3095,7 +3095,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %1998 = xor i32 %1992, %1997
   %1999 = getelementptr inbounds i32, i32* %1898, i64 9
   %2000 = load i1, i1* %out.3
-  %2001 = icmp slt i64 9, %len.
+  %2001 = icmp slt i64 9, %N
   %2002 = bitcast i64* %shadow to i32*
   %safe.510 = or i1 %2000, %2001
   %select.ptr.511 = select i1 %safe.510, i32* %1999, i32* %2002
@@ -3104,14 +3104,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.512, i32* %select.ptr.511, align 4
   %2004 = getelementptr inbounds i32, i32* %1898, i64 4
   %2005 = load i1, i1* %out.3
-  %2006 = icmp slt i64 4, %len.
+  %2006 = icmp slt i64 4, %N
   %2007 = bitcast i64* %shadow to i32*
   %safe.513 = or i1 %2005, %2006
   %select.ptr.514 = select i1 %safe.513, i32* %2004, i32* %2007
   %2008 = load i32, i32* %select.ptr.514, align 4
   %2009 = getelementptr inbounds i32, i32* %1898, i64 9
   %2010 = load i1, i1* %out.3
-  %2011 = icmp slt i64 9, %len.
+  %2011 = icmp slt i64 9, %N
   %2012 = bitcast i64* %shadow to i32*
   %safe.515 = or i1 %2010, %2011
   %select.ptr.516 = select i1 %safe.515, i32* %2009, i32* %2012
@@ -3119,7 +3119,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2014 = xor i32 %2008, %2013
   %2015 = getelementptr inbounds i32, i32* %1898, i64 10
   %2016 = load i1, i1* %out.3
-  %2017 = icmp slt i64 10, %len.
+  %2017 = icmp slt i64 10, %N
   %2018 = bitcast i64* %shadow to i32*
   %safe.517 = or i1 %2016, %2017
   %select.ptr.518 = select i1 %safe.517, i32* %2015, i32* %2018
@@ -3128,14 +3128,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.519, i32* %select.ptr.518, align 4
   %2020 = getelementptr inbounds i32, i32* %1898, i64 5
   %2021 = load i1, i1* %out.3
-  %2022 = icmp slt i64 5, %len.
+  %2022 = icmp slt i64 5, %N
   %2023 = bitcast i64* %shadow to i32*
   %safe.520 = or i1 %2021, %2022
   %select.ptr.521 = select i1 %safe.520, i32* %2020, i32* %2023
   %2024 = load i32, i32* %select.ptr.521, align 4
   %2025 = getelementptr inbounds i32, i32* %1898, i64 10
   %2026 = load i1, i1* %out.3
-  %2027 = icmp slt i64 10, %len.
+  %2027 = icmp slt i64 10, %N
   %2028 = bitcast i64* %shadow to i32*
   %safe.522 = or i1 %2026, %2027
   %select.ptr.523 = select i1 %safe.522, i32* %2025, i32* %2028
@@ -3143,7 +3143,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2030 = xor i32 %2024, %2029
   %2031 = getelementptr inbounds i32, i32* %1898, i64 11
   %2032 = load i1, i1* %out.3
-  %2033 = icmp slt i64 11, %len.
+  %2033 = icmp slt i64 11, %N
   %2034 = bitcast i64* %shadow to i32*
   %safe.524 = or i1 %2032, %2033
   %select.ptr.525 = select i1 %safe.524, i32* %2031, i32* %2034
@@ -3153,13 +3153,13 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2036 = getelementptr inbounds i32, i32* %1898, i64 6
   %2037 = getelementptr inbounds i32, i32* %2036, i64 5
   %2038 = load i1, i1* %out.3
-  %2039 = icmp slt i64 5, %len.
+  %2039 = icmp slt i64 5, %N
   %2040 = bitcast i64* %shadow to i32*
   %safe.527 = or i1 %2038, %2039
   %select.ptr.528 = select i1 %safe.527, i32* %2037, i32* %2040
   %2041 = load i32, i32* %select.ptr.528, align 4
   %2042 = load i1, i1* %out.3
-  %2043 = icmp slt i64 6, %len.
+  %2043 = icmp slt i64 6, %N
   %2044 = bitcast i64* %shadow to i32*
   %safe.529 = or i1 %2042, %2043
   %select.ptr.530 = select i1 %safe.529, i32* %2036, i32* %2044
@@ -3217,7 +3217,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2088 = xor i32 %2087, 134217728
   %2089 = getelementptr inbounds i32, i32* %2036, i64 6
   %2090 = load i1, i1* %out.3
-  %2091 = icmp slt i64 6, %len.
+  %2091 = icmp slt i64 6, %N
   %2092 = bitcast i64* %shadow to i32*
   %safe.539 = or i1 %2090, %2091
   %select.ptr.540 = select i1 %safe.539, i32* %2089, i32* %2092
@@ -3226,14 +3226,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.541, i32* %select.ptr.540, align 4
   %2094 = getelementptr inbounds i32, i32* %2036, i64 1
   %2095 = load i1, i1* %out.3
-  %2096 = icmp slt i64 1, %len.
+  %2096 = icmp slt i64 1, %N
   %2097 = bitcast i64* %shadow to i32*
   %safe.542 = or i1 %2095, %2096
   %select.ptr.543 = select i1 %safe.542, i32* %2094, i32* %2097
   %2098 = load i32, i32* %select.ptr.543, align 4
   %2099 = getelementptr inbounds i32, i32* %2036, i64 6
   %2100 = load i1, i1* %out.3
-  %2101 = icmp slt i64 6, %len.
+  %2101 = icmp slt i64 6, %N
   %2102 = bitcast i64* %shadow to i32*
   %safe.544 = or i1 %2100, %2101
   %select.ptr.545 = select i1 %safe.544, i32* %2099, i32* %2102
@@ -3241,7 +3241,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2104 = xor i32 %2098, %2103
   %2105 = getelementptr inbounds i32, i32* %2036, i64 7
   %2106 = load i1, i1* %out.3
-  %2107 = icmp slt i64 7, %len.
+  %2107 = icmp slt i64 7, %N
   %2108 = bitcast i64* %shadow to i32*
   %safe.546 = or i1 %2106, %2107
   %select.ptr.547 = select i1 %safe.546, i32* %2105, i32* %2108
@@ -3250,14 +3250,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.548, i32* %select.ptr.547, align 4
   %2110 = getelementptr inbounds i32, i32* %2036, i64 2
   %2111 = load i1, i1* %out.3
-  %2112 = icmp slt i64 2, %len.
+  %2112 = icmp slt i64 2, %N
   %2113 = bitcast i64* %shadow to i32*
   %safe.549 = or i1 %2111, %2112
   %select.ptr.550 = select i1 %safe.549, i32* %2110, i32* %2113
   %2114 = load i32, i32* %select.ptr.550, align 4
   %2115 = getelementptr inbounds i32, i32* %2036, i64 7
   %2116 = load i1, i1* %out.3
-  %2117 = icmp slt i64 7, %len.
+  %2117 = icmp slt i64 7, %N
   %2118 = bitcast i64* %shadow to i32*
   %safe.551 = or i1 %2116, %2117
   %select.ptr.552 = select i1 %safe.551, i32* %2115, i32* %2118
@@ -3265,7 +3265,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2120 = xor i32 %2114, %2119
   %2121 = getelementptr inbounds i32, i32* %2036, i64 8
   %2122 = load i1, i1* %out.3
-  %2123 = icmp slt i64 8, %len.
+  %2123 = icmp slt i64 8, %N
   %2124 = bitcast i64* %shadow to i32*
   %safe.553 = or i1 %2122, %2123
   %select.ptr.554 = select i1 %safe.553, i32* %2121, i32* %2124
@@ -3274,14 +3274,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.555, i32* %select.ptr.554, align 4
   %2126 = getelementptr inbounds i32, i32* %2036, i64 3
   %2127 = load i1, i1* %out.3
-  %2128 = icmp slt i64 3, %len.
+  %2128 = icmp slt i64 3, %N
   %2129 = bitcast i64* %shadow to i32*
   %safe.556 = or i1 %2127, %2128
   %select.ptr.557 = select i1 %safe.556, i32* %2126, i32* %2129
   %2130 = load i32, i32* %select.ptr.557, align 4
   %2131 = getelementptr inbounds i32, i32* %2036, i64 8
   %2132 = load i1, i1* %out.3
-  %2133 = icmp slt i64 8, %len.
+  %2133 = icmp slt i64 8, %N
   %2134 = bitcast i64* %shadow to i32*
   %safe.558 = or i1 %2132, %2133
   %select.ptr.559 = select i1 %safe.558, i32* %2131, i32* %2134
@@ -3289,7 +3289,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2136 = xor i32 %2130, %2135
   %2137 = getelementptr inbounds i32, i32* %2036, i64 9
   %2138 = load i1, i1* %out.3
-  %2139 = icmp slt i64 9, %len.
+  %2139 = icmp slt i64 9, %N
   %2140 = bitcast i64* %shadow to i32*
   %safe.560 = or i1 %2138, %2139
   %select.ptr.561 = select i1 %safe.560, i32* %2137, i32* %2140
@@ -3298,14 +3298,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.562, i32* %select.ptr.561, align 4
   %2142 = getelementptr inbounds i32, i32* %2036, i64 4
   %2143 = load i1, i1* %out.3
-  %2144 = icmp slt i64 4, %len.
+  %2144 = icmp slt i64 4, %N
   %2145 = bitcast i64* %shadow to i32*
   %safe.563 = or i1 %2143, %2144
   %select.ptr.564 = select i1 %safe.563, i32* %2142, i32* %2145
   %2146 = load i32, i32* %select.ptr.564, align 4
   %2147 = getelementptr inbounds i32, i32* %2036, i64 9
   %2148 = load i1, i1* %out.3
-  %2149 = icmp slt i64 9, %len.
+  %2149 = icmp slt i64 9, %N
   %2150 = bitcast i64* %shadow to i32*
   %safe.565 = or i1 %2148, %2149
   %select.ptr.566 = select i1 %safe.565, i32* %2147, i32* %2150
@@ -3313,7 +3313,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2152 = xor i32 %2146, %2151
   %2153 = getelementptr inbounds i32, i32* %2036, i64 10
   %2154 = load i1, i1* %out.3
-  %2155 = icmp slt i64 10, %len.
+  %2155 = icmp slt i64 10, %N
   %2156 = bitcast i64* %shadow to i32*
   %safe.567 = or i1 %2154, %2155
   %select.ptr.568 = select i1 %safe.567, i32* %2153, i32* %2156
@@ -3322,14 +3322,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.569, i32* %select.ptr.568, align 4
   %2158 = getelementptr inbounds i32, i32* %2036, i64 5
   %2159 = load i1, i1* %out.3
-  %2160 = icmp slt i64 5, %len.
+  %2160 = icmp slt i64 5, %N
   %2161 = bitcast i64* %shadow to i32*
   %safe.570 = or i1 %2159, %2160
   %select.ptr.571 = select i1 %safe.570, i32* %2158, i32* %2161
   %2162 = load i32, i32* %select.ptr.571, align 4
   %2163 = getelementptr inbounds i32, i32* %2036, i64 10
   %2164 = load i1, i1* %out.3
-  %2165 = icmp slt i64 10, %len.
+  %2165 = icmp slt i64 10, %N
   %2166 = bitcast i64* %shadow to i32*
   %safe.572 = or i1 %2164, %2165
   %select.ptr.573 = select i1 %safe.572, i32* %2163, i32* %2166
@@ -3337,7 +3337,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2168 = xor i32 %2162, %2167
   %2169 = getelementptr inbounds i32, i32* %2036, i64 11
   %2170 = load i1, i1* %out.3
-  %2171 = icmp slt i64 11, %len.
+  %2171 = icmp slt i64 11, %N
   %2172 = bitcast i64* %shadow to i32*
   %safe.574 = or i1 %2170, %2171
   %select.ptr.575 = select i1 %safe.574, i32* %2169, i32* %2172
@@ -3347,13 +3347,13 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2174 = getelementptr inbounds i32, i32* %2036, i64 6
   %2175 = getelementptr inbounds i32, i32* %2174, i64 5
   %2176 = load i1, i1* %out.3
-  %2177 = icmp slt i64 5, %len.
+  %2177 = icmp slt i64 5, %N
   %2178 = bitcast i64* %shadow to i32*
   %safe.577 = or i1 %2176, %2177
   %select.ptr.578 = select i1 %safe.577, i32* %2175, i32* %2178
   %2179 = load i32, i32* %select.ptr.578, align 4
   %2180 = load i1, i1* %out.3
-  %2181 = icmp slt i64 6, %len.
+  %2181 = icmp slt i64 6, %N
   %2182 = bitcast i64* %shadow to i32*
   %safe.579 = or i1 %2180, %2181
   %select.ptr.580 = select i1 %safe.579, i32* %2174, i32* %2182
@@ -3411,7 +3411,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2226 = xor i32 %2225, 268435456
   %2227 = getelementptr inbounds i32, i32* %2174, i64 6
   %2228 = load i1, i1* %out.3
-  %2229 = icmp slt i64 6, %len.
+  %2229 = icmp slt i64 6, %N
   %2230 = bitcast i64* %shadow to i32*
   %safe.589 = or i1 %2228, %2229
   %select.ptr.590 = select i1 %safe.589, i32* %2227, i32* %2230
@@ -3420,14 +3420,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.591, i32* %select.ptr.590, align 4
   %2232 = getelementptr inbounds i32, i32* %2174, i64 1
   %2233 = load i1, i1* %out.3
-  %2234 = icmp slt i64 1, %len.
+  %2234 = icmp slt i64 1, %N
   %2235 = bitcast i64* %shadow to i32*
   %safe.592 = or i1 %2233, %2234
   %select.ptr.593 = select i1 %safe.592, i32* %2232, i32* %2235
   %2236 = load i32, i32* %select.ptr.593, align 4
   %2237 = getelementptr inbounds i32, i32* %2174, i64 6
   %2238 = load i1, i1* %out.3
-  %2239 = icmp slt i64 6, %len.
+  %2239 = icmp slt i64 6, %N
   %2240 = bitcast i64* %shadow to i32*
   %safe.594 = or i1 %2238, %2239
   %select.ptr.595 = select i1 %safe.594, i32* %2237, i32* %2240
@@ -3435,7 +3435,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2242 = xor i32 %2236, %2241
   %2243 = getelementptr inbounds i32, i32* %2174, i64 7
   %2244 = load i1, i1* %out.3
-  %2245 = icmp slt i64 7, %len.
+  %2245 = icmp slt i64 7, %N
   %2246 = bitcast i64* %shadow to i32*
   %safe.596 = or i1 %2244, %2245
   %select.ptr.597 = select i1 %safe.596, i32* %2243, i32* %2246
@@ -3444,14 +3444,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.598, i32* %select.ptr.597, align 4
   %2248 = getelementptr inbounds i32, i32* %2174, i64 2
   %2249 = load i1, i1* %out.3
-  %2250 = icmp slt i64 2, %len.
+  %2250 = icmp slt i64 2, %N
   %2251 = bitcast i64* %shadow to i32*
   %safe.599 = or i1 %2249, %2250
   %select.ptr.600 = select i1 %safe.599, i32* %2248, i32* %2251
   %2252 = load i32, i32* %select.ptr.600, align 4
   %2253 = getelementptr inbounds i32, i32* %2174, i64 7
   %2254 = load i1, i1* %out.3
-  %2255 = icmp slt i64 7, %len.
+  %2255 = icmp slt i64 7, %N
   %2256 = bitcast i64* %shadow to i32*
   %safe.601 = or i1 %2254, %2255
   %select.ptr.602 = select i1 %safe.601, i32* %2253, i32* %2256
@@ -3459,7 +3459,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2258 = xor i32 %2252, %2257
   %2259 = getelementptr inbounds i32, i32* %2174, i64 8
   %2260 = load i1, i1* %out.3
-  %2261 = icmp slt i64 8, %len.
+  %2261 = icmp slt i64 8, %N
   %2262 = bitcast i64* %shadow to i32*
   %safe.603 = or i1 %2260, %2261
   %select.ptr.604 = select i1 %safe.603, i32* %2259, i32* %2262
@@ -3468,14 +3468,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.605, i32* %select.ptr.604, align 4
   %2264 = getelementptr inbounds i32, i32* %2174, i64 3
   %2265 = load i1, i1* %out.3
-  %2266 = icmp slt i64 3, %len.
+  %2266 = icmp slt i64 3, %N
   %2267 = bitcast i64* %shadow to i32*
   %safe.606 = or i1 %2265, %2266
   %select.ptr.607 = select i1 %safe.606, i32* %2264, i32* %2267
   %2268 = load i32, i32* %select.ptr.607, align 4
   %2269 = getelementptr inbounds i32, i32* %2174, i64 8
   %2270 = load i1, i1* %out.3
-  %2271 = icmp slt i64 8, %len.
+  %2271 = icmp slt i64 8, %N
   %2272 = bitcast i64* %shadow to i32*
   %safe.608 = or i1 %2270, %2271
   %select.ptr.609 = select i1 %safe.608, i32* %2269, i32* %2272
@@ -3483,7 +3483,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2274 = xor i32 %2268, %2273
   %2275 = getelementptr inbounds i32, i32* %2174, i64 9
   %2276 = load i1, i1* %out.3
-  %2277 = icmp slt i64 9, %len.
+  %2277 = icmp slt i64 9, %N
   %2278 = bitcast i64* %shadow to i32*
   %safe.610 = or i1 %2276, %2277
   %select.ptr.611 = select i1 %safe.610, i32* %2275, i32* %2278
@@ -3492,14 +3492,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.612, i32* %select.ptr.611, align 4
   %2280 = getelementptr inbounds i32, i32* %2174, i64 4
   %2281 = load i1, i1* %out.3
-  %2282 = icmp slt i64 4, %len.
+  %2282 = icmp slt i64 4, %N
   %2283 = bitcast i64* %shadow to i32*
   %safe.613 = or i1 %2281, %2282
   %select.ptr.614 = select i1 %safe.613, i32* %2280, i32* %2283
   %2284 = load i32, i32* %select.ptr.614, align 4
   %2285 = getelementptr inbounds i32, i32* %2174, i64 9
   %2286 = load i1, i1* %out.3
-  %2287 = icmp slt i64 9, %len.
+  %2287 = icmp slt i64 9, %N
   %2288 = bitcast i64* %shadow to i32*
   %safe.615 = or i1 %2286, %2287
   %select.ptr.616 = select i1 %safe.615, i32* %2285, i32* %2288
@@ -3507,7 +3507,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2290 = xor i32 %2284, %2289
   %2291 = getelementptr inbounds i32, i32* %2174, i64 10
   %2292 = load i1, i1* %out.3
-  %2293 = icmp slt i64 10, %len.
+  %2293 = icmp slt i64 10, %N
   %2294 = bitcast i64* %shadow to i32*
   %safe.617 = or i1 %2292, %2293
   %select.ptr.618 = select i1 %safe.617, i32* %2291, i32* %2294
@@ -3516,14 +3516,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.619, i32* %select.ptr.618, align 4
   %2296 = getelementptr inbounds i32, i32* %2174, i64 5
   %2297 = load i1, i1* %out.3
-  %2298 = icmp slt i64 5, %len.
+  %2298 = icmp slt i64 5, %N
   %2299 = bitcast i64* %shadow to i32*
   %safe.620 = or i1 %2297, %2298
   %select.ptr.621 = select i1 %safe.620, i32* %2296, i32* %2299
   %2300 = load i32, i32* %select.ptr.621, align 4
   %2301 = getelementptr inbounds i32, i32* %2174, i64 10
   %2302 = load i1, i1* %out.3
-  %2303 = icmp slt i64 10, %len.
+  %2303 = icmp slt i64 10, %N
   %2304 = bitcast i64* %shadow to i32*
   %safe.622 = or i1 %2302, %2303
   %select.ptr.623 = select i1 %safe.622, i32* %2301, i32* %2304
@@ -3531,7 +3531,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2306 = xor i32 %2300, %2305
   %2307 = getelementptr inbounds i32, i32* %2174, i64 11
   %2308 = load i1, i1* %out.3
-  %2309 = icmp slt i64 11, %len.
+  %2309 = icmp slt i64 11, %N
   %2310 = bitcast i64* %shadow to i32*
   %safe.624 = or i1 %2308, %2309
   %select.ptr.625 = select i1 %safe.624, i32* %2307, i32* %2310
@@ -3541,13 +3541,13 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2312 = getelementptr inbounds i32, i32* %2174, i64 6
   %2313 = getelementptr inbounds i32, i32* %2312, i64 5
   %2314 = load i1, i1* %out.3
-  %2315 = icmp slt i64 5, %len.
+  %2315 = icmp slt i64 5, %N
   %2316 = bitcast i64* %shadow to i32*
   %safe.627 = or i1 %2314, %2315
   %select.ptr.628 = select i1 %safe.627, i32* %2313, i32* %2316
   %2317 = load i32, i32* %select.ptr.628, align 4
   %2318 = load i1, i1* %out.3
-  %2319 = icmp slt i64 6, %len.
+  %2319 = icmp slt i64 6, %N
   %2320 = bitcast i64* %shadow to i32*
   %safe.629 = or i1 %2318, %2319
   %select.ptr.630 = select i1 %safe.629, i32* %2312, i32* %2320
@@ -3605,7 +3605,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2364 = xor i32 %2363, 536870912
   %2365 = getelementptr inbounds i32, i32* %2312, i64 6
   %2366 = load i1, i1* %out.3
-  %2367 = icmp slt i64 6, %len.
+  %2367 = icmp slt i64 6, %N
   %2368 = bitcast i64* %shadow to i32*
   %safe.639 = or i1 %2366, %2367
   %select.ptr.640 = select i1 %safe.639, i32* %2365, i32* %2368
@@ -3614,14 +3614,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.641, i32* %select.ptr.640, align 4
   %2370 = getelementptr inbounds i32, i32* %2312, i64 1
   %2371 = load i1, i1* %out.3
-  %2372 = icmp slt i64 1, %len.
+  %2372 = icmp slt i64 1, %N
   %2373 = bitcast i64* %shadow to i32*
   %safe.642 = or i1 %2371, %2372
   %select.ptr.643 = select i1 %safe.642, i32* %2370, i32* %2373
   %2374 = load i32, i32* %select.ptr.643, align 4
   %2375 = getelementptr inbounds i32, i32* %2312, i64 6
   %2376 = load i1, i1* %out.3
-  %2377 = icmp slt i64 6, %len.
+  %2377 = icmp slt i64 6, %N
   %2378 = bitcast i64* %shadow to i32*
   %safe.644 = or i1 %2376, %2377
   %select.ptr.645 = select i1 %safe.644, i32* %2375, i32* %2378
@@ -3629,7 +3629,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2380 = xor i32 %2374, %2379
   %2381 = getelementptr inbounds i32, i32* %2312, i64 7
   %2382 = load i1, i1* %out.3
-  %2383 = icmp slt i64 7, %len.
+  %2383 = icmp slt i64 7, %N
   %2384 = bitcast i64* %shadow to i32*
   %safe.646 = or i1 %2382, %2383
   %select.ptr.647 = select i1 %safe.646, i32* %2381, i32* %2384
@@ -3638,14 +3638,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.648, i32* %select.ptr.647, align 4
   %2386 = getelementptr inbounds i32, i32* %2312, i64 2
   %2387 = load i1, i1* %out.3
-  %2388 = icmp slt i64 2, %len.
+  %2388 = icmp slt i64 2, %N
   %2389 = bitcast i64* %shadow to i32*
   %safe.649 = or i1 %2387, %2388
   %select.ptr.650 = select i1 %safe.649, i32* %2386, i32* %2389
   %2390 = load i32, i32* %select.ptr.650, align 4
   %2391 = getelementptr inbounds i32, i32* %2312, i64 7
   %2392 = load i1, i1* %out.3
-  %2393 = icmp slt i64 7, %len.
+  %2393 = icmp slt i64 7, %N
   %2394 = bitcast i64* %shadow to i32*
   %safe.651 = or i1 %2392, %2393
   %select.ptr.652 = select i1 %safe.651, i32* %2391, i32* %2394
@@ -3653,7 +3653,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2396 = xor i32 %2390, %2395
   %2397 = getelementptr inbounds i32, i32* %2312, i64 8
   %2398 = load i1, i1* %out.3
-  %2399 = icmp slt i64 8, %len.
+  %2399 = icmp slt i64 8, %N
   %2400 = bitcast i64* %shadow to i32*
   %safe.653 = or i1 %2398, %2399
   %select.ptr.654 = select i1 %safe.653, i32* %2397, i32* %2400
@@ -3662,14 +3662,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.655, i32* %select.ptr.654, align 4
   %2402 = getelementptr inbounds i32, i32* %2312, i64 3
   %2403 = load i1, i1* %out.3
-  %2404 = icmp slt i64 3, %len.
+  %2404 = icmp slt i64 3, %N
   %2405 = bitcast i64* %shadow to i32*
   %safe.656 = or i1 %2403, %2404
   %select.ptr.657 = select i1 %safe.656, i32* %2402, i32* %2405
   %2406 = load i32, i32* %select.ptr.657, align 4
   %2407 = getelementptr inbounds i32, i32* %2312, i64 8
   %2408 = load i1, i1* %out.3
-  %2409 = icmp slt i64 8, %len.
+  %2409 = icmp slt i64 8, %N
   %2410 = bitcast i64* %shadow to i32*
   %safe.658 = or i1 %2408, %2409
   %select.ptr.659 = select i1 %safe.658, i32* %2407, i32* %2410
@@ -3677,7 +3677,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2412 = xor i32 %2406, %2411
   %2413 = getelementptr inbounds i32, i32* %2312, i64 9
   %2414 = load i1, i1* %out.3
-  %2415 = icmp slt i64 9, %len.
+  %2415 = icmp slt i64 9, %N
   %2416 = bitcast i64* %shadow to i32*
   %safe.660 = or i1 %2414, %2415
   %select.ptr.661 = select i1 %safe.660, i32* %2413, i32* %2416
@@ -3686,14 +3686,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.662, i32* %select.ptr.661, align 4
   %2418 = getelementptr inbounds i32, i32* %2312, i64 4
   %2419 = load i1, i1* %out.3
-  %2420 = icmp slt i64 4, %len.
+  %2420 = icmp slt i64 4, %N
   %2421 = bitcast i64* %shadow to i32*
   %safe.663 = or i1 %2419, %2420
   %select.ptr.664 = select i1 %safe.663, i32* %2418, i32* %2421
   %2422 = load i32, i32* %select.ptr.664, align 4
   %2423 = getelementptr inbounds i32, i32* %2312, i64 9
   %2424 = load i1, i1* %out.3
-  %2425 = icmp slt i64 9, %len.
+  %2425 = icmp slt i64 9, %N
   %2426 = bitcast i64* %shadow to i32*
   %safe.665 = or i1 %2424, %2425
   %select.ptr.666 = select i1 %safe.665, i32* %2423, i32* %2426
@@ -3701,7 +3701,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2428 = xor i32 %2422, %2427
   %2429 = getelementptr inbounds i32, i32* %2312, i64 10
   %2430 = load i1, i1* %out.3
-  %2431 = icmp slt i64 10, %len.
+  %2431 = icmp slt i64 10, %N
   %2432 = bitcast i64* %shadow to i32*
   %safe.667 = or i1 %2430, %2431
   %select.ptr.668 = select i1 %safe.667, i32* %2429, i32* %2432
@@ -3710,14 +3710,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.669, i32* %select.ptr.668, align 4
   %2434 = getelementptr inbounds i32, i32* %2312, i64 5
   %2435 = load i1, i1* %out.3
-  %2436 = icmp slt i64 5, %len.
+  %2436 = icmp slt i64 5, %N
   %2437 = bitcast i64* %shadow to i32*
   %safe.670 = or i1 %2435, %2436
   %select.ptr.671 = select i1 %safe.670, i32* %2434, i32* %2437
   %2438 = load i32, i32* %select.ptr.671, align 4
   %2439 = getelementptr inbounds i32, i32* %2312, i64 10
   %2440 = load i1, i1* %out.3
-  %2441 = icmp slt i64 10, %len.
+  %2441 = icmp slt i64 10, %N
   %2442 = bitcast i64* %shadow to i32*
   %safe.672 = or i1 %2440, %2441
   %select.ptr.673 = select i1 %safe.672, i32* %2439, i32* %2442
@@ -3725,7 +3725,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2444 = xor i32 %2438, %2443
   %2445 = getelementptr inbounds i32, i32* %2312, i64 11
   %2446 = load i1, i1* %out.3
-  %2447 = icmp slt i64 11, %len.
+  %2447 = icmp slt i64 11, %N
   %2448 = bitcast i64* %shadow to i32*
   %safe.674 = or i1 %2446, %2447
   %select.ptr.675 = select i1 %safe.674, i32* %2445, i32* %2448
@@ -3735,13 +3735,13 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2450 = getelementptr inbounds i32, i32* %2312, i64 6
   %2451 = getelementptr inbounds i32, i32* %2450, i64 5
   %2452 = load i1, i1* %out.3
-  %2453 = icmp slt i64 5, %len.
+  %2453 = icmp slt i64 5, %N
   %2454 = bitcast i64* %shadow to i32*
   %safe.677 = or i1 %2452, %2453
   %select.ptr.678 = select i1 %safe.677, i32* %2451, i32* %2454
   %2455 = load i32, i32* %select.ptr.678, align 4
   %2456 = load i1, i1* %out.3
-  %2457 = icmp slt i64 6, %len.
+  %2457 = icmp slt i64 6, %N
   %2458 = bitcast i64* %shadow to i32*
   %safe.679 = or i1 %2456, %2457
   %select.ptr.680 = select i1 %safe.679, i32* %2450, i32* %2458
@@ -3799,7 +3799,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2502 = xor i32 %2501, 1073741824
   %2503 = getelementptr inbounds i32, i32* %2450, i64 6
   %2504 = load i1, i1* %out.3
-  %2505 = icmp slt i64 6, %len.
+  %2505 = icmp slt i64 6, %N
   %2506 = bitcast i64* %shadow to i32*
   %safe.689 = or i1 %2504, %2505
   %select.ptr.690 = select i1 %safe.689, i32* %2503, i32* %2506
@@ -3808,14 +3808,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.691, i32* %select.ptr.690, align 4
   %2508 = getelementptr inbounds i32, i32* %2450, i64 1
   %2509 = load i1, i1* %out.3
-  %2510 = icmp slt i64 1, %len.
+  %2510 = icmp slt i64 1, %N
   %2511 = bitcast i64* %shadow to i32*
   %safe.692 = or i1 %2509, %2510
   %select.ptr.693 = select i1 %safe.692, i32* %2508, i32* %2511
   %2512 = load i32, i32* %select.ptr.693, align 4
   %2513 = getelementptr inbounds i32, i32* %2450, i64 6
   %2514 = load i1, i1* %out.3
-  %2515 = icmp slt i64 6, %len.
+  %2515 = icmp slt i64 6, %N
   %2516 = bitcast i64* %shadow to i32*
   %safe.694 = or i1 %2514, %2515
   %select.ptr.695 = select i1 %safe.694, i32* %2513, i32* %2516
@@ -3823,7 +3823,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2518 = xor i32 %2512, %2517
   %2519 = getelementptr inbounds i32, i32* %2450, i64 7
   %2520 = load i1, i1* %out.3
-  %2521 = icmp slt i64 7, %len.
+  %2521 = icmp slt i64 7, %N
   %2522 = bitcast i64* %shadow to i32*
   %safe.696 = or i1 %2520, %2521
   %select.ptr.697 = select i1 %safe.696, i32* %2519, i32* %2522
@@ -3832,14 +3832,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.698, i32* %select.ptr.697, align 4
   %2524 = getelementptr inbounds i32, i32* %2450, i64 2
   %2525 = load i1, i1* %out.3
-  %2526 = icmp slt i64 2, %len.
+  %2526 = icmp slt i64 2, %N
   %2527 = bitcast i64* %shadow to i32*
   %safe.699 = or i1 %2525, %2526
   %select.ptr.700 = select i1 %safe.699, i32* %2524, i32* %2527
   %2528 = load i32, i32* %select.ptr.700, align 4
   %2529 = getelementptr inbounds i32, i32* %2450, i64 7
   %2530 = load i1, i1* %out.3
-  %2531 = icmp slt i64 7, %len.
+  %2531 = icmp slt i64 7, %N
   %2532 = bitcast i64* %shadow to i32*
   %safe.701 = or i1 %2530, %2531
   %select.ptr.702 = select i1 %safe.701, i32* %2529, i32* %2532
@@ -3847,7 +3847,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2534 = xor i32 %2528, %2533
   %2535 = getelementptr inbounds i32, i32* %2450, i64 8
   %2536 = load i1, i1* %out.3
-  %2537 = icmp slt i64 8, %len.
+  %2537 = icmp slt i64 8, %N
   %2538 = bitcast i64* %shadow to i32*
   %safe.703 = or i1 %2536, %2537
   %select.ptr.704 = select i1 %safe.703, i32* %2535, i32* %2538
@@ -3856,14 +3856,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.705, i32* %select.ptr.704, align 4
   %2540 = getelementptr inbounds i32, i32* %2450, i64 3
   %2541 = load i1, i1* %out.3
-  %2542 = icmp slt i64 3, %len.
+  %2542 = icmp slt i64 3, %N
   %2543 = bitcast i64* %shadow to i32*
   %safe.706 = or i1 %2541, %2542
   %select.ptr.707 = select i1 %safe.706, i32* %2540, i32* %2543
   %2544 = load i32, i32* %select.ptr.707, align 4
   %2545 = getelementptr inbounds i32, i32* %2450, i64 8
   %2546 = load i1, i1* %out.3
-  %2547 = icmp slt i64 8, %len.
+  %2547 = icmp slt i64 8, %N
   %2548 = bitcast i64* %shadow to i32*
   %safe.708 = or i1 %2546, %2547
   %select.ptr.709 = select i1 %safe.708, i32* %2545, i32* %2548
@@ -3871,7 +3871,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2550 = xor i32 %2544, %2549
   %2551 = getelementptr inbounds i32, i32* %2450, i64 9
   %2552 = load i1, i1* %out.3
-  %2553 = icmp slt i64 9, %len.
+  %2553 = icmp slt i64 9, %N
   %2554 = bitcast i64* %shadow to i32*
   %safe.710 = or i1 %2552, %2553
   %select.ptr.711 = select i1 %safe.710, i32* %2551, i32* %2554
@@ -3880,14 +3880,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.712, i32* %select.ptr.711, align 4
   %2556 = getelementptr inbounds i32, i32* %2450, i64 4
   %2557 = load i1, i1* %out.3
-  %2558 = icmp slt i64 4, %len.
+  %2558 = icmp slt i64 4, %N
   %2559 = bitcast i64* %shadow to i32*
   %safe.713 = or i1 %2557, %2558
   %select.ptr.714 = select i1 %safe.713, i32* %2556, i32* %2559
   %2560 = load i32, i32* %select.ptr.714, align 4
   %2561 = getelementptr inbounds i32, i32* %2450, i64 9
   %2562 = load i1, i1* %out.3
-  %2563 = icmp slt i64 9, %len.
+  %2563 = icmp slt i64 9, %N
   %2564 = bitcast i64* %shadow to i32*
   %safe.715 = or i1 %2562, %2563
   %select.ptr.716 = select i1 %safe.715, i32* %2561, i32* %2564
@@ -3895,7 +3895,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2566 = xor i32 %2560, %2565
   %2567 = getelementptr inbounds i32, i32* %2450, i64 10
   %2568 = load i1, i1* %out.3
-  %2569 = icmp slt i64 10, %len.
+  %2569 = icmp slt i64 10, %N
   %2570 = bitcast i64* %shadow to i32*
   %safe.717 = or i1 %2568, %2569
   %select.ptr.718 = select i1 %safe.717, i32* %2567, i32* %2570
@@ -3904,14 +3904,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.719, i32* %select.ptr.718, align 4
   %2572 = getelementptr inbounds i32, i32* %2450, i64 5
   %2573 = load i1, i1* %out.3
-  %2574 = icmp slt i64 5, %len.
+  %2574 = icmp slt i64 5, %N
   %2575 = bitcast i64* %shadow to i32*
   %safe.720 = or i1 %2573, %2574
   %select.ptr.721 = select i1 %safe.720, i32* %2572, i32* %2575
   %2576 = load i32, i32* %select.ptr.721, align 4
   %2577 = getelementptr inbounds i32, i32* %2450, i64 10
   %2578 = load i1, i1* %out.3
-  %2579 = icmp slt i64 10, %len.
+  %2579 = icmp slt i64 10, %N
   %2580 = bitcast i64* %shadow to i32*
   %safe.722 = or i1 %2578, %2579
   %select.ptr.723 = select i1 %safe.722, i32* %2577, i32* %2580
@@ -3919,7 +3919,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2582 = xor i32 %2576, %2581
   %2583 = getelementptr inbounds i32, i32* %2450, i64 11
   %2584 = load i1, i1* %out.3
-  %2585 = icmp slt i64 11, %len.
+  %2585 = icmp slt i64 11, %N
   %2586 = bitcast i64* %shadow to i32*
   %safe.724 = or i1 %2584, %2585
   %select.ptr.725 = select i1 %safe.724, i32* %2583, i32* %2586
@@ -3929,13 +3929,13 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2588 = getelementptr inbounds i32, i32* %2450, i64 6
   %2589 = getelementptr inbounds i32, i32* %2588, i64 5
   %2590 = load i1, i1* %out.3
-  %2591 = icmp slt i64 5, %len.
+  %2591 = icmp slt i64 5, %N
   %2592 = bitcast i64* %shadow to i32*
   %safe.727 = or i1 %2590, %2591
   %select.ptr.728 = select i1 %safe.727, i32* %2589, i32* %2592
   %2593 = load i32, i32* %select.ptr.728, align 4
   %2594 = load i1, i1* %out.3
-  %2595 = icmp slt i64 6, %len.
+  %2595 = icmp slt i64 6, %N
   %2596 = bitcast i64* %shadow to i32*
   %safe.729 = or i1 %2594, %2595
   %select.ptr.730 = select i1 %safe.729, i32* %2588, i32* %2596
@@ -3993,7 +3993,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2640 = xor i32 %2639, -2147483648
   %2641 = getelementptr inbounds i32, i32* %2588, i64 6
   %2642 = load i1, i1* %out.3
-  %2643 = icmp slt i64 6, %len.
+  %2643 = icmp slt i64 6, %N
   %2644 = bitcast i64* %shadow to i32*
   %safe.739 = or i1 %2642, %2643
   %select.ptr.740 = select i1 %safe.739, i32* %2641, i32* %2644
@@ -4002,14 +4002,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.741, i32* %select.ptr.740, align 4
   %2646 = getelementptr inbounds i32, i32* %2588, i64 1
   %2647 = load i1, i1* %out.3
-  %2648 = icmp slt i64 1, %len.
+  %2648 = icmp slt i64 1, %N
   %2649 = bitcast i64* %shadow to i32*
   %safe.742 = or i1 %2647, %2648
   %select.ptr.743 = select i1 %safe.742, i32* %2646, i32* %2649
   %2650 = load i32, i32* %select.ptr.743, align 4
   %2651 = getelementptr inbounds i32, i32* %2588, i64 6
   %2652 = load i1, i1* %out.3
-  %2653 = icmp slt i64 6, %len.
+  %2653 = icmp slt i64 6, %N
   %2654 = bitcast i64* %shadow to i32*
   %safe.744 = or i1 %2652, %2653
   %select.ptr.745 = select i1 %safe.744, i32* %2651, i32* %2654
@@ -4017,7 +4017,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2656 = xor i32 %2650, %2655
   %2657 = getelementptr inbounds i32, i32* %2588, i64 7
   %2658 = load i1, i1* %out.3
-  %2659 = icmp slt i64 7, %len.
+  %2659 = icmp slt i64 7, %N
   %2660 = bitcast i64* %shadow to i32*
   %safe.746 = or i1 %2658, %2659
   %select.ptr.747 = select i1 %safe.746, i32* %2657, i32* %2660
@@ -4026,14 +4026,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.748, i32* %select.ptr.747, align 4
   %2662 = getelementptr inbounds i32, i32* %2588, i64 2
   %2663 = load i1, i1* %out.3
-  %2664 = icmp slt i64 2, %len.
+  %2664 = icmp slt i64 2, %N
   %2665 = bitcast i64* %shadow to i32*
   %safe.749 = or i1 %2663, %2664
   %select.ptr.750 = select i1 %safe.749, i32* %2662, i32* %2665
   %2666 = load i32, i32* %select.ptr.750, align 4
   %2667 = getelementptr inbounds i32, i32* %2588, i64 7
   %2668 = load i1, i1* %out.3
-  %2669 = icmp slt i64 7, %len.
+  %2669 = icmp slt i64 7, %N
   %2670 = bitcast i64* %shadow to i32*
   %safe.751 = or i1 %2668, %2669
   %select.ptr.752 = select i1 %safe.751, i32* %2667, i32* %2670
@@ -4041,7 +4041,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2672 = xor i32 %2666, %2671
   %2673 = getelementptr inbounds i32, i32* %2588, i64 8
   %2674 = load i1, i1* %out.3
-  %2675 = icmp slt i64 8, %len.
+  %2675 = icmp slt i64 8, %N
   %2676 = bitcast i64* %shadow to i32*
   %safe.753 = or i1 %2674, %2675
   %select.ptr.754 = select i1 %safe.753, i32* %2673, i32* %2676
@@ -4050,14 +4050,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.755, i32* %select.ptr.754, align 4
   %2678 = getelementptr inbounds i32, i32* %2588, i64 3
   %2679 = load i1, i1* %out.3
-  %2680 = icmp slt i64 3, %len.
+  %2680 = icmp slt i64 3, %N
   %2681 = bitcast i64* %shadow to i32*
   %safe.756 = or i1 %2679, %2680
   %select.ptr.757 = select i1 %safe.756, i32* %2678, i32* %2681
   %2682 = load i32, i32* %select.ptr.757, align 4
   %2683 = getelementptr inbounds i32, i32* %2588, i64 8
   %2684 = load i1, i1* %out.3
-  %2685 = icmp slt i64 8, %len.
+  %2685 = icmp slt i64 8, %N
   %2686 = bitcast i64* %shadow to i32*
   %safe.758 = or i1 %2684, %2685
   %select.ptr.759 = select i1 %safe.758, i32* %2683, i32* %2686
@@ -4065,7 +4065,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2688 = xor i32 %2682, %2687
   %2689 = getelementptr inbounds i32, i32* %2588, i64 9
   %2690 = load i1, i1* %out.3
-  %2691 = icmp slt i64 9, %len.
+  %2691 = icmp slt i64 9, %N
   %2692 = bitcast i64* %shadow to i32*
   %safe.760 = or i1 %2690, %2691
   %select.ptr.761 = select i1 %safe.760, i32* %2689, i32* %2692
@@ -4077,7 +4077,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i1 %in., i1* %out.1
   %2695 = getelementptr inbounds i32, i32* %0, i64 3
   %2696 = load i1, i1* %out.1
-  %2697 = icmp slt i64 3, %len.
+  %2697 = icmp slt i64 3, %N
   %2698 = bitcast i64* %shadow to i32*
   %safe. = or i1 %2696, %2697
   %select.ptr. = select i1 %safe., i32* %2695, i32* %2698
@@ -4137,7 +4137,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2744 = xor i32 %2743, 16777216
   %2745 = getelementptr inbounds i32, i32* %0, i64 4
   %2746 = load i1, i1* %out.1
-  %2747 = icmp slt i64 4, %len.
+  %2747 = icmp slt i64 4, %N
   %2748 = bitcast i64* %shadow to i32*
   %safe.10 = or i1 %2746, %2747
   %select.ptr.11 = select i1 %safe.10, i32* %2745, i32* %2748
@@ -4146,14 +4146,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val., i32* %select.ptr.11, align 4
   %2750 = getelementptr inbounds i32, i32* %0, i64 1
   %2751 = load i1, i1* %out.1
-  %2752 = icmp slt i64 1, %len.
+  %2752 = icmp slt i64 1, %N
   %2753 = bitcast i64* %shadow to i32*
   %safe.12 = or i1 %2751, %2752
   %select.ptr.13 = select i1 %safe.12, i32* %2750, i32* %2753
   %2754 = load i32, i32* %select.ptr.13, align 4
   %2755 = getelementptr inbounds i32, i32* %0, i64 4
   %2756 = load i1, i1* %out.1
-  %2757 = icmp slt i64 4, %len.
+  %2757 = icmp slt i64 4, %N
   %2758 = bitcast i64* %shadow to i32*
   %safe.14 = or i1 %2756, %2757
   %select.ptr.15 = select i1 %safe.14, i32* %2755, i32* %2758
@@ -4161,7 +4161,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2760 = xor i32 %2754, %2759
   %2761 = getelementptr inbounds i32, i32* %0, i64 5
   %2762 = load i1, i1* %out.1
-  %2763 = icmp slt i64 5, %len.
+  %2763 = icmp slt i64 5, %N
   %2764 = bitcast i64* %shadow to i32*
   %safe.16 = or i1 %2762, %2763
   %select.ptr.17 = select i1 %safe.16, i32* %2761, i32* %2764
@@ -4170,14 +4170,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.18, i32* %select.ptr.17, align 4
   %2766 = getelementptr inbounds i32, i32* %0, i64 2
   %2767 = load i1, i1* %out.1
-  %2768 = icmp slt i64 2, %len.
+  %2768 = icmp slt i64 2, %N
   %2769 = bitcast i64* %shadow to i32*
   %safe.19 = or i1 %2767, %2768
   %select.ptr.20 = select i1 %safe.19, i32* %2766, i32* %2769
   %2770 = load i32, i32* %select.ptr.20, align 4
   %2771 = getelementptr inbounds i32, i32* %0, i64 5
   %2772 = load i1, i1* %out.1
-  %2773 = icmp slt i64 5, %len.
+  %2773 = icmp slt i64 5, %N
   %2774 = bitcast i64* %shadow to i32*
   %safe.21 = or i1 %2772, %2773
   %select.ptr.22 = select i1 %safe.21, i32* %2771, i32* %2774
@@ -4185,7 +4185,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2776 = xor i32 %2770, %2775
   %2777 = getelementptr inbounds i32, i32* %0, i64 6
   %2778 = load i1, i1* %out.1
-  %2779 = icmp slt i64 6, %len.
+  %2779 = icmp slt i64 6, %N
   %2780 = bitcast i64* %shadow to i32*
   %safe.23 = or i1 %2778, %2779
   %select.ptr.24 = select i1 %safe.23, i32* %2777, i32* %2780
@@ -4194,14 +4194,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.25, i32* %select.ptr.24, align 4
   %2782 = getelementptr inbounds i32, i32* %0, i64 3
   %2783 = load i1, i1* %out.1
-  %2784 = icmp slt i64 3, %len.
+  %2784 = icmp slt i64 3, %N
   %2785 = bitcast i64* %shadow to i32*
   %safe.26 = or i1 %2783, %2784
   %select.ptr.27 = select i1 %safe.26, i32* %2782, i32* %2785
   %2786 = load i32, i32* %select.ptr.27, align 4
   %2787 = getelementptr inbounds i32, i32* %0, i64 6
   %2788 = load i1, i1* %out.1
-  %2789 = icmp slt i64 6, %len.
+  %2789 = icmp slt i64 6, %N
   %2790 = bitcast i64* %shadow to i32*
   %safe.28 = or i1 %2788, %2789
   %select.ptr.29 = select i1 %safe.28, i32* %2787, i32* %2790
@@ -4209,7 +4209,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2792 = xor i32 %2786, %2791
   %2793 = getelementptr inbounds i32, i32* %0, i64 7
   %2794 = load i1, i1* %out.1
-  %2795 = icmp slt i64 7, %len.
+  %2795 = icmp slt i64 7, %N
   %2796 = bitcast i64* %shadow to i32*
   %safe.30 = or i1 %2794, %2795
   %select.ptr.31 = select i1 %safe.30, i32* %2793, i32* %2796
@@ -4219,13 +4219,13 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2798 = getelementptr inbounds i32, i32* %0, i64 4
   %2799 = getelementptr inbounds i32, i32* %2798, i64 3
   %2800 = load i1, i1* %out.1
-  %2801 = icmp slt i64 3, %len.
+  %2801 = icmp slt i64 3, %N
   %2802 = bitcast i64* %shadow to i32*
   %safe.33 = or i1 %2800, %2801
   %select.ptr.34 = select i1 %safe.33, i32* %2799, i32* %2802
   %2803 = load i32, i32* %select.ptr.34, align 4
   %2804 = load i1, i1* %out.1
-  %2805 = icmp slt i64 4, %len.
+  %2805 = icmp slt i64 4, %N
   %2806 = bitcast i64* %shadow to i32*
   %safe.35 = or i1 %2804, %2805
   %select.ptr.36 = select i1 %safe.35, i32* %2798, i32* %2806
@@ -4283,7 +4283,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2850 = xor i32 %2849, 33554432
   %2851 = getelementptr inbounds i32, i32* %2798, i64 4
   %2852 = load i1, i1* %out.1
-  %2853 = icmp slt i64 4, %len.
+  %2853 = icmp slt i64 4, %N
   %2854 = bitcast i64* %shadow to i32*
   %safe.45 = or i1 %2852, %2853
   %select.ptr.46 = select i1 %safe.45, i32* %2851, i32* %2854
@@ -4292,14 +4292,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.47, i32* %select.ptr.46, align 4
   %2856 = getelementptr inbounds i32, i32* %2798, i64 1
   %2857 = load i1, i1* %out.1
-  %2858 = icmp slt i64 1, %len.
+  %2858 = icmp slt i64 1, %N
   %2859 = bitcast i64* %shadow to i32*
   %safe.48 = or i1 %2857, %2858
   %select.ptr.49 = select i1 %safe.48, i32* %2856, i32* %2859
   %2860 = load i32, i32* %select.ptr.49, align 4
   %2861 = getelementptr inbounds i32, i32* %2798, i64 4
   %2862 = load i1, i1* %out.1
-  %2863 = icmp slt i64 4, %len.
+  %2863 = icmp slt i64 4, %N
   %2864 = bitcast i64* %shadow to i32*
   %safe.50 = or i1 %2862, %2863
   %select.ptr.51 = select i1 %safe.50, i32* %2861, i32* %2864
@@ -4307,7 +4307,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2866 = xor i32 %2860, %2865
   %2867 = getelementptr inbounds i32, i32* %2798, i64 5
   %2868 = load i1, i1* %out.1
-  %2869 = icmp slt i64 5, %len.
+  %2869 = icmp slt i64 5, %N
   %2870 = bitcast i64* %shadow to i32*
   %safe.52 = or i1 %2868, %2869
   %select.ptr.53 = select i1 %safe.52, i32* %2867, i32* %2870
@@ -4316,14 +4316,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.54, i32* %select.ptr.53, align 4
   %2872 = getelementptr inbounds i32, i32* %2798, i64 2
   %2873 = load i1, i1* %out.1
-  %2874 = icmp slt i64 2, %len.
+  %2874 = icmp slt i64 2, %N
   %2875 = bitcast i64* %shadow to i32*
   %safe.55 = or i1 %2873, %2874
   %select.ptr.56 = select i1 %safe.55, i32* %2872, i32* %2875
   %2876 = load i32, i32* %select.ptr.56, align 4
   %2877 = getelementptr inbounds i32, i32* %2798, i64 5
   %2878 = load i1, i1* %out.1
-  %2879 = icmp slt i64 5, %len.
+  %2879 = icmp slt i64 5, %N
   %2880 = bitcast i64* %shadow to i32*
   %safe.57 = or i1 %2878, %2879
   %select.ptr.58 = select i1 %safe.57, i32* %2877, i32* %2880
@@ -4331,7 +4331,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2882 = xor i32 %2876, %2881
   %2883 = getelementptr inbounds i32, i32* %2798, i64 6
   %2884 = load i1, i1* %out.1
-  %2885 = icmp slt i64 6, %len.
+  %2885 = icmp slt i64 6, %N
   %2886 = bitcast i64* %shadow to i32*
   %safe.59 = or i1 %2884, %2885
   %select.ptr.60 = select i1 %safe.59, i32* %2883, i32* %2886
@@ -4340,14 +4340,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.61, i32* %select.ptr.60, align 4
   %2888 = getelementptr inbounds i32, i32* %2798, i64 3
   %2889 = load i1, i1* %out.1
-  %2890 = icmp slt i64 3, %len.
+  %2890 = icmp slt i64 3, %N
   %2891 = bitcast i64* %shadow to i32*
   %safe.62 = or i1 %2889, %2890
   %select.ptr.63 = select i1 %safe.62, i32* %2888, i32* %2891
   %2892 = load i32, i32* %select.ptr.63, align 4
   %2893 = getelementptr inbounds i32, i32* %2798, i64 6
   %2894 = load i1, i1* %out.1
-  %2895 = icmp slt i64 6, %len.
+  %2895 = icmp slt i64 6, %N
   %2896 = bitcast i64* %shadow to i32*
   %safe.64 = or i1 %2894, %2895
   %select.ptr.65 = select i1 %safe.64, i32* %2893, i32* %2896
@@ -4355,7 +4355,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2898 = xor i32 %2892, %2897
   %2899 = getelementptr inbounds i32, i32* %2798, i64 7
   %2900 = load i1, i1* %out.1
-  %2901 = icmp slt i64 7, %len.
+  %2901 = icmp slt i64 7, %N
   %2902 = bitcast i64* %shadow to i32*
   %safe.66 = or i1 %2900, %2901
   %select.ptr.67 = select i1 %safe.66, i32* %2899, i32* %2902
@@ -4365,13 +4365,13 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2904 = getelementptr inbounds i32, i32* %2798, i64 4
   %2905 = getelementptr inbounds i32, i32* %2904, i64 3
   %2906 = load i1, i1* %out.1
-  %2907 = icmp slt i64 3, %len.
+  %2907 = icmp slt i64 3, %N
   %2908 = bitcast i64* %shadow to i32*
   %safe.69 = or i1 %2906, %2907
   %select.ptr.70 = select i1 %safe.69, i32* %2905, i32* %2908
   %2909 = load i32, i32* %select.ptr.70, align 4
   %2910 = load i1, i1* %out.1
-  %2911 = icmp slt i64 4, %len.
+  %2911 = icmp slt i64 4, %N
   %2912 = bitcast i64* %shadow to i32*
   %safe.71 = or i1 %2910, %2911
   %select.ptr.72 = select i1 %safe.71, i32* %2904, i32* %2912
@@ -4429,7 +4429,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2956 = xor i32 %2955, 67108864
   %2957 = getelementptr inbounds i32, i32* %2904, i64 4
   %2958 = load i1, i1* %out.1
-  %2959 = icmp slt i64 4, %len.
+  %2959 = icmp slt i64 4, %N
   %2960 = bitcast i64* %shadow to i32*
   %safe.81 = or i1 %2958, %2959
   %select.ptr.82 = select i1 %safe.81, i32* %2957, i32* %2960
@@ -4438,14 +4438,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.83, i32* %select.ptr.82, align 4
   %2962 = getelementptr inbounds i32, i32* %2904, i64 1
   %2963 = load i1, i1* %out.1
-  %2964 = icmp slt i64 1, %len.
+  %2964 = icmp slt i64 1, %N
   %2965 = bitcast i64* %shadow to i32*
   %safe.84 = or i1 %2963, %2964
   %select.ptr.85 = select i1 %safe.84, i32* %2962, i32* %2965
   %2966 = load i32, i32* %select.ptr.85, align 4
   %2967 = getelementptr inbounds i32, i32* %2904, i64 4
   %2968 = load i1, i1* %out.1
-  %2969 = icmp slt i64 4, %len.
+  %2969 = icmp slt i64 4, %N
   %2970 = bitcast i64* %shadow to i32*
   %safe.86 = or i1 %2968, %2969
   %select.ptr.87 = select i1 %safe.86, i32* %2967, i32* %2970
@@ -4453,7 +4453,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2972 = xor i32 %2966, %2971
   %2973 = getelementptr inbounds i32, i32* %2904, i64 5
   %2974 = load i1, i1* %out.1
-  %2975 = icmp slt i64 5, %len.
+  %2975 = icmp slt i64 5, %N
   %2976 = bitcast i64* %shadow to i32*
   %safe.88 = or i1 %2974, %2975
   %select.ptr.89 = select i1 %safe.88, i32* %2973, i32* %2976
@@ -4462,14 +4462,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.90, i32* %select.ptr.89, align 4
   %2978 = getelementptr inbounds i32, i32* %2904, i64 2
   %2979 = load i1, i1* %out.1
-  %2980 = icmp slt i64 2, %len.
+  %2980 = icmp slt i64 2, %N
   %2981 = bitcast i64* %shadow to i32*
   %safe.91 = or i1 %2979, %2980
   %select.ptr.92 = select i1 %safe.91, i32* %2978, i32* %2981
   %2982 = load i32, i32* %select.ptr.92, align 4
   %2983 = getelementptr inbounds i32, i32* %2904, i64 5
   %2984 = load i1, i1* %out.1
-  %2985 = icmp slt i64 5, %len.
+  %2985 = icmp slt i64 5, %N
   %2986 = bitcast i64* %shadow to i32*
   %safe.93 = or i1 %2984, %2985
   %select.ptr.94 = select i1 %safe.93, i32* %2983, i32* %2986
@@ -4477,7 +4477,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %2988 = xor i32 %2982, %2987
   %2989 = getelementptr inbounds i32, i32* %2904, i64 6
   %2990 = load i1, i1* %out.1
-  %2991 = icmp slt i64 6, %len.
+  %2991 = icmp slt i64 6, %N
   %2992 = bitcast i64* %shadow to i32*
   %safe.95 = or i1 %2990, %2991
   %select.ptr.96 = select i1 %safe.95, i32* %2989, i32* %2992
@@ -4486,14 +4486,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.97, i32* %select.ptr.96, align 4
   %2994 = getelementptr inbounds i32, i32* %2904, i64 3
   %2995 = load i1, i1* %out.1
-  %2996 = icmp slt i64 3, %len.
+  %2996 = icmp slt i64 3, %N
   %2997 = bitcast i64* %shadow to i32*
   %safe.98 = or i1 %2995, %2996
   %select.ptr.99 = select i1 %safe.98, i32* %2994, i32* %2997
   %2998 = load i32, i32* %select.ptr.99, align 4
   %2999 = getelementptr inbounds i32, i32* %2904, i64 6
   %3000 = load i1, i1* %out.1
-  %3001 = icmp slt i64 6, %len.
+  %3001 = icmp slt i64 6, %N
   %3002 = bitcast i64* %shadow to i32*
   %safe.100 = or i1 %3000, %3001
   %select.ptr.101 = select i1 %safe.100, i32* %2999, i32* %3002
@@ -4501,7 +4501,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3004 = xor i32 %2998, %3003
   %3005 = getelementptr inbounds i32, i32* %2904, i64 7
   %3006 = load i1, i1* %out.1
-  %3007 = icmp slt i64 7, %len.
+  %3007 = icmp slt i64 7, %N
   %3008 = bitcast i64* %shadow to i32*
   %safe.102 = or i1 %3006, %3007
   %select.ptr.103 = select i1 %safe.102, i32* %3005, i32* %3008
@@ -4511,13 +4511,13 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3010 = getelementptr inbounds i32, i32* %2904, i64 4
   %3011 = getelementptr inbounds i32, i32* %3010, i64 3
   %3012 = load i1, i1* %out.1
-  %3013 = icmp slt i64 3, %len.
+  %3013 = icmp slt i64 3, %N
   %3014 = bitcast i64* %shadow to i32*
   %safe.105 = or i1 %3012, %3013
   %select.ptr.106 = select i1 %safe.105, i32* %3011, i32* %3014
   %3015 = load i32, i32* %select.ptr.106, align 4
   %3016 = load i1, i1* %out.1
-  %3017 = icmp slt i64 4, %len.
+  %3017 = icmp slt i64 4, %N
   %3018 = bitcast i64* %shadow to i32*
   %safe.107 = or i1 %3016, %3017
   %select.ptr.108 = select i1 %safe.107, i32* %3010, i32* %3018
@@ -4575,7 +4575,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3062 = xor i32 %3061, 134217728
   %3063 = getelementptr inbounds i32, i32* %3010, i64 4
   %3064 = load i1, i1* %out.1
-  %3065 = icmp slt i64 4, %len.
+  %3065 = icmp slt i64 4, %N
   %3066 = bitcast i64* %shadow to i32*
   %safe.117 = or i1 %3064, %3065
   %select.ptr.118 = select i1 %safe.117, i32* %3063, i32* %3066
@@ -4584,14 +4584,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.119, i32* %select.ptr.118, align 4
   %3068 = getelementptr inbounds i32, i32* %3010, i64 1
   %3069 = load i1, i1* %out.1
-  %3070 = icmp slt i64 1, %len.
+  %3070 = icmp slt i64 1, %N
   %3071 = bitcast i64* %shadow to i32*
   %safe.120 = or i1 %3069, %3070
   %select.ptr.121 = select i1 %safe.120, i32* %3068, i32* %3071
   %3072 = load i32, i32* %select.ptr.121, align 4
   %3073 = getelementptr inbounds i32, i32* %3010, i64 4
   %3074 = load i1, i1* %out.1
-  %3075 = icmp slt i64 4, %len.
+  %3075 = icmp slt i64 4, %N
   %3076 = bitcast i64* %shadow to i32*
   %safe.122 = or i1 %3074, %3075
   %select.ptr.123 = select i1 %safe.122, i32* %3073, i32* %3076
@@ -4599,7 +4599,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3078 = xor i32 %3072, %3077
   %3079 = getelementptr inbounds i32, i32* %3010, i64 5
   %3080 = load i1, i1* %out.1
-  %3081 = icmp slt i64 5, %len.
+  %3081 = icmp slt i64 5, %N
   %3082 = bitcast i64* %shadow to i32*
   %safe.124 = or i1 %3080, %3081
   %select.ptr.125 = select i1 %safe.124, i32* %3079, i32* %3082
@@ -4608,14 +4608,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.126, i32* %select.ptr.125, align 4
   %3084 = getelementptr inbounds i32, i32* %3010, i64 2
   %3085 = load i1, i1* %out.1
-  %3086 = icmp slt i64 2, %len.
+  %3086 = icmp slt i64 2, %N
   %3087 = bitcast i64* %shadow to i32*
   %safe.127 = or i1 %3085, %3086
   %select.ptr.128 = select i1 %safe.127, i32* %3084, i32* %3087
   %3088 = load i32, i32* %select.ptr.128, align 4
   %3089 = getelementptr inbounds i32, i32* %3010, i64 5
   %3090 = load i1, i1* %out.1
-  %3091 = icmp slt i64 5, %len.
+  %3091 = icmp slt i64 5, %N
   %3092 = bitcast i64* %shadow to i32*
   %safe.129 = or i1 %3090, %3091
   %select.ptr.130 = select i1 %safe.129, i32* %3089, i32* %3092
@@ -4623,7 +4623,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3094 = xor i32 %3088, %3093
   %3095 = getelementptr inbounds i32, i32* %3010, i64 6
   %3096 = load i1, i1* %out.1
-  %3097 = icmp slt i64 6, %len.
+  %3097 = icmp slt i64 6, %N
   %3098 = bitcast i64* %shadow to i32*
   %safe.131 = or i1 %3096, %3097
   %select.ptr.132 = select i1 %safe.131, i32* %3095, i32* %3098
@@ -4632,14 +4632,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.133, i32* %select.ptr.132, align 4
   %3100 = getelementptr inbounds i32, i32* %3010, i64 3
   %3101 = load i1, i1* %out.1
-  %3102 = icmp slt i64 3, %len.
+  %3102 = icmp slt i64 3, %N
   %3103 = bitcast i64* %shadow to i32*
   %safe.134 = or i1 %3101, %3102
   %select.ptr.135 = select i1 %safe.134, i32* %3100, i32* %3103
   %3104 = load i32, i32* %select.ptr.135, align 4
   %3105 = getelementptr inbounds i32, i32* %3010, i64 6
   %3106 = load i1, i1* %out.1
-  %3107 = icmp slt i64 6, %len.
+  %3107 = icmp slt i64 6, %N
   %3108 = bitcast i64* %shadow to i32*
   %safe.136 = or i1 %3106, %3107
   %select.ptr.137 = select i1 %safe.136, i32* %3105, i32* %3108
@@ -4647,7 +4647,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3110 = xor i32 %3104, %3109
   %3111 = getelementptr inbounds i32, i32* %3010, i64 7
   %3112 = load i1, i1* %out.1
-  %3113 = icmp slt i64 7, %len.
+  %3113 = icmp slt i64 7, %N
   %3114 = bitcast i64* %shadow to i32*
   %safe.138 = or i1 %3112, %3113
   %select.ptr.139 = select i1 %safe.138, i32* %3111, i32* %3114
@@ -4657,13 +4657,13 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3116 = getelementptr inbounds i32, i32* %3010, i64 4
   %3117 = getelementptr inbounds i32, i32* %3116, i64 3
   %3118 = load i1, i1* %out.1
-  %3119 = icmp slt i64 3, %len.
+  %3119 = icmp slt i64 3, %N
   %3120 = bitcast i64* %shadow to i32*
   %safe.141 = or i1 %3118, %3119
   %select.ptr.142 = select i1 %safe.141, i32* %3117, i32* %3120
   %3121 = load i32, i32* %select.ptr.142, align 4
   %3122 = load i1, i1* %out.1
-  %3123 = icmp slt i64 4, %len.
+  %3123 = icmp slt i64 4, %N
   %3124 = bitcast i64* %shadow to i32*
   %safe.143 = or i1 %3122, %3123
   %select.ptr.144 = select i1 %safe.143, i32* %3116, i32* %3124
@@ -4721,7 +4721,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3168 = xor i32 %3167, 268435456
   %3169 = getelementptr inbounds i32, i32* %3116, i64 4
   %3170 = load i1, i1* %out.1
-  %3171 = icmp slt i64 4, %len.
+  %3171 = icmp slt i64 4, %N
   %3172 = bitcast i64* %shadow to i32*
   %safe.153 = or i1 %3170, %3171
   %select.ptr.154 = select i1 %safe.153, i32* %3169, i32* %3172
@@ -4730,14 +4730,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.155, i32* %select.ptr.154, align 4
   %3174 = getelementptr inbounds i32, i32* %3116, i64 1
   %3175 = load i1, i1* %out.1
-  %3176 = icmp slt i64 1, %len.
+  %3176 = icmp slt i64 1, %N
   %3177 = bitcast i64* %shadow to i32*
   %safe.156 = or i1 %3175, %3176
   %select.ptr.157 = select i1 %safe.156, i32* %3174, i32* %3177
   %3178 = load i32, i32* %select.ptr.157, align 4
   %3179 = getelementptr inbounds i32, i32* %3116, i64 4
   %3180 = load i1, i1* %out.1
-  %3181 = icmp slt i64 4, %len.
+  %3181 = icmp slt i64 4, %N
   %3182 = bitcast i64* %shadow to i32*
   %safe.158 = or i1 %3180, %3181
   %select.ptr.159 = select i1 %safe.158, i32* %3179, i32* %3182
@@ -4745,7 +4745,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3184 = xor i32 %3178, %3183
   %3185 = getelementptr inbounds i32, i32* %3116, i64 5
   %3186 = load i1, i1* %out.1
-  %3187 = icmp slt i64 5, %len.
+  %3187 = icmp slt i64 5, %N
   %3188 = bitcast i64* %shadow to i32*
   %safe.160 = or i1 %3186, %3187
   %select.ptr.161 = select i1 %safe.160, i32* %3185, i32* %3188
@@ -4754,14 +4754,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.162, i32* %select.ptr.161, align 4
   %3190 = getelementptr inbounds i32, i32* %3116, i64 2
   %3191 = load i1, i1* %out.1
-  %3192 = icmp slt i64 2, %len.
+  %3192 = icmp slt i64 2, %N
   %3193 = bitcast i64* %shadow to i32*
   %safe.163 = or i1 %3191, %3192
   %select.ptr.164 = select i1 %safe.163, i32* %3190, i32* %3193
   %3194 = load i32, i32* %select.ptr.164, align 4
   %3195 = getelementptr inbounds i32, i32* %3116, i64 5
   %3196 = load i1, i1* %out.1
-  %3197 = icmp slt i64 5, %len.
+  %3197 = icmp slt i64 5, %N
   %3198 = bitcast i64* %shadow to i32*
   %safe.165 = or i1 %3196, %3197
   %select.ptr.166 = select i1 %safe.165, i32* %3195, i32* %3198
@@ -4769,7 +4769,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3200 = xor i32 %3194, %3199
   %3201 = getelementptr inbounds i32, i32* %3116, i64 6
   %3202 = load i1, i1* %out.1
-  %3203 = icmp slt i64 6, %len.
+  %3203 = icmp slt i64 6, %N
   %3204 = bitcast i64* %shadow to i32*
   %safe.167 = or i1 %3202, %3203
   %select.ptr.168 = select i1 %safe.167, i32* %3201, i32* %3204
@@ -4778,14 +4778,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.169, i32* %select.ptr.168, align 4
   %3206 = getelementptr inbounds i32, i32* %3116, i64 3
   %3207 = load i1, i1* %out.1
-  %3208 = icmp slt i64 3, %len.
+  %3208 = icmp slt i64 3, %N
   %3209 = bitcast i64* %shadow to i32*
   %safe.170 = or i1 %3207, %3208
   %select.ptr.171 = select i1 %safe.170, i32* %3206, i32* %3209
   %3210 = load i32, i32* %select.ptr.171, align 4
   %3211 = getelementptr inbounds i32, i32* %3116, i64 6
   %3212 = load i1, i1* %out.1
-  %3213 = icmp slt i64 6, %len.
+  %3213 = icmp slt i64 6, %N
   %3214 = bitcast i64* %shadow to i32*
   %safe.172 = or i1 %3212, %3213
   %select.ptr.173 = select i1 %safe.172, i32* %3211, i32* %3214
@@ -4793,7 +4793,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3216 = xor i32 %3210, %3215
   %3217 = getelementptr inbounds i32, i32* %3116, i64 7
   %3218 = load i1, i1* %out.1
-  %3219 = icmp slt i64 7, %len.
+  %3219 = icmp slt i64 7, %N
   %3220 = bitcast i64* %shadow to i32*
   %safe.174 = or i1 %3218, %3219
   %select.ptr.175 = select i1 %safe.174, i32* %3217, i32* %3220
@@ -4803,13 +4803,13 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3222 = getelementptr inbounds i32, i32* %3116, i64 4
   %3223 = getelementptr inbounds i32, i32* %3222, i64 3
   %3224 = load i1, i1* %out.1
-  %3225 = icmp slt i64 3, %len.
+  %3225 = icmp slt i64 3, %N
   %3226 = bitcast i64* %shadow to i32*
   %safe.177 = or i1 %3224, %3225
   %select.ptr.178 = select i1 %safe.177, i32* %3223, i32* %3226
   %3227 = load i32, i32* %select.ptr.178, align 4
   %3228 = load i1, i1* %out.1
-  %3229 = icmp slt i64 4, %len.
+  %3229 = icmp slt i64 4, %N
   %3230 = bitcast i64* %shadow to i32*
   %safe.179 = or i1 %3228, %3229
   %select.ptr.180 = select i1 %safe.179, i32* %3222, i32* %3230
@@ -4867,7 +4867,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3274 = xor i32 %3273, 536870912
   %3275 = getelementptr inbounds i32, i32* %3222, i64 4
   %3276 = load i1, i1* %out.1
-  %3277 = icmp slt i64 4, %len.
+  %3277 = icmp slt i64 4, %N
   %3278 = bitcast i64* %shadow to i32*
   %safe.189 = or i1 %3276, %3277
   %select.ptr.190 = select i1 %safe.189, i32* %3275, i32* %3278
@@ -4876,14 +4876,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.191, i32* %select.ptr.190, align 4
   %3280 = getelementptr inbounds i32, i32* %3222, i64 1
   %3281 = load i1, i1* %out.1
-  %3282 = icmp slt i64 1, %len.
+  %3282 = icmp slt i64 1, %N
   %3283 = bitcast i64* %shadow to i32*
   %safe.192 = or i1 %3281, %3282
   %select.ptr.193 = select i1 %safe.192, i32* %3280, i32* %3283
   %3284 = load i32, i32* %select.ptr.193, align 4
   %3285 = getelementptr inbounds i32, i32* %3222, i64 4
   %3286 = load i1, i1* %out.1
-  %3287 = icmp slt i64 4, %len.
+  %3287 = icmp slt i64 4, %N
   %3288 = bitcast i64* %shadow to i32*
   %safe.194 = or i1 %3286, %3287
   %select.ptr.195 = select i1 %safe.194, i32* %3285, i32* %3288
@@ -4891,7 +4891,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3290 = xor i32 %3284, %3289
   %3291 = getelementptr inbounds i32, i32* %3222, i64 5
   %3292 = load i1, i1* %out.1
-  %3293 = icmp slt i64 5, %len.
+  %3293 = icmp slt i64 5, %N
   %3294 = bitcast i64* %shadow to i32*
   %safe.196 = or i1 %3292, %3293
   %select.ptr.197 = select i1 %safe.196, i32* %3291, i32* %3294
@@ -4900,14 +4900,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.198, i32* %select.ptr.197, align 4
   %3296 = getelementptr inbounds i32, i32* %3222, i64 2
   %3297 = load i1, i1* %out.1
-  %3298 = icmp slt i64 2, %len.
+  %3298 = icmp slt i64 2, %N
   %3299 = bitcast i64* %shadow to i32*
   %safe.199 = or i1 %3297, %3298
   %select.ptr.200 = select i1 %safe.199, i32* %3296, i32* %3299
   %3300 = load i32, i32* %select.ptr.200, align 4
   %3301 = getelementptr inbounds i32, i32* %3222, i64 5
   %3302 = load i1, i1* %out.1
-  %3303 = icmp slt i64 5, %len.
+  %3303 = icmp slt i64 5, %N
   %3304 = bitcast i64* %shadow to i32*
   %safe.201 = or i1 %3302, %3303
   %select.ptr.202 = select i1 %safe.201, i32* %3301, i32* %3304
@@ -4915,7 +4915,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3306 = xor i32 %3300, %3305
   %3307 = getelementptr inbounds i32, i32* %3222, i64 6
   %3308 = load i1, i1* %out.1
-  %3309 = icmp slt i64 6, %len.
+  %3309 = icmp slt i64 6, %N
   %3310 = bitcast i64* %shadow to i32*
   %safe.203 = or i1 %3308, %3309
   %select.ptr.204 = select i1 %safe.203, i32* %3307, i32* %3310
@@ -4924,14 +4924,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.205, i32* %select.ptr.204, align 4
   %3312 = getelementptr inbounds i32, i32* %3222, i64 3
   %3313 = load i1, i1* %out.1
-  %3314 = icmp slt i64 3, %len.
+  %3314 = icmp slt i64 3, %N
   %3315 = bitcast i64* %shadow to i32*
   %safe.206 = or i1 %3313, %3314
   %select.ptr.207 = select i1 %safe.206, i32* %3312, i32* %3315
   %3316 = load i32, i32* %select.ptr.207, align 4
   %3317 = getelementptr inbounds i32, i32* %3222, i64 6
   %3318 = load i1, i1* %out.1
-  %3319 = icmp slt i64 6, %len.
+  %3319 = icmp slt i64 6, %N
   %3320 = bitcast i64* %shadow to i32*
   %safe.208 = or i1 %3318, %3319
   %select.ptr.209 = select i1 %safe.208, i32* %3317, i32* %3320
@@ -4939,7 +4939,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3322 = xor i32 %3316, %3321
   %3323 = getelementptr inbounds i32, i32* %3222, i64 7
   %3324 = load i1, i1* %out.1
-  %3325 = icmp slt i64 7, %len.
+  %3325 = icmp slt i64 7, %N
   %3326 = bitcast i64* %shadow to i32*
   %safe.210 = or i1 %3324, %3325
   %select.ptr.211 = select i1 %safe.210, i32* %3323, i32* %3326
@@ -4949,13 +4949,13 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3328 = getelementptr inbounds i32, i32* %3222, i64 4
   %3329 = getelementptr inbounds i32, i32* %3328, i64 3
   %3330 = load i1, i1* %out.1
-  %3331 = icmp slt i64 3, %len.
+  %3331 = icmp slt i64 3, %N
   %3332 = bitcast i64* %shadow to i32*
   %safe.213 = or i1 %3330, %3331
   %select.ptr.214 = select i1 %safe.213, i32* %3329, i32* %3332
   %3333 = load i32, i32* %select.ptr.214, align 4
   %3334 = load i1, i1* %out.1
-  %3335 = icmp slt i64 4, %len.
+  %3335 = icmp slt i64 4, %N
   %3336 = bitcast i64* %shadow to i32*
   %safe.215 = or i1 %3334, %3335
   %select.ptr.216 = select i1 %safe.215, i32* %3328, i32* %3336
@@ -5013,7 +5013,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3380 = xor i32 %3379, 1073741824
   %3381 = getelementptr inbounds i32, i32* %3328, i64 4
   %3382 = load i1, i1* %out.1
-  %3383 = icmp slt i64 4, %len.
+  %3383 = icmp slt i64 4, %N
   %3384 = bitcast i64* %shadow to i32*
   %safe.225 = or i1 %3382, %3383
   %select.ptr.226 = select i1 %safe.225, i32* %3381, i32* %3384
@@ -5022,14 +5022,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.227, i32* %select.ptr.226, align 4
   %3386 = getelementptr inbounds i32, i32* %3328, i64 1
   %3387 = load i1, i1* %out.1
-  %3388 = icmp slt i64 1, %len.
+  %3388 = icmp slt i64 1, %N
   %3389 = bitcast i64* %shadow to i32*
   %safe.228 = or i1 %3387, %3388
   %select.ptr.229 = select i1 %safe.228, i32* %3386, i32* %3389
   %3390 = load i32, i32* %select.ptr.229, align 4
   %3391 = getelementptr inbounds i32, i32* %3328, i64 4
   %3392 = load i1, i1* %out.1
-  %3393 = icmp slt i64 4, %len.
+  %3393 = icmp slt i64 4, %N
   %3394 = bitcast i64* %shadow to i32*
   %safe.230 = or i1 %3392, %3393
   %select.ptr.231 = select i1 %safe.230, i32* %3391, i32* %3394
@@ -5037,7 +5037,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3396 = xor i32 %3390, %3395
   %3397 = getelementptr inbounds i32, i32* %3328, i64 5
   %3398 = load i1, i1* %out.1
-  %3399 = icmp slt i64 5, %len.
+  %3399 = icmp slt i64 5, %N
   %3400 = bitcast i64* %shadow to i32*
   %safe.232 = or i1 %3398, %3399
   %select.ptr.233 = select i1 %safe.232, i32* %3397, i32* %3400
@@ -5046,14 +5046,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.234, i32* %select.ptr.233, align 4
   %3402 = getelementptr inbounds i32, i32* %3328, i64 2
   %3403 = load i1, i1* %out.1
-  %3404 = icmp slt i64 2, %len.
+  %3404 = icmp slt i64 2, %N
   %3405 = bitcast i64* %shadow to i32*
   %safe.235 = or i1 %3403, %3404
   %select.ptr.236 = select i1 %safe.235, i32* %3402, i32* %3405
   %3406 = load i32, i32* %select.ptr.236, align 4
   %3407 = getelementptr inbounds i32, i32* %3328, i64 5
   %3408 = load i1, i1* %out.1
-  %3409 = icmp slt i64 5, %len.
+  %3409 = icmp slt i64 5, %N
   %3410 = bitcast i64* %shadow to i32*
   %safe.237 = or i1 %3408, %3409
   %select.ptr.238 = select i1 %safe.237, i32* %3407, i32* %3410
@@ -5061,7 +5061,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3412 = xor i32 %3406, %3411
   %3413 = getelementptr inbounds i32, i32* %3328, i64 6
   %3414 = load i1, i1* %out.1
-  %3415 = icmp slt i64 6, %len.
+  %3415 = icmp slt i64 6, %N
   %3416 = bitcast i64* %shadow to i32*
   %safe.239 = or i1 %3414, %3415
   %select.ptr.240 = select i1 %safe.239, i32* %3413, i32* %3416
@@ -5070,14 +5070,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.241, i32* %select.ptr.240, align 4
   %3418 = getelementptr inbounds i32, i32* %3328, i64 3
   %3419 = load i1, i1* %out.1
-  %3420 = icmp slt i64 3, %len.
+  %3420 = icmp slt i64 3, %N
   %3421 = bitcast i64* %shadow to i32*
   %safe.242 = or i1 %3419, %3420
   %select.ptr.243 = select i1 %safe.242, i32* %3418, i32* %3421
   %3422 = load i32, i32* %select.ptr.243, align 4
   %3423 = getelementptr inbounds i32, i32* %3328, i64 6
   %3424 = load i1, i1* %out.1
-  %3425 = icmp slt i64 6, %len.
+  %3425 = icmp slt i64 6, %N
   %3426 = bitcast i64* %shadow to i32*
   %safe.244 = or i1 %3424, %3425
   %select.ptr.245 = select i1 %safe.244, i32* %3423, i32* %3426
@@ -5085,7 +5085,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3428 = xor i32 %3422, %3427
   %3429 = getelementptr inbounds i32, i32* %3328, i64 7
   %3430 = load i1, i1* %out.1
-  %3431 = icmp slt i64 7, %len.
+  %3431 = icmp slt i64 7, %N
   %3432 = bitcast i64* %shadow to i32*
   %safe.246 = or i1 %3430, %3431
   %select.ptr.247 = select i1 %safe.246, i32* %3429, i32* %3432
@@ -5095,13 +5095,13 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3434 = getelementptr inbounds i32, i32* %3328, i64 4
   %3435 = getelementptr inbounds i32, i32* %3434, i64 3
   %3436 = load i1, i1* %out.1
-  %3437 = icmp slt i64 3, %len.
+  %3437 = icmp slt i64 3, %N
   %3438 = bitcast i64* %shadow to i32*
   %safe.249 = or i1 %3436, %3437
   %select.ptr.250 = select i1 %safe.249, i32* %3435, i32* %3438
   %3439 = load i32, i32* %select.ptr.250, align 4
   %3440 = load i1, i1* %out.1
-  %3441 = icmp slt i64 4, %len.
+  %3441 = icmp slt i64 4, %N
   %3442 = bitcast i64* %shadow to i32*
   %safe.251 = or i1 %3440, %3441
   %select.ptr.252 = select i1 %safe.251, i32* %3434, i32* %3442
@@ -5159,7 +5159,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3486 = xor i32 %3485, -2147483648
   %3487 = getelementptr inbounds i32, i32* %3434, i64 4
   %3488 = load i1, i1* %out.1
-  %3489 = icmp slt i64 4, %len.
+  %3489 = icmp slt i64 4, %N
   %3490 = bitcast i64* %shadow to i32*
   %safe.261 = or i1 %3488, %3489
   %select.ptr.262 = select i1 %safe.261, i32* %3487, i32* %3490
@@ -5168,14 +5168,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.263, i32* %select.ptr.262, align 4
   %3492 = getelementptr inbounds i32, i32* %3434, i64 1
   %3493 = load i1, i1* %out.1
-  %3494 = icmp slt i64 1, %len.
+  %3494 = icmp slt i64 1, %N
   %3495 = bitcast i64* %shadow to i32*
   %safe.264 = or i1 %3493, %3494
   %select.ptr.265 = select i1 %safe.264, i32* %3492, i32* %3495
   %3496 = load i32, i32* %select.ptr.265, align 4
   %3497 = getelementptr inbounds i32, i32* %3434, i64 4
   %3498 = load i1, i1* %out.1
-  %3499 = icmp slt i64 4, %len.
+  %3499 = icmp slt i64 4, %N
   %3500 = bitcast i64* %shadow to i32*
   %safe.266 = or i1 %3498, %3499
   %select.ptr.267 = select i1 %safe.266, i32* %3497, i32* %3500
@@ -5183,7 +5183,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3502 = xor i32 %3496, %3501
   %3503 = getelementptr inbounds i32, i32* %3434, i64 5
   %3504 = load i1, i1* %out.1
-  %3505 = icmp slt i64 5, %len.
+  %3505 = icmp slt i64 5, %N
   %3506 = bitcast i64* %shadow to i32*
   %safe.268 = or i1 %3504, %3505
   %select.ptr.269 = select i1 %safe.268, i32* %3503, i32* %3506
@@ -5192,14 +5192,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.270, i32* %select.ptr.269, align 4
   %3508 = getelementptr inbounds i32, i32* %3434, i64 2
   %3509 = load i1, i1* %out.1
-  %3510 = icmp slt i64 2, %len.
+  %3510 = icmp slt i64 2, %N
   %3511 = bitcast i64* %shadow to i32*
   %safe.271 = or i1 %3509, %3510
   %select.ptr.272 = select i1 %safe.271, i32* %3508, i32* %3511
   %3512 = load i32, i32* %select.ptr.272, align 4
   %3513 = getelementptr inbounds i32, i32* %3434, i64 5
   %3514 = load i1, i1* %out.1
-  %3515 = icmp slt i64 5, %len.
+  %3515 = icmp slt i64 5, %N
   %3516 = bitcast i64* %shadow to i32*
   %safe.273 = or i1 %3514, %3515
   %select.ptr.274 = select i1 %safe.273, i32* %3513, i32* %3516
@@ -5207,7 +5207,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3518 = xor i32 %3512, %3517
   %3519 = getelementptr inbounds i32, i32* %3434, i64 6
   %3520 = load i1, i1* %out.1
-  %3521 = icmp slt i64 6, %len.
+  %3521 = icmp slt i64 6, %N
   %3522 = bitcast i64* %shadow to i32*
   %safe.275 = or i1 %3520, %3521
   %select.ptr.276 = select i1 %safe.275, i32* %3519, i32* %3522
@@ -5216,14 +5216,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.277, i32* %select.ptr.276, align 4
   %3524 = getelementptr inbounds i32, i32* %3434, i64 3
   %3525 = load i1, i1* %out.1
-  %3526 = icmp slt i64 3, %len.
+  %3526 = icmp slt i64 3, %N
   %3527 = bitcast i64* %shadow to i32*
   %safe.278 = or i1 %3525, %3526
   %select.ptr.279 = select i1 %safe.278, i32* %3524, i32* %3527
   %3528 = load i32, i32* %select.ptr.279, align 4
   %3529 = getelementptr inbounds i32, i32* %3434, i64 6
   %3530 = load i1, i1* %out.1
-  %3531 = icmp slt i64 6, %len.
+  %3531 = icmp slt i64 6, %N
   %3532 = bitcast i64* %shadow to i32*
   %safe.280 = or i1 %3530, %3531
   %select.ptr.281 = select i1 %safe.280, i32* %3529, i32* %3532
@@ -5231,7 +5231,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3534 = xor i32 %3528, %3533
   %3535 = getelementptr inbounds i32, i32* %3434, i64 7
   %3536 = load i1, i1* %out.1
-  %3537 = icmp slt i64 7, %len.
+  %3537 = icmp slt i64 7, %N
   %3538 = bitcast i64* %shadow to i32*
   %safe.282 = or i1 %3536, %3537
   %select.ptr.283 = select i1 %safe.282, i32* %3535, i32* %3538
@@ -5241,13 +5241,13 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3540 = getelementptr inbounds i32, i32* %3434, i64 4
   %3541 = getelementptr inbounds i32, i32* %3540, i64 3
   %3542 = load i1, i1* %out.1
-  %3543 = icmp slt i64 3, %len.
+  %3543 = icmp slt i64 3, %N
   %3544 = bitcast i64* %shadow to i32*
   %safe.285 = or i1 %3542, %3543
   %select.ptr.286 = select i1 %safe.285, i32* %3541, i32* %3544
   %3545 = load i32, i32* %select.ptr.286, align 4
   %3546 = load i1, i1* %out.1
-  %3547 = icmp slt i64 4, %len.
+  %3547 = icmp slt i64 4, %N
   %3548 = bitcast i64* %shadow to i32*
   %safe.287 = or i1 %3546, %3547
   %select.ptr.288 = select i1 %safe.287, i32* %3540, i32* %3548
@@ -5305,7 +5305,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3592 = xor i32 %3591, 452984832
   %3593 = getelementptr inbounds i32, i32* %3540, i64 4
   %3594 = load i1, i1* %out.1
-  %3595 = icmp slt i64 4, %len.
+  %3595 = icmp slt i64 4, %N
   %3596 = bitcast i64* %shadow to i32*
   %safe.297 = or i1 %3594, %3595
   %select.ptr.298 = select i1 %safe.297, i32* %3593, i32* %3596
@@ -5314,14 +5314,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.299, i32* %select.ptr.298, align 4
   %3598 = getelementptr inbounds i32, i32* %3540, i64 1
   %3599 = load i1, i1* %out.1
-  %3600 = icmp slt i64 1, %len.
+  %3600 = icmp slt i64 1, %N
   %3601 = bitcast i64* %shadow to i32*
   %safe.300 = or i1 %3599, %3600
   %select.ptr.301 = select i1 %safe.300, i32* %3598, i32* %3601
   %3602 = load i32, i32* %select.ptr.301, align 4
   %3603 = getelementptr inbounds i32, i32* %3540, i64 4
   %3604 = load i1, i1* %out.1
-  %3605 = icmp slt i64 4, %len.
+  %3605 = icmp slt i64 4, %N
   %3606 = bitcast i64* %shadow to i32*
   %safe.302 = or i1 %3604, %3605
   %select.ptr.303 = select i1 %safe.302, i32* %3603, i32* %3606
@@ -5329,7 +5329,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3608 = xor i32 %3602, %3607
   %3609 = getelementptr inbounds i32, i32* %3540, i64 5
   %3610 = load i1, i1* %out.1
-  %3611 = icmp slt i64 5, %len.
+  %3611 = icmp slt i64 5, %N
   %3612 = bitcast i64* %shadow to i32*
   %safe.304 = or i1 %3610, %3611
   %select.ptr.305 = select i1 %safe.304, i32* %3609, i32* %3612
@@ -5338,14 +5338,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.306, i32* %select.ptr.305, align 4
   %3614 = getelementptr inbounds i32, i32* %3540, i64 2
   %3615 = load i1, i1* %out.1
-  %3616 = icmp slt i64 2, %len.
+  %3616 = icmp slt i64 2, %N
   %3617 = bitcast i64* %shadow to i32*
   %safe.307 = or i1 %3615, %3616
   %select.ptr.308 = select i1 %safe.307, i32* %3614, i32* %3617
   %3618 = load i32, i32* %select.ptr.308, align 4
   %3619 = getelementptr inbounds i32, i32* %3540, i64 5
   %3620 = load i1, i1* %out.1
-  %3621 = icmp slt i64 5, %len.
+  %3621 = icmp slt i64 5, %N
   %3622 = bitcast i64* %shadow to i32*
   %safe.309 = or i1 %3620, %3621
   %select.ptr.310 = select i1 %safe.309, i32* %3619, i32* %3622
@@ -5353,7 +5353,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3624 = xor i32 %3618, %3623
   %3625 = getelementptr inbounds i32, i32* %3540, i64 6
   %3626 = load i1, i1* %out.1
-  %3627 = icmp slt i64 6, %len.
+  %3627 = icmp slt i64 6, %N
   %3628 = bitcast i64* %shadow to i32*
   %safe.311 = or i1 %3626, %3627
   %select.ptr.312 = select i1 %safe.311, i32* %3625, i32* %3628
@@ -5362,14 +5362,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.313, i32* %select.ptr.312, align 4
   %3630 = getelementptr inbounds i32, i32* %3540, i64 3
   %3631 = load i1, i1* %out.1
-  %3632 = icmp slt i64 3, %len.
+  %3632 = icmp slt i64 3, %N
   %3633 = bitcast i64* %shadow to i32*
   %safe.314 = or i1 %3631, %3632
   %select.ptr.315 = select i1 %safe.314, i32* %3630, i32* %3633
   %3634 = load i32, i32* %select.ptr.315, align 4
   %3635 = getelementptr inbounds i32, i32* %3540, i64 6
   %3636 = load i1, i1* %out.1
-  %3637 = icmp slt i64 6, %len.
+  %3637 = icmp slt i64 6, %N
   %3638 = bitcast i64* %shadow to i32*
   %safe.316 = or i1 %3636, %3637
   %select.ptr.317 = select i1 %safe.316, i32* %3635, i32* %3638
@@ -5377,7 +5377,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3640 = xor i32 %3634, %3639
   %3641 = getelementptr inbounds i32, i32* %3540, i64 7
   %3642 = load i1, i1* %out.1
-  %3643 = icmp slt i64 7, %len.
+  %3643 = icmp slt i64 7, %N
   %3644 = bitcast i64* %shadow to i32*
   %safe.318 = or i1 %3642, %3643
   %select.ptr.319 = select i1 %safe.318, i32* %3641, i32* %3644
@@ -5387,13 +5387,13 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3646 = getelementptr inbounds i32, i32* %3540, i64 4
   %3647 = getelementptr inbounds i32, i32* %3646, i64 3
   %3648 = load i1, i1* %out.1
-  %3649 = icmp slt i64 3, %len.
+  %3649 = icmp slt i64 3, %N
   %3650 = bitcast i64* %shadow to i32*
   %safe.321 = or i1 %3648, %3649
   %select.ptr.322 = select i1 %safe.321, i32* %3647, i32* %3650
   %3651 = load i32, i32* %select.ptr.322, align 4
   %3652 = load i1, i1* %out.1
-  %3653 = icmp slt i64 4, %len.
+  %3653 = icmp slt i64 4, %N
   %3654 = bitcast i64* %shadow to i32*
   %safe.323 = or i1 %3652, %3653
   %select.ptr.324 = select i1 %safe.323, i32* %3646, i32* %3654
@@ -5451,7 +5451,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3698 = xor i32 %3697, 905969664
   %3699 = getelementptr inbounds i32, i32* %3646, i64 4
   %3700 = load i1, i1* %out.1
-  %3701 = icmp slt i64 4, %len.
+  %3701 = icmp slt i64 4, %N
   %3702 = bitcast i64* %shadow to i32*
   %safe.333 = or i1 %3700, %3701
   %select.ptr.334 = select i1 %safe.333, i32* %3699, i32* %3702
@@ -5460,14 +5460,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.335, i32* %select.ptr.334, align 4
   %3704 = getelementptr inbounds i32, i32* %3646, i64 1
   %3705 = load i1, i1* %out.1
-  %3706 = icmp slt i64 1, %len.
+  %3706 = icmp slt i64 1, %N
   %3707 = bitcast i64* %shadow to i32*
   %safe.336 = or i1 %3705, %3706
   %select.ptr.337 = select i1 %safe.336, i32* %3704, i32* %3707
   %3708 = load i32, i32* %select.ptr.337, align 4
   %3709 = getelementptr inbounds i32, i32* %3646, i64 4
   %3710 = load i1, i1* %out.1
-  %3711 = icmp slt i64 4, %len.
+  %3711 = icmp slt i64 4, %N
   %3712 = bitcast i64* %shadow to i32*
   %safe.338 = or i1 %3710, %3711
   %select.ptr.339 = select i1 %safe.338, i32* %3709, i32* %3712
@@ -5475,7 +5475,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3714 = xor i32 %3708, %3713
   %3715 = getelementptr inbounds i32, i32* %3646, i64 5
   %3716 = load i1, i1* %out.1
-  %3717 = icmp slt i64 5, %len.
+  %3717 = icmp slt i64 5, %N
   %3718 = bitcast i64* %shadow to i32*
   %safe.340 = or i1 %3716, %3717
   %select.ptr.341 = select i1 %safe.340, i32* %3715, i32* %3718
@@ -5484,14 +5484,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.342, i32* %select.ptr.341, align 4
   %3720 = getelementptr inbounds i32, i32* %3646, i64 2
   %3721 = load i1, i1* %out.1
-  %3722 = icmp slt i64 2, %len.
+  %3722 = icmp slt i64 2, %N
   %3723 = bitcast i64* %shadow to i32*
   %safe.343 = or i1 %3721, %3722
   %select.ptr.344 = select i1 %safe.343, i32* %3720, i32* %3723
   %3724 = load i32, i32* %select.ptr.344, align 4
   %3725 = getelementptr inbounds i32, i32* %3646, i64 5
   %3726 = load i1, i1* %out.1
-  %3727 = icmp slt i64 5, %len.
+  %3727 = icmp slt i64 5, %N
   %3728 = bitcast i64* %shadow to i32*
   %safe.345 = or i1 %3726, %3727
   %select.ptr.346 = select i1 %safe.345, i32* %3725, i32* %3728
@@ -5499,7 +5499,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3730 = xor i32 %3724, %3729
   %3731 = getelementptr inbounds i32, i32* %3646, i64 6
   %3732 = load i1, i1* %out.1
-  %3733 = icmp slt i64 6, %len.
+  %3733 = icmp slt i64 6, %N
   %3734 = bitcast i64* %shadow to i32*
   %safe.347 = or i1 %3732, %3733
   %select.ptr.348 = select i1 %safe.347, i32* %3731, i32* %3734
@@ -5508,14 +5508,14 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   store i32 %select.val.349, i32* %select.ptr.348, align 4
   %3736 = getelementptr inbounds i32, i32* %3646, i64 3
   %3737 = load i1, i1* %out.1
-  %3738 = icmp slt i64 3, %len.
+  %3738 = icmp slt i64 3, %N
   %3739 = bitcast i64* %shadow to i32*
   %safe.350 = or i1 %3737, %3738
   %select.ptr.351 = select i1 %safe.350, i32* %3736, i32* %3739
   %3740 = load i32, i32* %select.ptr.351, align 4
   %3741 = getelementptr inbounds i32, i32* %3646, i64 6
   %3742 = load i1, i1* %out.1
-  %3743 = icmp slt i64 6, %len.
+  %3743 = icmp slt i64 6, %N
   %3744 = bitcast i64* %shadow to i32*
   %safe.352 = or i1 %3742, %3743
   %select.ptr.353 = select i1 %safe.352, i32* %3741, i32* %3744
@@ -5523,7 +5523,7 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   %3746 = xor i32 %3740, %3745
   %3747 = getelementptr inbounds i32, i32* %3646, i64 7
   %3748 = load i1, i1* %out.1
-  %3749 = icmp slt i64 7, %len.
+  %3749 = icmp slt i64 7, %N
   %3750 = bitcast i64* %shadow to i32*
   %safe.354 = or i1 %3748, %3749
   %select.ptr.355 = select i1 %safe.354, i32* %3747, i32* %3750
@@ -5546,8 +5546,8 @@ define i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   ret i32 %select.phi.
 }
 
-define i32 @rijndaelKeySetupDec(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) {
-  %4 = call i32 @rijndaelKeySetupEnc(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2)
+define i32 @rijndaelKeySetupDec(i32* %0, i64 %N, i8* %1, i64 %N1, i32 %2) {
+  %4 = call i32 @rijndaelKeySetupEnc(i32* %0, i64 %N, i8* %1, i64 %N1, i32 %2)
   %5 = mul nsw i32 4, %4
   %6 = icmp slt i32 0, %5
   br i1 %6, label %.lr.ph8, label %.preheader
@@ -5625,7 +5625,7 @@ define i32 @rijndaelKeySetupDec(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
 
 .lr.ph:                                           ; preds = %.lr.ph, %.lr.ph.preheader
   %.04 = phi i32* [ %49, %.lr.ph ], [ %.0.ph, %.lr.ph.preheader ]
-  %48 = phi i64 [ %len., %.lr.ph.preheader ], [ %len., %.lr.ph ]
+  %48 = phi i64 [ %N, %.lr.ph.preheader ], [ %N, %.lr.ph ]
   %.13 = phi i32 [ %229, %.lr.ph ], [ %.1.ph, %.lr.ph.preheader ]
   %49 = getelementptr inbounds i32, i32* %.04, i64 4
   %50 = load i32, i32* %49, align 4
@@ -5822,7 +5822,7 @@ define i32 @rijndaelKeySetupDec(i32* %0, i64 %len., i8* %1, i64 %len.1, i32 %2) 
   ret i32 %4
 }
 
-define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8* %3, i64 %len.2) {
+define void @rijndaelEncrypt(i32* %0, i64 %N, i32 %1, i8* %2, i64 %N1, i8* %3, i64 %N2) {
 .preheader12:
   %out. = alloca i1
   store i1 true, i1* %out.
@@ -6054,7 +6054,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %183 = xor i32 %161, %select.phi.369
   %184 = getelementptr inbounds i32, i32* %0, i64 4
   %185 = load i1, i1* %out.8
-  %186 = icmp slt i64 4, %len.
+  %186 = icmp slt i64 4, %N
   %187 = bitcast i64* %shadow to i32*
   %safe.17 = or i1 %185, %186
   %select.ptr.18 = select i1 %safe.17, i32* %184, i32* %187
@@ -6107,7 +6107,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %226 = xor i32 %217, %225
   %227 = getelementptr inbounds i32, i32* %0, i64 5
   %228 = load i1, i1* %out.8
-  %229 = icmp slt i64 5, %len.
+  %229 = icmp slt i64 5, %N
   %230 = bitcast i64* %shadow to i32*
   %safe.27 = or i1 %228, %229
   %select.ptr.28 = select i1 %safe.27, i32* %227, i32* %230
@@ -6160,7 +6160,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %269 = xor i32 %260, %268
   %270 = getelementptr inbounds i32, i32* %0, i64 6
   %271 = load i1, i1* %out.8
-  %272 = icmp slt i64 6, %len.
+  %272 = icmp slt i64 6, %N
   %273 = bitcast i64* %shadow to i32*
   %safe.37 = or i1 %271, %272
   %select.ptr.38 = select i1 %safe.37, i32* %270, i32* %273
@@ -6213,7 +6213,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %312 = xor i32 %303, %311
   %313 = getelementptr inbounds i32, i32* %0, i64 7
   %314 = load i1, i1* %out.8
-  %315 = icmp slt i64 7, %len.
+  %315 = icmp slt i64 7, %N
   %316 = bitcast i64* %shadow to i32*
   %safe.47 = or i1 %314, %315
   %select.ptr.48 = select i1 %safe.47, i32* %313, i32* %316
@@ -6266,7 +6266,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %355 = xor i32 %346, %354
   %356 = getelementptr inbounds i32, i32* %0, i64 8
   %357 = load i1, i1* %out.8
-  %358 = icmp slt i64 8, %len.
+  %358 = icmp slt i64 8, %N
   %359 = bitcast i64* %shadow to i32*
   %safe.57 = or i1 %357, %358
   %select.ptr.58 = select i1 %safe.57, i32* %356, i32* %359
@@ -6319,7 +6319,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %398 = xor i32 %389, %397
   %399 = getelementptr inbounds i32, i32* %0, i64 9
   %400 = load i1, i1* %out.8
-  %401 = icmp slt i64 9, %len.
+  %401 = icmp slt i64 9, %N
   %402 = bitcast i64* %shadow to i32*
   %safe.67 = or i1 %400, %401
   %select.ptr.68 = select i1 %safe.67, i32* %399, i32* %402
@@ -6372,7 +6372,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %441 = xor i32 %432, %440
   %442 = getelementptr inbounds i32, i32* %0, i64 10
   %443 = load i1, i1* %out.8
-  %444 = icmp slt i64 10, %len.
+  %444 = icmp slt i64 10, %N
   %445 = bitcast i64* %shadow to i32*
   %safe.77 = or i1 %443, %444
   %select.ptr.78 = select i1 %safe.77, i32* %442, i32* %445
@@ -6425,7 +6425,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %484 = xor i32 %475, %483
   %485 = getelementptr inbounds i32, i32* %0, i64 11
   %486 = load i1, i1* %out.8
-  %487 = icmp slt i64 11, %len.
+  %487 = icmp slt i64 11, %N
   %488 = bitcast i64* %shadow to i32*
   %safe.87 = or i1 %486, %487
   %select.ptr.88 = select i1 %safe.87, i32* %485, i32* %488
@@ -6478,7 +6478,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %527 = xor i32 %518, %526
   %528 = getelementptr inbounds i32, i32* %0, i64 12
   %529 = load i1, i1* %out.8
-  %530 = icmp slt i64 12, %len.
+  %530 = icmp slt i64 12, %N
   %531 = bitcast i64* %shadow to i32*
   %safe.97 = or i1 %529, %530
   %select.ptr.98 = select i1 %safe.97, i32* %528, i32* %531
@@ -6531,7 +6531,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %570 = xor i32 %561, %569
   %571 = getelementptr inbounds i32, i32* %0, i64 13
   %572 = load i1, i1* %out.8
-  %573 = icmp slt i64 13, %len.
+  %573 = icmp slt i64 13, %N
   %574 = bitcast i64* %shadow to i32*
   %safe.107 = or i1 %572, %573
   %select.ptr.108 = select i1 %safe.107, i32* %571, i32* %574
@@ -6584,7 +6584,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %613 = xor i32 %604, %612
   %614 = getelementptr inbounds i32, i32* %0, i64 14
   %615 = load i1, i1* %out.8
-  %616 = icmp slt i64 14, %len.
+  %616 = icmp slt i64 14, %N
   %617 = bitcast i64* %shadow to i32*
   %safe.117 = or i1 %615, %616
   %select.ptr.118 = select i1 %safe.117, i32* %614, i32* %617
@@ -6637,7 +6637,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %656 = xor i32 %647, %655
   %657 = getelementptr inbounds i32, i32* %0, i64 15
   %658 = load i1, i1* %out.8
-  %659 = icmp slt i64 15, %len.
+  %659 = icmp slt i64 15, %N
   %660 = bitcast i64* %shadow to i32*
   %safe.127 = or i1 %658, %659
   %select.ptr.128 = select i1 %safe.127, i32* %657, i32* %660
@@ -6690,7 +6690,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %699 = xor i32 %690, %698
   %700 = getelementptr inbounds i32, i32* %0, i64 16
   %701 = load i1, i1* %out.8
-  %702 = icmp slt i64 16, %len.
+  %702 = icmp slt i64 16, %N
   %703 = bitcast i64* %shadow to i32*
   %safe.137 = or i1 %701, %702
   %select.ptr.138 = select i1 %safe.137, i32* %700, i32* %703
@@ -6743,7 +6743,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %742 = xor i32 %733, %741
   %743 = getelementptr inbounds i32, i32* %0, i64 17
   %744 = load i1, i1* %out.8
-  %745 = icmp slt i64 17, %len.
+  %745 = icmp slt i64 17, %N
   %746 = bitcast i64* %shadow to i32*
   %safe.147 = or i1 %744, %745
   %select.ptr.148 = select i1 %safe.147, i32* %743, i32* %746
@@ -6796,7 +6796,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %785 = xor i32 %776, %784
   %786 = getelementptr inbounds i32, i32* %0, i64 18
   %787 = load i1, i1* %out.8
-  %788 = icmp slt i64 18, %len.
+  %788 = icmp slt i64 18, %N
   %789 = bitcast i64* %shadow to i32*
   %safe.157 = or i1 %787, %788
   %select.ptr.158 = select i1 %safe.157, i32* %786, i32* %789
@@ -6849,7 +6849,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %828 = xor i32 %819, %827
   %829 = getelementptr inbounds i32, i32* %0, i64 19
   %830 = load i1, i1* %out.8
-  %831 = icmp slt i64 19, %len.
+  %831 = icmp slt i64 19, %N
   %832 = bitcast i64* %shadow to i32*
   %safe.167 = or i1 %830, %831
   %select.ptr.168 = select i1 %safe.167, i32* %829, i32* %832
@@ -6902,7 +6902,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %871 = xor i32 %862, %870
   %872 = getelementptr inbounds i32, i32* %0, i64 20
   %873 = load i1, i1* %out.8
-  %874 = icmp slt i64 20, %len.
+  %874 = icmp slt i64 20, %N
   %875 = bitcast i64* %shadow to i32*
   %safe.177 = or i1 %873, %874
   %select.ptr.178 = select i1 %safe.177, i32* %872, i32* %875
@@ -6955,7 +6955,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %914 = xor i32 %905, %913
   %915 = getelementptr inbounds i32, i32* %0, i64 21
   %916 = load i1, i1* %out.8
-  %917 = icmp slt i64 21, %len.
+  %917 = icmp slt i64 21, %N
   %918 = bitcast i64* %shadow to i32*
   %safe.187 = or i1 %916, %917
   %select.ptr.188 = select i1 %safe.187, i32* %915, i32* %918
@@ -7008,7 +7008,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %957 = xor i32 %948, %956
   %958 = getelementptr inbounds i32, i32* %0, i64 22
   %959 = load i1, i1* %out.8
-  %960 = icmp slt i64 22, %len.
+  %960 = icmp slt i64 22, %N
   %961 = bitcast i64* %shadow to i32*
   %safe.197 = or i1 %959, %960
   %select.ptr.198 = select i1 %safe.197, i32* %958, i32* %961
@@ -7061,7 +7061,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1000 = xor i32 %991, %999
   %1001 = getelementptr inbounds i32, i32* %0, i64 23
   %1002 = load i1, i1* %out.8
-  %1003 = icmp slt i64 23, %len.
+  %1003 = icmp slt i64 23, %N
   %1004 = bitcast i64* %shadow to i32*
   %safe.207 = or i1 %1002, %1003
   %select.ptr.208 = select i1 %safe.207, i32* %1001, i32* %1004
@@ -7114,7 +7114,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1043 = xor i32 %1034, %1042
   %1044 = getelementptr inbounds i32, i32* %0, i64 24
   %1045 = load i1, i1* %out.8
-  %1046 = icmp slt i64 24, %len.
+  %1046 = icmp slt i64 24, %N
   %1047 = bitcast i64* %shadow to i32*
   %safe.217 = or i1 %1045, %1046
   %select.ptr.218 = select i1 %safe.217, i32* %1044, i32* %1047
@@ -7167,7 +7167,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1086 = xor i32 %1077, %1085
   %1087 = getelementptr inbounds i32, i32* %0, i64 25
   %1088 = load i1, i1* %out.8
-  %1089 = icmp slt i64 25, %len.
+  %1089 = icmp slt i64 25, %N
   %1090 = bitcast i64* %shadow to i32*
   %safe.227 = or i1 %1088, %1089
   %select.ptr.228 = select i1 %safe.227, i32* %1087, i32* %1090
@@ -7220,7 +7220,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1129 = xor i32 %1120, %1128
   %1130 = getelementptr inbounds i32, i32* %0, i64 26
   %1131 = load i1, i1* %out.8
-  %1132 = icmp slt i64 26, %len.
+  %1132 = icmp slt i64 26, %N
   %1133 = bitcast i64* %shadow to i32*
   %safe.237 = or i1 %1131, %1132
   %select.ptr.238 = select i1 %safe.237, i32* %1130, i32* %1133
@@ -7273,7 +7273,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1172 = xor i32 %1163, %1171
   %1173 = getelementptr inbounds i32, i32* %0, i64 27
   %1174 = load i1, i1* %out.8
-  %1175 = icmp slt i64 27, %len.
+  %1175 = icmp slt i64 27, %N
   %1176 = bitcast i64* %shadow to i32*
   %safe.247 = or i1 %1174, %1175
   %select.ptr.248 = select i1 %safe.247, i32* %1173, i32* %1176
@@ -7326,7 +7326,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1215 = xor i32 %1206, %1214
   %1216 = getelementptr inbounds i32, i32* %0, i64 28
   %1217 = load i1, i1* %out.8
-  %1218 = icmp slt i64 28, %len.
+  %1218 = icmp slt i64 28, %N
   %1219 = bitcast i64* %shadow to i32*
   %safe.257 = or i1 %1217, %1218
   %select.ptr.258 = select i1 %safe.257, i32* %1216, i32* %1219
@@ -7379,7 +7379,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1258 = xor i32 %1249, %1257
   %1259 = getelementptr inbounds i32, i32* %0, i64 29
   %1260 = load i1, i1* %out.8
-  %1261 = icmp slt i64 29, %len.
+  %1261 = icmp slt i64 29, %N
   %1262 = bitcast i64* %shadow to i32*
   %safe.267 = or i1 %1260, %1261
   %select.ptr.268 = select i1 %safe.267, i32* %1259, i32* %1262
@@ -7432,7 +7432,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1301 = xor i32 %1292, %1300
   %1302 = getelementptr inbounds i32, i32* %0, i64 30
   %1303 = load i1, i1* %out.8
-  %1304 = icmp slt i64 30, %len.
+  %1304 = icmp slt i64 30, %N
   %1305 = bitcast i64* %shadow to i32*
   %safe.277 = or i1 %1303, %1304
   %select.ptr.278 = select i1 %safe.277, i32* %1302, i32* %1305
@@ -7485,7 +7485,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1344 = xor i32 %1335, %1343
   %1345 = getelementptr inbounds i32, i32* %0, i64 31
   %1346 = load i1, i1* %out.8
-  %1347 = icmp slt i64 31, %len.
+  %1347 = icmp slt i64 31, %N
   %1348 = bitcast i64* %shadow to i32*
   %safe.287 = or i1 %1346, %1347
   %select.ptr.288 = select i1 %safe.287, i32* %1345, i32* %1348
@@ -7538,7 +7538,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1387 = xor i32 %1378, %1386
   %1388 = getelementptr inbounds i32, i32* %0, i64 32
   %1389 = load i1, i1* %out.8
-  %1390 = icmp slt i64 32, %len.
+  %1390 = icmp slt i64 32, %N
   %1391 = bitcast i64* %shadow to i32*
   %safe.297 = or i1 %1389, %1390
   %select.ptr.298 = select i1 %safe.297, i32* %1388, i32* %1391
@@ -7591,7 +7591,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1430 = xor i32 %1421, %1429
   %1431 = getelementptr inbounds i32, i32* %0, i64 33
   %1432 = load i1, i1* %out.8
-  %1433 = icmp slt i64 33, %len.
+  %1433 = icmp slt i64 33, %N
   %1434 = bitcast i64* %shadow to i32*
   %safe.307 = or i1 %1432, %1433
   %select.ptr.308 = select i1 %safe.307, i32* %1431, i32* %1434
@@ -7644,7 +7644,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1473 = xor i32 %1464, %1472
   %1474 = getelementptr inbounds i32, i32* %0, i64 34
   %1475 = load i1, i1* %out.8
-  %1476 = icmp slt i64 34, %len.
+  %1476 = icmp slt i64 34, %N
   %1477 = bitcast i64* %shadow to i32*
   %safe.317 = or i1 %1475, %1476
   %select.ptr.318 = select i1 %safe.317, i32* %1474, i32* %1477
@@ -7697,7 +7697,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1516 = xor i32 %1507, %1515
   %1517 = getelementptr inbounds i32, i32* %0, i64 35
   %1518 = load i1, i1* %out.8
-  %1519 = icmp slt i64 35, %len.
+  %1519 = icmp slt i64 35, %N
   %1520 = bitcast i64* %shadow to i32*
   %safe.327 = or i1 %1518, %1519
   %select.ptr.328 = select i1 %safe.327, i32* %1517, i32* %1520
@@ -7750,7 +7750,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1559 = xor i32 %1550, %1558
   %1560 = getelementptr inbounds i32, i32* %0, i64 36
   %1561 = load i1, i1* %out.8
-  %1562 = icmp slt i64 36, %len.
+  %1562 = icmp slt i64 36, %N
   %1563 = bitcast i64* %shadow to i32*
   %safe.337 = or i1 %1561, %1562
   %select.ptr.338 = select i1 %safe.337, i32* %1560, i32* %1563
@@ -7803,7 +7803,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1602 = xor i32 %1593, %1601
   %1603 = getelementptr inbounds i32, i32* %0, i64 37
   %1604 = load i1, i1* %out.8
-  %1605 = icmp slt i64 37, %len.
+  %1605 = icmp slt i64 37, %N
   %1606 = bitcast i64* %shadow to i32*
   %safe.347 = or i1 %1604, %1605
   %select.ptr.348 = select i1 %safe.347, i32* %1603, i32* %1606
@@ -7856,7 +7856,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1645 = xor i32 %1636, %1644
   %1646 = getelementptr inbounds i32, i32* %0, i64 38
   %1647 = load i1, i1* %out.8
-  %1648 = icmp slt i64 38, %len.
+  %1648 = icmp slt i64 38, %N
   %1649 = bitcast i64* %shadow to i32*
   %safe.357 = or i1 %1647, %1648
   %select.ptr.358 = select i1 %safe.357, i32* %1646, i32* %1649
@@ -7909,7 +7909,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1688 = xor i32 %1679, %1687
   %1689 = getelementptr inbounds i32, i32* %0, i64 39
   %1690 = load i1, i1* %out.8
-  %1691 = icmp slt i64 39, %len.
+  %1691 = icmp slt i64 39, %N
   %1692 = bitcast i64* %shadow to i32*
   %safe.367 = or i1 %1690, %1691
   %select.ptr.368 = select i1 %safe.367, i32* %1689, i32* %1692
@@ -7966,7 +7966,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1733 = xor i32 %1724, %1732
   %1734 = getelementptr inbounds i32, i32* %0, i64 40
   %1735 = load i1, i1* %out.9
-  %1736 = icmp slt i64 40, %len.
+  %1736 = icmp slt i64 40, %N
   %1737 = bitcast i64* %shadow to i32*
   %safe.378 = or i1 %1735, %1736
   %select.ptr.379 = select i1 %safe.378, i32* %1734, i32* %1737
@@ -8019,7 +8019,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1776 = xor i32 %1767, %1775
   %1777 = getelementptr inbounds i32, i32* %0, i64 41
   %1778 = load i1, i1* %out.9
-  %1779 = icmp slt i64 41, %len.
+  %1779 = icmp slt i64 41, %N
   %1780 = bitcast i64* %shadow to i32*
   %safe.388 = or i1 %1778, %1779
   %select.ptr.389 = select i1 %safe.388, i32* %1777, i32* %1780
@@ -8072,7 +8072,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1819 = xor i32 %1810, %1818
   %1820 = getelementptr inbounds i32, i32* %0, i64 42
   %1821 = load i1, i1* %out.9
-  %1822 = icmp slt i64 42, %len.
+  %1822 = icmp slt i64 42, %N
   %1823 = bitcast i64* %shadow to i32*
   %safe.398 = or i1 %1821, %1822
   %select.ptr.399 = select i1 %safe.398, i32* %1820, i32* %1823
@@ -8125,7 +8125,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1862 = xor i32 %1853, %1861
   %1863 = getelementptr inbounds i32, i32* %0, i64 43
   %1864 = load i1, i1* %out.9
-  %1865 = icmp slt i64 43, %len.
+  %1865 = icmp slt i64 43, %N
   %1866 = bitcast i64* %shadow to i32*
   %safe.408 = or i1 %1864, %1865
   %select.ptr.409 = select i1 %safe.408, i32* %1863, i32* %1866
@@ -8178,7 +8178,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1905 = xor i32 %1896, %1904
   %1906 = getelementptr inbounds i32, i32* %0, i64 44
   %1907 = load i1, i1* %out.9
-  %1908 = icmp slt i64 44, %len.
+  %1908 = icmp slt i64 44, %N
   %1909 = bitcast i64* %shadow to i32*
   %safe.418 = or i1 %1907, %1908
   %select.ptr.419 = select i1 %safe.418, i32* %1906, i32* %1909
@@ -8231,7 +8231,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1948 = xor i32 %1939, %1947
   %1949 = getelementptr inbounds i32, i32* %0, i64 45
   %1950 = load i1, i1* %out.9
-  %1951 = icmp slt i64 45, %len.
+  %1951 = icmp slt i64 45, %N
   %1952 = bitcast i64* %shadow to i32*
   %safe.428 = or i1 %1950, %1951
   %select.ptr.429 = select i1 %safe.428, i32* %1949, i32* %1952
@@ -8284,7 +8284,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %1991 = xor i32 %1982, %1990
   %1992 = getelementptr inbounds i32, i32* %0, i64 46
   %1993 = load i1, i1* %out.9
-  %1994 = icmp slt i64 46, %len.
+  %1994 = icmp slt i64 46, %N
   %1995 = bitcast i64* %shadow to i32*
   %safe.438 = or i1 %1993, %1994
   %select.ptr.439 = select i1 %safe.438, i32* %1992, i32* %1995
@@ -8337,7 +8337,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2034 = xor i32 %2025, %2033
   %2035 = getelementptr inbounds i32, i32* %0, i64 47
   %2036 = load i1, i1* %out.9
-  %2037 = icmp slt i64 47, %len.
+  %2037 = icmp slt i64 47, %N
   %2038 = bitcast i64* %shadow to i32*
   %safe.448 = or i1 %2036, %2037
   %select.ptr.449 = select i1 %safe.448, i32* %2035, i32* %2038
@@ -8394,7 +8394,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2079 = xor i32 %2070, %2078
   %2080 = getelementptr inbounds i32, i32* %0, i64 48
   %2081 = load i1, i1* %out.10
-  %2082 = icmp slt i64 48, %len.
+  %2082 = icmp slt i64 48, %N
   %2083 = bitcast i64* %shadow to i32*
   %safe.458 = or i1 %2081, %2082
   %select.ptr.459 = select i1 %safe.458, i32* %2080, i32* %2083
@@ -8447,7 +8447,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2122 = xor i32 %2113, %2121
   %2123 = getelementptr inbounds i32, i32* %0, i64 49
   %2124 = load i1, i1* %out.10
-  %2125 = icmp slt i64 49, %len.
+  %2125 = icmp slt i64 49, %N
   %2126 = bitcast i64* %shadow to i32*
   %safe.468 = or i1 %2124, %2125
   %select.ptr.469 = select i1 %safe.468, i32* %2123, i32* %2126
@@ -8500,7 +8500,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2165 = xor i32 %2156, %2164
   %2166 = getelementptr inbounds i32, i32* %0, i64 50
   %2167 = load i1, i1* %out.10
-  %2168 = icmp slt i64 50, %len.
+  %2168 = icmp slt i64 50, %N
   %2169 = bitcast i64* %shadow to i32*
   %safe.478 = or i1 %2167, %2168
   %select.ptr.479 = select i1 %safe.478, i32* %2166, i32* %2169
@@ -8553,7 +8553,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2208 = xor i32 %2199, %2207
   %2209 = getelementptr inbounds i32, i32* %0, i64 51
   %2210 = load i1, i1* %out.10
-  %2211 = icmp slt i64 51, %len.
+  %2211 = icmp slt i64 51, %N
   %2212 = bitcast i64* %shadow to i32*
   %safe.488 = or i1 %2210, %2211
   %select.ptr.489 = select i1 %safe.488, i32* %2209, i32* %2212
@@ -8606,7 +8606,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2251 = xor i32 %2242, %2250
   %2252 = getelementptr inbounds i32, i32* %0, i64 52
   %2253 = load i1, i1* %out.10
-  %2254 = icmp slt i64 52, %len.
+  %2254 = icmp slt i64 52, %N
   %2255 = bitcast i64* %shadow to i32*
   %safe.498 = or i1 %2253, %2254
   %select.ptr.499 = select i1 %safe.498, i32* %2252, i32* %2255
@@ -8659,7 +8659,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2294 = xor i32 %2285, %2293
   %2295 = getelementptr inbounds i32, i32* %0, i64 53
   %2296 = load i1, i1* %out.10
-  %2297 = icmp slt i64 53, %len.
+  %2297 = icmp slt i64 53, %N
   %2298 = bitcast i64* %shadow to i32*
   %safe.508 = or i1 %2296, %2297
   %select.ptr.509 = select i1 %safe.508, i32* %2295, i32* %2298
@@ -8712,7 +8712,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2337 = xor i32 %2328, %2336
   %2338 = getelementptr inbounds i32, i32* %0, i64 54
   %2339 = load i1, i1* %out.10
-  %2340 = icmp slt i64 54, %len.
+  %2340 = icmp slt i64 54, %N
   %2341 = bitcast i64* %shadow to i32*
   %safe.518 = or i1 %2339, %2340
   %select.ptr.519 = select i1 %safe.518, i32* %2338, i32* %2341
@@ -8765,7 +8765,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2380 = xor i32 %2371, %2379
   %2381 = getelementptr inbounds i32, i32* %0, i64 55
   %2382 = load i1, i1* %out.10
-  %2383 = icmp slt i64 55, %len.
+  %2383 = icmp slt i64 55, %N
   %2384 = bitcast i64* %shadow to i32*
   %safe.528 = or i1 %2382, %2383
   %select.ptr.529 = select i1 %safe.528, i32* %2381, i32* %2384
@@ -8843,7 +8843,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2441 = xor i32 %2431, %2440
   %2442 = getelementptr inbounds i32, i32* %2400, i64 0
   %2443 = load i1, i1* %out.11
-  %2444 = icmp slt i64 0, %len.
+  %2444 = icmp slt i64 0, %N
   %2445 = bitcast i64* %shadow to i32*
   %safe.538 = or i1 %2443, %2444
   %select.ptr.539 = select i1 %safe.538, i32* %2442, i32* %2445
@@ -8853,7 +8853,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2449 = trunc i32 %2448 to i8
   %2450 = getelementptr inbounds i8, i8* %3, i64 0
   %2451 = load i1, i1* %out.11
-  %2452 = icmp slt i64 0, %len.2
+  %2452 = icmp slt i64 0, %N2
   %2453 = bitcast i64* %shadow to i8*
   %safe.540 = or i1 %2451, %2452
   %select.ptr.541 = select i1 %safe.540, i8* %2450, i8* %2453
@@ -8864,7 +8864,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2456 = trunc i32 %2455 to i8
   %2457 = getelementptr inbounds i8, i8* %3, i64 1
   %2458 = load i1, i1* %out.11
-  %2459 = icmp slt i64 1, %len.2
+  %2459 = icmp slt i64 1, %N2
   %2460 = bitcast i64* %shadow to i8*
   %safe.542 = or i1 %2458, %2459
   %select.ptr.543 = select i1 %safe.542, i8* %2457, i8* %2460
@@ -8875,7 +8875,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2463 = trunc i32 %2462 to i8
   %2464 = getelementptr inbounds i8, i8* %3, i64 2
   %2465 = load i1, i1* %out.11
-  %2466 = icmp slt i64 2, %len.2
+  %2466 = icmp slt i64 2, %N2
   %2467 = bitcast i64* %shadow to i8*
   %safe.545 = or i1 %2465, %2466
   %select.ptr.546 = select i1 %safe.545, i8* %2464, i8* %2467
@@ -8885,7 +8885,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2469 = trunc i32 %2447 to i8
   %2470 = getelementptr inbounds i8, i8* %3, i64 3
   %2471 = load i1, i1* %out.11
-  %2472 = icmp slt i64 3, %len.2
+  %2472 = icmp slt i64 3, %N2
   %2473 = bitcast i64* %shadow to i8*
   %safe.548 = or i1 %2471, %2472
   %select.ptr.549 = select i1 %safe.548, i8* %2470, i8* %2473
@@ -8943,7 +8943,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2515 = xor i32 %2505, %2514
   %2516 = getelementptr inbounds i32, i32* %2400, i64 1
   %2517 = load i1, i1* %out.11
-  %2518 = icmp slt i64 1, %len.
+  %2518 = icmp slt i64 1, %N
   %2519 = bitcast i64* %shadow to i32*
   %safe.559 = or i1 %2517, %2518
   %select.ptr.560 = select i1 %safe.559, i32* %2516, i32* %2519
@@ -8954,7 +8954,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2524 = getelementptr inbounds i8, i8* %3, i64 4
   %2525 = getelementptr inbounds i8, i8* %2524, i64 0
   %2526 = load i1, i1* %out.11
-  %2527 = icmp slt i64 0, %len.2
+  %2527 = icmp slt i64 0, %N2
   %2528 = bitcast i64* %shadow to i8*
   %safe.561 = or i1 %2526, %2527
   %select.ptr.562 = select i1 %safe.561, i8* %2525, i8* %2528
@@ -8966,7 +8966,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2532 = getelementptr inbounds i8, i8* %3, i64 4
   %2533 = getelementptr inbounds i8, i8* %2532, i64 1
   %2534 = load i1, i1* %out.11
-  %2535 = icmp slt i64 1, %len.2
+  %2535 = icmp slt i64 1, %N2
   %2536 = bitcast i64* %shadow to i8*
   %safe.564 = or i1 %2534, %2535
   %select.ptr.565 = select i1 %safe.564, i8* %2533, i8* %2536
@@ -8978,7 +8978,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2540 = getelementptr inbounds i8, i8* %3, i64 4
   %2541 = getelementptr inbounds i8, i8* %2540, i64 2
   %2542 = load i1, i1* %out.11
-  %2543 = icmp slt i64 2, %len.2
+  %2543 = icmp slt i64 2, %N2
   %2544 = bitcast i64* %shadow to i8*
   %safe.567 = or i1 %2542, %2543
   %select.ptr.568 = select i1 %safe.567, i8* %2541, i8* %2544
@@ -8989,7 +8989,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2547 = getelementptr inbounds i8, i8* %3, i64 4
   %2548 = getelementptr inbounds i8, i8* %2547, i64 3
   %2549 = load i1, i1* %out.11
-  %2550 = icmp slt i64 3, %len.2
+  %2550 = icmp slt i64 3, %N2
   %2551 = bitcast i64* %shadow to i8*
   %safe.570 = or i1 %2549, %2550
   %select.ptr.571 = select i1 %safe.570, i8* %2548, i8* %2551
@@ -9047,7 +9047,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2593 = xor i32 %2583, %2592
   %2594 = getelementptr inbounds i32, i32* %2400, i64 2
   %2595 = load i1, i1* %out.11
-  %2596 = icmp slt i64 2, %len.
+  %2596 = icmp slt i64 2, %N
   %2597 = bitcast i64* %shadow to i32*
   %safe.581 = or i1 %2595, %2596
   %select.ptr.582 = select i1 %safe.581, i32* %2594, i32* %2597
@@ -9058,7 +9058,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2602 = getelementptr inbounds i8, i8* %3, i64 8
   %2603 = getelementptr inbounds i8, i8* %2602, i64 0
   %2604 = load i1, i1* %out.11
-  %2605 = icmp slt i64 0, %len.2
+  %2605 = icmp slt i64 0, %N2
   %2606 = bitcast i64* %shadow to i8*
   %safe.583 = or i1 %2604, %2605
   %select.ptr.584 = select i1 %safe.583, i8* %2603, i8* %2606
@@ -9070,7 +9070,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2610 = getelementptr inbounds i8, i8* %3, i64 8
   %2611 = getelementptr inbounds i8, i8* %2610, i64 1
   %2612 = load i1, i1* %out.11
-  %2613 = icmp slt i64 1, %len.2
+  %2613 = icmp slt i64 1, %N2
   %2614 = bitcast i64* %shadow to i8*
   %safe.586 = or i1 %2612, %2613
   %select.ptr.587 = select i1 %safe.586, i8* %2611, i8* %2614
@@ -9082,7 +9082,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2618 = getelementptr inbounds i8, i8* %3, i64 8
   %2619 = getelementptr inbounds i8, i8* %2618, i64 2
   %2620 = load i1, i1* %out.11
-  %2621 = icmp slt i64 2, %len.2
+  %2621 = icmp slt i64 2, %N2
   %2622 = bitcast i64* %shadow to i8*
   %safe.589 = or i1 %2620, %2621
   %select.ptr.590 = select i1 %safe.589, i8* %2619, i8* %2622
@@ -9093,7 +9093,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2625 = getelementptr inbounds i8, i8* %3, i64 8
   %2626 = getelementptr inbounds i8, i8* %2625, i64 3
   %2627 = load i1, i1* %out.11
-  %2628 = icmp slt i64 3, %len.2
+  %2628 = icmp slt i64 3, %N2
   %2629 = bitcast i64* %shadow to i8*
   %safe.592 = or i1 %2627, %2628
   %select.ptr.593 = select i1 %safe.592, i8* %2626, i8* %2629
@@ -9151,7 +9151,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2671 = xor i32 %2661, %2670
   %2672 = getelementptr inbounds i32, i32* %2400, i64 3
   %2673 = load i1, i1* %out.11
-  %2674 = icmp slt i64 3, %len.
+  %2674 = icmp slt i64 3, %N
   %2675 = bitcast i64* %shadow to i32*
   %safe.603 = or i1 %2673, %2674
   %select.ptr.604 = select i1 %safe.603, i32* %2672, i32* %2675
@@ -9162,7 +9162,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2680 = getelementptr inbounds i8, i8* %3, i64 12
   %2681 = getelementptr inbounds i8, i8* %2680, i64 0
   %2682 = load i1, i1* %out.11
-  %2683 = icmp slt i64 0, %len.2
+  %2683 = icmp slt i64 0, %N2
   %2684 = bitcast i64* %shadow to i8*
   %safe.605 = or i1 %2682, %2683
   %select.ptr.606 = select i1 %safe.605, i8* %2681, i8* %2684
@@ -9174,7 +9174,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2688 = getelementptr inbounds i8, i8* %3, i64 12
   %2689 = getelementptr inbounds i8, i8* %2688, i64 1
   %2690 = load i1, i1* %out.11
-  %2691 = icmp slt i64 1, %len.2
+  %2691 = icmp slt i64 1, %N2
   %2692 = bitcast i64* %shadow to i8*
   %safe.608 = or i1 %2690, %2691
   %select.ptr.609 = select i1 %safe.608, i8* %2689, i8* %2692
@@ -9186,7 +9186,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2696 = getelementptr inbounds i8, i8* %3, i64 12
   %2697 = getelementptr inbounds i8, i8* %2696, i64 2
   %2698 = load i1, i1* %out.11
-  %2699 = icmp slt i64 2, %len.2
+  %2699 = icmp slt i64 2, %N2
   %2700 = bitcast i64* %shadow to i8*
   %safe.611 = or i1 %2698, %2699
   %select.ptr.612 = select i1 %safe.611, i8* %2697, i8* %2700
@@ -9197,7 +9197,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   %2703 = getelementptr inbounds i8, i8* %3, i64 12
   %2704 = getelementptr inbounds i8, i8* %2703, i64 3
   %2705 = load i1, i1* %out.11
-  %2706 = icmp slt i64 3, %len.2
+  %2706 = icmp slt i64 3, %N2
   %2707 = bitcast i64* %shadow to i8*
   %safe.614 = or i1 %2705, %2706
   %select.ptr.615 = select i1 %safe.614, i8* %2704, i8* %2707
@@ -9207,7 +9207,7 @@ define void @rijndaelEncrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   ret void
 }
 
-define void @rijndaelDecrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8* %3, i64 %len.2) {
+define void @rijndaelDecrypt(i32* %0, i64 %N, i32 %1, i8* %2, i64 %N1, i8* %3, i64 %N2) {
   %5 = getelementptr inbounds i8, i8* %2, i64 0
   %6 = load i8, i8* %5, align 1
   %7 = zext i8 %6 to i32
@@ -10757,7 +10757,7 @@ define void @rijndaelDecrypt(i32* %0, i64 %len., i32 %1, i8* %2, i64 %len.1, i8*
   ret void
 }
 
-define void @randombytes(i8* %0, i64 %len., i64 %1) {
+define void @randombytes(i8* %0, i64 %N, i64 %1) {
   %3 = icmp sge i64 %1, 0
   br i1 %3, label %5, label %4
 
