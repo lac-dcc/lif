@@ -9,6 +9,7 @@ source collect.sh
 declare -a benchs=(
     "comp"
     "mu" 
+    "3way"
     "dudect-examples/aes32"
     "dudect-examples/donnabad"
     "bearssl/hash/md5"

@@ -63,15 +63,13 @@ PreservedAnalyses Pass::run(Module &M, ModuleAnalysisManager &MAM) {
         MAM.getResult<FunctionAnalysisManagerModuleProxy>(M).getManager();
 
     auto Derived = findDerived(M, std::set(Fns.begin(), Fns.end()));
-    bool PreserveAll = true;
 
     // We transform every function selected by the user plus the derived ones.
     // If no function was selected, we consider all functions from M as
     // derived, and thus all functions must be transformed. We need to filter
     // functions that we don't have access to the definition.
     if (Names.empty())
-        for (Function &F : M)
-            if (!F.isDeclaration()) Derived.insert(&F);
+        for (Function &F : M) Derived.insert(&F);
 
     auto Wrap = [](Function *F, bool IsDerived) -> FuncWrapper * {
         // Transform multiple return points into a unique exit block.
@@ -92,23 +90,34 @@ PreservedAnalyses Pass::run(Module &M, ModuleAnalysisManager &MAM) {
         return W;
     };
 
+    // We cannot modify external functions (i.e. functions that we don't have
+    // access to their definition), so we just emit a warning.
+    auto WarnExternal = [](const Function &F) {
+        errs() << "Warning: cannot handle external function " << F.getName()
+               << "!\n";
+    };
+
     // We mark all functions from the derived set as "Derived".
     llvm::SmallVector<FuncWrapper *, 32> Wrapped;
-    for (auto F : Derived)
-        if (!F->isDeclaration()) Wrapped.push_back(Wrap(F, true));
+    for (auto F : Derived) {
+        if (F->isDeclaration())
+            WarnExternal(*F);
+        else
+            Wrapped.push_back(Wrap(F, true));
+    }
 
     // Then, we insert the functions selected by the user as not derived (unless
     // it was already marked as derived).
-    for (auto F : Fns)
-        if (Derived.find(F) == Derived.end()) Wrapped.push_back(Wrap(F, false));
-
-    if (InsertLen) {
-        prepareModule(M, Wrapped, FAM);
-        PreserveAll = false;
+    for (auto F : Fns) {
+        if (F->isDeclaration())
+            WarnExternal(*F);
+        else if (Derived.find(F) == Derived.end())
+            Wrapped.push_back(Wrap(F, false));
     }
 
-    for (auto W : Wrapped) PreserveAll &= !transformFunc(*W, FAM);
-    return PreserveAll ? PreservedAnalyses::all() : PreservedAnalyses::none();
+    prepareModule(M, Wrapped, FAM);
+    for (auto W : Wrapped) transformFunc(*W, FAM);
+    return PreservedAnalyses::none();
 }
 
 std::set<Function *> findDerived(Module &M, const std::set<Function *> Fns) {
@@ -543,7 +552,7 @@ void prepareFunc(Function &F) {
                                ReturnInst::Create(F.getContext(), Phi));
 }
 
-bool transformFunc(const FuncWrapper &W, FunctionAnalysisManager &FAM) {
+void transformFunc(const FuncWrapper &W, FunctionAnalysisManager &FAM) {
     auto [F, _1, OutM, InM, Skip] = W;
 
     // We currently cannot handle functions with cycles.
@@ -554,7 +563,7 @@ bool transformFunc(const FuncWrapper &W, FunctionAnalysisManager &FAM) {
         errs() << "Error: unexpected cycle(s) on function \"" << F->getName()
                << "\" (possible fix: run 'opt -mem2reg -loop-rotate "
                   "-loop-unroll -unroll-count=N')\n";
-        return false;
+        return;
     }
 
     // Get the length associated with each pointer (either local or
@@ -618,7 +627,6 @@ bool transformFunc(const FuncWrapper &W, FunctionAnalysisManager &FAM) {
     // Now that every basic block has only one successor, we can merge them
     // without any problems.
     for (auto BB : MergeV) MergeBlockIntoPredecessor(BB);
-    return true;
 }
 
 void transformPhi(PHINode &Phi, const SmallVectorImpl<Incoming> &InV) {

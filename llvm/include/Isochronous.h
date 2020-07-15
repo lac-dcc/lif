@@ -51,16 +51,11 @@ class Pass : public llvm::PassInfoMixin<Pass> {
     /// A constructor that takes the name of functions to be transformed and a
     /// boolean indicating if this pass should insert the length of pointer
     /// arguments.
-    Pass(std::set<llvm::StringRef> Names = {}, bool InsertLen = false)
-        : Names(Names), InsertLen(InsertLen){};
+    Pass(std::set<llvm::StringRef> Names = {}) : Names(Names){};
 
     /// Traverses the module \p M transforming functions into isochronous
-    /// versions.
-    ///
-    /// If FNames is not empty, then we transform only the functions in
-    /// there and skip the others. If InsertLen is set to true, then given a
-    /// function F we modify its type by inserting the length of each pointer
-    /// argument to its signature.
+    /// versions. If FNames is not empty, then we transform only the functions
+    /// in there and skip the others.
     ///
     /// \returns the set of analyses preserved after running this pass.
     llvm::PreservedAnalyses run(llvm::Module &M,
@@ -69,10 +64,6 @@ class Pass : public llvm::PassInfoMixin<Pass> {
   private:
     /// A set storing the name of the functions that should be transformed.
     std::set<llvm::StringRef> Names;
-
-    /// A boolean value indicating whether we should insert the length of
-    /// pointer argument to a function signature.
-    bool InsertLen;
 };
 
 /// A wrapper for a function F to indicate whether it is derived or not. By
@@ -112,9 +103,7 @@ void prepareFunc(llvm::Function &F);
 
 /// Transform \p F into isochronous by applying the proper rules to each
 /// instruction.
-///
-/// \returns true if success; false otherwise.
-bool transformFunc(const FuncWrapper &W, llvm::FunctionAnalysisManager &FAM);
+void transformFunc(const FuncWrapper &W, llvm::FunctionAnalysisManager &FAM);
 
 /// Transforms \p Phi into a set of instructions according to the incoming
 /// conditions of the basic block that contains \Phi.

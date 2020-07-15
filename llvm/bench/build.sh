@@ -92,10 +92,11 @@ build::single() {
         opt -S -O1 "${llvmir}/${srcname}.ll" -o "${llvmir}/${srcname}_opt.ll"
 
         # Run the invariant tool without optimizations & with optimizations.
-        ../bin/lif -insert-len -O0 -names=${meta[functions]} \
+        ../bin/lif -O0 -names=${meta[functions]} \
             "${llvmir}/${srcname}.ll" -o "${llvmir}/${srcname}_inv.ll"
-        ../bin/lif -insert-len -O1 -names=${meta[functions]} \
-            "${llvmir}/${srcname}.ll" -o "${llvmir}/${srcname}_invopt.ll"
+        ../bin/lif -O1 -names=${meta[functions]} \
+            "${llvmir}/${srcname}.ll" -o "${llvmir}/${srcname}_invopt.ll" \
+            &> /dev/null
 
         # Generate the assembly files.
         llc -filetype=asm "${llvmir}/${srcname}.ll" \

@@ -1,3 +1,4 @@
+// See: https://github.com/arthurlopes/ctbench/blob/master/dudect/BearSSL/hash/md5/dut_md5.c
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h> // memcmp

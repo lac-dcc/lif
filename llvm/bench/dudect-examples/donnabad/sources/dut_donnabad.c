@@ -1,3 +1,4 @@
+// See: https://github.com/oreparaz/dudect/blob/master/dut/aes32/dut_aes32.c
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>

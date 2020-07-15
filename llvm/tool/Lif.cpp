@@ -70,13 +70,6 @@ static cl::opt<std::string>
                  cl::value_desc("bitcode filename"), cl::init("out.ll"),
                  cl::cat(LifCategory));
 
-/// An optional argument that specifies whether the tool should insert
-/// arguments for the length of the original pointer arguments or not.
-static cl::opt<bool> InsertLen("insert-len",
-                               cl::desc("Insert an argument for the length of "
-                                        "each pointer passed to a function"),
-                               cl::init(false), cl::cat(LifCategory));
-
 /// An optional argument that specifies whether the tool should try to unroll
 /// existing loops or not.
 static cl::opt<bool>
@@ -148,7 +141,7 @@ void runIsochronousPass(Module &M) {
     }
 
     std::set<StringRef> Names(FNames.begin(), FNames.end());
-    MPM.addPass(isochronous::Pass(Names, InsertLen));
+    MPM.addPass(isochronous::Pass(Names));
 
     if (Opt != O0)
         MPM.addPass(PB.buildPerModuleDefaultPipeline(OptM.find(Opt)->second));
