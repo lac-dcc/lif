@@ -1,0 +1,17 @@
+Src,Fn,Type,Ir,I1mr,ILmr,Dr,D1mr,DLmr,Dw,D1mw,DLmw
+main1.c,des_ekey,orig,512,77,77,251,157,157,78,31,31
+main1.c,des_ekey,orig-opt,481,75,75,245,170,170,84,46,46
+main1.c,des_ekey,isochr,514,77,77,251,158,157,79,27,27
+main1.c,des_ekey,isochr-opt,481,75,75,245,168,168,84,49,49
+main1.c,des_encrypt,orig,541,70,70,165,145,145,4,1,1
+main1.c,des_encrypt,orig-opt,635,81,81,167,146,146,6,1,1
+main1.c,des_encrypt,isochr,558,72,72,165,146,146,5,1,1
+main1.c,des_encrypt,isochr-opt,635,81,81,167,146,146,6,1,1
+main2.c,des_ekey,orig,512,77,77,251,38,38,78,25,25
+main2.c,des_ekey,orig-opt,481,75,75,245,55,53,84,35,35
+main2.c,des_ekey,isochr,514,77,77,251,40,40,79,24,23
+main2.c,des_ekey,isochr-opt,481,75,75,245,54,52,84,36,36
+main2.c,des_encrypt,orig,541,70,70,165,144,144,4,1,1
+main2.c,des_encrypt,orig-opt,635,81,81,167,144,144,6,1,1
+main2.c,des_encrypt,isochr,558,72,72,165,144,144,5,1,1
+main2.c,des_encrypt,isochr-opt,635,81,81,167,145,145,6,1,1

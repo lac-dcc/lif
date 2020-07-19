@@ -66,10 +66,12 @@ PreservedAnalyses Pass::run(Module &M, ModuleAnalysisManager &MAM) {
 
     // We transform every function selected by the user plus the derived ones.
     // If no function was selected, we consider all functions from M as
-    // derived, and thus all functions must be transformed. We need to filter
-    // functions that we don't have access to the definition.
+    // derived, as long as they are used by some other function, and thus all
+    // functions shall be transformed. We need to filter functions that we don't
+    // have access to the definition.
     if (Names.empty())
-        for (Function &F : M) Derived.insert(&F);
+        for (Function &F : M)
+            if (!F.use_empty() && !F.isDeclaration()) Derived.insert(&F);
 
     auto Wrap = [](Function *F, bool IsDerived) -> FuncWrapper * {
         // Transform multiple return points into a unique exit block.
@@ -97,10 +99,24 @@ PreservedAnalyses Pass::run(Module &M, ModuleAnalysisManager &MAM) {
                << "!\n";
     };
 
+    // We curently cannot handle functions with loops/cycles, so we skip them
+    // and throw an error.
+    auto ErrCycles = [](const Function &F) {
+        errs() << "Error: unexpected cycle(s) on function \"" << F.getName()
+               << "\" (possible fix: run 'opt -mem2reg -loop-rotate "
+                  "-loop-unroll -unroll-count=N')\n";
+    };
+
     // We mark all functions from the derived set as "Derived".
     llvm::SmallVector<FuncWrapper *, 32> Wrapped;
     for (auto F : Derived) {
-        if (F->isDeclaration())
+        SmallVector<std::pair<const BasicBlock *, const BasicBlock *>, 32>
+            Result;
+        FindFunctionBackedges(*F, Result);
+
+        if (!Result.empty())
+            ErrCycles(*F);
+        else if (F->isDeclaration())
             WarnExternal(*F);
         else
             Wrapped.push_back(Wrap(F, true));
@@ -109,7 +125,13 @@ PreservedAnalyses Pass::run(Module &M, ModuleAnalysisManager &MAM) {
     // Then, we insert the functions selected by the user as not derived (unless
     // it was already marked as derived).
     for (auto F : Fns) {
-        if (F->isDeclaration())
+        SmallVector<std::pair<const BasicBlock *, const BasicBlock *>, 32>
+            Result;
+        FindFunctionBackedges(*F, Result);
+
+        if (!Result.empty())
+            ErrCycles(*F);
+        else if (F->isDeclaration())
             WarnExternal(*F);
         else if (Derived.find(F) == Derived.end())
             Wrapped.push_back(Wrap(F, false));
@@ -153,6 +175,7 @@ std::set<Function *> findDerived(Module &M, const std::set<Function *> Fns) {
     return Derived;
 }
 
+// FIXME: Compute length of arrays inside structs.
 DenseMap<const Value *, Value *> computeLength(Function &F,
                                                const TargetLibraryInfo *TLI) {
     DenseMap<const Value *, Value *> LenM;
@@ -188,14 +211,15 @@ DenseMap<const Value *, Value *> computeLength(Function &F,
         auto PtrTy = dyn_cast<PointerType>(Global.getType());
         if (!PtrTy) continue;
 
-        Value *Len;
+        Value *Len = ConstantInt::get(Int64Ty, 1);
         auto ArrTy = dyn_cast<ArrayType>(PtrTy->getElementType());
 
-        if (ArrTy)
-            Len = ConstantInt::get(ArrTy->getElementType(),
-                                   ArrTy->getNumElements());
-        else
-            Len = ConstantInt::get(Int64Ty, 1);
+        if (ArrTy) {
+            auto NumElems = ArrTy->getNumElements();
+            while ((ArrTy = dyn_cast<ArrayType>(ArrTy->getElementType())))
+                NumElems *= ArrTy->getNumElements();
+            Len = ConstantInt::get(Int64Ty, NumElems);
+        }
 
         LenM[&Global] = Len;
         Propagate(&Global);
@@ -295,18 +319,24 @@ DenseMap<const Value *, Value *> computeLength(Function &F,
             // We're lucky! It is a GEP and the type is an array.
             else if (auto GEP = dyn_cast<GetElementPtrInst>(Ptr)) {
                 auto ArrTy = cast<ArrayType>(GEP->getPointerOperandType());
-                Len = ConstantInt::get(ArrTy->getElementType(),
-                                       ArrTy->getNumElements());
+                auto NumElems = ArrTy->getNumElements();
+                while ((ArrTy = dyn_cast<ArrayType>(ArrTy->getElementType())))
+                    NumElems *= ArrTy->getNumElements();
+                Len = ConstantInt::get(Int64Ty, NumElems);
             }
 
             // Okay, not a GEP. Perhaps an alloca?
             else if (auto Alloca = dyn_cast<AllocaInst>(Ptr)) {
                 auto ArrTy = dyn_cast<ArrayType>(Alloca->getAllocatedType());
-                if (ArrTy && !Alloca->isArrayAllocation())
-                    Len = ConstantInt::get(ArrTy->getElementType(),
-                                           ArrTy->getNumElements());
-                else
+                if (ArrTy && !Alloca->isArrayAllocation()) {
+                    auto NumElems = ArrTy->getNumElements();
+                    while (
+                        (ArrTy = dyn_cast<ArrayType>(ArrTy->getElementType())))
+                        NumElems *= ArrTy->getNumElements();
+                    Len = ConstantInt::get(Int64Ty, NumElems);
+                } else {
                     Len = Alloca->getArraySize();
+                }
             }
 
             // Nothing yet... so it has to be a malloc call!
@@ -406,6 +436,7 @@ void prepareModule(Module &M, SmallVectorImpl<FuncWrapper *> &Fns,
         auto NewF =
             Function::Create(NewFTy, F.getLinkage(), F.getAddressSpace());
         M.getFunctionList().insert(F.getIterator(), NewF);
+        NewF->copyAttributesFrom(&F);
         NewF->takeName(&F);
 
         // Set the new function's argument's names.
@@ -555,17 +586,6 @@ void prepareFunc(Function &F) {
 void transformFunc(const FuncWrapper &W, FunctionAnalysisManager &FAM) {
     auto [F, _1, OutM, InM, Skip] = W;
 
-    // We currently cannot handle functions with cycles.
-    SmallVector<std::pair<const BasicBlock *, const BasicBlock *>, 32> Result;
-    FindFunctionBackedges(*F, Result);
-
-    if (!Result.empty()) {
-        errs() << "Error: unexpected cycle(s) on function \"" << F->getName()
-               << "\" (possible fix: run 'opt -mem2reg -loop-rotate "
-                  "-loop-unroll -unroll-count=N')\n";
-        return;
-    }
-
     // Get the length associated with each pointer (either local or
     // argument).
     auto LenM = computeLength(*F, &FAM.getResult<TargetLibraryAnalysis>(*F));
@@ -655,6 +675,13 @@ void transformPhi(PHINode &Phi, const SmallVectorImpl<Incoming> &InV) {
 
 void transformLoad(LoadInst &Load, AllocaInst *Shadow, Value *PtrLen,
                    Value *Cond) {
+    // The pointer operand may be a GEP in the form of a ConstantExpr. In this
+    // case, we transform it into a GEP instruction so we can handle easier.
+    if (auto ConstExpr = dyn_cast<ConstantExpr>(Load.getPointerOperand())) {
+        auto GEP = cast<GetElementPtrInst>(ConstExpr->getAsInstruction());
+        GEP->insertBefore(&Load);
+        Load.setOperand(Load.getPointerOperandIndex(), GEP);
+    }
     // If the pointer operand is a GEP we need to transform it in order to
     // ensure the safety of the memory access.
     if (auto GEP = dyn_cast<GetElementPtrInst>(Load.getPointerOperand()))
@@ -688,17 +715,79 @@ void transformStore(StoreInst &Store, AllocaInst *Shadow, Value *PtrLen,
 
 Value *transformGEP(GetElementPtrInst *GEP, AllocaInst *Shadow, Value *PtrLen,
                     Value *Cond, Instruction *Before) {
-    auto Idx = GEP->getOperand(GEP->getNumIndices());
-    auto IdxTy = Idx->getType();
-    auto PtrLenTy = PtrLen->getType();
-    auto IdxNumBits = IdxTy->getScalarSizeInBits();
-    auto PtrLenNumBits = PtrLenTy->getScalarSizeInBits();
+    // If GEP operand pointer is of an array type, it may be a multidimensional
+    // array so we need to compute the actual index.
+    //
+    // Example 1: an access like A[1][1] may be translated to a getlementptr ..
+    // i32 0, i64 1, i64 1.  In this situation, the actual index would be 2^0 *
+    // 1 + 2^1 * 1 = 3.
+    //
+    // Example 2: Let A be the third field of some struct. In this case, the
+    // GEP inst. would be something like getlementptr ... i32 0, i32 2, i64 1,
+    // i64 1. Hence, the actual index would be 0 + 2 + 2^0 * 1 + 2^1 * 1 = 5.
+    // For computing the safety of the access we are interested in the index
+    // related to the array, so in this case it would be 3 as well.
+    //
+    // TODO: We can simplify this code if we change the behavior of
+    // computeLength for multidimensional arrays (and structs). Instead of
+    // computing a single value, we can store a list of lengths (e.g. a matrix
+    // [3][3] would be stored as two lengths [3, 3]). This way, we already know
+    // how much operand indices we need to aggregate (in case we're explicit
+    // dealing with a multidimensional array). For simple pointers we'd store
+    // the length as a list of size 1, so we know that we should compare with
+    // the last idx operand.
+    // The "base" GEP operand pointer type is always a pointer.
+    auto PtrOpTy =
+        cast<PointerType>(GEP->getPointerOperandType())->getElementType();
 
-    if (PtrLenNumBits < IdxNumBits)
-        PtrLen = new SExtInst(PtrLen, IdxTy, "", Before);
-    else if (IdxNumBits < PtrLenNumBits)
-        Idx = new SExtInst(Idx, PtrLenTy, "", Before);
+    size_t OpIdx = 1;
+    // Move until we found the pointed element (which can be an array).
+    while ((isa<PointerType>(PtrOpTy) || isa<StructType>(PtrOpTy)) &&
+           OpIdx < GEP->getNumOperands() - 1) {
+        OpIdx++;
+        PtrOpTy = isa<PointerType>(PtrOpTy)
+                      ? cast<PointerType>(PtrOpTy)->getElementType()
+                      // Indexing a struct field requires a constant integer.
+                      : cast<StructType>(PtrOpTy)->getElementType(
+                            cast<ConstantInt>(GEP->getOperand(OpIdx))
+                                ->getSExtValue());
+    }
 
+    auto Idx = GEP->getOperand(OpIdx);
+    auto ArrIdxMult = 1;
+
+    auto MatchType = [Before](Value *&A, Value *&B) {
+        auto ATy = A->getType();
+        auto BTy = B->getType();
+        auto ANumBits = ATy->getScalarSizeInBits();
+        auto BNumBits = BTy->getScalarSizeInBits();
+        if (ANumBits < BNumBits)
+            A = new SExtInst(A, BTy, "", Before);
+        else if (BNumBits < ANumBits)
+            B = new SExtInst(B, ATy, "", Before);
+    };
+
+    if (isa<ArrayType>(PtrOpTy)) {
+        auto ArrIdx = GEP->getOperand(OpIdx);
+        auto ArrIdxTy = ArrIdx->getType();
+        MatchType(ArrIdx, Idx);
+        Idx = BinaryOperator::CreateMul(
+            ArrIdx, ConstantInt::get(ArrIdxTy, ArrIdxMult), "", Before);
+
+        while (OpIdx < GEP->getNumIndices()) {
+            ArrIdxMult *= 2;
+            OpIdx++;
+            auto ArrIdx = GEP->getOperand(OpIdx);
+            auto ArrIdxTy = ArrIdx->getType();
+            MatchType(ArrIdx, Idx);
+            ArrIdx = BinaryOperator::CreateMul(
+                ArrIdx, ConstantInt::get(ArrIdxTy, ArrIdxMult), "", Before);
+            MatchType(ArrIdx, Idx);
+            Idx = BinaryOperator::CreateAdd(Idx, ArrIdx, "", Before);
+        }
+    }
+
+    MatchType(Idx, PtrLen);
     auto IsSafe = ICmpInst::Create(Instruction::ICmp, ICmpInst::ICMP_SLT, Idx,
                                    PtrLen, "", Before);
 

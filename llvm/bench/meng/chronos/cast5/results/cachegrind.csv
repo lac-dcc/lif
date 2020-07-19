@@ -1,0 +1,17 @@
+Src,Fn,Type,Ir,I1mr,ILmr,Dr,D1mr,DLmr,Dw,D1mw,DLmw
+main1.c,cast5_setkey,orig,124,14,14,45,10,10,45,9,9
+main1.c,cast5_setkey,orig-opt,124,14,14,45,9,9,45,9,9
+main1.c,cast5_setkey,isochr,133,15,15,45,9,9,48,12,12
+main1.c,cast5_setkey,isochr-opt,132,16,16,45,12,12,47,12,12
+main1.c,cast5_encrypt,orig,262,33,33,101,94,94,4,1,1
+main1.c,cast5_encrypt,orig-opt,273,34,34,101,93,93,4,1,1
+main1.c,cast5_encrypt,isochr,266,34,34,101,88,88,5,1,1
+main1.c,cast5_encrypt,isochr-opt,268,34,34,101,90,90,4,1,1
+main2.c,cast5_setkey,orig,124,14,14,45,10,10,45,9,9
+main2.c,cast5_setkey,orig-opt,124,14,14,45,9,9,45,9,9
+main2.c,cast5_setkey,isochr,133,15,15,45,9,9,48,12,12
+main2.c,cast5_setkey,isochr-opt,132,16,16,45,12,12,47,12,12
+main2.c,cast5_encrypt,orig,262,33,33,101,89,89,4,1,1
+main2.c,cast5_encrypt,orig-opt,273,34,34,101,87,87,4,1,1
+main2.c,cast5_encrypt,isochr,266,34,34,101,86,86,5,0,0
+main2.c,cast5_encrypt,isochr-opt,268,34,34,101,87,87,4,0,0

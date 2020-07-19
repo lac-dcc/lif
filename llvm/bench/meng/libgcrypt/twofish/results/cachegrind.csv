@@ -1,0 +1,17 @@
+Src,Fn,Type,Ir,I1mr,ILmr,Dr,D1mr,DLmr,Dw,D1mw,DLmw
+main1.c,do_twofish_setkey,orig,9.632,1.362,1.362,3.880,2.991,2.991,1.073,1.047,1.047
+main1.c,do_twofish_setkey,orig-opt,8.349,1.229,1.229,2.789,2.408,2.408,1.070,1.045,1.045
+main1.c,do_twofish_setkey,isochr,41.286,5.473,5.473,8.081,6.550,6.550,3.313,1.769,1.769
+main1.c,do_twofish_setkey,isochr-opt,26.063,3.964,3.964,7.815,6.129,6.124,3.268,681,681
+main1.c,do_twofish_encrypt,orig,584,72,72,176,148,146,16,2,2
+main1.c,do_twofish_encrypt,orig-opt,603,73,73,176,143,143,16,2,2
+main1.c,do_twofish_encrypt,isochr,603,82,82,179,149,149,19,4,4
+main1.c,do_twofish_encrypt,isochr-opt,621,84,84,179,151,151,18,4,4
+main2.c,do_twofish_setkey,orig,9.632,1.362,1.362,3.880,2.965,2.965,1.073,1.047,1.047
+main2.c,do_twofish_setkey,orig-opt,8.349,1.229,1.229,2.789,2.423,2.423,1.070,1.045,1.045
+main2.c,do_twofish_setkey,isochr,41.286,5.473,5.473,8.081,6.558,6.558,3.313,1.769,1.769
+main2.c,do_twofish_setkey,isochr-opt,26.063,3.964,3.964,7.815,6.127,6.122,3.268,677,677
+main2.c,do_twofish_encrypt,orig,584,72,72,176,149,147,16,2,2
+main2.c,do_twofish_encrypt,orig-opt,603,73,73,176,147,147,16,2,2
+main2.c,do_twofish_encrypt,isochr,603,82,82,179,149,149,19,4,4
+main2.c,do_twofish_encrypt,isochr-opt,621,84,84,179,152,152,18,4,4

@@ -1,0 +1,11 @@
+# Based on: https://github.com/arthurlopes/ctbench/blob/master/FlowTracker/dudect%20examples/donnabad/in.xml
+functions:
+  - curve25519_donna
+cache:
+  - --I1=16384;4;1024
+  - --D1=16384;4;1024
+  - --LL=16384;4;1024
+measure:
+  - 32
+  - 1
+  - 32

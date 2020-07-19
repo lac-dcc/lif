@@ -1,0 +1,17 @@
+Src,Fn,Type,Ir,I1mr,ILmr,Dr,D1mr,DLmr,Dw,D1mw,DLmw
+main1.c,RunEncryptionKeySchedule,orig,534,64,64,35,2,2,33,8,8
+main1.c,RunEncryptionKeySchedule,orig-opt,506,61,61,37,2,2,35,8,8
+main1.c,RunEncryptionKeySchedule,isochr,535,65,65,35,2,2,34,9,9
+main1.c,RunEncryptionKeySchedule,isochr-opt,506,61,61,37,3,3,35,9,9
+main1.c,PRESENT_encrypt,orig,2.986,433,433,1.060,1.059,1.059,3,2,2
+main1.c,PRESENT_encrypt,orig-opt,2.568,377,377,1.059,1.058,1.058,2,1,1
+main1.c,PRESENT_encrypt,isochr,2.987,433,433,1.060,1.057,1.057,4,1,1
+main1.c,PRESENT_encrypt,isochr-opt,2.568,377,377,1.059,1.056,1.056,2,1,1
+main2.c,RunEncryptionKeySchedule,orig,534,64,64,35,2,2,33,8,8
+main2.c,RunEncryptionKeySchedule,orig-opt,506,61,61,37,2,2,35,8,8
+main2.c,RunEncryptionKeySchedule,isochr,535,65,65,35,2,2,34,9,9
+main2.c,RunEncryptionKeySchedule,isochr-opt,506,61,61,37,3,3,35,9,9
+main2.c,PRESENT_encrypt,orig,2.986,433,433,1.060,1.059,1.059,3,2,2
+main2.c,PRESENT_encrypt,orig-opt,2.568,377,377,1.059,1.058,1.058,2,1,1
+main2.c,PRESENT_encrypt,isochr,2.987,433,433,1.060,1.057,1.057,4,1,1
+main2.c,PRESENT_encrypt,isochr-opt,2.568,377,377,1.059,1.056,1.056,2,1,1

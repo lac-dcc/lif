@@ -1,0 +1,17 @@
+Src,Fn,Type,Ir,I1mr,ILmr,Dr,D1mr,DLmr,Dw,D1mw,DLmw
+main1.c,RunEncryptionKeySchedule,orig,2.642,284,284,1.223,72,72,1.185,25,25
+main1.c,RunEncryptionKeySchedule,orig-opt,980,137,137,273,176,176,387,71,70
+main1.c,RunEncryptionKeySchedule,isochr,2.643,288,288,1.223,72,72,1.186,26,26
+main1.c,RunEncryptionKeySchedule,isochr-opt,966,135,135,268,153,153,383,71,71
+main1.c,TWINE_encrypt,orig,5.501,599,599,1.321,8,8,1.024,0,0
+main1.c,TWINE_encrypt,orig-opt,4.493,487,487,1.234,407,405,1.066,137,136
+main1.c,TWINE_encrypt,isochr,5.537,608,608,1.391,8,8,1.025,0,0
+main1.c,TWINE_encrypt,isochr-opt,4.502,494,494,1.228,357,357,1.071,181,181
+main2.c,RunEncryptionKeySchedule,orig,2.642,284,284,1.223,72,72,1.185,25,25
+main2.c,RunEncryptionKeySchedule,orig-opt,980,137,137,273,176,176,387,71,70
+main2.c,RunEncryptionKeySchedule,isochr,2.643,288,288,1.223,72,72,1.186,26,26
+main2.c,RunEncryptionKeySchedule,isochr-opt,966,135,135,268,153,153,383,71,71
+main2.c,TWINE_encrypt,orig,5.501,599,599,1.321,8,8,1.024,0,0
+main2.c,TWINE_encrypt,orig-opt,4.493,487,487,1.234,407,405,1.066,137,136
+main2.c,TWINE_encrypt,isochr,5.537,608,608,1.391,8,8,1.025,0,0
+main2.c,TWINE_encrypt,isochr-opt,4.502,494,494,1.228,357,357,1.071,181,181

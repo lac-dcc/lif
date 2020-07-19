@@ -1,0 +1,7 @@
+Src,Type,N,Mean,Median,Std,#Outliers
+measure,orig,64,3499.04,3501.0,169.671,3
+measure,orig-opt,64,3278.945,3296.0,187.414,4
+measure,isochr,64,3406.984,3395.0,152.214,8
+measure,isochr-opt,64,3468.579,3468.0,173.535,3
+measure,meng,64,4809.49,4785.0,272.203,29
+measure,meng-opt,64,4170.016,4125.0,298.004,5

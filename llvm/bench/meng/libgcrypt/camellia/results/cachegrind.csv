@@ -1,0 +1,9 @@
+Src,Fn,Type,Ir,I1mr,ILmr,Dr,D1mr,DLmr,Dw,D1mw,DLmw
+main1.c,camellia_setup128,orig,510,71,71,189,76,74,117,25,25
+main1.c,camellia_setup128,orig-opt,586,67,67,113,64,64,111,26,26
+main1.c,camellia_setup128,isochr,520,75,75,190,77,72,119,26,26
+main1.c,camellia_setup128,isochr-opt,601,74,74,113,64,62,115,30,29
+main2.c,camellia_setup128,orig,510,71,71,189,76,74,117,25,25
+main2.c,camellia_setup128,orig-opt,586,67,67,113,64,64,111,26,26
+main2.c,camellia_setup128,isochr,520,75,75,190,77,72,119,26,26
+main2.c,camellia_setup128,isochr-opt,601,74,74,113,64,62,115,30,29

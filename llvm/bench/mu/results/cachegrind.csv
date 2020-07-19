@@ -1,9 +1,9 @@
 Src,Fn,Type,Ir,I1mr,ILmr,Dr,D1mr,DLmr,Dw,D1mw,DLmw
-main1.c,mu,orig,400,49,49,293,2,2,7,1,1
-main1.c,mu,orig-opt,367,36,36,11,0,0,10,1,1
-main1.c,mu,isochr,2.212,210,210,548,51,40,486,70,60
-main1.c,mu,isochr-opt,349,35,35,10,0,0,9,2,2
-main2.c,mu,orig,406,52,52,298,2,2,7,1,1
-main2.c,mu,orig-opt,367,36,36,11,0,0,10,1,1
-main2.c,mu,isochr,2.212,210,210,548,51,40,486,70,60
-main2.c,mu,isochr-opt,349,35,35,10,0,0,9,2,2
+main1.c,mu,orig,400,49,49,293,3,3,7,1,1
+main1.c,mu,orig-opt,367,36,36,11,0,0,10,2,2
+main1.c,mu,isochr,2.684,243,243,837,123,123,488,113,113
+main1.c,mu,isochr-opt,911,105,105,131,31,31,224,23,23
+main2.c,mu,orig,406,52,52,298,3,3,7,1,1
+main2.c,mu,orig-opt,367,36,36,11,0,0,10,2,2
+main2.c,mu,isochr,2.684,243,243,837,123,123,488,113,113
+main2.c,mu,isochr-opt,911,105,105,131,31,31,224,23,23

@@ -1,7 +1,22 @@
+# Cmake
 compile_commands.json
 cmake_install.cmake
 CMakeCache.txt
 CMakeFiles/
-bin/
+
+# Ninja
 *ninja*
+
+# Clang
 .clangd
+
+# Python
+__pycache__/
+
+# Exec
+bin/
+
+# Benchmark files
+*.ll
+*.s
+*.cachegrind

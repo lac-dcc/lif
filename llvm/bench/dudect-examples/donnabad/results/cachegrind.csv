@@ -1,9 +1,0 @@
-Src,Fn,Type,Ir,I1mr,ILmr,Dr,D1mr,DLmr,Dw,D1mw,DLmw
-main1.c,curve25519_donna,orig,999,10,10,378,0,0,396,1,1
-main1.c,curve25519_donna,orig-opt,999,10,10,369,0,0,396,1,1
-main1.c,curve25519_donna,isochr,1.179,18,9,360,0,0,441,1,1
-main1.c,curve25519_donna,isochr-opt,15.822,64,64,621,0,0,3.186,2,2
-main2.c,curve25519_donna,orig,999,10,10,378,0,0,396,1,1
-main2.c,curve25519_donna,orig-opt,999,10,10,369,0,0,396,1,1
-main2.c,curve25519_donna,isochr,1.179,18,9,360,0,0,441,1,1
-main2.c,curve25519_donna,isochr-opt,15.822,64,64,621,0,0,3.186,2,2

@@ -1,0 +1,12 @@
+functions:
+  - twy_enc
+  - twy_dec
+  - mu
+cache:
+  - --I1=128;2;32
+  - --D1=128;2;32
+  - --LL=128;2;32
+measure:
+  - 3
+  - 1
+  - 3

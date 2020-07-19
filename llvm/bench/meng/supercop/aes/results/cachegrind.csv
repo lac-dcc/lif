@@ -1,0 +1,17 @@
+Src,Fn,Type,Ir,I1mr,ILmr,Dr,D1mr,DLmr,Dw,D1mw,DLmw
+main1.c,AES_set_encrypt_key,orig,324,42,42,54,42,42,50,14,14
+main1.c,AES_set_encrypt_key,orig-opt,319,42,42,54,42,42,51,14,14
+main1.c,AES_set_encrypt_key,isochr,4.624,605,605,1.389,956,956,473,303,303
+main1.c,AES_set_encrypt_key,isochr-opt,3.341,444,444,889,512,512,342,151,151
+main1.c,AES_encrypt,orig,51,5,5,11,3,3,18,1,1
+main1.c,AES_encrypt,orig-opt,51,5,5,11,2,2,18,1,1
+main1.c,AES_encrypt,isochr,52,5,5,11,3,3,19,1,1
+main1.c,AES_encrypt,isochr-opt,51,5,5,11,3,3,18,1,1
+main2.c,AES_set_encrypt_key,orig,324,42,42,54,43,43,50,18,18
+main2.c,AES_set_encrypt_key,orig-opt,319,42,42,54,43,43,51,18,18
+main2.c,AES_set_encrypt_key,isochr,4.624,605,605,1.389,956,956,473,303,303
+main2.c,AES_set_encrypt_key,isochr-opt,3.341,444,444,889,510,510,342,151,151
+main2.c,AES_encrypt,orig,51,5,5,11,3,3,18,1,1
+main2.c,AES_encrypt,orig-opt,51,5,5,11,2,2,18,1,1
+main2.c,AES_encrypt,isochr,52,5,5,11,3,3,19,1,1
+main2.c,AES_encrypt,isochr-opt,51,5,5,11,3,3,18,1,1

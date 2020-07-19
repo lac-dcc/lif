@@ -1,0 +1,7 @@
+Src,Type,N,#LLVM-IR Instructions
+measure,orig,64,7618
+measure,orig-opt,64,5138
+measure,isochr,64,16624
+measure,isochr-opt,64,7629
+measure,meng,64,7618
+measure,meng-opt,64,5138

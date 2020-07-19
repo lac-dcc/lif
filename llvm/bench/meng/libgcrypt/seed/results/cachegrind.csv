@@ -1,0 +1,17 @@
+Src,Fn,Type,Ir,I1mr,ILmr,Dr,D1mr,DLmr,Dw,D1mw,DLmw
+main1.c,do_setkey,orig,492,71,71,254,143,143,82,50,50
+main1.c,do_setkey,orig-opt,760,112,112,235,208,208,141,74,74
+main1.c,do_setkey,isochr,2.132,271,271,417,229,229,147,35,35
+main1.c,do_setkey,isochr-opt,2.063,256,256,416,289,289,162,42,42
+main1.c,do_encrypt,orig,683,95,95,376,207,207,112,40,40
+main1.c,do_encrypt,orig-opt,699,93,93,232,207,207,16,0,0
+main1.c,do_encrypt,isochr,703,103,103,378,210,210,115,3,3
+main1.c,do_encrypt,isochr-opt,719,101,101,234,209,209,17,1,1
+main2.c,do_setkey,orig,492,71,71,254,144,144,82,50,50
+main2.c,do_setkey,orig-opt,760,112,112,235,213,213,141,76,76
+main2.c,do_setkey,isochr,2.132,271,271,417,242,242,147,35,35
+main2.c,do_setkey,isochr-opt,2.063,256,256,416,281,281,162,45,45
+main2.c,do_encrypt,orig,683,95,95,376,207,207,112,35,35
+main2.c,do_encrypt,orig-opt,699,93,93,232,207,207,16,2,2
+main2.c,do_encrypt,isochr,703,103,103,378,207,207,115,39,39
+main2.c,do_encrypt,isochr-opt,719,102,102,234,209,209,17,0,0

@@ -1,0 +1,3 @@
+ Type,  N,   Mean, Median,   Std, #Outliers
+  lif, 16,  0.069,  0.069,   0.0,         1
+ meng, 16, 27.719, 27.709, 0.264,         0

@@ -1,0 +1,9 @@
+Src,Fn,Type,Ir,I1mr,ILmr,Dr,D1mr,DLmr,Dw,D1mw,DLmw
+main1.c,curve25519_donna,orig,999,9,9,378,0,0,396,1,1
+main1.c,curve25519_donna,orig-opt,999,9,9,369,0,0,396,1,1
+main1.c,curve25519_donna,isochr,1.233,27,27,387,0,0,450,0,0
+main1.c,curve25519_donna,isochr-opt,1.053,9,9,378,0,0,405,1,1
+main2.c,curve25519_donna,orig,999,9,9,378,0,0,396,1,1
+main2.c,curve25519_donna,orig-opt,999,9,9,369,0,0,396,1,1
+main2.c,curve25519_donna,isochr,1.233,27,27,387,0,0,450,0,0
+main2.c,curve25519_donna,isochr-opt,1.053,9,9,378,0,0,405,1,1

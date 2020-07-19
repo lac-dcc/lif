@@ -1,9 +1,0 @@
-Src,Fn,Type,Ir,I1mr,ILmr,Dr,D1mr,DLmr,Dw,D1mw,DLmw
-main1.c,br_md5_round,orig,653,2,2,58,0,0,25,1,1
-main1.c,br_md5_round,orig-opt,643,2,2,57,0,0,24,1,1
-main1.c,br_md5_round,isochr,584,3,3,54,0,0,24,1,1
-main1.c,br_md5_round,isochr-opt,552,3,3,54,0,0,26,1,1
-main2.c,br_md5_round,orig,653,2,2,58,0,0,25,1,1
-main2.c,br_md5_round,orig-opt,643,2,2,57,0,0,24,1,1
-main2.c,br_md5_round,isochr,584,3,3,54,0,0,24,1,1
-main2.c,br_md5_round,isochr-opt,552,3,3,54,0,0,26,1,1

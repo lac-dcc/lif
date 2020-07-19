@@ -1,12 +1,11 @@
 functions:
   - comp
-sources:
-  - main1.c
-  - main2.c
-  - main3.c
-libs:
-  - comp.c
 cache:
   - --I1=128;2;32
   - --D1=128;2;32
   - --LL=128;2;32
+# The minimum, the step, and maximum size used to measure running time.
+measure:
+  - 32
+  - 32
+  - 1024

@@ -1,0 +1,17 @@
+Src,Fn,Type,Ir,I1mr,ILmr,Dr,D1mr,DLmr,Dw,D1mw,DLmw
+main1.c,des_setkey,orig,49,8,8,22,4,4,23,5,5
+main1.c,des_setkey,orig-opt,49,8,8,22,4,4,23,5,5
+main1.c,des_setkey,isochr,51,9,9,22,4,4,23,5,5
+main1.c,des_setkey,isochr-opt,50,9,9,22,4,4,23,5,5
+main1.c,des_ecb_crypt,orig,635,72,72,168,151,151,12,3,3
+main1.c,des_ecb_crypt,orig-opt,638,73,73,168,150,150,12,3,3
+main1.c,des_ecb_crypt,isochr,649,77,77,171,153,153,14,4,4
+main1.c,des_ecb_crypt,isochr-opt,651,78,78,171,152,152,13,2,2
+main2.c,des_setkey,orig,49,8,8,22,4,4,23,5,5
+main2.c,des_setkey,orig-opt,49,8,8,22,4,4,23,5,5
+main2.c,des_setkey,isochr,51,9,9,22,4,4,23,5,5
+main2.c,des_setkey,isochr-opt,50,9,9,22,4,4,23,5,5
+main2.c,des_ecb_crypt,orig,635,72,72,168,152,152,12,3,3
+main2.c,des_ecb_crypt,orig-opt,638,73,73,168,152,152,12,3,3
+main2.c,des_ecb_crypt,isochr,649,77,77,171,153,153,14,4,4
+main2.c,des_ecb_crypt,isochr-opt,651,78,78,171,155,155,13,2,2
