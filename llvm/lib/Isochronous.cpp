@@ -56,10 +56,10 @@ using namespace cond;
 namespace isochronous {
 PreservedAnalyses Pass::run(Module &M, ModuleAnalysisManager &MAM) {
     llvm::SmallVector<Function *, 32> Fns;
-    for (Function &F : M)
+    for (auto &F : M)
         if (Names.find(F.getName()) != Names.end()) Fns.push_back(&F);
 
-    FunctionAnalysisManager &FAM =
+    auto &FAM =
         MAM.getResult<FunctionAnalysisManagerModuleProxy>(M).getManager();
 
     auto Derived = findDerived(M, std::set(Fns.begin(), Fns.end()));
@@ -75,10 +75,10 @@ PreservedAnalyses Pass::run(Module &M, ModuleAnalysisManager &MAM) {
 
     auto Wrap = [](Function *F, bool IsDerived) -> FuncWrapper * {
         // Transform multiple return points into a unique exit block.
-        prepareFunc(*F);
+        unifyExits(*F);
 
         // Bind the outgoing and incoming conditions to all basic blocks.
-        OutMap OutM = allocOut(*F);
+        auto OutM = allocOut(*F);
         auto [InM, GenV] = bind(*F, OutM);
 
         // Fill SkipS with the instructions generated after binding the
@@ -86,7 +86,7 @@ PreservedAnalyses Pass::run(Module &M, ModuleAnalysisManager &MAM) {
         std::set<Value *> Skip;
         for (auto V : GenV) Skip.insert(V);
 
-        FuncWrapper *W = new FuncWrapper;
+        auto W = new FuncWrapper;
         *W = {F, IsDerived, OutM, InM, Skip};
 
         return W;
@@ -101,22 +101,24 @@ PreservedAnalyses Pass::run(Module &M, ModuleAnalysisManager &MAM) {
 
     // We curently cannot handle functions with loops/cycles, so we skip them
     // and throw an error.
-    auto ErrCycles = [](const Function &F) {
-        errs() << "Error: unexpected cycle(s) on function \"" << F.getName()
-               << "\" (possible fix: run 'opt -mem2reg -loop-rotate "
-                  "-loop-unroll -unroll-count=N')\n";
-    };
+    // auto ErrCycles = [](const Function &F) {
+    //     errs() << "Error: unexpected cycle(s) on function \"" << F.getName()
+    //            << "\" (possible fix: run 'opt -mem2reg -loop-rotate "
+    //               "-loop-unroll -unroll-count=N')\n";
+    // };
 
     // We mark all functions from the derived set as "Derived".
     llvm::SmallVector<FuncWrapper *, 32> Wrapped;
     for (auto F : Derived) {
-        SmallVector<std::pair<const BasicBlock *, const BasicBlock *>, 32>
-            Result;
-        FindFunctionBackedges(*F, Result);
+        // SmallVector<std::pair<const BasicBlock *, const BasicBlock *>, 32>
+        //     Result;
+        // FindFunctionBackedges(*F, Result);
+        // auto &LI = FAM.getResult<LoopAnalysis>(*F);
 
-        if (!Result.empty())
-            ErrCycles(*F);
-        else if (F->isDeclaration())
+        // TODO: Check for loop properties.
+        // if (!Result.empty())
+        //     ErrCycles(*F);
+        if (F->isDeclaration())
             WarnExternal(*F);
         else
             Wrapped.push_back(Wrap(F, true));
@@ -125,13 +127,14 @@ PreservedAnalyses Pass::run(Module &M, ModuleAnalysisManager &MAM) {
     // Then, we insert the functions selected by the user as not derived (unless
     // it was already marked as derived).
     for (auto F : Fns) {
-        SmallVector<std::pair<const BasicBlock *, const BasicBlock *>, 32>
-            Result;
-        FindFunctionBackedges(*F, Result);
+        // SmallVector<std::pair<const BasicBlock *, const BasicBlock *>, 32>
+        //     Result;
+        // FindFunctionBackedges(*F, Result);
 
-        if (!Result.empty())
-            ErrCycles(*F);
-        else if (F->isDeclaration())
+        // TODO: Check for loop properties.
+        // if (!Result.empty())
+        //     ErrCycles(*F);
+        if (F->isDeclaration())
             WarnExternal(*F);
         else if (Derived.find(F) == Derived.end())
             Wrapped.push_back(Wrap(F, false));
@@ -149,8 +152,8 @@ std::set<Function *> findDerived(Module &M, const std::set<Function *> Fns) {
     // initially should be transformed.
     std::stack<Function *> S;
     auto PushCalls = [&](Function &F) {
-        for (BasicBlock &BB : F)
-            for (Instruction &I : BB) {
+        for (auto &BB : F)
+            for (auto &I : BB) {
                 auto Call = dyn_cast<CallInst>(&I);
                 if (!Call) continue;
 
@@ -193,7 +196,7 @@ DenseMap<const Value *, Value *> computeLength(Function &F,
     // simple, since we require each pointer to be immediately followed by its
     // length. TODO: get the length from annotations.
     for (auto Iter = F.arg_begin(); Iter != F.arg_end(); ++Iter) {
-        Value *V = &*Iter;
+        auto V = &*Iter;
         if (!isa<PointerType>(V->getType())) continue;
 
         auto Len = &*(Iter + 1);
@@ -211,7 +214,7 @@ DenseMap<const Value *, Value *> computeLength(Function &F,
         auto PtrTy = dyn_cast<PointerType>(Global.getType());
         if (!PtrTy) continue;
 
-        Value *Len = ConstantInt::get(Int64Ty, 1);
+        auto Len = ConstantInt::get(Int64Ty, 1);
         auto ArrTy = dyn_cast<ArrayType>(PtrTy->getElementType());
 
         if (ArrTy) {
@@ -545,7 +548,7 @@ void prepareModule(Module &M, SmallVectorImpl<FuncWrapper *> &Fns,
                 Args.push_back(C);
             }
 
-            CallInst *NewCall = CallInst::Create(NewF, Args);
+            auto NewCall = CallInst::Create(NewF, Args);
             NewCall->setCallingConv(NewF->getCallingConv());
 
             if (!Call->use_empty()) Call->replaceAllUsesWith(NewCall);
@@ -558,7 +561,7 @@ void prepareModule(Module &M, SmallVectorImpl<FuncWrapper *> &Fns,
     }
 }
 
-void prepareFunc(Function &F) {
+void unifyExits(Function &F) {
     SmallVector<ReturnInst *, 8> Returns;
     for (BasicBlock &BB : F)
         for (Instruction &I : BB)
@@ -660,7 +663,7 @@ void transformPhi(PHINode &Phi, const SmallVectorImpl<Incoming> &InV) {
         auto Before = cast<Instruction>(InV.back().Cond)->getNextNode();
         auto Iter1 = InV.end() - 1;
 
-        Value *V1 = Phi.getIncomingValueForBlock(Iter1->From);
+        auto V1 = Phi.getIncomingValueForBlock(Iter1->From);
         for (auto Iter2 = Iter1 - 1; Iter2 != InV.begin(); --Iter1, --Iter2)
             V1 = SelectInst::Create(Iter2->Cond,
                                     Phi.getIncomingValueForBlock(Iter2->From),
