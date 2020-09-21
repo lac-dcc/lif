@@ -99,7 +99,7 @@ void prepareModule(llvm::Module &M, llvm::SmallVectorImpl<FuncWrapper *> &Fns,
 
 /// We cannot transform properly functions that have multiple return points, so
 /// we replace multiple returns by a combination of phis + uncond. jmps.
-void prepareFunc(llvm::Function &F);
+void unifyExits(llvm::Function &F);
 
 /// Transform \p F into isochronous by applying the proper rules to each
 /// instruction.
