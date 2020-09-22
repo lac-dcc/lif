@@ -48,7 +48,7 @@ struct LoopWrapper {
     /// A set containing all the loop latches (LL), so it is easy to check if a
     /// basic block is one of them.
     llvm::SmallPtrSet<llvm::BasicBlock *, 32> LLBlocks;
-    /// A map containing all the loop exiting blocks, so it is easy to
+    /// A set containing all the loop exiting blocks, so it is easy to
     /// check if a basic block is one of them. Note that here we don't consider
     /// the loop condition block.
     llvm::SmallPtrSet<llvm::BasicBlock *, 32> ExitingBlocks;
@@ -71,8 +71,8 @@ struct LoopWrapper {
 LoopWrapper &prepare(llvm::LoopInfo &LI, llvm::LLVMContext &Ctx);
 
 /// This function is pretty similar to "prepare", but instead of inserting
-/// phi-functions, it assumes that these phi-functions were already inserted an
-/// tries to recover them from the successors of a loop latch.
+/// phi-functions, it assumes that these phi-functions were already inserted
+/// and tries to recover them from the successors of a loop latch.
 LoopWrapper &recover(llvm::LoopInfo &LI, llvm::LLVMContext &Ctx);
 } // namespace loop
 

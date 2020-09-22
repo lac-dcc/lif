@@ -68,12 +68,12 @@ build::single() {
         for lib in ${libs[@]}; do
             local libname=$(echo $lib | sed "s/\.[^.]*$//")
 
-            # Compile the lib & link it with src
+            # Compile the lib to link it with src.
             clang -emit-llvm -S -Xclang -disable-O0-optnone \
                 "${libraries}/${lib}" -o "${llvmir}/${libname}.ll";
 
             # Try to completely unroll existing loops.
-            build::full_unroll "${llvmir}/${libname}.ll"
+            # build::full_unroll "${llvmir}/${libname}.ll"
 
             libllvm+=("${llvmir}/${libname}.ll")
         done
@@ -82,13 +82,16 @@ build::single() {
         llvm-link -S ${llvmir}/${srcname}.ll ${libllvm[@]} \
             -o ${llvmir}/${srcname}.ll
 
+        # Modify every loop to be in canonical form, as well as their indvar.
+        opt -S -mem2reg -loop-simplify -indvars "${llvmir}/${srcname}.ll" \
+            -o "${llvmir}/${srcname}.ll"
+
         # Now the lib code is inside src.ll, so we can remove it to save
         # space.
         rm ${libllvm[@]}
 
         # Apply optimizations (level 1).
         opt -S -O1 "${llvmir}/${srcname}.ll" -o "${llvmir}/${srcname}.opt.ll"
-        printf "."
 
         # Run the isochronous tool without optimizations & with optimizations.
         ../bin/lif -O0 -names=${meta[functions]} \

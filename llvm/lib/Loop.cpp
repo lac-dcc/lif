@@ -49,12 +49,12 @@ LoopWrapper &prepare(LoopInfo &LI, LLVMContext &Ctx) {
         // iterations.
         auto LHT = cast<BranchInst>(LH->getTerminator());
 
-        // In other to find the LC block, we need to find the loop induction
+        // In order to find the LC block, we need to find the loop induction
         // variable. We assume it is in canonical form (run -indvars). The
         // canonical induction variable is guaranteed to be the first PHI node
         // in the loop header block.
         auto LIV = L->getCanonicalInductionVariable();
-        assert(LIV);
+        assert(LIV && "loop induction variable not in canonical form!");
 
         BasicBlock *LC = nullptr;
         if (LHT->isConditional()) {
