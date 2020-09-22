@@ -52,14 +52,11 @@ OutMap allocOut(Function &F) {
 }
 
 std::pair<SmallVector<Incoming, 8>, SmallVector<Value *, 4>>
-bindIn(BasicBlock &BB, const OutMap OutM) {
+bindIn(BasicBlock &BB, const OutMap OutM, const loop::LoopWrapper LW) {
     SmallVector<Incoming, 8> InV;
     SmallVector<Value *, 4> GenV;
 
     for (auto Bp : predecessors(&BB)) {
-        // Whenever P is a Loop Condition Basic Block, we must not include its
-        // predicate in the incoming conditions of BB.
-
         auto Terminator = Bp->getTerminator();
         auto Br = dyn_cast<BranchInst>(Terminator);
 
@@ -77,10 +74,21 @@ bindIn(BasicBlock &BB, const OutMap OutM) {
             new LoadInst(OutPtr->getAllocatedType(), OutPtr, "", Before);
 
         GenV.push_back(C);
-        if (Br->isConditional()) {
+
+        // Whenever Bp is a Loop Condition Basic Block, we must not include its
+        // predicate in the incoming conditions of BB.
+        if (Br->isConditional() && LW.LCBlocks.find(Bp) == LW.LCBlocks.end()) {
             // If we are at an else branch, then we should negate the
             // predicate.
             auto P = Br->getCondition();
+
+            // Whenever Bp is a conditional Loop Latch, we must replace the
+            // predicate of the latch by its associated phi-function at BB (it
+            // must already be created by loop::prepare).
+            auto PMap = LW.PredMap.find(P);
+            if (PMap != LW.PredMap.end() && PMap->second.lookup(&BB))
+                P = PMap->second.lookup(&BB);
+
             if (Br->getSuccessor(1) == &BB) {
                 P = BinaryOperator::CreateNot(P, "", Before);
                 GenV.push_back(P);
@@ -117,13 +125,6 @@ std::vector<Value *> bindOut(BasicBlock &BB, Value *OutPtr,
         Before = cast<Instruction>(OutV)->getNextNode();
     }
 
-    // TODO: Let (p1, p2) be a pair composed by a predicate of a branch at a
-    // loop's exiting block (except for loop condition). If BB is the loop
-    // latch, we must replace p1 by p2 in the outgoing of BB. That is, we must
-    // traverse each instruction from OutV, search for the use of p1 as an
-    // operand and replace it. This must be done for every pair (p1, p2). There
-    // is probably a better solution, but let's stick with that for now.
-
     GenV.push_back(new StoreInst(OutV, OutPtr, Before));
     return GenV;
 }
@@ -134,7 +135,7 @@ std::pair<InMap, std::vector<Value *>> bind(Function &F, const OutMap OutM,
     std::vector<Value *> GenV;
 
     for (BasicBlock &BB : F) {
-        auto [InV, GenInV] = bindIn(BB, OutM);
+        auto [InV, GenInV] = bindIn(BB, OutM, LW);
         InM[&BB] = InV;
         GenV.insert(GenV.end(), GenInV.begin(), GenInV.end());
         auto GenOutV = bindOut(BB, OutM.lookup(&BB), InV);

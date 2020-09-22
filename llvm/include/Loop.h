@@ -35,15 +35,21 @@ namespace loop {
 struct LoopWrapper {
     /// LoopInfo produced by running LoopAnalysis.
     const llvm::LoopInfo &LI;
-    /// A map between the predicate that governs the outcome of an exiting
-    /// block (except for the loop condition block) to the associated
-    /// phi-function at the header, created by calling "loop::prepare".
-    llvm::DenseMap<llvm::Value *, llvm::Value *> PredMap;
-    /// A set that contains "loop condition" basic blocks. This kind of basic
-    /// block can be either the loop header or the (unique) latch. We assume
-    /// the loop has a unique latch, so it is easier to handle (run the
+    /// A map between the predicate that governs the outcome of a loop latch,
+    /// in case it is conditional, and the a map of phi nodes created at the
+    /// successors of the latch. This can be used to insert phi-functions at
+    /// the loop header LH, for computing the incoming conditions of LH.
+    llvm::DenseMap<llvm::Value *,
+                   llvm::DenseMap<llvm::BasicBlock *, llvm::Value *>>
+        PredMap;
+    /// A set that contains "loop condition" (LC) basic blocks. This kind of
+    /// basic block can be either the loop header or the (unique) latch. We
+    /// assume the loop has a unique latch, so it is easier to handle (run the
     /// "loop-simplify" pass to prepare the loops, if necessary).
     llvm::SmallPtrSet<llvm::BasicBlock *, 32> LCBlocks;
+    /// A set containing all the loop latches (LL), so it is easy to check if a
+    /// basic block is one of them;
+    llvm::SmallPtrSet<llvm::BasicBlock *, 32> LLBlocks;
     /// Takes LoopInfo and produces a wrapper to extend \p LI with useful
     /// information.
     LoopWrapper(const llvm::LoopInfo &LI) : LI(LI) {}
