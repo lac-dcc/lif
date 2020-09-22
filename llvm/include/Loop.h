@@ -34,13 +34,11 @@ namespace loop {
 /// branch to outside the loop (see function prepare).
 struct LoopWrapper {
     /// LoopInfo produced by running LoopAnalysis.
-    const llvm::LoopInfo &LI;
-    /// A map between the predicate that governs the outcome of a loop latch,
-    /// in case it is conditional, and the a map of phi nodes created at the
-    /// successors of the latch. This can be used to insert phi-functions at
-    /// the loop header LH, for computing the incoming conditions of LH.
-    llvm::DenseMap<llvm::Value *,
-                   llvm::DenseMap<llvm::BasicBlock *, llvm::Value *>>
+    llvm::LoopInfo &LI;
+    /// A map between the predicate that governs the outcome of a loop exiting,
+    /// and the associated phi-functions inserted at the loop header. We also
+    /// save the initial value.
+    llvm::DenseMap<llvm::Value *, std::pair<llvm::Value *, llvm::Value *>>
         PredMap;
     /// A set that contains "loop condition" (LC) basic blocks. This kind of
     /// basic block can be either the loop header or the (unique) latch. We
@@ -48,22 +46,34 @@ struct LoopWrapper {
     /// "loop-simplify" pass to prepare the loops, if necessary).
     llvm::SmallPtrSet<llvm::BasicBlock *, 32> LCBlocks;
     /// A set containing all the loop latches (LL), so it is easy to check if a
-    /// basic block is one of them;
+    /// basic block is one of them.
     llvm::SmallPtrSet<llvm::BasicBlock *, 32> LLBlocks;
+    /// A map containing all the loop exiting blocks, so it is easy to
+    /// check if a basic block is one of them. Note that here we don't consider
+    /// the loop condition block.
+    llvm::SmallPtrSet<llvm::BasicBlock *, 32> ExitingBlocks;
+    /// A set containing all the loop exit blocks, so it is easy to check if a
+    /// basic block is one of them.
+    llvm::SmallPtrSet<llvm::BasicBlock *, 32> ExitBlocks;
     /// Takes LoopInfo and produces a wrapper to extend \p LI with useful
     /// information.
-    LoopWrapper(const llvm::LoopInfo &LI) : LI(LI) {}
+    LoopWrapper(llvm::LoopInfo &LI) : LI(LI) {}
 };
 
 /// In order to handle loops properly, we must insert a phi-function at the
-/// loop header for each conditional statement that targets a basic block
-/// outside the loop (e.g. if break/return). This function assumes that every
-/// loop is in the canonical form. Specifically, every loop must contain a
-/// single backedge.
+/// the loop header for the predicate of the loop latch, whenever it is
+/// conditional. This function assumes that every loop is in the canonical
+/// form. Specifically, every loop must contain a single backedge.
 //
-/// \returns a map between the predicates and the phi-functions created, plus a
-/// set containing "loop condition" basic blocks.
-LoopWrapper prepare(const llvm::LoopInfo &LI, llvm::LLVMContext &Ctx);
+/// \returns a map between the predicates and the phi-functions created, a
+/// set containing "loop condition" basic blocks, and a set containing the loop
+/// latches.
+LoopWrapper &prepare(llvm::LoopInfo &LI, llvm::LLVMContext &Ctx);
+
+/// This function is pretty similar to "prepare", but instead of inserting
+/// phi-functions, it assumes that these phi-functions were already inserted an
+/// tries to recover them from the successors of a loop latch.
+LoopWrapper &recover(llvm::LoopInfo &LI, llvm::LLVMContext &Ctx);
 } // namespace loop
 
 #endif
