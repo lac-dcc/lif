@@ -56,6 +56,8 @@ bindIn(BasicBlock &BB, const OutMap OutM, const loop::LoopWrapper LW) {
     SmallVector<Incoming, 8> InV;
     SmallVector<Value *, 4> GenV;
 
+    auto LCEnd = LW.LCBlocks.end();
+    auto PMEnd = LW.PredMap.end();
     for (auto Bp : predecessors(&BB)) {
         auto Terminator = Bp->getTerminator();
         auto Br = dyn_cast<BranchInst>(Terminator);
@@ -80,21 +82,20 @@ bindIn(BasicBlock &BB, const OutMap OutM, const loop::LoopWrapper LW) {
         if (Br->isConditional() && LW.LCBlocks.find(Bp) == LW.LCBlocks.end()) {
             // If we are at an else branch, then we should negate the
             // predicate.
-            auto P = Br->getCondition();
+            auto Pred = Br->getCondition();
 
             // Whenever Bp is a conditional Loop Latch, we must replace the
             // predicate of the latch by its associated phi-function at BB (it
             // must already be created by loop::prepare).
-            auto PMap = LW.PredMap.find(P);
-            if (PMap != LW.PredMap.end() && PMap->second.lookup(&BB))
-                P = PMap->second.lookup(&BB);
+            if (LW.LCBlocks.find(Bp) != LCEnd && LW.PredMap.find(Pred) != PMEnd)
+                Pred = LW.PredMap.lookup(Pred).first;
 
             if (Br->getSuccessor(1) == &BB) {
-                P = BinaryOperator::CreateNot(P, "", Before);
-                GenV.push_back(P);
+                Pred = BinaryOperator::CreateNot(Pred, "", Before);
+                GenV.push_back(C);
             }
 
-            C = BinaryOperator::CreateAnd(C, P, "in.", Before);
+            C = BinaryOperator::CreateAnd(C, Pred, "in.", Before);
             GenV.push_back(C);
         }
 

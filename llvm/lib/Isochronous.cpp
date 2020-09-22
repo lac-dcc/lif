@@ -81,7 +81,7 @@ PreservedAnalyses Pass::run(Module &M, ModuleAnalysisManager &MAM) {
         // Prepare loops by inserting phi-functions at loop headers for every
         // predicate that branch out the loop.
         auto &LI = FAM.getResult<LoopAnalysis>(*F);
-        auto LW = loop::prepare(LI, F->getContext());
+        auto &LW = loop::prepare(LI, F->getContext());
 
         // Bind the outgoing and incoming conditions to all basic blocks.
         auto OutM = allocOut(*F);
@@ -92,10 +92,7 @@ PreservedAnalyses Pass::run(Module &M, ModuleAnalysisManager &MAM) {
         std::set<Value *> Skip;
         for (auto V : GenV) Skip.insert(V);
 
-        auto FW = new FuncWrapper;
-        *FW = {F, IsDerived, OutM, InM, Skip};
-
-        return FW;
+        return new FuncWrapper{F, IsDerived, OutM, InM, Skip, LW};
     };
 
     // We cannot modify external functions (i.e. functions that we don't have
@@ -141,13 +138,14 @@ PreservedAnalyses Pass::run(Module &M, ModuleAnalysisManager &MAM) {
         //     ErrCycles(*F);
         if (F->isDeclaration())
             WarnExternal(*F);
-        else if (Derived.find(F) == Derived.end())
+        else if (Derived.find(F) == Derived.end()) {
             Wrapped.push_back(Wrap(F, false));
+        }
     }
 
-    return PreservedAnalyses::none();
     prepareModule(M, Wrapped, FAM);
     for (auto FW : Wrapped) transformFunc(*FW, FAM);
+
     return PreservedAnalyses::none();
 }
 
@@ -489,7 +487,11 @@ void prepareModule(Module &M, SmallVectorImpl<FuncWrapper *> &Fns,
         // Update the pointer to F to point to the new function we just create.
         if (IdxIter != TransformIdx.end()) {
             TransformIdx[NewF] = IdxIter->second;
-            Fns[IdxIter->second]->F = NewF;
+            auto FW = Fns[IdxIter->second];
+            auto &LI = FAM.getResult<LoopAnalysis>(*FW->F);
+            auto &LW = loop::recover(LI, Ctx);
+            Fns[IdxIter->second] = new FuncWrapper{
+                NewF, FW->IsDerived, FW->OutM, FW->InM, FW->Skip, LW};
         }
     }
 
@@ -593,7 +595,7 @@ void unifyExits(Function &F) {
 }
 
 void transformFunc(const FuncWrapper &W, FunctionAnalysisManager &FAM) {
-    auto [F, _1, OutM, InM, Skip] = W;
+    auto [F, _1, OutM, InM, Skip, LW] = W;
 
     // Get the length associated with each pointer (either local or
     // argument).
@@ -615,10 +617,14 @@ void transformFunc(const FuncWrapper &W, FunctionAnalysisManager &FAM) {
         auto InV = InM[&BB];
         auto Out = OutM[&BB];
 
+        auto IsLH = LW.LI.isLoopHeader(&BB);
+
+        // TODO: Add transformation rule for assigments to predicates in loop
+        // exiting blocks.
         for (Instruction &I : BB) {
             if (Skip.find(&I) != Skip.end() || InV.empty()) continue;
             if (auto Phi = dyn_cast<PHINode>(&I)) {
-                PhiV.push_back(Phi);
+                if (!IsLH) PhiV.push_back(Phi);
                 continue;
             }
 
@@ -642,20 +648,84 @@ void transformFunc(const FuncWrapper &W, FunctionAnalysisManager &FAM) {
         for (auto Phi : PhiV) transformPhi(*Phi, InM[&BB]);
     }
 
+    // For each loop latch, temporarily remove the backedge to the loop header.
+    // This way, we can produce an acyclic graph, and thus we can sort the
+    // basic blocks in topological ordering. A loop latch can be either
+    // conditional (do-while) or unconditional (while/for). In the first case,
+    // we replace the conditional branch by an unconditional that branches out
+    // the loop. In the second, we just erase the unconditional branch.
+    DenseMap<BasicBlock *, BranchInst *> Recover;
+    for (auto LL : LW.LLBlocks) {
+        auto LLT = cast<BranchInst>(LL->getTerminator());
+        Recover[LL] = cast<BranchInst>(LLT->clone());
+
+        if (LLT->isConditional()) {
+            auto S = LW.LI.isLoopHeader(LLT->getSuccessor(0))
+                         ? LLT->getSuccessor(1)
+                         : LLT->getSuccessor(0);
+            BranchInst::Create(S, LLT);
+        } else {
+            new UnreachableInst(F->getContext(), LLT);
+        }
+
+        LLT->eraseFromParent();
+    }
+
+    // We treat loop exiting blocks in a distinct way. Here, we are
+    // considering every exiting block except for the loop condition. The
+    // successor of these blocks will always be the basic block that is
+    // inside the loop, not the one that is outside, regardless of the
+    // topological ordering.
+    for (auto LE : LW.ExitingBlocks) {
+        auto LET = LE->getTerminator();
+        BasicBlock *Inside = nullptr, *Outside = nullptr;
+
+        for (auto Target : cast<BranchInst>(LET)->successors()) {
+            if (LW.ExitBlocks.find(Target) == LW.ExitBlocks.end())
+                Inside = Target;
+            else
+                Outside = Target;
+        }
+
+        // Outside may be a basic block created to eliminate critical edges. In
+        // such case, it may become unreachable if we just ignore it. Thus, we
+        // need to reconnect it to the CFG somehow. If that is the case, we
+        // link LE to Outside and Outside to Inside.
+        auto Target = Inside;
+        if (pred_size(Outside) == 1) {
+            auto OutsideT = cast<BranchInst>(Outside->getTerminator());
+            OutsideT->setSuccessor(0, Inside);
+            Target = Outside;
+        }
+
+        ReplaceInstWithInst(LET, BranchInst::Create(Target));
+    }
+
     // Replace each terminator by an uncond. br linked to the next basic
     // block, following the reverse postorder.
     ReversePostOrderTraversal<Function *> RPOT(F);
-    SmallVector<BasicBlock *, 32> MergeV;
-
     for (auto Iter = RPOT.begin(); Iter + 1 != RPOT.end(); ++Iter) {
-        MergeV.push_back(*(Iter + 1));
-        ReplaceInstWithInst((*Iter)->getTerminator(),
-                            BranchInst::Create(*(Iter + 1)));
+        auto BB = *Iter;
+        auto BBT = BB->getTerminator();
+
+        // Since we may have changed the control flow graph, there may be the
+        // case that the exit block had multiple predecessors before and now it
+        // does not. This means that it might not be the last block in the
+        // topological ordering, but we must not touch it.
+        if (succ_size(BB) == 0) continue;
+
+        // We must not remove loop conditions, so just skip them. Moreover,
+        // we are treating loop latches as a special case (in case it is not
+        // conditional). That is, its successor will always be the loop
+        // header.
+        auto LCEnd = LW.LCBlocks.end();
+        auto LLEnd = LW.LLBlocks.end();
+        if (LW.LCBlocks.find(BB) == LCEnd && LW.LLBlocks.find(BB) == LLEnd)
+            ReplaceInstWithInst(BBT, BranchInst::Create(*(Iter + 1)));
     }
 
-    // Now that every basic block has only one successor, we can merge them
-    // without any problems.
-    for (auto BB : MergeV) MergeBlockIntoPredecessor(BB);
+    // Recover the backedges that we have deleted.
+    for (auto [LL, Br] : Recover) ReplaceInstWithInst(LL->getTerminator(), Br);
 }
 
 void transformPhi(PHINode &Phi, const SmallVectorImpl<Incoming> &InV) {
@@ -684,8 +754,9 @@ void transformPhi(PHINode &Phi, const SmallVectorImpl<Incoming> &InV) {
 
 void transformLoad(LoadInst &Load, AllocaInst *Shadow, Value *PtrLen,
                    Value *Cond) {
-    // The pointer operand may be a GEP in the form of a ConstantExpr. In this
-    // case, we transform it into a GEP instruction so we can handle easier.
+    // The pointer operand may be a GEP in the form of a ConstantExpr. In
+    // this case, we transform it into a GEP instruction so we can handle
+    // easier.
     if (auto ConstExpr = dyn_cast<ConstantExpr>(Load.getPointerOperand())) {
         auto GEP = cast<GetElementPtrInst>(ConstExpr->getAsInstruction());
         GEP->insertBefore(&Load);
@@ -707,11 +778,11 @@ void transformStore(StoreInst &Store, AllocaInst *Shadow, Value *PtrLen,
     auto StoreVal = Store.getValueOperand();
     auto StorePtr = Store.getPointerOperand();
 
-    // If the Ptr operand is a GEP instruction, then we need to transform it in
-    // in order to ensure the safety of the memory access. If not, this load
-    // does not need to be transformed.  We fold the incoming conditions from
-    // InV into a single value by applying the operator | (or) to get the
-    // condition.
+    // If the Ptr operand is a GEP instruction, then we need to transform it
+    // in in order to ensure the safety of the memory access. If not, this
+    // load does not need to be transformed.  We fold the incoming
+    // conditions from InV into a single value by applying the operator |
+    // (or) to get the condition.
     if (auto GEP = dyn_cast<GetElementPtrInst>(StorePtr))
         Store.setOperand(Store.getPointerOperandIndex(),
                          transformGEP(GEP, Shadow, PtrLen, Cond, &Store));
@@ -724,28 +795,28 @@ void transformStore(StoreInst &Store, AllocaInst *Shadow, Value *PtrLen,
 
 Value *transformGEP(GetElementPtrInst *GEP, AllocaInst *Shadow, Value *PtrLen,
                     Value *Cond, Instruction *Before) {
-    // If GEP operand pointer is of an array type, it may be a multidimensional
-    // array so we need to compute the actual index.
+    // If GEP operand pointer is of an array type, it may be a
+    // multidimensional array so we need to compute the actual index.
     //
-    // Example 1: an access like A[1][1] may be translated to a getlementptr ..
-    // i32 0, i64 1, i64 1.  In this situation, the actual index would be 2^0 *
-    // 1 + 2^1 * 1 = 3.
+    // Example 1: an access like A[1][1] may be translated to a getlementptr
+    // .. i32 0, i64 1, i64 1.  In this situation, the actual index would be
+    // 2^0 * 1 + 2^1 * 1 = 3.
     //
     // Example 2: Let A be the third field of some struct. In this case, the
-    // GEP inst. would be something like getlementptr ... i32 0, i32 2, i64 1,
-    // i64 1. Hence, the actual index would be 0 + 2 + 2^0 * 1 + 2^1 * 1 = 5.
-    // For computing the safety of the access we are interested in the index
-    // related to the array, so in this case it would be 3 as well.
+    // GEP inst. would be something like getlementptr ... i32 0, i32 2, i64
+    // 1, i64 1. Hence, the actual index would be 0 + 2 + 2^0 * 1 + 2^1 * 1
+    // = 5. For computing the safety of the access we are interested in the
+    // index related to the array, so in this case it would be 3 as well.
     //
     // TODO: We can simplify this code if we change the behavior of
     // computeLength for multidimensional arrays (and structs). Instead of
-    // computing a single value, we can store a list of lengths (e.g. a matrix
-    // [3][3] would be stored as two lengths [3, 3]). This way, we already know
-    // how much operand indices we need to aggregate (in case we're explicit
-    // dealing with a multidimensional array). For simple pointers we'd store
-    // the length as a list of size 1, so we know that we should compare with
-    // the last idx operand.
-    // The "base" GEP operand pointer type is always a pointer.
+    // computing a single value, we can store a list of lengths (e.g. a
+    // matrix [3][3] would be stored as two lengths [3, 3]). This way, we
+    // already know how much operand indices we need to aggregate (in case
+    // we're explicit dealing with a multidimensional array). For simple
+    // pointers we'd store the length as a list of size 1, so we know that
+    // we should compare with the last idx operand. The "base" GEP operand
+    // pointer type is always a pointer.
     auto PtrOpTy =
         cast<PointerType>(GEP->getPointerOperandType())->getElementType();
 
@@ -802,9 +873,9 @@ Value *transformGEP(GetElementPtrInst *GEP, AllocaInst *Shadow, Value *PtrLen,
 
     // Check if (i) the incoming condition is true OR (ii) the access to the
     // original array at Idx is safe. If (i), we execute the original
-    // instruction as it is. If (ii), we also execute the original instruction
-    // as it is because we know the access is inbounds. Otherwise, we access a
-    // shadow memory.
+    // instruction as it is. If (ii), we also execute the original
+    // instruction as it is because we know the access is inbounds.
+    // Otherwise, we access a shadow memory.
     auto NewPtr =
         ctsel(BinaryOperator::CreateOr(Cond, IsSafe, "safe.", Before), GEP,
               new BitCastInst(Shadow, GEP->getType(), "", Before), Before);
