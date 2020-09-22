@@ -25,6 +25,7 @@
 
 #include "Isochronous.h"
 #include "Cond.h"
+#include "Loop.h"
 
 #include <llvm/ADT/DenseMap.h>
 #include <llvm/ADT/PostOrderIterator.h>
@@ -73,23 +74,28 @@ PreservedAnalyses Pass::run(Module &M, ModuleAnalysisManager &MAM) {
         for (Function &F : M)
             if (!F.use_empty() && !F.isDeclaration()) Derived.insert(&F);
 
-    auto Wrap = [](Function *F, bool IsDerived) -> FuncWrapper * {
+    auto Wrap = [&FAM](Function *F, bool IsDerived) -> FuncWrapper * {
         // Transform multiple return points into a unique exit block.
         unifyExits(*F);
 
+        // Prepare loops by inserting phi-functions at loop headers for every
+        // predicate that branch out the loop.
+        auto &LI = FAM.getResult<LoopAnalysis>(*F);
+        auto LW = loop::prepare(LI, F->getContext());
+
         // Bind the outgoing and incoming conditions to all basic blocks.
         auto OutM = allocOut(*F);
-        auto [InM, GenV] = bind(*F, OutM);
+        auto [InM, GenV] = bind(*F, OutM, LW);
 
         // Fill SkipS with the instructions generated after binding the
         // conditions to each basic block, since we don't need to modify them.
         std::set<Value *> Skip;
         for (auto V : GenV) Skip.insert(V);
 
-        auto W = new FuncWrapper;
-        *W = {F, IsDerived, OutM, InM, Skip};
+        auto FW = new FuncWrapper;
+        *FW = {F, IsDerived, OutM, InM, Skip};
 
-        return W;
+        return FW;
     };
 
     // We cannot modify external functions (i.e. functions that we don't have
@@ -113,7 +119,6 @@ PreservedAnalyses Pass::run(Module &M, ModuleAnalysisManager &MAM) {
         // SmallVector<std::pair<const BasicBlock *, const BasicBlock *>, 32>
         //     Result;
         // FindFunctionBackedges(*F, Result);
-        // auto &LI = FAM.getResult<LoopAnalysis>(*F);
 
         // TODO: Check for loop properties.
         // if (!Result.empty())
@@ -140,8 +145,9 @@ PreservedAnalyses Pass::run(Module &M, ModuleAnalysisManager &MAM) {
             Wrapped.push_back(Wrap(F, false));
     }
 
+    return PreservedAnalyses::none();
     prepareModule(M, Wrapped, FAM);
-    for (auto W : Wrapped) transformFunc(*W, FAM);
+    for (auto FW : Wrapped) transformFunc(*FW, FAM);
     return PreservedAnalyses::none();
 }
 
@@ -466,13 +472,13 @@ void prepareModule(Module &M, SmallVectorImpl<FuncWrapper *> &Fns,
             BranchInst::Create(&Entry, NewEntry);
 
             auto Cond = NewF->getArg(ArgTypes.size() - 1);
-            auto W = Fns[IdxIter->second];
+            auto FW = Fns[IdxIter->second];
 
             // Set the incoming and the outgoing cond. of the old entry block
             // (the outgoing we only need to set if there are other blocks
             // followed by the old entry).
-            W->InM[&Entry] = SmallVector<Incoming, 1>({{Cond, NewEntry}});
-            auto Out = W->OutM[&Entry];
+            FW->InM[&Entry] = SmallVector<Incoming, 1>({{Cond, NewEntry}});
+            auto Out = FW->OutM[&Entry];
             auto I = *std::next(Out->user_begin(), Out->getNumUses() - 1);
             cast<StoreInst>(I)->setOperand(0, Cond);
         }

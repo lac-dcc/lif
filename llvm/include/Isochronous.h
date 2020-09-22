@@ -21,8 +21,8 @@
 /// of instructions regardless of the inputs.
 ///
 //===----------------------------------------------------------------------===//
-#ifndef LLVM_LIF_INVARIANT_H
-#define LLVM_LIF_INVARIANT_H
+#ifndef LLVM_LIF_ISOCHRONOUS_H
+#define LLVM_LIF_ISOCHRONOUS_H
 
 #include "Cond.h"
 
@@ -31,6 +31,7 @@
 #include <llvm/ADT/SmallPtrSet.h>
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/StringRef.h>
+#include <llvm/Analysis/LoopInfo.h>
 #include <llvm/Analysis/TargetLibraryInfo.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Instructions.h>

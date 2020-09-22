@@ -24,6 +24,8 @@
 #ifndef LIF_COND_H
 #define LIF_COND_H
 
+#include "Loop.h"
+
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Value.h>
@@ -94,8 +96,8 @@ std::vector<llvm::Value *> bindOut(llvm::BasicBlock &BB, llvm::Value *OutPtr,
 /// \returns a map between basic blocks and their incoming conditions plus the
 /// set of instructions generated (i.e. the set generated from bindIn +
 /// bindOut).
-std::pair<InMap, std::vector<llvm::Value *>> bind(llvm::Function &F,
-                                                  const OutMap OutM);
+std::pair<InMap, std::vector<llvm::Value *>>
+bind(llvm::Function &F, const OutMap OutM, const loop::LoopWrapper LW);
 
 /// Fold a list of incoming conds. (\p InV) into a single value by applying
 /// the | (or) operator.
