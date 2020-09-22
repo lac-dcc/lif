@@ -56,8 +56,11 @@ bindIn(BasicBlock &BB, const OutMap OutM) {
     SmallVector<Incoming, 8> InV;
     SmallVector<Value *, 4> GenV;
 
-    for (auto P : predecessors(&BB)) {
-        auto Terminator = P->getTerminator();
+    for (auto Bp : predecessors(&BB)) {
+        // Whenever P is a Loop Condition Basic Block, we must not include its
+        // predicate in the incoming conditions of BB.
+
+        auto Terminator = Bp->getTerminator();
         auto Br = dyn_cast<BranchInst>(Terminator);
 
         // TODO: Handle switch, etc...
@@ -69,7 +72,7 @@ bindIn(BasicBlock &BB, const OutMap OutM) {
 
         // Out map must have been constructed already; thus, every
         // basic block should be associated with an out variable.
-        auto OutPtr = cast<AllocaInst>(OutM.lookup(P));
+        auto OutPtr = cast<AllocaInst>(OutM.lookup(Bp));
         Instruction *C =
             new LoadInst(OutPtr->getAllocatedType(), OutPtr, "", Before);
 
@@ -77,19 +80,19 @@ bindIn(BasicBlock &BB, const OutMap OutM) {
         if (Br->isConditional()) {
             // If we are at an else branch, then we should negate the
             // predicate.
-            auto Pred = Br->getCondition();
+            auto P = Br->getCondition();
             if (Br->getSuccessor(1) == &BB) {
-                Pred = BinaryOperator::CreateNot(Pred, "", Before);
-                GenV.push_back(Pred);
+                P = BinaryOperator::CreateNot(P, "", Before);
+                GenV.push_back(P);
             }
 
-            C = BinaryOperator::CreateAnd(C, Pred, "in.", Before);
+            C = BinaryOperator::CreateAnd(C, P, "in.", Before);
             GenV.push_back(C);
         }
 
         // Insert to the beginning of the vector to preserve the insertion
         // order at the basic block.
-        InV.insert(InV.begin(), {C /* Cond */, P /* From */});
+        InV.insert(InV.begin(), {C /* Cond */, Bp /* From */});
     }
 
     return {InV, GenV};
@@ -114,11 +117,19 @@ std::vector<Value *> bindOut(BasicBlock &BB, Value *OutPtr,
         Before = cast<Instruction>(OutV)->getNextNode();
     }
 
+    // TODO: Let (p1, p2) be a pair composed by a predicate of a branch at a
+    // loop's exiting block (except for loop condition). If BB is the loop
+    // latch, we must replace p1 by p2 in the outgoing of BB. That is, we must
+    // traverse each instruction from OutV, search for the use of p1 as an
+    // operand and replace it. This must be done for every pair (p1, p2). There
+    // is probably a better solution, but let's stick with that for now.
+
     GenV.push_back(new StoreInst(OutV, OutPtr, Before));
     return GenV;
 }
 
-std::pair<InMap, std::vector<Value *>> bind(Function &F, const OutMap OutM) {
+std::pair<InMap, std::vector<Value *>> bind(Function &F, const OutMap OutM,
+                                            const loop::LoopWrapper LW) {
     InMap InM(F.size());
     std::vector<Value *> GenV;
 
