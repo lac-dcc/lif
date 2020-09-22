@@ -32,44 +32,40 @@ LoopWrapper prepare(const LoopInfo &LI, LLVMContext &Ctx) {
     LoopWrapper LW(LI);
 
     auto BoolTy = IntegerType::getInt1Ty(Ctx);
+    auto True = ConstantInt::getTrue(BoolTy);
     auto False = ConstantInt::getFalse(BoolTy);
 
     for (auto L : LI) {
         auto LH = L->getHeader();
         auto LL = L->getLoopLatch();
-        auto LP = L->getLoopPredecessor();
-        auto Before = LH->getFirstNonPHI();
+
+        // Save every loop latch for future use, if necessary.
+        LW.LLBlocks.insert(LL);
 
         // We need to save this. LC is the basic block that contains
         // the loop condition. It can be the header of the latch (we assume
         // it is unique). The predicate of this block must not be included
         // in the incoming conditions of its successors, since the loop
         // will always run the same number of iterations.
-        auto T = cast<BranchInst>(LH->getTerminator());
-        LW.LCBlocks.insert(T->isConditional() ? LH : LL);
+        auto LHT = cast<BranchInst>(LH->getTerminator());
+        LW.LCBlocks.insert(LHT->isConditional() ? LH : LL);
 
-        SmallVector<BasicBlock *, 4> ExitingBlocks;
-        L->getExitingBlocks(ExitingBlocks);
+        // For each successor S of the loop latch LL, such that S has more than
+        // one predecessor Sp, insert a phi-function for the predicate of LL.
+        auto LLT = cast<BranchInst>(LL->getTerminator());
+        if (!LLT->isConditional()) continue;
 
-        for (auto B : ExitingBlocks) {
-            if (B == LH) continue;
+        auto P = LLT->getCondition();
+        for (auto S : LLT->successors()) {
+            if (S->hasNPredecessors(1)) continue;
 
-            auto T = cast<BranchInst>(B->getTerminator());
-            // TODO: Handle unconditonal brs?
-            assert(T->isConditional());
+            auto Init = LLT->getSuccessor(0) == S ? True : False;
+            auto Before = S->getFirstNonPHI();
+            auto Phi = PHINode::Create(BoolTy, pred_size(S), "p", Before);
+            LW.PredMap[P][S] = Phi;
 
-            // Insert phi [false, LP] [p, LL] at the header LH, where p is
-            // the predicate that governs that outcome of B, LP is the
-            // block that preceeds LH (outside the loop), and LL is the
-            // (unique) latch. We assume that the loop has a unique latch,
-            // so it is easier to produce the correct phi-function.
-            auto Phi = PHINode::Create(BoolTy, 2, "p", Before);
-            auto P = T->getCondition();
-
-            Phi->addIncoming(False, LP);
-            Phi->addIncoming(P, LL);
-
-            LW.PredMap[P] = Phi;
+            for (auto Sp : predecessors(S))
+                Phi->addIncoming(Sp == LL ? P : Init, Sp);
         }
     }
 

@@ -76,7 +76,7 @@ OutMap allocOut(llvm::Function &F);
 /// \returns a list of incoming conditions plus the set of instructions
 /// generated.
 std::pair<llvm::SmallVector<Incoming, 8>, llvm::SmallVector<llvm::Value *, 4>>
-bindIn(llvm::BasicBlock &BB, const OutMap OutM);
+bindIn(llvm::BasicBlock &BB, const OutMap OutM, const loop::LoopWrapper LW);
 
 /// Computes the outgoing condition for \p BB.
 ///
