@@ -618,13 +618,24 @@ void transformFunc(const FuncWrapper &W, FunctionAnalysisManager &FAM) {
         auto Out = OutM[&BB];
 
         auto IsLH = LW.LI.isLoopHeader(&BB);
+        auto IsLC = LW.LCBlocks.find(&BB) != LW.LCBlocks.end();
 
-        // TODO: Add transformation rule for assigments to predicates in loop
-        // exiting blocks.
         for (Instruction &I : BB) {
             if (Skip.find(&I) != Skip.end() || InV.empty()) continue;
             if (auto Phi = dyn_cast<PHINode>(&I)) {
                 if (!IsLH) PhiV.push_back(Phi);
+                continue;
+            }
+
+            // TODO: Move to a separete function!!!!
+            //
+            // If it is the definition of a predicate that may cause a branch
+            // to outside the loop, we need to ensure that whenever its value
+            // changes (considering the initial one), it will never change back
+            // to the initial. Note that this does not apply to the LC block.
+            if (!IsLC && LW.PredMap.find(cast<Value>(&I)) != LW.PredMap.end()) {
+                auto [Phi, Init] = LW.PredMap.lookup(cast<Value>(&I));
+                transformPredAssign(I, cast<PHINode>(*Phi), *Init);
                 continue;
             }
 
@@ -882,6 +893,20 @@ Value *transformGEP(GetElementPtrInst *GEP, AllocaInst *Shadow, Value *PtrLen,
 
     NewPtr->setName("select.ptr.");
     return NewPtr;
+}
+
+void transformPredAssign(Instruction &P, PHINode &Phi, Value &Init) {
+    auto PredAssign = cast<ConstantInt>(Init).isOne()
+                          // If the initial value is "true", and at some point
+                          // it becomes "false", it cannot be "true" again.
+                          ? BinaryOperator::CreateAnd(&P, &Phi, "")
+                          // Similarly, if it is "false", and at some point it
+                          // becomes "true", it cannot be "false" again.
+                          : BinaryOperator::CreateOr(&P, &Phi, "");
+
+    PredAssign->insertAfter(&P);
+    P.replaceUsesWithIf(
+        PredAssign, [PredAssign](Use &U) { return U.getUser() != PredAssign; });
 }
 
 Value *ctsel(Value *Cond, Value *VTrue, Value *VFalse, Instruction *Before) {
