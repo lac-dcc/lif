@@ -6,10 +6,10 @@
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+// FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+// details.
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
@@ -23,7 +23,6 @@
 
 #include "Cond.h"
 
-#include <cstddef>
 #include <llvm/ADT/DenseMap.h>
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/IR/BasicBlock.h>
@@ -56,8 +55,6 @@ bindIn(BasicBlock &BB, const OutMap OutM, const loop::LoopWrapper LW) {
     SmallVector<Incoming, 8> InV;
     SmallVector<Value *, 4> GenV;
 
-    auto LCEnd = LW.LCBlocks.end();
-    auto PMEnd = LW.PredMap.end();
     for (auto Bp : predecessors(&BB)) {
         auto Terminator = Bp->getTerminator();
         auto Br = dyn_cast<BranchInst>(Terminator);
@@ -77,19 +74,12 @@ bindIn(BasicBlock &BB, const OutMap OutM, const loop::LoopWrapper LW) {
 
         GenV.push_back(C);
 
-        // Whenever Bp is a Loop Condition Basic Block, we must not include its
-        // predicate in the incoming conditions of BB.
-        if (Br->isConditional() && LW.LCBlocks.find(Bp) == LW.LCBlocks.end()) {
+        // Whenever Bp is a Loop Latch containing the loop condition, we must
+        // not include its predicate in the incoming conditions of BB.
+        if (Br->isConditional() && LW.LLBlocks.find(Bp) == LW.LLBlocks.end()) {
             // If we are at an else branch, then we should negate the
             // predicate.
             auto Pred = Br->getCondition();
-
-            // Whenever Bp is a conditional Loop Latch, we must replace the
-            // predicate of the latch by its associated phi-function at BB (it
-            // must already be created by loop::prepare).
-            if (LW.LCBlocks.find(Bp) != LCEnd && LW.PredMap.find(Pred) != PMEnd)
-                Pred = LW.PredMap.lookup(Pred).first;
-
             if (Br->getSuccessor(1) == &BB) {
                 Pred = BinaryOperator::CreateNot(Pred, "", Before);
                 GenV.push_back(C);
@@ -119,7 +109,7 @@ std::vector<Value *> bindOut(BasicBlock &BB, Value *OutPtr,
         // There are no incoming conditions, so we set the out value as
         // true.
         auto BoolTy = IntegerType::getInt1Ty(BB.getContext());
-        OutV = ConstantInt::get(BoolTy, 1);
+        OutV = ConstantInt::getTrue(BoolTy);
         Before = cast<Instruction>(OutPtr)->getNextNode();
     } else {
         OutV = fold(InV);
@@ -135,11 +125,24 @@ std::pair<InMap, std::vector<Value *>> bind(Function &F, const OutMap OutM,
     InMap InM(F.size());
     std::vector<Value *> GenV;
 
+    auto LLEnd = LW.LLBlocks.end();
+    auto BoolTy = IntegerType::getInt1Ty(F.getContext());
+    auto False = ConstantInt::getFalse(BoolTy);
+
     for (BasicBlock &BB : F) {
         auto [InV, GenInV] = bindIn(BB, OutM, LW);
         InM[&BB] = InV;
         GenV.insert(GenV.end(), GenInV.begin(), GenInV.end());
-        auto GenOutV = bindOut(BB, OutM.lookup(&BB), InV);
+        auto OutPtr = OutM.lookup(&BB);
+        // Whenever BB is a loop latch, we need to initialize its reserved
+        // outgoing variable as "false", for it is used to compute the incoming
+        // conditions of the loop header. Otherwise, the initial value will be
+        // a trash, which can produce undefined behavior.
+        if (LW.LLBlocks.find(&BB) != LLEnd) {
+            auto Init = new StoreInst(False, OutPtr);
+            Init->insertAfter(cast<Instruction>(OutPtr));
+        }
+        auto GenOutV = bindOut(BB, OutPtr, InV);
         GenV.insert(GenV.end(), GenOutV.begin(), GenOutV.end());
     }
 

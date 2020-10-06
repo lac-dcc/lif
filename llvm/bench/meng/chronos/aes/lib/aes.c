@@ -874,7 +874,7 @@ int crypto_aes_expand_key(const uint8_t *in_key, struct crypto_aes_ctx *ctx,
     // Currently we cannot support loops without unrolling, so we
     // set the loop limit to 24 (key_len, see main) + 24.
     // ================= end :: Isochronous pass ================ //
-    /* for (i = 4; i < key_len + ; ++i) { */
+    /* for (i = 4; i < key_len + 24; ++i) { */
     for (i = 4; i < 24 + 24; ++i) {
         if (i < key_len + 24) {
             j = key_len + 24 - (i & ~3) + (i & 3);
