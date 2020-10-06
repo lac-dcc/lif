@@ -40,17 +40,12 @@ struct LoopWrapper {
     /// save the initial value.
     llvm::DenseMap<llvm::Value *, std::pair<llvm::Value *, llvm::Value *>>
         PredMap;
-    /// A set that contains "loop condition" (LC) basic blocks. This kind of
-    /// basic block can be either the loop header or the (unique) latch. We
-    /// assume the loop has a unique latch, so it is easier to handle (run the
-    /// "loop-simplify" pass to prepare the loops, if necessary).
-    llvm::SmallPtrSet<llvm::BasicBlock *, 32> LCBlocks;
     /// A set containing all the loop latches (LL), so it is easy to check if a
-    /// basic block is one of them.
+    /// basic block is one of them. In the case of rotated loops, loop latches
+    /// are the ones that contain the loop condition.
     llvm::SmallPtrSet<llvm::BasicBlock *, 32> LLBlocks;
     /// A set containing all the loop exiting blocks, so it is easy to
-    /// check if a basic block is one of them. Note that here we don't consider
-    /// the loop condition block.
+    /// check if a basic block is one of them.
     llvm::SmallPtrSet<llvm::BasicBlock *, 32> ExitingBlocks;
     /// A set containing all the loop exit blocks, so it is easy to check if a
     /// basic block is one of them.
@@ -61,10 +56,10 @@ struct LoopWrapper {
 };
 
 /// In order to handle loops properly, we must insert a phi-function at the
-/// the loop header for the predicate of the loop latch, whenever it is
-/// conditional. This function assumes that every loop is in the canonical
-/// form. Specifically, every loop must contain a single backedge.
-//
+/// loop header for each predicate that branches out the loop. We assume that
+/// (i) the loop is in canonical form; and (ii) the loop is rotated. From (ii),
+/// we can guarantee that the loop latch will contain the loop condition.
+///
 /// \returns a map between the predicates and the phi-functions created, a
 /// set containing "loop condition" basic blocks, and a set containing the loop
 /// latches.

@@ -2,36 +2,6 @@
 
 source parse.sh
 
-# Take the path to a llvm IR file and the path to the output file and try to
-# unroll the existing loops.
-build::unroll() {
-    local in=$1
-    local out=$2
-
-    opt -S -mem2reg -simplifycfg -loops -lcssa -loop-simplify -loop-rotate \
-            -indvars -loop-unroll -unroll-count=5000 -unroll-threshold=5000 \
-            "$in" -o "$out"
-}
-# Sometimes a single unroll pass does not suffice to completely unroll the
-# existing loops, so we try to unroll until the new file is equal to the
-# previous one.
-build::full_unroll() {
-    local llvmfile=$1
-
-    # Unroll two times and check if both files are the same. If not, unroll
-    # untill it stops changing.
-    build::unroll "$llvmfile" "$llvmfile"
-    build::unroll "$llvmfile" "unroll.ll"
-
-    while [ $(cmp -s "$llvmfile" "unroll.ll"; echo $?) -eq 1 ]; do
-        cp "unroll.ll" "$llvmfile"
-        build::unroll "$llvmfile" "unroll.ll"
-    done
-
-    cp "unroll.ll" "$llvmfile"
-    rm "unroll.ll"
-}
-
 # Takes the path to a benchmark and generates executables for: (i) the original
 # code; (ii) the isochronous version; and (iii) the isochr. & optimized version.
 # We assume that the benchmark folder contains a "sources" folder with a list
@@ -72,9 +42,6 @@ build::single() {
             clang -emit-llvm -S -Xclang -disable-O0-optnone \
                 "${libraries}/${lib}" -o "${llvmir}/${libname}.ll";
 
-            # Try to completely unroll existing loops.
-            # build::full_unroll "${llvmir}/${libname}.ll"
-
             libllvm+=("${llvmir}/${libname}.ll")
         done
 
@@ -82,9 +49,11 @@ build::single() {
         llvm-link -S ${llvmir}/${srcname}.ll ${libllvm[@]} \
             -o ${llvmir}/${srcname}.ll
 
-        # Modify every loop to be in canonical form, as well as their indvar.
-        opt -S -mem2reg -loop-simplify -indvars "${llvmir}/${srcname}.ll" \
-            -o "${llvmir}/${srcname}.ll"
+        # Modify every loop to be rotated and in the canonical form.
+        opt -S -mem2reg -lowerswitch -loop-simplify -loop-rotate \
+            -rotation-max-header-size=1000 \
+            "${llvmir}/${srcname}.ll" -o "${llvmir}/${srcname}.ll"
+        printf "."
 
         # Now the lib code is inside src.ll, so we can remove it to save
         # space.
@@ -92,6 +61,7 @@ build::single() {
 
         # Apply optimizations (level 1).
         opt -S -O1 "${llvmir}/${srcname}.ll" -o "${llvmir}/${srcname}.opt.ll"
+        printf "."
 
         # Run the isochronous tool without optimizations & with optimizations.
         ../bin/lif -O0 -names=${meta[functions]} \
@@ -202,15 +172,18 @@ build::single() {
                 clang -emit-llvm -S -Xclang -disable-O0-optnone -D_N=$size \
                     "${libraries}/${lib}" -o "${llvmir}/${libname}.ll";
 
-                # Try to completely unroll existing loops.
-                build::full_unroll "${llvmir}/${libname}.ll"
-
                 libllvm+=("${llvmir}/${libname}.ll")
             done
 
             # Link the src file with all required libs.
             llvm-link -S ${llvmir}/${fullname}.ll ${libllvm[@]} \
                 -o ${llvmir}/${fullname}.ll
+            printf "."
+
+            # Modify every loop to be rotated and in the canonical form.
+            opt -S -mem2reg -lowerswitch -loop-simplify -loop-rotate \
+                -rotation-max-header-size=1000 \
+                "${llvmir}/${fullname}.ll" -o "${llvmir}/${fullname}.ll"
             printf "."
 
             # Now the lib code is inside src.ll, so we can remove it to save

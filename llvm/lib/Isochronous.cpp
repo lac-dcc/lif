@@ -609,6 +609,7 @@ void transformFunc(const FuncWrapper &W, FunctionAnalysisManager &FAM) {
             F->getParent()->getDataLayout().getMaxPointerSizeInBits()),
         0, "shadow", F->getEntryBlock().getTerminator());
 
+    auto LLEnd = LW.LLBlocks.end();
     for (BasicBlock &BB : *F) {
         // We need to collect every phi instruction and store in a separate
         // vector because phi transform. fn removes the phi instruction, so
@@ -618,7 +619,7 @@ void transformFunc(const FuncWrapper &W, FunctionAnalysisManager &FAM) {
         auto Out = OutM[&BB];
 
         auto IsLH = LW.LI.isLoopHeader(&BB);
-        auto IsLC = LW.LCBlocks.find(&BB) != LW.LCBlocks.end();
+        auto IsLL = LW.LLBlocks.find(&BB) != LLEnd;
 
         for (Instruction &I : BB) {
             if (Skip.find(&I) != Skip.end() || InV.empty()) continue;
@@ -627,13 +628,11 @@ void transformFunc(const FuncWrapper &W, FunctionAnalysisManager &FAM) {
                 continue;
             }
 
-            // TODO: Move to a separete function!!!!
-            //
             // If it is the definition of a predicate that may cause a branch
             // to outside the loop, we need to ensure that whenever its value
             // changes (considering the initial one), it will never change back
-            // to the initial. Note that this does not apply to the LC block.
-            if (!IsLC && LW.PredMap.find(cast<Value>(&I)) != LW.PredMap.end()) {
+            // to the initial. Note that this does not apply to the LL block.
+            if (!IsLL && LW.PredMap.find(cast<Value>(&I)) != LW.PredMap.end()) {
                 auto [Phi, Init] = LW.PredMap.lookup(cast<Value>(&I));
                 transformPredAssign(I, cast<PHINode>(*Phi), *Init);
                 continue;
@@ -661,24 +660,18 @@ void transformFunc(const FuncWrapper &W, FunctionAnalysisManager &FAM) {
 
     // For each loop latch, temporarily remove the backedge to the loop header.
     // This way, we can produce an acyclic graph, and thus we can sort the
-    // basic blocks in topological ordering. A loop latch can be either
-    // conditional (do-while) or unconditional (while/for). In the first case,
-    // we replace the conditional branch by an unconditional that branches out
-    // the loop. In the second, we just erase the unconditional branch.
+    // basic blocks in topological ordering. We are assuming that loops are
+    // rotated. Therefore, the loop latch will always be conditional.
     DenseMap<BasicBlock *, BranchInst *> Recover;
     for (auto LL : LW.LLBlocks) {
         auto LLT = cast<BranchInst>(LL->getTerminator());
+        assert(LLT->isConditional() && "unconditonal loop latch!");
+
         Recover[LL] = cast<BranchInst>(LLT->clone());
-
-        if (LLT->isConditional()) {
-            auto S = LW.LI.isLoopHeader(LLT->getSuccessor(0))
-                         ? LLT->getSuccessor(1)
-                         : LLT->getSuccessor(0);
-            BranchInst::Create(S, LLT);
-        } else {
-            new UnreachableInst(F->getContext(), LLT);
-        }
-
+        auto S = LW.LI.isLoopHeader(LLT->getSuccessor(0))
+                     ? LLT->getSuccessor(1)
+                     : LLT->getSuccessor(0);
+        BranchInst::Create(S, LLT);
         LLT->eraseFromParent();
     }
 
@@ -688,6 +681,9 @@ void transformFunc(const FuncWrapper &W, FunctionAnalysisManager &FAM) {
     // inside the loop, not the one that is outside, regardless of the
     // topological ordering.
     for (auto LE : LW.ExitingBlocks) {
+        // Skip loop latches, since they were already handled above.
+        if (LW.LLBlocks.find(LE) != LLEnd) continue;
+
         auto LET = LE->getTerminator();
         BasicBlock *Inside = nullptr, *Outside = nullptr;
 
@@ -725,13 +721,8 @@ void transformFunc(const FuncWrapper &W, FunctionAnalysisManager &FAM) {
         // topological ordering, but we must not touch it.
         if (succ_size(BB) == 0) continue;
 
-        // We must not remove loop conditions, so just skip them. Moreover,
-        // we are treating loop latches as a special case (in case it is not
-        // conditional). That is, its successor will always be the loop
-        // header.
-        auto LCEnd = LW.LCBlocks.end();
-        auto LLEnd = LW.LLBlocks.end();
-        if (LW.LCBlocks.find(BB) == LCEnd && LW.LLBlocks.find(BB) == LLEnd)
+        // We must not remove loop conditions, so just skip them.
+        if (LW.LLBlocks.find(BB) == LLEnd)
             ReplaceInstWithInst(BBT, BranchInst::Create(*(Iter + 1)));
     }
 
@@ -779,7 +770,6 @@ void transformLoad(LoadInst &Load, AllocaInst *Shadow, Value *PtrLen,
         Load.setOperand(Load.getPointerOperandIndex(),
                         transformGEP(GEP, Shadow, PtrLen, Cond, &Load));
 }
-
 void transformStore(StoreInst &Store, AllocaInst *Shadow, Value *PtrLen,
                     Value *Cond) {
     // Let addr' be either the original addr accessed by Store or the addr

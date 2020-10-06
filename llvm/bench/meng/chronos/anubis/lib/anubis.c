@@ -394,7 +394,7 @@ int anubis_setkey(const uint8_t *in_key, struct anubis_ctx *ctx,
      */
     uint32_t K0, K1, K2, K3;
 
-#pragma unroll
+/* #pragma unroll */
     for (r = 0; r < 3; r++) {
         /*
          * generate r-th round key K^r:
@@ -404,7 +404,7 @@ int anubis_setkey(const uint8_t *in_key, struct anubis_ctx *ctx,
         K2 = T4[(kappa[N - 1] >> 8) & 0xff];
         K3 = T4[(kappa[N - 1]) & 0xff];
 
-#pragma unroll
+/* #pragma unroll */
         for (i = 4; i >= 0; i--) {
             K0 = T4[(kappa[i] >> 24)] ^ (T5[(K0 >> 24)] & 0xff000000U) ^
                  (T5[(K0 >> 16) & 0xff] & 0x00ff0000U) ^
@@ -432,7 +432,7 @@ int anubis_setkey(const uint8_t *in_key, struct anubis_ctx *ctx,
 /*
  * compute kappa^{r+1} from kappa^r:
  */
-#pragma unroll
+/* #pragma unroll */
         for (i = 0; i < 6; i++) {
             int j = i;
             inter[i] = T0[(kappa[j--] >> 24)];
@@ -457,7 +457,7 @@ int anubis_setkey(const uint8_t *in_key, struct anubis_ctx *ctx,
     K2 = T4[(kappa[N - 1] >> 8) & 0xff];
     K3 = T4[(kappa[N - 1]) & 0xff];
 
-#pragma unroll
+/* #pragma unroll */
     for (i = 4; i >= 0; i--) {
         K0 = T4[(kappa[i] >> 24)] ^ (T5[(K0 >> 24)] & 0xff000000U) ^
              (T5[(K0 >> 16) & 0xff] & 0x00ff0000U) ^
@@ -494,9 +494,9 @@ int anubis_setkey(const uint8_t *in_key, struct anubis_ctx *ctx,
     ctx->D[0][3] = ctx->E[14][3];
     ctx->D[14][3] = ctx->E[0][3];
 
-#pragma unroll
+/* #pragma unroll */
     for (r = 1; r < 14; r++) {
-#pragma unroll
+/* #pragma unroll */
         for (i = 0; i < 4; i++) {
             uint32_t v = ctx->E[R - r][i];
             ctx->D[r][i] =
@@ -525,7 +525,7 @@ void anubis_crypt(uint32_t roundKey[ANUBIS_MAX_ROUNDS + 1][4],
 /*
  * R - 1 full rounds:
  */
-#pragma unroll
+/* #pragma unroll */
     for (r = 1; r < R; r++) {
         inter[0] = T0[(state[0] >> 24)] ^ T1[(state[1] >> 24)] ^
                    T2[(state[2] >> 24)] ^ T3[(state[3] >> 24)] ^ roundKey[r][0];

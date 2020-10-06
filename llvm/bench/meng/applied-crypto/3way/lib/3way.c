@@ -115,16 +115,9 @@ void twy_enc(twy_ctx *c, u4 *data, int blkcnt) {
     int i;
     d = data;
 
-    // =============== begin :: Isochronous pass ================ //
-    // Currently we cannot support loops without unrolling, so we
-    // set the loop limit to 3 (see main).
-    // ================= end :: Isochronous pass ================ //
-    /* for(i=0;i<blkcnt;i++) { */
-    for (i = 0; i < 3; i++) {
-        if (i < blkcnt) {
-            encrypt(c,d);
-            d +=3;
-        }   
+    for(i=0;i<blkcnt;i++) {
+        encrypt(c,d);
+        d +=3;
     }
 }
 
@@ -134,16 +127,9 @@ void twy_dec(twy_ctx *c, u4 *data, int blkcnt) {
     int i;
     d = data;
 
-    // =============== begin :: Isochronous pass ================ //
-    // Currently we cannot support loops without unrolling, so we
-    // set the loop limit to 3 (see main).
-    // ================= end :: Isochronous pass ================ //
-    /* for(i=0;i<blkcnt;i++){ */
-    for (i = 0; i < 3; i++) {
-        if (i < blkcnt) {
-            decrypt(c,d);
-            d+=3;
-        }   
+    for(i=0;i<blkcnt;i++){
+        decrypt(c,d);
+        d+=3;
     }
 }
 
