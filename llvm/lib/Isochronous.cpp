@@ -595,7 +595,7 @@ void unifyExits(Function &F) {
 }
 
 void transformFunc(const FuncWrapper &W, FunctionAnalysisManager &FAM) {
-    auto [F, _1, OutM, InM, Skip, LW] = W;
+    auto [F, _, OutM, InM, Skip, LW] = W;
 
     // Get the length associated with each pointer (either local or
     // argument).
@@ -658,23 +658,6 @@ void transformFunc(const FuncWrapper &W, FunctionAnalysisManager &FAM) {
         for (auto Phi : PhiV) transformPhi(*Phi, InM[&BB]);
     }
 
-    // For each loop latch, temporarily remove the backedge to the loop header.
-    // This way, we can produce an acyclic graph, and thus we can sort the
-    // basic blocks in topological ordering. We are assuming that loops are
-    // rotated. Therefore, the loop latch will always be conditional.
-    DenseMap<BasicBlock *, BranchInst *> Recover;
-    for (auto LL : LW.LLBlocks) {
-        auto LLT = cast<BranchInst>(LL->getTerminator());
-        assert(LLT->isConditional() && "unconditonal loop latch!");
-
-        Recover[LL] = cast<BranchInst>(LLT->clone());
-        auto S = LW.LI.isLoopHeader(LLT->getSuccessor(0))
-                     ? LLT->getSuccessor(1)
-                     : LLT->getSuccessor(0);
-        BranchInst::Create(S, LLT);
-        LLT->eraseFromParent();
-    }
-
     // We treat loop exiting blocks in a distinct way. Here, we are
     // considering every exiting block except for the loop condition. The
     // successor of these blocks will always be the basic block that is
@@ -715,19 +698,13 @@ void transformFunc(const FuncWrapper &W, FunctionAnalysisManager &FAM) {
         auto BB = *Iter;
         auto BBT = BB->getTerminator();
 
-        // Since we may have changed the control flow graph, there may be the
-        // case that the exit block had multiple predecessors before and now it
-        // does not. This means that it might not be the last block in the
-        // topological ordering, but we must not touch it.
-        if (succ_size(BB) == 0) continue;
+        // Do not mess with loop conditions.
+        if (LW.LLBlocks.find(BB) != LW.LLBlocks.end()) continue;
 
         // We must not remove loop conditions, so just skip them.
         if (LW.LLBlocks.find(BB) == LLEnd)
             ReplaceInstWithInst(BBT, BranchInst::Create(*(Iter + 1)));
     }
-
-    // Recover the backedges that we have deleted.
-    for (auto [LL, Br] : Recover) ReplaceInstWithInst(LL->getTerminator(), Br);
 }
 
 void transformPhi(PHINode &Phi, const SmallVectorImpl<Incoming> &InV) {
