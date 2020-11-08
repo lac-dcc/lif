@@ -5,7 +5,7 @@ source parse.sh
 # Takes the path to a benchmark and produces a CSV file with some statistics
 # related to the execution time of a program.
 measure::exec_time() {
-    local bench=$1;
+    local bench=$1
     local sources=${bench}/src
     local bin=${bench}/bin
     local results=${bench}/results
@@ -318,7 +318,7 @@ measure::pass_time() {
         regex_str=${regex_str// /}
         regex_str=${regex_str//_/ }
 
-        # First, we measure our transformation (a 1000 samples).
+        # First, we measure our transformation (50 samples).
         local -a elapsed=()
         for _ in {1..50}; do
             # The time-passes option prints to the std error output.

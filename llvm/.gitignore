@@ -16,7 +16,8 @@ __pycache__/
 # Exec
 bin/
 
-# Benchmark files
-*.ll
-*.s
-*.cachegrind
+# Benchmark generated files
+bench/**/asm
+bench/**/bin
+bench/**/llvm-ir
+bench/**/results

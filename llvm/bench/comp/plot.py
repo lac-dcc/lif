@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import math
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -8,7 +9,7 @@ import seaborn as sns
 sns.set()
 palette = ["#2c2c2c", "#747474"]
 
-data = pd.read_csv("exec_time.csv", skipinitialspace=True)
+data = pd.read_csv("results/exec_time.csv", skipinitialspace=True)
 
 #  measure = "Median"
 measure = "Mean"
@@ -45,13 +46,29 @@ sns.scatterplot(
     ax=ax1, palette=palette
 )
 
+ymin = math.floor(
+    min(np.min(input1_raw[measure]), 
+        np.min(input2_raw[measure]))
+    * 100) / 100.0
+ymax = math.ceil(
+    max(np.max(input1_raw[measure]), 
+        np.max(input2_raw[measure]))
+    * 100) / 100.0
+
+# Adjust the limits in order to make the data fit in the chart.
+ystep = (ymax - ymin) / 4
+
 step = 256
-ax1.set(xlim=(0, 1024 + step/4), xticks=np.arange(0, 1024 + step, step))
+ax1.set(
+    xlim=(0, 1024 + step/4), ylim=(ymin - ystep, ymax + 2*ystep),
+    xticks=np.arange(0, 1024 + step, step),
+    yticks=np.linspace(ymin, ymax, 4).round(decimals=2)
+)
 ax1.set_xticklabels([])
 ax1.set_xlabel("(a) a[i] == b[i]", fontweight="bold")
 ax1.yaxis.label.set_visible(False)
 handles, labels = ax1.get_legend_handles_labels()
-ax1.legend(loc="upper left", handles=handles[1:], labels=labels[1:])
+ax1.legend(loc="upper left", handles=handles, labels=labels)
 
 sns.scatterplot(
     x="N", y=measure, hue="Type",
@@ -66,7 +83,7 @@ ax2.set_yticklabels([])
 ax2.set_xlabel("(b) a[0] != b[0]", fontweight="bold")
 ax2.yaxis.label.set_visible(False)
 handles, labels = ax2.get_legend_handles_labels()
-ax2.legend(loc="upper left", handles=handles[1:], labels=labels[1:])
+ax2.legend(loc="upper left", handles=handles, labels=labels)
 
 sns.scatterplot(
     x="N", y=measure, hue="Type",
@@ -74,12 +91,28 @@ sns.scatterplot(
     ax=ax3, palette=palette
 )
 
-ax3.set(xlim=(0, 1024 + step/4), xticks=np.arange(0, 1024 + step, step))
-ax3.set(ylim=(1.1, 1.35), yticks=(1.15, 1.20, 1.25, 1.30))
+ymin = math.floor(
+    min(np.min(input1_opt[measure]), 
+        np.min(input2_opt[measure]))
+    * 100) / 100.0
+ymax = math.ceil(
+    max(np.max(input1_opt[measure]), 
+        np.max(input2_opt[measure]))
+    * 100) / 100.0
+
+# Adjust the limits in order to make the data fit in the chart.
+ystep = (ymax - ymin) / 4
+
+ax3.set(
+    xlim=(0, 1024 + step/4), 
+    xticks=np.arange(0, 1024 + step, step))
+ax3.set(
+    ylim=(ymin - ystep, ymax + 4*ystep), 
+    yticks=np.linspace(ymin, ymax,4).round(decimals=2))
 ax3.xaxis.label.set_visible(False)
 ax3.yaxis.label.set_visible(False)
 handles, labels = ax3.get_legend_handles_labels()
-ax3.legend(loc="upper left", handles=handles[1:], labels=labels[1:])
+ax3.legend(loc="upper left", handles=handles, labels=labels)
 
 sns.scatterplot(
     x="N", y=measure, hue="Type",
@@ -93,7 +126,7 @@ ax4.set_yticklabels([])
 ax4.xaxis.label.set_visible(False)
 ax4.yaxis.label.set_visible(False)
 handles, labels = ax4.get_legend_handles_labels()
-ax4.legend(loc="upper left", handles=handles[1:], labels=labels[1:])
+ax4.legend(loc="upper left", handles=handles, labels=labels)
 
 # Add common labels:
 fig.text(
@@ -112,12 +145,12 @@ fig.text(
 #  ax2.legend(loc="upper left")
 
 # Finally, save the figure:
-fig.savefig("exec_time.pdf", bbox_inches="tight")
+fig.savefig("results/exec_time.pdf", bbox_inches="tight")
 
 # Now, we plot the program size (in terms of llvm-ir instructions).
 # In this case, the size is the same regardless of the inputs, so we only
 # plot for input1.
-data = pd.read_csv("size.csv", skipinitialspace=True)
+data = pd.read_csv("results/size.csv", skipinitialspace=True)
 # Mask "lif" as "this paper", for double-bind submissions.
 data.loc[data["Type"] == "lif", "Type"] = "This paper"
 data.loc[data["Type"] == "lif-opt", "Type"] = "This paper (opt)"
@@ -143,7 +176,7 @@ ax1.set_yscale("log", base=10)
 ax1.xaxis.label.set_visible(False)
 ax1.set_ylabel("# of LLVM-IR instructions", fontsize="large")
 handles, labels = ax1.get_legend_handles_labels()
-ax1.legend(loc="lower right", handles=handles[1:], labels=labels[1:])
+ax1.legend(loc="lower right", handles=handles, labels=labels)
 
 sns.scatterplot(
     x="N", y="#LLVM-IR Instructions", hue="Type",
@@ -157,23 +190,23 @@ ax2.set_yticklabels([])
 ax2.xaxis.label.set_visible(False)
 ax2.yaxis.label.set_visible(False)
 handles, labels = ax2.get_legend_handles_labels()
-ax2.legend(loc="lower right", handles=handles[1:], labels=labels[1:])
+ax2.legend(loc="lower right", handles=handles, labels=labels)
 
 # Add common labels:
 fig.text(
-    0.5, 0.01, 
-    "# of cells of input arrays", 
+    0.5, 0.01,
+    "# of cells of input arrays",
     ha="center", va="center",
     fontsize="large"
 )
 
-fig.savefig("size.pdf", bbox_inches="tight")
+fig.savefig("results/size.pdf", bbox_inches="tight")
 
 # Finally, we plot the time (user+system) spent on running the isochronous pass,
 # for each size N.
 fig = plt.figure(figsize=(5, 2))
 
-data = pd.read_csv("pass_time.csv", skipinitialspace=True)
+data = pd.read_csv("results/pass_time.csv", skipinitialspace=True)
 # Mask "lif" as "this paper", for double-bind submissions.
 data.loc[data["Type"] == "lif", "Type"] = "This paper"
 data.loc[data["Type"] == "meng", "Type"] = "Meng"
@@ -191,6 +224,6 @@ ax.set(
 )
 
 handles, labels = ax.get_legend_handles_labels()
-ax.legend(loc="best", handles=handles[1:], labels=labels[1:])
+ax.legend(loc="best", handles=handles, labels=labels)
 
-fig.savefig("pass_time.pdf", bbox_inches="tight")
+fig.savefig("results/pass_time.pdf", bbox_inches="tight")

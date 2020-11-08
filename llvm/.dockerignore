@@ -1,0 +1,12 @@
+# Benchmark binaries.
+bench/**/bin/
+
+# Benchmark intermediate files.
+bench/**/*.ll
+bench/**/*.s
+
+# Result files.
+bench/**/*.cachegrind
+bench/**/*.csv
+bench/**/*.pdf
+bench/**/*.jpg

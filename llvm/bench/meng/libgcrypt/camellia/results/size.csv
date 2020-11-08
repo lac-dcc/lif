@@ -1,7 +1,0 @@
-Src,Type,N,#LLVM-IR Instructions
-measure,orig,50,1246
-measure,orig-opt,50,726
-measure,isochr,50,4248
-measure,isochr-opt,50,1366
-measure,meng,50,3742
-measure,meng-opt,50,3222

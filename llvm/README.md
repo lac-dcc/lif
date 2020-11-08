@@ -2,18 +2,24 @@
 ![stability-wip](https://img.shields.io/badge/stability-work_in_progress-lightgrey.svg)
 
 # Lif - LLVM
-This is an implementation of the Isochronous Pass onto the LLVM ecossystem. It relies on the new LLVM Pass Manager. Unfortunately, so far the official documentation is directed to the legacy Pass Manager, but you can find nice talks about the new Pass Manager on youtube. I recommend the following talk from Andrzej Warzynski:
+This is an implementation of the Isochronous Pass onto the LLVM ecossystem. It
+relies on the new LLVM Pass Manager. Unfortunately, so far the official
+documentation is directed to the legacy Pass Manager, but you can find nice
+talks about the new Pass Manager on youtube. We recommend the following talk
+from Andrzej Warzynski:
 
 [![New LLVM Pass Manager](https://img.youtube.com/vi/ar7cJl2aBuU/0.jpg)](https://www.youtube.com/watch?v=ar7cJl2aBuU "2019 LLVM Developers’ Meeting: A. Warzynski “Writing an LLVM Pass: 101”")
 
 ## Requirements
-- CMake >= 3.4.3
-- LLVM >= 10.0.0 (you can use your LLVM's system package, no need to build it manually)
-- Clang >= 10.0.0
+- CMake >= 3.18.4
+- LLVM >= 10.0.1 (you can use your LLVM's system package, no need to build it manually)
+- Clang >= 10.0.1
 - A generator for CMake (GNU Make, Ninja, etc)
 
 ## Build
-This project is built with CMake. You can choose the generator you prefer. You also need to set the path for the LLVM install directory. The following commands illustrate the building process:
+This project is built with CMake. You can choose the generator you prefer. You
+also need to set the path for the LLVM install directory. The following
+commands illustrate the building process:
 
 ```
 $ cd /path/to/lif/llvm
@@ -22,9 +28,10 @@ $ ninja
 ```
 
 ## Usage
-`$ lif [options] <Module to be transformed] -o <Module after the transformations>`
+`$ lif [options] <Module to be transformed> -o <Module after the transformations>`
 
-First, you need to generate an LLVM IR representation of some source code. For that, you can proceed as follows:
+First, you need to generate an LLVM IR representation of some source code. For
+that, you can proceed as follows:
 
 #### **`comp.c`**
 ``` c
@@ -49,7 +56,7 @@ $ clang -S -emit-llvm -Xclang -disable-O0-optnone comp.c -o comp.ll
 ```
 
 The isochronous pass requires each loop to be fully unrolled. You can use the
-option _unroll_ (together with _unroll-count_ and _unroll-thresholl_, an option
+option _unroll_ (together with _unroll-count_ and _unroll-threshold_, an option
 for the LLVM loop-unroll pass) in order to let this trool try to unroll them,
 or you can manually unroll them if you want.
 

@@ -15,11 +15,11 @@ collect::all() {
 
     for bench in ${benchs_ref[@]}; do
         echo "Collecting data from ${bench}"
-        # cachegrind::run "$bench"
-        # cachegrind::filter "$bench"
-        # measure::exec_time "$bench"
-        # measure::size "$bench"
-        # measure::pass_time "$bench"
+        cachegrind::run "$bench"
+        cachegrind::filter "$bench"
+        measure::exec_time "$bench"
+        measure::size "$bench"
+        measure::pass_time "$bench"
 
         # Gather the collected data into a single place.
         local prefix=$(echo $bench | rev | sed -n "s:[^/]*\(/[^/]*\).*:\1:p" | rev)
