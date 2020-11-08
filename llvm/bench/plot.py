@@ -7,22 +7,20 @@ import seaborn as sns
 sns.set()
 palette = ["#2c2c2c", "#747474", "#b4b4b4"]
 
-# List of benchmarks that meng's tool failed to transform or produced wrong
-# code.
-failed = [
-    "hash/md5",
-    "dudect/aes32",
-    "dudect/donnabad",
-    "applied-crypto/loki91"
-]
+# List of benchmarks that meng's tool crashed (failed to transform).
 crashed = [
     "hash/md5",
     "dudect/aes32",
     "dudect/donnabad",
 ]
 
+# List of benchmarks that either crashed (right above) or that meng's tool
+# somehow produced wrong code.
+failed = crashed + ["applied-crypto/loki91"]
+
 # First: program sizes.
-data = pd.read_csv("size.csv", skipinitialspace=True)
+data = pd.read_csv("results/size.csv", skipinitialspace=True)
+data = data[data["Bench"] != "comp"]
 # Mask "lif" as "this paper", for double-bind submissions.
 data.loc[data["Type"] == "lif", "Type"] = "This paper"
 data.loc[data["Type"] == "lif-opt", "Type"] = "This paper (opt)"
@@ -84,12 +82,13 @@ fig.text(
     fontsize="x-large"
 )
 
-fig.savefig("size.pdf", bbox_inches="tight")
+fig.savefig("results/size.pdf", bbox_inches="tight")
 
 # Now, running time of the pass:
 #  measure = "Median"
 measure = "Mean"
-data = pd.read_csv("pass_time.csv", skipinitialspace=True)
+data = pd.read_csv("results/pass_time.csv", skipinitialspace=True)
+data = data[data["Bench"] != "comp"]
 # Mask "lif" as "this paper", for double-bind submissions.
 data.loc[data["Type"] == "lif", "Type"] = "This paper"
 data.loc[data["Type"] == "meng", "Type"] = "Meng"
@@ -125,10 +124,11 @@ ax1.set_xticklabels(
 )
 
 ax1.legend(loc="best", fontsize="large", title=None)
-fig.savefig("pass_time.pdf", bbox_inches="tight")
+fig.savefig("results/pass_time.pdf", bbox_inches="tight")
 
 # Finally, benchmarks running time.
-data = pd.read_csv("exec_time.csv", skipinitialspace=True)
+data = pd.read_csv("results/exec_time.csv", skipinitialspace=True)
+data = data[data["Bench"] != "comp"]
 # CSV data is in nanoseconds, so we first transform it to microseconds:
 data[measure] = data[measure] / 1000
 # Mask "lif" as "this paper", for double-bind submissions.
@@ -189,4 +189,4 @@ fig.text(
     fontsize="large"
 )
 
-fig.savefig("exec_time.pdf", bbox_inches="tight")
+fig.savefig("results/exec_time.pdf", bbox_inches="tight")

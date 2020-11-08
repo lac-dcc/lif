@@ -7,8 +7,8 @@ source collect.sh
 
 # Array of benchmarks to be transformed & analyzed.
 declare -a benchs=(
-    # "comp"
-    # "mu"
+    "comp"
+    "mu"
     "ctbench/bearssl/hash/md5"
     "ctbench/dudect/aes32"
     "ctbench/dudect/donnabad"
@@ -42,12 +42,13 @@ while [ $# -gt 0 ]; do
             echo -e "==============================================================================="
             echo -e "=====                     Build & collect statistics                      ====="
             echo -e "===============================================================================\n"
-            echo -e "-h, --help\t\tPrint this help message"
-            echo -e "-b, --build\t\tBuild & apply the invariant transformation"
-            echo -e "\t\t\tto each benchmark"
+            echo -e "-h, --help\t\tPrint this help message."
+            echo -e "-b, --build\t\tBuild & apply the isochronous transformation"
+            echo -e "\t\t\tto each benchmark."
             echo -e "-c, --collect\t\tCollect statistics from each benchmark. This option"
-            echo -e "\t\t\tassumes that the benchmarks were previously built"
-            echo -e "-a, --all\t\tBuild & collect"
+            echo -e "\t\t\tassumes that the benchmarks were previously built."
+            echo -e "-a, --all\t\tBuild & collect."
+            echo -e "-p, --plot\t\tPlot the results collected."
             ;;
         -b|--build)
             shift
@@ -66,6 +67,18 @@ while [ $# -gt 0 ]; do
                 shift
             fi
             collect::all benchs
+            ;;
+        -p|--plot)
+            shift
+            # This option expects "--collect" to be executed for
+            # every benchmark before. First, plot the charts
+            # related to the real benchmarks.
+            python plot.py
+            echo "Generated results/(pass_time|exec_time|size).pdf"
+            # Then, move to the "comp" benchmark to plot its
+            # results.
+            cd comp && python plot.py
+            echo "Generated comp/results/(pass_time|exec_time|size).pdf"
             ;;
         -a|--all)
             shift

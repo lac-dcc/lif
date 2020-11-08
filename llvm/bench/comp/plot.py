@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import math
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -51,7 +52,7 @@ ax1.set_xticklabels([])
 ax1.set_xlabel("(a) a[i] == b[i]", fontweight="bold")
 ax1.yaxis.label.set_visible(False)
 handles, labels = ax1.get_legend_handles_labels()
-ax1.legend(loc="upper left", handles=handles[1:], labels=labels[1:])
+ax1.legend(loc="upper left", handles=handles, labels=labels)
 
 sns.scatterplot(
     x="N", y=measure, hue="Type",
@@ -66,7 +67,7 @@ ax2.set_yticklabels([])
 ax2.set_xlabel("(b) a[0] != b[0]", fontweight="bold")
 ax2.yaxis.label.set_visible(False)
 handles, labels = ax2.get_legend_handles_labels()
-ax2.legend(loc="upper left", handles=handles[1:], labels=labels[1:])
+ax2.legend(loc="upper left", handles=handles, labels=labels)
 
 sns.scatterplot(
     x="N", y=measure, hue="Type",
@@ -74,12 +75,18 @@ sns.scatterplot(
     ax=ax3, palette=palette
 )
 
+ymin = min(np.min(input1_opt[measure]), np.min(input2_opt[measure]))
+ymin = math.floor(ymin * 100) / 100.0
+ymax = max(np.max(input1_opt[measure]), np.max(input2_opt[measure]))
+ymax = math.ceil(ymax * 100) / 100.0
+
 ax3.set(xlim=(0, 1024 + step/4), xticks=np.arange(0, 1024 + step, step))
-ax3.set(ylim=(1.1, 1.35), yticks=(1.15, 1.20, 1.25, 1.30))
+ax3.set(ylim=(ymin, ymax), 
+        yticks=np.linspace(ymin, ymax, 4).round(decimals=2))
 ax3.xaxis.label.set_visible(False)
 ax3.yaxis.label.set_visible(False)
 handles, labels = ax3.get_legend_handles_labels()
-ax3.legend(loc="upper left", handles=handles[1:], labels=labels[1:])
+ax3.legend(loc="upper left", handles=handles, labels=labels)
 
 sns.scatterplot(
     x="N", y=measure, hue="Type",
@@ -93,7 +100,7 @@ ax4.set_yticklabels([])
 ax4.xaxis.label.set_visible(False)
 ax4.yaxis.label.set_visible(False)
 handles, labels = ax4.get_legend_handles_labels()
-ax4.legend(loc="upper left", handles=handles[1:], labels=labels[1:])
+ax4.legend(loc="upper left", handles=handles, labels=labels)
 
 # Add common labels:
 fig.text(
@@ -143,7 +150,7 @@ ax1.set_yscale("log", base=10)
 ax1.xaxis.label.set_visible(False)
 ax1.set_ylabel("# of LLVM-IR instructions", fontsize="large")
 handles, labels = ax1.get_legend_handles_labels()
-ax1.legend(loc="lower right", handles=handles[1:], labels=labels[1:])
+ax1.legend(loc="lower right", handles=handles, labels=labels)
 
 sns.scatterplot(
     x="N", y="#LLVM-IR Instructions", hue="Type",
@@ -157,12 +164,12 @@ ax2.set_yticklabels([])
 ax2.xaxis.label.set_visible(False)
 ax2.yaxis.label.set_visible(False)
 handles, labels = ax2.get_legend_handles_labels()
-ax2.legend(loc="lower right", handles=handles[1:], labels=labels[1:])
+ax2.legend(loc="lower right", handles=handles, labels=labels)
 
 # Add common labels:
 fig.text(
-    0.5, 0.01, 
-    "# of cells of input arrays", 
+    0.5, 0.01,
+    "# of cells of input arrays",
     ha="center", va="center",
     fontsize="large"
 )
@@ -191,6 +198,6 @@ ax.set(
 )
 
 handles, labels = ax.get_legend_handles_labels()
-ax.legend(loc="best", handles=handles[1:], labels=labels[1:])
+ax.legend(loc="best", handles=handles, labels=labels)
 
 fig.savefig("pass_time.pdf", bbox_inches="tight")
