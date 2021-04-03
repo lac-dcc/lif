@@ -633,8 +633,8 @@ void transformFunc(const FuncWrapper &W, FunctionAnalysisManager &FAM) {
             // changes (considering the initial one), it will never change back
             // to the initial. Note that this does not apply to the LL block.
             if (!IsLL && LW.PredMap.find(cast<Value>(&I)) != LW.PredMap.end()) {
-                auto [Phi, Init] = LW.PredMap.lookup(cast<Value>(&I));
-                transformPredAssign(I, cast<PHINode>(*Phi), *Init);
+                auto Phi = LW.PredMap.lookup(cast<Value>(&I));
+                transformPredAssign(I, *Phi);
                 continue;
             }
 
@@ -862,14 +862,8 @@ Value *transformGEP(GetElementPtrInst *GEP, AllocaInst *Shadow, Value *PtrLen,
     return NewPtr;
 }
 
-void transformPredAssign(Instruction &P, PHINode &Phi, Value &Init) {
-    auto PredAssign = cast<ConstantInt>(Init).isOne()
-                          // If the initial value is "true", and at some point
-                          // it becomes "false", it cannot be "true" again.
-                          ? BinaryOperator::CreateAnd(&P, &Phi, "")
-                          // Similarly, if it is "false", and at some point it
-                          // becomes "true", it cannot be "false" again.
-                          : BinaryOperator::CreateOr(&P, &Phi, "");
+void transformPredAssign(Instruction &P, PHINode &Phi) {
+    auto PredAssign = BinaryOperator::CreateOr(&P, &Phi, "");
 
     PredAssign->insertAfter(&P);
     P.replaceUsesWithIf(

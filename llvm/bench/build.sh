@@ -64,7 +64,7 @@ build::single() {
         printf "."
 
         # Run the isochronous tool without optimizations & with optimizations.
-        ../bin/lif -O0 -names=${meta[functions]} \
+        ../build/bin/lif -O0 -names=${meta[functions]} \
             "${llvmir}/${srcname}.ll" -o "${llvmir}/${srcname}_isochr.ll" \
             &> /dev/null
         printf "."
@@ -198,7 +198,7 @@ build::single() {
             # Run the isochronous tool without optimizations & with optimizations.
             # Since Meng's tool seems to try to transform all functions within
             # a module, to be fair we don't select any specific function.
-            ../bin/lif -O0 "${llvmir}/${fullname}.ll" \
+            ../build/bin/lif -O0 "${llvmir}/${fullname}.ll" \
                 -o "${llvmir}/${fullname}_isochr.ll" &> /dev/null
             printf "."
 

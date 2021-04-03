@@ -36,10 +36,8 @@ struct LoopWrapper {
     /// LoopInfo produced by running LoopAnalysis.
     llvm::LoopInfo &LI;
     /// A map between the predicate that governs the outcome of a loop exiting,
-    /// and the associated phi-functions inserted at the loop header. We also
-    /// save the initial value.
-    llvm::DenseMap<llvm::Value *, std::pair<llvm::Value *, llvm::Value *>>
-        PredMap;
+    /// and the associated phi-functions inserted at the loop header.
+    llvm::DenseMap<llvm::Value *, llvm::PHINode *> PredMap;
     /// A set containing all the loop latches (LL), so it is easy to check if a
     /// basic block is one of them. In the case of rotated loops, loop latches
     /// are the ones that contain the loop condition.

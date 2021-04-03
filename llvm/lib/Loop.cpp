@@ -32,12 +32,15 @@ LoopWrapper &prepare(LoopInfo &LI, LLVMContext &Ctx) {
     auto LW = new LoopWrapper(LI);
 
     auto BoolTy = IntegerType::getInt1Ty(Ctx);
-    auto True = ConstantInt::getTrue(BoolTy);
     auto False = ConstantInt::getFalse(BoolTy);
 
     for (auto L : LI.getLoopsInPreorder()) {
         auto LH = L->getHeader();
+
+        // --loop-simplify
         auto LL = L->getLoopLatch();
+
+        // --loop-rotate
         assert(L->isRotatedForm() && "loop is not in rotated form!");
 
         // Save every loop latch for future use, if necessary.
@@ -47,17 +50,17 @@ LoopWrapper &prepare(LoopInfo &LI, LLVMContext &Ctx) {
         L->getExitingBlocks(ExitingBlocks);
         auto Before = LH->getFirstNonPHI();
         for (auto LE : ExitingBlocks) {
+            if (LE == LL) continue;
+
             // For each exiting block LE, insert a phi-function at the LH
             // associated with the predicate of LE.
             auto LET = cast<BranchInst>(LE->getTerminator());
             auto C = LET->getCondition();
-            // It can be the LL, which targets the LH. We need this information
-            // in order to get the correct initial value.
-            auto Init = LET->getSuccessor(0) == LH ? True : False;
+
             auto Phi = PHINode::Create(BoolTy, pred_size(LH), "p", Before);
             for (auto P : predecessors(LH)) {
-                Phi->addIncoming(P == LL ? C : Init, P);
-                LW->PredMap[C] = {Phi, Init};
+                Phi->addIncoming(P == LL ? C : False, P);
+                LW->PredMap[C] = Phi;
             }
         }
 
@@ -68,7 +71,7 @@ LoopWrapper &prepare(LoopInfo &LI, LLVMContext &Ctx) {
     }
 
     return *LW;
-} // namespace loop
+}
 
 LoopWrapper &recover(LoopInfo &LI, LLVMContext &Ctx) {
     auto LW = new LoopWrapper(LI);
@@ -79,23 +82,23 @@ LoopWrapper &recover(LoopInfo &LI, LLVMContext &Ctx) {
 
         // Save every loop latch for future use, if necessary.
         LW->LLBlocks.insert(LL);
+
         // Save every loop exiting block that is not the loop condition.
         SmallVector<BasicBlock *, 4> ExitingBlocks;
         L->getExitingBlocks(ExitingBlocks);
+
         for (auto LE : ExitingBlocks) {
+            if (LE == LL) continue;
             // For each exiting block LE, there is a phi-function at the LH
             // associated with the predicate of LE.
             auto LET = cast<BranchInst>(LE->getTerminator());
             auto C = LET->getCondition();
-            // Since the loop is in canonical form, the predecessor of the
-            // header outside the loop is always unique: it is the loop
-            // preheader.
-            auto LHP = L->getLoopPredecessor();
+
             for (auto &I : *LH) {
                 auto Phi = dyn_cast<PHINode>(&I);
                 if (!Phi) continue;
                 if (Phi->getIncomingValueForBlock(LL) == C)
-                    LW->PredMap[C] = {Phi, Phi->getIncomingValueForBlock(LHP)};
+                    LW->PredMap[C] = Phi;
             }
         }
 

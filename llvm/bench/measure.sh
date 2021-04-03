@@ -322,7 +322,7 @@ measure::pass_time() {
         local -a elapsed=()
         for _ in {1..50}; do
             # The time-passes option prints to the std error output.
-            ../bin/lif -O0 -names=${meta[functions]} -time-passes \
+            ../build/bin/lif -O0 -names=${meta[functions]} -time-passes \
                 "${llvmir}/${srcname}_${size}.ll" -o "${llvmir}/tmp.ll" \
                 2> time.txt
             local time=$(cat time.txt | sed -n -E "s/${regex_str}/\1/p")

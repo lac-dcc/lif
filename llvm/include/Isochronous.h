@@ -144,11 +144,9 @@ llvm::Value *transformGEP(llvm::GetElementPtrInst *GEP,
                           llvm::Value *Cond, llvm::Instruction *Before);
 
 /// Transforms \p P (the definition of some predicate used in a branch inside a
-/// loop) in a way that it respects the associated \p Phi. That is, if the
-/// initial value of the phi-function is true, whenever \p P becomes false it
-/// cannot change back to true (similarly for the initial value false).
-void transformPredAssign(llvm::Instruction &P, llvm::PHINode &Phi,
-                         llvm::Value &Init);
+/// loop) in a way that it respects the associated \p Phi. That is, whenever
+/// \p P becomes true, it cannot change back to false.
+void transformPredAssign(llvm::Instruction &P, llvm::PHINode &Phi);
 
 /// Given two values, \p VTrue and \p VFalse, and a condition \p Cond,
 /// generate instructions for selecting between \p VTrue and \p VFalse.

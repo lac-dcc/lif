@@ -23,8 +23,8 @@ commands illustrate the building process:
 
 ```
 $ cd /path/to/lif/llvm
-$ cmake -DLT_LLVM_INSTALL_DIR="/usr" -G Ninja .
-$ ninja
+$ cmake -DLT_LLVM_INSTALL_DIR="/usr" -G Ninja -B build/ .
+$ ninja -C build
 ```
 
 ## Usage
