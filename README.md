@@ -1,20 +1,23 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 # Low-level Isochronous Form
-The goal of project Lif is the development of a technique that
-transforms a function into a version of it that is time and
-memory invariant. This property ensures that the set of
-instructions executed will always be the same regardless of the
-inputs. As a consequence, the execution time of said function
-will be constant. Such transformation method eliminates
-side-channels in implementations of cryptography.
+A function is said to be isochronous if its running time does not
+depend on secret inputs. In other words, the function must
+be invariant with respect to both operations and memory accesses.
+If every sensitive function of a program is isochronous, than the
+program itself is said to be isochronous. The goal of project Lif
+is the development of a technique that transforms a program into
+an isochronous version. This invariant property is desirable when
+dealing with cryptography, given that these implementations must
+be side-channel free.
+
 
 This repository is split into two folders described above:
 
-- `lang`: A small and simple language implemented in Haskell. 
+- `tiny`: A small and simple language written in Haskell. 
           It exists primarily with the purpose of implementing a
-          skeleton of the invariant transformation pass.
-- `llvm`: A LLVM implementation of the invariant pass.
+          skeleton of the isochronous pass.
+- `lif`: A LLVM-based tool that implements the isochronous pass.
 
 ## Overview
 Consider the following function, which takes two lists, _A_ and
@@ -33,7 +36,7 @@ body will be executed _N_ times. Now, let A' = [1, 0, 0, 0]. When
 calling `comp` with A' and B, since the first test _A'[i] != B[i]_
 already fails, the loop body will be executed only once and the
 function will then return. Hence, if _N_ is large, the execution
-time of this function w.r.t the first input will take longer than
-the execution time for the second input. This difference can, for
-example, be used by an external observer to retrieve informations
+time of this function w.r.t. the first input will take longer
+than the execution time for the second input. This difference
+can be used by an external observer to retrieve informations
 related to those inputs.

@@ -104,29 +104,29 @@ build::single() {
         # transformed code is correct).
         local orig=$("${bin}/${srcname}.opt")
         local isochr=$("${bin}/${srcname}_isochr.opt")
-        local meng
+        local wu
 
-        # Run meng tool just so we can check its correctness as well.
-        local err=$(opt -S -load util/meng.so -branch\
-            "${llvmir}/${srcname}.ll" -o "meng.ll" 2>&1)
+        # Run wu tool just so we can check its correctness as well.
+        local err=$(opt -S -load util/wu.so -branch\
+            "${llvmir}/${srcname}.ll" -o "wu.ll" 2>&1)
         printf "."
 
         # Grep return zero if found, nonzero otherwise.
         echo $err | grep -q "LLVM ERROR"
         local success=$?
         if [ $success -ne 0 ]; then
-            mv "meng.ll" "${llvmir}/${srcname}_meng.ll"
-            opt -S -O1 "${llvmir}/${srcname}_meng.ll" -o \
-                "${llvmir}/${srcname}_meng.ll"
+            mv "wu.ll" "${llvmir}/${srcname}_wu.ll"
+            opt -S -O1 "${llvmir}/${srcname}_wu.ll" -o \
+                "${llvmir}/${srcname}_wu.ll"
             printf "."
 
             llc -x86-cmov-converter=false -filetype=asm\
-                "${llvmir}/${srcname}_meng.ll" -o "${asm}/${srcname}_meng.s"
+                "${llvmir}/${srcname}_wu.ll" -o "${asm}/${srcname}_wu.s"
             printf "."
 
-            clang -g "${asm}/${srcname}_meng.s" \
-                -o "${bin}/${srcname}_meng" -no-pie
-            meng=$("${bin}/${srcname}_meng")
+            clang -g "${asm}/${srcname}_wu.s" \
+                -o "${bin}/${srcname}_wu" -no-pie
+            wu=$("${bin}/${srcname}_wu")
             printf "."
         fi
 
@@ -138,11 +138,11 @@ build::single() {
         fi;
 
         if [ $success -eq 0 ]; then
-            echo -e " meng=\033[0;31m[LLVM ERROR]\033[0m"
-        elif [[ "$orig" == "$meng" ]]; then
-            echo -e " meng=\033[0;32m[pass]\033[0m"
+            echo -e " wu=\033[0;31m[LLVM ERROR]\033[0m"
+        elif [[ "$orig" == "$wu" ]]; then
+            echo -e " wu=\033[0;32m[pass]\033[0m"
         else
-            echo -e " meng=\033[0;31m[fail]\033[0m"
+            echo -e " wu=\033[0;31m[fail]\033[0m"
         fi;
     done
 
@@ -196,7 +196,7 @@ build::single() {
             printf "."
 
             # Run the isochronous tool without optimizations & with optimizations.
-            # Since Meng's tool seems to try to transform all functions within
+            # Since Wu's tool seems to try to transform all functions within
             # a module, to be fair we don't select any specific function.
             ../build/bin/lif -O0 "${llvmir}/${fullname}.ll" \
                 -o "${llvmir}/${fullname}_isochr.ll" &> /dev/null
@@ -242,33 +242,33 @@ build::single() {
                 -o "${bin}/${fullname}_isochr.opt" -no-pie
             printf "."
 
-            # Run meng's tool with and without optimizations.
-            local err=$(opt -S -load util/meng.so -branch\
-                "${llvmir}/${fullname}.ll" -o "meng.ll" 2>&1)
+            # Run wu's tool with and without optimizations.
+            local err=$(opt -S -load util/wu.so -branch\
+                "${llvmir}/${fullname}.ll" -o "wu.ll" 2>&1)
 
             echo $err | grep -q "LLVM ERROR"
             local success=$?
             if [ $success -ne 0 ]; then
-                mv "meng.ll" "${llvmir}/${fullname}_meng.ll"
-                opt -S -O1 "${llvmir}/${fullname}_meng.ll" \
-                    -o "${llvmir}/${fullname}_meng.opt.ll"
+                mv "wu.ll" "${llvmir}/${fullname}_wu.ll"
+                opt -S -O1 "${llvmir}/${fullname}_wu.ll" \
+                    -o "${llvmir}/${fullname}_wu.opt.ll"
 
                 llc -x86-cmov-converter=false -filetype=asm \
-                    "${llvmir}/${fullname}_meng.ll" \
-                    -o "${asm}/${fullname}_meng.s"
+                    "${llvmir}/${fullname}_wu.ll" \
+                    -o "${asm}/${fullname}_wu.s"
                 printf "."
 
                 llc -x86-cmov-converter=false -filetype=asm \
-                    "${llvmir}/${fullname}_meng.opt.ll" \
-                    -o "${asm}/${fullname}_meng.opt.s"
+                    "${llvmir}/${fullname}_wu.opt.ll" \
+                    -o "${asm}/${fullname}_wu.opt.s"
                 printf "."
 
-                clang -g "${asm}/${fullname}_meng.s" \
-                    -o "${bin}/${fullname}_meng" -no-pie
+                clang -g "${asm}/${fullname}_wu.s" \
+                    -o "${bin}/${fullname}_wu" -no-pie
                 printf "."
 
-                clang -g "${asm}/${fullname}_meng.opt.s" \
-                    -o "${bin}/${fullname}_meng.opt" -no-pie
+                clang -g "${asm}/${fullname}_wu.opt.s" \
+                    -o "${bin}/${fullname}_wu.opt" -no-pie
                 printf "."
             fi
 

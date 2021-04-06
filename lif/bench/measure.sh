@@ -116,15 +116,15 @@ measure::exec_time() {
             echo "$row" >> ${results}/exec_time.csv
         done
 
-        # Now, Meng's version:
+        # Now, Wu's version:
         for size in $(seq ${measure[0]} ${measure[1]} ${measure[2]}); do
             local fullname="${srcname}_${size}"
             local -a elapsed=()
-            local row="${srcname},meng,${size}"
-            if [ -f ${bin}/${fullname}_meng ]; then
+            local row="${srcname},wu,${size}"
+            if [ -f ${bin}/${fullname}_wu ]; then
                 local -a elapsed=()
                 for _ in {1..1000}; do
-                    elapsed+=($(${bin}/${fullname}_meng))
+                    elapsed+=($(${bin}/${fullname}_wu))
                 done
 
                 local args=${elapsed[@]}
@@ -143,14 +143,14 @@ measure::exec_time() {
             echo "$row" >> ${results}/exec_time.csv
         done
 
-        # And finally, Meng's optimized version:
+        # And finally, Wu's optimized version:
         for size in $(seq ${measure[0]} ${measure[1]} ${measure[2]}); do
             local fullname="${srcname}_${size}"
-            local row="${srcname},meng-opt,${size}"
-            if [ -f ${bin}/${fullname}_meng.opt ]; then
+            local row="${srcname},wu-opt,${size}"
+            if [ -f ${bin}/${fullname}_wu.opt ]; then
                 local -a elapsed=()
                 for _ in {1..1000}; do
-                    elapsed+=($(${bin}/${fullname}_meng.opt))
+                    elapsed+=($(${bin}/${fullname}_wu.opt))
                 done
 
                 local args=${elapsed[@]}
@@ -238,12 +238,12 @@ measure::size() {
                 >> ${bench}/results/size.csv
         done
 
-        # Now, meng's version (if possibe).
+        # Now, wu's version (if possibe).
         for size in $(seq ${measure[0]} ${measure[1]} ${measure[2]}); do
-            local row="${srcname},meng,${size}"
+            local row="${srcname},wu,${size}"
             local fullname="${srcname}_${size}"
-            if [ -f ${llvmir}/${fullname}_meng.ll ]; then
-                local llvm_size=$(util/instcount ${llvmir}/${fullname}_meng.ll \
+            if [ -f ${llvmir}/${fullname}_wu.ll ]; then
+                local llvm_size=$(util/instcount ${llvmir}/${fullname}_wu.ll \
                     | sed -n -E "s/Total: ([0-9]+)$/\1/p")
 
                 echo "${row},${llvm_size}" >> ${bench}/results/size.csv
@@ -252,12 +252,12 @@ measure::size() {
             fi
         done
 
-        # And finally, meng's opt version.
+        # And finally, wu's opt version.
         for size in $(seq ${measure[0]} ${measure[1]} ${measure[2]}); do
-            local row="${srcname},meng-opt,${size}"
+            local row="${srcname},wu-opt,${size}"
             local fullname="${srcname}_${size}"
-            if [ -f ${llvmir}/${fullname}_meng.opt.ll ]; then
-                local llvm_size=$(util/instcount ${llvmir}/${fullname}_meng.opt.ll \
+            if [ -f ${llvmir}/${fullname}_wu.opt.ll ]; then
+                local llvm_size=$(util/instcount ${llvmir}/${fullname}_wu.opt.ll \
                     | sed -n -E "s/Total: ([0-9]+)$/\1/p")
 
                 echo "${row},${llvm_size}" >> ${bench}/results/size.csv
@@ -341,18 +341,18 @@ measure::pass_time() {
         row="${row},${stats[median]},${stats[std]},${stats[outliers]}"
         echo $row >> ${bench}/results/pass_time.csv
 
-        # Now, we measure meng's transformation (if possible).
-        local err=$(opt -S -load util/meng.so -branch \
+        # Now, we measure wu's transformation (if possible).
+        local err=$(opt -S -load util/wu.so -branch \
             "${llvmir}/${srcname}_${size}.ll" -o "${llvmir}/tmp.ll" \
             2>&1)
 
-        local row="meng,${size}"
+        local row="wu,${size}"
         echo $err | grep -q "LLVM ERROR"
         local success=$?
         if [ $success -ne 0 ]; then
             elapsed=()
             for _ in {1..50}; do
-                opt -S -load util/meng.so -branch -time-passes \
+                opt -S -load util/wu.so -branch -time-passes \
                     "${llvmir}/${srcname}_${size}.ll" -o "${llvmir}/tmp.ll" \
                     2> time.txt
                 local time=$(cat time.txt | sed -n -E "s/${regex_str}/\1/p")

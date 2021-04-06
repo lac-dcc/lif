@@ -23,13 +23,13 @@ data.loc[data["Type"] == "orig-opt", "Type"] = "Orig (opt)"
 # First: plot running time (median):
 # Measure 1: a[i] == b[i]
 input1 = data[(data["Src"] == "measure1") &
-              ~data["Type"].isin(["meng", "meng-opt"])]
+              ~data["Type"].isin(["wu", "wu-opt"])]
 input1_raw = input1[input1["Type"].isin(["Orig", "This paper"])]
 input1_opt = input1[input1["Type"].isin(["Orig (opt)", "This paper (opt)"])]
 
 # Measure 2: a[0] != b[0]
 input2 = data[(data["Src"] == "measure2") &
-              ~data["Type"].isin(["meng", "meng-opt"])]
+              ~data["Type"].isin(["wu", "wu-opt"])]
 input2_raw = input2[input2["Type"].isin(["Orig", "This paper"])]
 input2_opt = input2[input2["Type"].isin(["Orig (opt)", "This paper (opt)"])]
 
@@ -209,7 +209,7 @@ fig = plt.figure(figsize=(5, 2))
 data = pd.read_csv("results/pass_time.csv", skipinitialspace=True)
 # Mask "lif" as "this paper", for double-bind submissions.
 data.loc[data["Type"] == "lif", "Type"] = "This paper"
-data.loc[data["Type"] == "meng", "Type"] = "Meng"
+data.loc[data["Type"] == "wu", "Type"] = "Wu"
 
 ax = sns.scatterplot(
     x="N", y=measure,

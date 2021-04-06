@@ -7,14 +7,14 @@ import seaborn as sns
 sns.set()
 palette = ["#2c2c2c", "#747474", "#b4b4b4"]
 
-# List of benchmarks that meng's tool crashed (failed to transform).
+# List of benchmarks that wu's tool crashed (failed to transform).
 crashed = [
     "hash/md5",
     "dudect/aes32",
     "dudect/donnabad",
 ]
 
-# List of benchmarks that either crashed (right above) or that meng's tool
+# List of benchmarks that either crashed (right above) or that wu's tool
 # somehow produced wrong code.
 failed = crashed + ["applied-crypto/loki91"]
 
@@ -25,7 +25,7 @@ data = data[data["Bench"] != "comp"]
 # Ensure that crashed programs will not appear in the chart.
 data.loc[
     data["Bench"].isin(failed) &
-    data["Type"].str.startswith("meng"),
+    data["Type"].str.startswith("wu"),
     "#LLVM-IR Instructions"
 ] = -1
 
@@ -34,12 +34,12 @@ data.loc[data["Type"] == "lif", "Type"] = "This paper"
 data.loc[data["Type"] == "lif-opt", "Type"] = "This paper (opt)"
 data.loc[data["Type"] == "orig", "Type"] = "Orig"
 data.loc[data["Type"] == "orig-opt", "Type"] = "Orig (opt)"
-data.loc[data["Type"] == "meng", "Type"] = "Meng"
-data.loc[data["Type"] == "meng-opt", "Type"] = "Meng (opt)"
+data.loc[data["Type"] == "wu", "Type"] = "Wu"
+data.loc[data["Type"] == "wu-opt", "Type"] = "Wu (opt)"
 
 # Split unoptimized and optimized data.
-data_raw = data[data["Type"].isin(["Orig", "This paper", "Meng"])]
-data_opt = data[data["Type"].isin(["Orig (opt)", "This paper (opt)", "Meng (opt)"])]
+data_raw = data[data["Type"].isin(["Orig", "This paper", "Wu"])]
+data_opt = data[data["Type"].isin(["Orig (opt)", "This paper (opt)", "Wu (opt)"])]
 
 fig = plt.figure(figsize=(9, 10))
 ax1 = fig.add_subplot(211) # Non-optimized
@@ -102,13 +102,13 @@ data = data[data["Bench"] != "comp"]
 # Ensure that programs that failed will not appear in the chart.
 data.loc[
     data["Bench"].isin(crashed) &
-    data["Type"].str.startswith("meng"),
+    data["Type"].str.startswith("wu"),
     measure
 ] = -1
 
 # Mask "lif" as "this paper", for double-bind submissions.
 data.loc[data["Type"] == "lif", "Type"] = "This paper"
-data.loc[data["Type"] == "meng", "Type"] = "Meng"
+data.loc[data["Type"] == "wu", "Type"] = "Wu"
 
 fig = plt.figure(figsize=(8, 6))
 ax1 = fig.add_subplot(111) # Non-optimized
@@ -153,7 +153,7 @@ data[measure] = data[measure] / 1000
 # Ensure that programs that failed will not appear in the chart.
 data.loc[
     data["Bench"].isin(failed) & 
-    data["Type"].str.startswith("meng"),
+    data["Type"].str.startswith("wu"),
     measure
 ] = -1
 
@@ -162,11 +162,11 @@ data.loc[data["Type"] == "lif", "Type"] = "This paper"
 data.loc[data["Type"] == "lif-opt", "Type"] = "This paper (opt)"
 data.loc[data["Type"] == "orig", "Type"] = "Orig"
 data.loc[data["Type"] == "orig-opt", "Type"] = "Orig (opt)"
-data.loc[data["Type"] == "meng", "Type"] = "Meng"
-data.loc[data["Type"] == "meng-opt", "Type"] = "Meng (opt)"
+data.loc[data["Type"] == "wu", "Type"] = "Wu"
+data.loc[data["Type"] == "wu-opt", "Type"] = "Wu (opt)"
 
-data_raw = data[data["Type"].isin(["Orig", "This paper", "Meng"])]
-data_opt = data[data["Type"].isin(["Orig (opt)", "This paper (opt)", "Meng (opt)"])]
+data_raw = data[data["Type"].isin(["Orig", "This paper", "Wu"])]
+data_opt = data[data["Type"].isin(["Orig (opt)", "This paper (opt)", "Wu (opt)"])]
 
 fig = plt.figure(figsize=(8, 6))
 ax1 = fig.add_subplot(211) # Non-optimized

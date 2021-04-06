@@ -17,10 +17,10 @@ $             pyyaml==5.3.1
 This folder contain benchmarks and scripts that can be used to
 evaluate the performance and correctness of the Lif tool. There
 is a synthetic benchmark (comp) as well as real benchmarks picked
-from [CTBench](https://github.com/arthurlopes/ctbench) and [Meng
+from [CTBench](https://github.com/arthurlopes/ctbench) and [Wu
 et al.'s artifact](https://zenodo.org/record/1299357).
 Additionally, the *mu* benchmark consists of a function used as
-example by Meng et al. in the paper "Eliminating Timing
+example by Wu et al. in the paper "Eliminating Timing
 Side-Channel Leaks using Program Repair"
 
 The main script is *run.sh*. It can be used as follows:
@@ -37,11 +37,11 @@ individually. For example:
 
 ```
 $ cd path/to/lif/llvm/bench
-$ /bin/bash run.sh -a meng/applied-crypto/3way
+$ /bin/bash run.sh -a wu/applied-crypto/3way
 ```
 
 When building a benchmark, there will be three types of outputs
-for both our isochronous pass and Meng et al.'s transformation:
+for both our isochronous pass and Wu et al.'s transformation:
 
 - **Pass**: the output of the original program is equivalent to
     the output of the transformed code.
