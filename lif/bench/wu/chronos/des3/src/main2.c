@@ -11,7 +11,7 @@ int main() {
 
     struct des3_ede_ctx ctx;
 
-    des3_ede_setkey(in_key, &ctx, 24);
+    des3_ede_setkey(&ctx, in_key, 24);
     des3_ede_encrypt(&ctx, out, in);
 
     for (size_t i = 0; i < 64; i++) printf("%d ", out[i]);

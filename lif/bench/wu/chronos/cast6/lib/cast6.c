@@ -16,9 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
  */
+#include "../include/cast6.h"
 #include <stdint.h>
 #include <stdio.h>
-#include "../include/cast6.h"
+#include <string.h>
 
 #define ror32(word, shift) (word >> shift) | (word << (32 - shift))
 #define rol32(word, shift) (word << shift) | (word >> (32 - shift))
@@ -36,7 +37,7 @@
      (((s1[I >> 24] + s2[(I >> 16) & 0xff]) ^ s3[(I >> 8) & 0xff]) -           \
       s4[I & 0xff]))
 
-static const uint32_t s1[256] __attribute__((aligned(64))) = {
+static const uint32_t s1[256] = {
     0x30fb40d4, 0x9fa0ff0b, 0x6beccd2f, 0x3f258c7a, 0x1e213f2f, 0x9c004dd3,
     0x6003e540, 0xcf9fc949, 0xbfd4af27, 0x88bbbdb5, 0xe2034090, 0x98d09675,
     0x6e63a0e0, 0x15c361d2, 0xc2e7661d, 0x22d4ff8e, 0x28683b6f, 0xc07fd059,
@@ -81,7 +82,7 @@ static const uint32_t s1[256] __attribute__((aligned(64))) = {
     0xb141ab08, 0x7cca89b9, 0x1a69e783, 0x02cc4843, 0xa2f7c579, 0x429ef47d,
     0x427b169c, 0x5ac9f049, 0xdd8f0f00, 0x5c8165bf};
 
-static const uint32_t s2[256] __attribute__((aligned(64))) = {
+static const uint32_t s2[256] = {
     0x1f201094, 0xef0ba75b, 0x69e3cf7e, 0x393f4380, 0xfe61cf7a, 0xeec5207a,
     0x55889c94, 0x72fc0651, 0xada7ef79, 0x4e1d7235, 0xd55a63ce, 0xde0436ba,
     0x99c430ef, 0x5f0c0794, 0x18dcdb7d, 0xa1d6eff3, 0xa0b52f7b, 0x59e83605,
@@ -126,7 +127,7 @@ static const uint32_t s2[256] __attribute__((aligned(64))) = {
     0x5c038323, 0x3e5d3bb9, 0x43d79572, 0x7e6dd07c, 0x06dfdf1e, 0x6c6cc4ef,
     0x7160a539, 0x73bfbe70, 0x83877605, 0x4523ecf1};
 
-static const uint32_t s3[256] __attribute__((aligned(64))) = {
+static const uint32_t s3[256] = {
     0x8defc240, 0x25fa5d9f, 0xeb903dbf, 0xe810c907, 0x47607fff, 0x369fe44b,
     0x8c1fc644, 0xaececa90, 0xbeb1f9bf, 0xeefbcaea, 0xe8cf1950, 0x51df07ae,
     0x920e8806, 0xf0ad0548, 0xe13c8d83, 0x927010d5, 0x11107d9f, 0x07647db9,
@@ -171,7 +172,7 @@ static const uint32_t s3[256] __attribute__((aligned(64))) = {
     0x52bce688, 0x1b03588a, 0xf7baefd5, 0x4142ed9c, 0xa4315c11, 0x83323ec5,
     0xdfef4636, 0xa133c501, 0xe9d3531c, 0xee353783};
 
-static const uint32_t s4[256] __attribute__((aligned(64))) = {
+static const uint32_t s4[256] = {
     0x9db30420, 0x1fb6e9de, 0xa7be7bef, 0xd273a298, 0x4a4f7bdb, 0x64ad8c57,
     0x85510443, 0xfa020ed1, 0x7e287aff, 0xe60fb663, 0x095f35a1, 0x79ebf120,
     0xfd059d43, 0x6497b7b1, 0xf3641f63, 0x241e4adf, 0x28147f5f, 0x4fa2b8cd,
@@ -216,7 +217,7 @@ static const uint32_t s4[256] __attribute__((aligned(64))) = {
     0xb657c34d, 0x4edfd282, 0x7ae5290c, 0x3cb9536b, 0x851e20fe, 0x9833557e,
     0x13ecf0b0, 0xd3ffb372, 0x3f85c5c1, 0x0aef7ed2};
 
-static const uint32_t Tm[24][8] __attribute__((aligned(64))) = {
+static const uint32_t Tm[24][8] = {
     {0x5a827999, 0xc95c653a, 0x383650db, 0xa7103c7c, 0x15ea281d, 0x84c413be,
      0xf39dff5f, 0x6277eb00},
     {0xd151d6a1, 0x402bc242, 0xaf05ade3, 0x1ddf9984, 0x8cb98525, 0xfb9370c6,
@@ -266,14 +267,14 @@ static const uint32_t Tm[24][8] __attribute__((aligned(64))) = {
     {0x0723d551, 0x75fdc0f2, 0xe4d7ac93, 0x53b19834, 0xc28b83d5, 0x31656f76,
      0xa03f5b17, 0x0f1946b8}};
 
-static const uint8_t Tr[4][8] __attribute__((aligned(64))) = {
+static const uint8_t Tr[4][8] = {
     {0x13, 0x04, 0x15, 0x06, 0x17, 0x08, 0x19, 0x0a},
     {0x1b, 0x0c, 0x1d, 0x0e, 0x1f, 0x10, 0x01, 0x12},
     {0x03, 0x14, 0x05, 0x16, 0x07, 0x18, 0x09, 0x1a},
     {0x0b, 0x1c, 0x0d, 0x1e, 0x0f, 0x00, 0x11, 0x02}};
 
 /* forward octave */
-static inline void W(uint32_t *key, unsigned int i) {
+void W(uint32_t *key, unsigned int i) {
     uint32_t I;
     key[6] ^= F1(key[7], Tr[i % 4][0], Tm[i][0]);
     key[5] ^= F2(key[6], Tr[i % 4][1], Tm[i][1]);
@@ -285,10 +286,18 @@ static inline void W(uint32_t *key, unsigned int i) {
     key[7] ^= F2(key[0], Tr[i % 4][7], Tm[i][7]);
 }
 
-int cast6_setkey(const uint8_t *in_key, struct cast6_ctx *c, unsigned key_len) {
+int cast6_setkey(struct cast6_ctx *c, const uint8_t *in_key, unsigned key_len) {
     int i;
     uint32_t key[8];
-    uint32_t *p_key = (uint32_t *)in_key;
+    uint32_t p_key[8];
+
+    if (key_len % 4 != 0) {
+        //*flags |= CRYPTO_TFM_RES_BAD_KEY_LEN;
+        return -22;
+    }
+
+    memset(p_key, 0, 32);
+    memcpy(p_key, in_key, key_len);
 
     key[0] = (p_key[0]); /* A */
     key[1] = (p_key[1]); /* B */
@@ -299,8 +308,7 @@ int cast6_setkey(const uint8_t *in_key, struct cast6_ctx *c, unsigned key_len) {
     key[6] = (p_key[6]); /* G */
     key[7] = (p_key[7]); /* H */
 
-#pragma unroll
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 12; i++) {
         W(key, 2 * i);
         W(key, 2 * i + 1);
 
@@ -319,7 +327,7 @@ int cast6_setkey(const uint8_t *in_key, struct cast6_ctx *c, unsigned key_len) {
 }
 
 /*forward quad round*/
-static inline void Q(uint32_t *block, uint8_t *Kr, uint32_t *Km) {
+void Q(uint32_t *block, uint8_t *Kr, uint32_t *Km) {
     uint32_t I;
     block[2] ^= F1(block[3], Kr[0], Km[0]);
     block[1] ^= F2(block[2], Kr[1], Km[1]);
@@ -328,7 +336,7 @@ static inline void Q(uint32_t *block, uint8_t *Kr, uint32_t *Km) {
 }
 
 /*reverse quad round*/
-static inline void QBAR(uint32_t *block, uint8_t *Kr, uint32_t *Km) {
+void QBAR(uint32_t *block, uint8_t *Kr, uint32_t *Km) {
     uint32_t I;
     block[3] ^= F1(block[0], Kr[3], Km[3]);
     block[0] ^= F3(block[1], Kr[2], Km[2]);

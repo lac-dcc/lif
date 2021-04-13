@@ -13,7 +13,7 @@ struct cast6_ctx {
     uint8_t Kr[12][4];
 };
 
-int cast6_setkey(const uint8_t *in_key, struct cast6_ctx *c, unsigned key_len);
+int cast6_setkey(struct cast6_ctx *c, const uint8_t *in_key, unsigned key_len);
 void cast6_encrypt(struct cast6_ctx *c, uint8_t *outbuf, const uint8_t *inbuf);
 
 #endif

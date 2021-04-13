@@ -12,7 +12,7 @@ int main() {
 
     struct cast6_ctx ctx;
 
-    cast6_setkey(in_key, &ctx, 32);
+    cast6_setkey(&ctx, in_key, 32);
     cast6_encrypt(&ctx, out, in);
 
     for (size_t i = 0; i < 32; i++) printf("%d ", out[i]);

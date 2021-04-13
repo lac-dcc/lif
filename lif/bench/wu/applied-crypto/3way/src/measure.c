@@ -12,7 +12,7 @@ INLINE uint64_t nanoseconds(struct timespec t) {
 
 int main() {
     twy_ctx gc;
-    word32 a[3],k[3];
+    int32_t a[3],k[3];
 
     srand(time(NULL));
     for (size_t i = 0; i < 3; i++) k[i] = rand() % 256;
@@ -20,9 +20,9 @@ int main() {
 
     struct timespec start, end;
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
-    twy_key(&gc,k);
-    twy_enc(&gc,a,3);
-    twy_dec(&gc,a,3);
+    twy_key(k, &gc);
+    twy_enc(&gc, a, 3);
+    twy_dec(&gc, a, 3);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
 
     uint64_t delta = nanoseconds(end) - nanoseconds(start);

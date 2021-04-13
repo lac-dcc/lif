@@ -22,7 +22,7 @@ int main() {
 
     struct timespec start, end;
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
-    des3_ede_setkey(in_key, &ctx, 24);
+    des3_ede_setkey(&ctx, in_key, 24);
     des3_ede_encrypt(&ctx, out, in);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
 

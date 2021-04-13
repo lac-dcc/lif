@@ -34,7 +34,7 @@
 // #include "../util/m5/m5op.h"
 #include "../include/anubis.h"
 
-static const uint32_t T0[256] __attribute__((aligned(64))) = {
+static const uint32_t T0[256] = {
     0xba69d2bbU, 0x54a84de5U, 0x2f5ebce2U, 0x74e8cd25U, 0x53a651f7U,
     0xd3bb6bd0U, 0xd2b96fd6U, 0x4d9a29b3U, 0x50a05dfdU, 0xac458acfU,
     0x8d070e09U, 0xbf63c6a5U, 0x70e0dd3dU, 0x52a455f1U, 0x9a29527bU,
@@ -89,7 +89,7 @@ static const uint32_t T0[256] __attribute__((aligned(64))) = {
     0x42841591U,
 };
 
-static const uint32_t T1[256] __attribute__((aligned(64))) = {
+static const uint32_t T1[256] = {
     0x69babbd2U, 0xa854e54dU, 0x5e2fe2bcU, 0xe87425cdU, 0xa653f751U,
     0xbbd3d06bU, 0xb9d2d66fU, 0x9a4db329U, 0xa050fd5dU, 0x45accf8aU,
     0x078d090eU, 0x63bfa5c6U, 0xe0703dddU, 0xa452f155U, 0x299a7b52U,
@@ -144,7 +144,7 @@ static const uint32_t T1[256] __attribute__((aligned(64))) = {
     0x84429115U,
 };
 
-static const uint32_t T2[256] __attribute__((aligned(64))) = {
+static const uint32_t T2[256] = {
     0xd2bbba69U, 0x4de554a8U, 0xbce22f5eU, 0xcd2574e8U, 0x51f753a6U,
     0x6bd0d3bbU, 0x6fd6d2b9U, 0x29b34d9aU, 0x5dfd50a0U, 0x8acfac45U,
     0x0e098d07U, 0xc6a5bf63U, 0xdd3d70e0U, 0x55f152a4U, 0x527b9a29U,
@@ -199,7 +199,7 @@ static const uint32_t T2[256] __attribute__((aligned(64))) = {
     0x15914284U,
 };
 
-static const uint32_t T3[256] __attribute__((aligned(64))) = {
+static const uint32_t T3[256] = {
     0xbbd269baU, 0xe54da854U, 0xe2bc5e2fU, 0x25cde874U, 0xf751a653U,
     0xd06bbbd3U, 0xd66fb9d2U, 0xb3299a4dU, 0xfd5da050U, 0xcf8a45acU,
     0x090e078dU, 0xa5c663bfU, 0x3ddde070U, 0xf155a452U, 0x7b52299aU,
@@ -254,7 +254,7 @@ static const uint32_t T3[256] __attribute__((aligned(64))) = {
     0x91158442U,
 };
 
-static const uint32_t T4[256] __attribute__((aligned(64))) = {
+static const uint32_t T4[256] = {
     0xbabababaU, 0x54545454U, 0x2f2f2f2fU, 0x74747474U, 0x53535353U,
     0xd3d3d3d3U, 0xd2d2d2d2U, 0x4d4d4d4dU, 0x50505050U, 0xacacacacU,
     0x8d8d8d8dU, 0xbfbfbfbfU, 0x70707070U, 0x52525252U, 0x9a9a9a9aU,
@@ -309,7 +309,7 @@ static const uint32_t T4[256] __attribute__((aligned(64))) = {
     0x42424242U,
 };
 
-static const uint32_t T5[256] __attribute__((aligned(64))) = {
+static const uint32_t T5[256] = {
     0x00000000U, 0x01020608U, 0x02040c10U, 0x03060a18U, 0x04081820U,
     0x050a1e28U, 0x060c1430U, 0x070e1238U, 0x08103040U, 0x09123648U,
     0x0a143c50U, 0x0b163a58U, 0x0c182860U, 0x0d1a2e68U, 0x0e1c2470U,
@@ -364,7 +364,7 @@ static const uint32_t T5[256] __attribute__((aligned(64))) = {
     0xffe338abU,
 };
 
-static const uint32_t rc[] __attribute__((aligned(64))) = {
+static const uint32_t rc[] = {
     0xba542f74U, 0x53d3d24dU, 0x50ac8dbfU, 0x70529a4cU, 0xead597d1U,
     0x33515ba6U, 0xde48a899U, 0xdb32b7fcU, 0xe39e919bU, 0xe2bb416eU,
     0xa5cb6b95U, 0xa1f3b102U, 0xccc41d14U, 0xc363da5dU, 0x5fdc7dcdU,
@@ -394,7 +394,7 @@ int anubis_setkey(const uint8_t *in_key, struct anubis_ctx *ctx,
      */
     uint32_t K0, K1, K2, K3;
 
-/* #pragma unroll */
+    /* #pragma unroll */
     for (r = 0; r < 3; r++) {
         /*
          * generate r-th round key K^r:
@@ -404,7 +404,7 @@ int anubis_setkey(const uint8_t *in_key, struct anubis_ctx *ctx,
         K2 = T4[(kappa[N - 1] >> 8) & 0xff];
         K3 = T4[(kappa[N - 1]) & 0xff];
 
-/* #pragma unroll */
+        /* #pragma unroll */
         for (i = 4; i >= 0; i--) {
             K0 = T4[(kappa[i] >> 24)] ^ (T5[(K0 >> 24)] & 0xff000000U) ^
                  (T5[(K0 >> 16) & 0xff] & 0x00ff0000U) ^
@@ -429,10 +429,10 @@ int anubis_setkey(const uint8_t *in_key, struct anubis_ctx *ctx,
         ctx->E[r][2] = K2;
         ctx->E[r][3] = K3;
 
-/*
- * compute kappa^{r+1} from kappa^r:
- */
-/* #pragma unroll */
+        /*
+         * compute kappa^{r+1} from kappa^r:
+         */
+        /* #pragma unroll */
         for (i = 0; i < 6; i++) {
             int j = i;
             inter[i] = T0[(kappa[j--] >> 24)];
@@ -457,7 +457,7 @@ int anubis_setkey(const uint8_t *in_key, struct anubis_ctx *ctx,
     K2 = T4[(kappa[N - 1] >> 8) & 0xff];
     K3 = T4[(kappa[N - 1]) & 0xff];
 
-/* #pragma unroll */
+    /* #pragma unroll */
     for (i = 4; i >= 0; i--) {
         K0 = T4[(kappa[i] >> 24)] ^ (T5[(K0 >> 24)] & 0xff000000U) ^
              (T5[(K0 >> 16) & 0xff] & 0x00ff0000U) ^
@@ -494,9 +494,9 @@ int anubis_setkey(const uint8_t *in_key, struct anubis_ctx *ctx,
     ctx->D[0][3] = ctx->E[14][3];
     ctx->D[14][3] = ctx->E[0][3];
 
-/* #pragma unroll */
+    /* #pragma unroll */
     for (r = 1; r < 14; r++) {
-/* #pragma unroll */
+        /* #pragma unroll */
         for (i = 0; i < 4; i++) {
             uint32_t v = ctx->E[R - r][i];
             ctx->D[r][i] =
@@ -522,10 +522,10 @@ void anubis_crypt(uint32_t roundKey[ANUBIS_MAX_ROUNDS + 1][4],
      */
     for (i = 0; i < 4; i++) state[i] = (src[i]) ^ roundKey[0][i];
 
-/*
- * R - 1 full rounds:
- */
-/* #pragma unroll */
+    /*
+     * R - 1 full rounds:
+     */
+    /* #pragma unroll */
     for (r = 1; r < R; r++) {
         inter[0] = T0[(state[0] >> 24)] ^ T1[(state[1] >> 24)] ^
                    T2[(state[2] >> 24)] ^ T3[(state[3] >> 24)] ^ roundKey[r][0];

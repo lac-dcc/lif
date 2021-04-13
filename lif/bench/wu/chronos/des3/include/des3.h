@@ -34,8 +34,7 @@ struct des_ctx {
 struct des3_ede_ctx {
     uint32_t expkey[DES3_EDE_EXPKEY_WORDS];
 };
-
-int des3_ede_setkey(const uint8_t *key, struct des3_ede_ctx *dctx,
+int des3_ede_setkey(struct des3_ede_ctx *dctx, const uint8_t *key,
                     unsigned int keylen);
 void des3_ede_encrypt(struct des3_ede_ctx *dctx, uint8_t *dst,
                       const uint8_t *src);

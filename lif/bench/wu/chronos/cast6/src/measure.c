@@ -22,7 +22,7 @@ int main() {
 
     struct timespec start, end;
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
-    cast6_setkey(in_key, &ctx, 32);
+    cast6_setkey(&ctx, in_key, 32);
     cast6_encrypt(&ctx, out, in);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
 

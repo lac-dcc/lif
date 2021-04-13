@@ -7,9 +7,9 @@ int main() {
     b[3] = -1;
     int32_t r = comp(a, b);
     printf("%d\n", r);
-    r = comp2(a, b);
-    printf("%d\n", r);
-    r = comp3(a, b);
-    printf("%d\n", r);
+    /* r = comp2(a, b); */
+    /* printf("%d\n", r); */
+    /* r = comp3(a, b); */
+    /* printf("%d\n", r); */
     return 0;
 }
