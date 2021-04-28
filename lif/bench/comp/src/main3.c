@@ -2,9 +2,9 @@
 #include <stdio.h>
 
 int main() {
-    int32_t a[4], b[4];
-    for (size_t i = 0; i < 4; i++) a[i] = b[i] = i;
-    b[3] = -1;
+    int32_t a[_N], b[_N];
+    for (size_t i = 0; i < _N; i++) a[i] = b[i] = i;
+    b[_N/2] = -1;
     int32_t r = comp(a, b);
     printf("%d\n", r);
     /* r = comp2(a, b); */

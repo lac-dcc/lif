@@ -21,14 +21,18 @@
 /// isochronous pass.
 ///
 //===----------------------------------------------------------------------===//
-#ifndef LLVM_LIF_LOOP_H
-#define LLVM_LIF_LOOP_H
+#ifndef LIF_LOOP_H
+#define LIF_LOOP_H
 
 #include <llvm/ADT/DenseMap.h>
 #include <llvm/ADT/SmallPtrSet.h>
 #include <llvm/Analysis/LoopInfo.h>
+#include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Instructions.h>
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/Value.h>
 
-namespace loop {
+namespace lif {
 /// Contains useful information to be used by the data-flow analysis and the
 /// isochronous pass, such as the phi-functions associated with predicates that
 /// branch to outside the loop (see function prepare).
@@ -42,8 +46,8 @@ struct LoopWrapper {
     /// basic block is one of them. In the case of rotated loops, loop latches
     /// are the ones that contain the loop condition.
     llvm::SmallPtrSet<llvm::BasicBlock *, 32> LLBlocks;
-    /// A set containing all the loop exiting blocks, so it is easy to
-    /// check if a basic block is one of them.
+    /// A set containing all the loop exiting blocks, so it is easy to check
+    /// if a basic block is one of them.
     llvm::SmallPtrSet<llvm::BasicBlock *, 32> ExitingBlocks;
     /// A set containing all the loop exit blocks, so it is easy to check if a
     /// basic block is one of them.
@@ -59,14 +63,9 @@ struct LoopWrapper {
 /// we can guarantee that the loop latch will contain the loop condition.
 ///
 /// \returns a map between the predicates and the phi-functions created, a
-/// set containing "loop condition" basic blocks, and a set containing the loop
-/// latches.
-LoopWrapper &prepare(llvm::LoopInfo &LI, llvm::LLVMContext &Ctx);
-
-/// This function is pretty similar to "prepare", but instead of inserting
-/// phi-functions, it assumes that these phi-functions were already inserted
-/// and tries to recover them from the successors of a loop latch.
-LoopWrapper &recover(llvm::LoopInfo &LI, llvm::LLVMContext &Ctx);
-} // namespace loop
+/// a set containing the loop latches, and sets containing the exiting and
+/// exit blocks.
+LoopWrapper prepare(llvm::LoopInfo &LI, llvm::LLVMContext &Ctx);
+} // namespace lif
 
 #endif

@@ -141,7 +141,7 @@ void runIsochronousPass(Module &M) {
     }
 
     std::set<StringRef> Names(FNames.begin(), FNames.end());
-    MPM.addPass(isochronous::Pass(Names));
+    MPM.addPass(lif::IsochronousPass(Names));
 
     if (Opt != O0)
         MPM.addPass(PB.buildPerModuleDefaultPipeline(OptM.find(Opt)->second));

@@ -3,6 +3,8 @@ add_executable(lif
     ../lib/Isochronous.cpp
     ../lib/Cond.cpp
     ../lib/Loop.cpp
+    ../lib/Func.cpp
+    ../lib/Module.cpp
     )
 
 target_link_libraries(lif LLVMPasses)

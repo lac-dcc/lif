@@ -26,11 +26,14 @@
 
 #include "Loop.h"
 
+#include <llvm/ADT/DenseMap.h>
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Function.h>
+#include <llvm/IR/Instructions.h>
 #include <llvm/IR/Value.h>
 
-namespace cond {
+namespace lif {
 /// A condition from Bp to B, where Bp is a immediate predecessor of B.
 ///
 /// A condition from path B1 to Bk is a set of expressions (predicates) such as
@@ -53,7 +56,7 @@ struct Incoming {
 
 /// A map between a basic block and its incoming conditions.
 using InMap =
-    llvm::DenseMap<llvm::BasicBlock *, llvm::SmallVector<Incoming, 8>>;
+    llvm::DenseMap<llvm::BasicBlock *, llvm::SmallVector<Incoming, 4>>;
 
 /// A map between a basic block and its outgoing condition.
 using OutMap = llvm::DenseMap<llvm::BasicBlock *, llvm::Value *>;
@@ -73,19 +76,19 @@ OutMap allocOut(llvm::Function &F);
 /// The size of the basic block grows according to the # of instructions needed
 /// to compute the incoming conditions.
 ///
-/// \returns a list of incoming conditions plus the set of instructions
-/// generated.
-std::pair<llvm::SmallVector<Incoming, 8>, llvm::SmallVector<llvm::Value *, 4>>
-bindIn(llvm::BasicBlock &BB, const OutMap OutM, const loop::LoopWrapper LW);
+/// \returns a list of incoming conditions plus a list the Load/Stores created.
+std::pair<llvm::SmallVector<Incoming, 4>,
+          llvm::SmallVector<llvm::Instruction *, 4>>
+bindIn(llvm::BasicBlock &BB, const OutMap OM, const LoopWrapper &LW);
 
 /// Computes the outgoing condition for \p BB.
 ///
 /// The size of the basic block grows according to the # of instructions needed
 /// to compute the outgoing condition.
 ///
-/// \returns the set of instructions generated.
-std::vector<llvm::Value *> bindOut(llvm::BasicBlock &BB, llvm::Value *OutPtr,
-                                   const llvm::SmallVectorImpl<Incoming> &InV);
+/// \returns the Store created to set the value of the outgoing condition.
+llvm::StoreInst *bindOut(llvm::BasicBlock &BB, llvm::Value *OutPtr,
+                         const llvm::SmallVectorImpl<Incoming> &Incomings);
 
 /// Traverses the basic blocks of \p F, binding the proper incoming and outgoing
 /// conditions to them.
@@ -93,20 +96,20 @@ std::vector<llvm::Value *> bindOut(llvm::BasicBlock &BB, llvm::Value *OutPtr,
 /// The size of each basic block in \p F grows according to the # of
 /// instructions needed to compute both their incoming and outgoing conds.
 ///
-/// \returns a map between basic blocks and their incoming conditions plus the
-/// set of instructions generated (i.e. the set generated from bindIn +
-/// bindOut).
-std::pair<InMap, std::vector<llvm::Value *>>
-bind(llvm::Function &F, const OutMap OutM, const loop::LoopWrapper LW);
+/// \returns a map between basic blocks and their incoming conditions plus a
+/// list of the Load/Stores generated.
+std::pair<InMap, llvm::SmallVector<llvm::Instruction *, 32>>
+bindAll(llvm::Function &F, const OutMap OM, const LoopWrapper &LW);
 
-/// Fold a list of incoming conds. (\p InV) into a single value by applying
-/// the | (or) operator.
+/// Fold a list of incoming conds. (\p Incomings) into a single value by
+/// applying the | (or) operator.
 ///
-/// This method requries #incoming conds > 0.
-/// The size of \p BB grows according to #insts. generated.
+/// This method expects the lenght of \p Incomings > 0. Also, for simplicity,
+/// if the \p Incomings contains a single incoming cond., the returned value
+/// will be Incomings[0] | false.
 ///
-/// \returns a value representing the folded condition.
-llvm::Value *fold(const llvm::SmallVectorImpl<cond::Incoming> &InV);
-} // namespace cond
+/// \returns a new binary operator representing the folded condition.
+llvm::BinaryOperator *fold(const llvm::SmallVectorImpl<Incoming> &Incomings);
+} // namespace lif
 
 #endif

@@ -1,4 +1,4 @@
-//===-- Loop.h ------------------------------------------------------------===//
+//===-- Loop.cpp ----------------------------------------------------------===//
 // Copyright (C) 2020  Luigi D. C. Soares
 //
 // This program is free software: you can redistribute it and/or modify
@@ -23,91 +23,57 @@
 //===----------------------------------------------------------------------===//
 
 #include "Loop.h"
-#include <llvm/Analysis/LoopInfo.h>
 
-using namespace llvm;
+#include <llvm/ADT/SmallVector.h>
+#include <llvm/IR/Constants.h>
+#include <llvm/IR/DerivedTypes.h>
+#include <llvm/IR/Instructions.h>
+#include <llvm/Support/Casting.h>
 
-namespace loop {
-LoopWrapper &prepare(LoopInfo &LI, LLVMContext &Ctx) {
-    auto LW = new LoopWrapper(LI);
+using namespace lif;
 
-    auto BoolTy = IntegerType::getInt1Ty(Ctx);
-    auto False = ConstantInt::getFalse(BoolTy);
+LoopWrapper lif::prepare(llvm::LoopInfo &LI, llvm::LLVMContext &Ctx) {
+    LoopWrapper LW(LI);
 
-    for (auto L : LI.getLoopsInPreorder()) {
-        auto LH = L->getHeader();
+    auto *BoolTy = llvm::IntegerType::getInt1Ty(Ctx);
+    auto *False = llvm::ConstantInt::getFalse(BoolTy);
+
+    for (auto *L : LI.getLoopsInPreorder()) {
+        auto *LH = L->getHeader();
 
         // --loop-simplify
-        auto LL = L->getLoopLatch();
+        auto *LL = L->getLoopLatch();
 
         // --loop-rotate
         assert(L->isRotatedForm() && "loop is not in rotated form!");
 
         // Save every loop latch for future use, if necessary.
-        LW->LLBlocks.insert(LL);
+        LW.LLBlocks.insert(LL);
 
-        SmallVector<BasicBlock *, 4> ExitingBlocks;
+        llvm::SmallVector<llvm::BasicBlock *, 4> ExitingBlocks;
         L->getExitingBlocks(ExitingBlocks);
-        auto Before = LH->getFirstNonPHI();
-        for (auto LE : ExitingBlocks) {
+        auto *Before = LH->getFirstNonPHI();
+        for (auto *LE : ExitingBlocks) {
             if (LE == LL) continue;
 
             // For each exiting block LE, insert a phi-function at the LH
             // associated with the predicate of LE.
-            auto LET = cast<BranchInst>(LE->getTerminator());
-            auto C = LET->getCondition();
+            auto *LET = llvm::cast<llvm::BranchInst>(LE->getTerminator());
+            auto *C = LET->getCondition();
+            auto *Phi =
+                llvm::PHINode::Create(BoolTy, pred_size(LH), "p", Before);
 
-            auto Phi = PHINode::Create(BoolTy, pred_size(LH), "p", Before);
             for (auto P : predecessors(LH)) {
                 Phi->addIncoming(P == LL ? C : False, P);
-                LW->PredMap[C] = Phi;
+                LW.PredMap[C] = Phi;
             }
         }
 
         // Save every loop exit block as well.
-        SmallVector<BasicBlock *, 4> ExitBlocks;
+        llvm::SmallVector<llvm::BasicBlock *, 4> ExitBlocks;
         L->getExitBlocks(ExitBlocks);
-        for (auto LE : ExitBlocks) LW->ExitBlocks.insert(LE);
+        for (auto *LE : ExitBlocks) LW.ExitBlocks.insert(LE);
     }
 
-    return *LW;
+    return LW;
 }
-
-LoopWrapper &recover(LoopInfo &LI, LLVMContext &Ctx) {
-    auto LW = new LoopWrapper(LI);
-    for (auto L : LI.getLoopsInPreorder()) {
-        assert(L->isRotatedForm() && "loop is not in rotated form!");
-        auto LH = L->getHeader();
-        auto LL = L->getLoopLatch();
-
-        // Save every loop latch for future use, if necessary.
-        LW->LLBlocks.insert(LL);
-
-        // Save every loop exiting block that is not the loop condition.
-        SmallVector<BasicBlock *, 4> ExitingBlocks;
-        L->getExitingBlocks(ExitingBlocks);
-
-        for (auto LE : ExitingBlocks) {
-            if (LE == LL) continue;
-            // For each exiting block LE, there is a phi-function at the LH
-            // associated with the predicate of LE.
-            auto LET = cast<BranchInst>(LE->getTerminator());
-            auto C = LET->getCondition();
-
-            for (auto &I : *LH) {
-                auto Phi = dyn_cast<PHINode>(&I);
-                if (!Phi) continue;
-                if (Phi->getIncomingValueForBlock(LL) == C)
-                    LW->PredMap[C] = Phi;
-            }
-        }
-
-        // Save every loop exit block.
-        SmallVector<BasicBlock *, 4> ExitBlocks;
-        L->getExitBlocks(ExitBlocks);
-        for (auto LE : ExitBlocks) LW->ExitBlocks.insert(LE);
-    }
-
-    return *LW;
-}
-} // namespace loop
