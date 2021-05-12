@@ -261,14 +261,13 @@ fixCallSites(AugmentInfo *Info,
         auto *OldF = Info->Replace[NewF];
         while (!OldF->use_empty()) {
             auto *U = OldF->user_back();
-            llvm::CallSite CS(U);
 
             // If CS is not a call, then probably it is storing F's address so
             // it can be used as an indirect call somewhere. This is hard to
             // track and even hard to fix, so we currently does not support.
             // We just replace the use of F by NewF so we can move to the next
             // user.
-            if (!CS.isCall()) {
+            if (!llvm::isa<llvm::CallInst>(U)) {
                 U->replaceUsesOfWith(OldF, NewF);
                 llvm::errs()
                     << "Warning: cannot handle possible indirect calls to "
@@ -276,19 +275,18 @@ fixCallSites(AugmentInfo *Info,
                 continue;
             }
 
-            assert(CS.getCalledFunction() == OldF);
+            auto *Call = llvm::cast<llvm::CallInst>(U);
+            assert(Call->getCalledFunction() == OldF);
             llvm::SmallVector<llvm::Value *, 16> Args;
-            llvm::CallInst *Call =
-                llvm::cast<llvm::CallInst>(CS.getInstruction());
 
             size_t Idx = 0;
-            for (auto &Arg : CS.args()) {
+            for (auto &Arg : Call->args()) {
                 Args.push_back(Arg);
                 Idx++;
 
                 if (!llvm::isa<llvm::PointerType>(Arg->getType())) continue;
 
-                auto *Len = Info->FLen[CS.getCaller()][Arg];
+                auto *Len = Info->FLen[Call->getCaller()][Arg];
                 auto *LenArgTy = (NewF->arg_begin() + Idx)->getType();
 
                 if (Len->getType()->getScalarSizeInBits() <
@@ -307,7 +305,7 @@ fixCallSites(AugmentInfo *Info,
                 // that it does not have any incoming condition defined, so we
                 // just pass true.
                 llvm::Value *C = llvm::ConstantInt::getTrue(NewF->getContext());
-                auto IdxIt = Info->FIdx.find(CS.getCaller());
+                auto IdxIt = Info->FIdx.find(Call->getCaller());
 
                 if (IdxIt != FIdxEnd) {
                     auto Incomings =

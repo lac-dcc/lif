@@ -524,7 +524,8 @@ static void applyTransformRules(FuncWrapper *FW,
             // We create a load to get the value of the outgoing condition for
             // each load or store. There is probably a better way to do that,
             // but this is simpler.
-            auto *OutVal = new llvm::LoadInst(OutPtr, "", &I);
+            auto *OutVal =
+                new llvm::LoadInst(OutPtr->getAllocatedType(), OutPtr, "", &I);
             FW->Skip.insert(OutVal);
 
             if (auto *Load = llvm::dyn_cast<llvm::LoadInst>(&I)) {

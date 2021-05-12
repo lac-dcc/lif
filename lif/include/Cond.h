@@ -59,7 +59,7 @@ using InMap =
     llvm::DenseMap<llvm::BasicBlock *, llvm::SmallVector<Incoming, 4>>;
 
 /// A map between a basic block and its outgoing condition.
-using OutMap = llvm::DenseMap<llvm::BasicBlock *, llvm::Value *>;
+using OutMap = llvm::DenseMap<llvm::BasicBlock *, llvm::AllocaInst *>;
 
 /// Allocates a variable for each basic block (that is not an exit block) in \p
 /// F representing their outgoing conditions.

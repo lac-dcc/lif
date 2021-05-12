@@ -104,177 +104,179 @@ build::single() {
         # transformed code is correct).
         local orig=$("${bin}/${srcname}.opt")
         local isochr=$("${bin}/${srcname}_isochr.opt")
-        local wu
+        # local wu
 
         # Run wu tool just so we can check its correctness as well.
-        local err=$(opt -S -load util/wu.so -branch\
-            "${llvmir}/${srcname}.ll" -o "wu.ll" 2>&1)
-        printf "."
+        # local err=$(opt -S -load util/wu.so -branch\
+        #     "${llvmir}/${srcname}.ll" -o "wu.ll" 2>&1)
+        # printf "."
 
         # Grep return zero if found, nonzero otherwise.
-        echo $err | grep -q "LLVM ERROR"
-        local success=$?
-        if [ $success -ne 0 ]; then
-            mv "wu.ll" "${llvmir}/${srcname}_wu.ll"
-            opt -S -O1 "${llvmir}/${srcname}_wu.ll" -o \
-                "${llvmir}/${srcname}_wu.ll"
-            printf "."
-
-            llc -x86-cmov-converter=false -filetype=asm\
-                "${llvmir}/${srcname}_wu.ll" -o "${asm}/${srcname}_wu.s"
-            printf "."
-
-            clang -g "${asm}/${srcname}_wu.s" \
-                -o "${bin}/${srcname}_wu" -no-pie
-            wu=$("${bin}/${srcname}_wu")
-            printf "."
-        fi
+        # echo $err | grep -q "LLVM ERROR"
+        # local success=$?
+        # if [ $success -ne 0 ]; then
+        #     mv "wu.ll" "${llvmir}/${srcname}_wu.ll"
+        #     opt -S -O1 "${llvmir}/${srcname}_wu.ll" -o \
+        #         "${llvmir}/${srcname}_wu.ll"
+        #     printf "."
+        #
+        #     llc -x86-cmov-converter=false -filetype=asm\
+        #         "${llvmir}/${srcname}_wu.ll" -o "${asm}/${srcname}_wu.s"
+        #     printf "."
+        #
+        #     clang -g "${asm}/${srcname}_wu.s" \
+        #         -o "${bin}/${srcname}_wu" -no-pie
+        #     wu=$("${bin}/${srcname}_wu")
+        #     printf "."
+        # fi
 
         printf ". "
         if [[ "$orig" == "$isochr" ]]; then
-            printf "\033[0;32m[pass]\033[0m"
+            # printf "\033[0;32m[pass]\033[0m"
+            echo -e "\033[0;32m[pass]\033[0m"
         else
-            printf "\033[0;31m[fail]\033[0m"
+            # printf "\033[0;31m[fail]\033[0m"
+            echo -e "\033[0;31m[fail]\033[0m"
         fi;
 
-        if [ $success -eq 0 ]; then
-            echo -e " wu=\033[0;31m[LLVM ERROR]\033[0m"
-        elif [[ "$orig" == "$wu" ]]; then
-            echo -e " wu=\033[0;32m[pass]\033[0m"
-        else
-            echo -e " wu=\033[0;31m[fail]\033[0m"
-        fi;
+        # if [ $success -eq 0 ]; then
+        #     echo -e " wu=\033[0;31m[LLVM ERROR]\033[0m"
+        # elif [[ "$orig" == "$wu" ]]; then
+        #     echo -e " wu=\033[0;32m[pass]\033[0m"
+        # else
+        #     echo -e " wu=\033[0;31m[fail]\033[0m"
+        # fi;
     done
 
     # File names with prefix "measure" refer to source files used to measure
     # execution time of the benchmark.
-    srcs=($(ls $sources | grep "measure"))
-    local -a measure=(${meta[measure]//,/ })
-
-    for src in ${srcs[@]}; do
-        # Get rid of the language extension so we can use the src name.
-        local srcname=$(echo $src | sed "s/\.[^.]*$//")
-
-        # These measure files rely on a constant N to be the size of the input,
-        # so we compile the benchmark for size in range [32, 1024], with step 32:
-        for size in $(seq ${measure[0]} ${measure[1]} ${measure[2]}); do
-            local fullname="${srcname}_${size}"
-            printf "$srcname [$size] "
-            # Compile the src file.
-            clang -emit-llvm -S -Xclang -disable-O0-optnone -D_N=$size \
-                "${sources}/${src}" -o "${llvmir}/${fullname}.ll";
-
-            local -a libllvm=()
-            for lib in ${libs[@]}; do
-                local libname=$(echo $lib | sed "s/\.[^.]*$//")
-
-                # Compile the lib & link it with src
-                clang -emit-llvm -S -Xclang -disable-O0-optnone -D_N=$size \
-                    "${libraries}/${lib}" -o "${llvmir}/${libname}.ll";
-
-                libllvm+=("${llvmir}/${libname}.ll")
-            done
-
-            # Link the src file with all required libs.
-            llvm-link -S ${llvmir}/${fullname}.ll ${libllvm[@]} \
-                -o ${llvmir}/${fullname}.ll
-            printf "."
-
-            # Modify every loop to be rotated and in the canonical form.
-            opt -S -mem2reg -lowerswitch -loop-simplify -loop-rotate \
-                -rotation-max-header-size=1000 \
-                "${llvmir}/${fullname}.ll" -o "${llvmir}/${fullname}.ll"
-            printf "."
-
-            # Now the lib code is inside src.ll, so we can remove it to save
-            # space.
-            rm ${libllvm[@]}
-
-            # Apply optimizations (level 1).
-            opt -S -O1 "${llvmir}/${fullname}.ll" \
-                -o "${llvmir}/${fullname}.opt.ll"
-            printf "."
-
-            # Run the isochronous tool without optimizations & with optimizations.
-            # Since Wu's tool seems to try to transform all functions within
-            # a module, to be fair we don't select any specific function.
-            ../build/bin/lif -O0 "${llvmir}/${fullname}.ll" \
-                -o "${llvmir}/${fullname}_isochr.ll" &> /dev/null
-            printf "."
-
-            opt -S -O1 "${llvmir}/${fullname}_isochr.ll" -o \
-                "${llvmir}/${fullname}_isochr.opt.ll"
-            printf "."
-
-            # Generate the assembly files.
-            llc -filetype=asm "${llvmir}/${fullname}.ll" \
-                -o "${asm}/${fullname}.s"
-            printf "."
-
-            llc -filetype=asm "${llvmir}/${fullname}.opt.ll" \
-                -o "${asm}/${fullname}.opt.s"
-            printf "."
-
-            llc -x86-cmov-converter=false -filetype=asm \
-                "${llvmir}/${fullname}_isochr.ll" \
-                -o "${asm}/${fullname}_isochr.s"
-            printf "."
-
-            llc -x86-cmov-converter=false -filetype=asm \
-                "${llvmir}/${fullname}_isochr.opt.ll" \
-                -o "${asm}/${fullname}_isochr.opt.s"
-            printf "."
-
-            # Generate the exec. for each assembly file.
-            clang -g "${asm}/${fullname}.s" \
-                -o "${bin}/${fullname}" -no-pie
-            printf "."
-
-            clang -g "${asm}/${fullname}.opt.s" \
-                -o "${bin}/${fullname}.opt" -no-pie
-            printf "."
-
-            clang -g "${asm}/${fullname}_isochr.s" \
-                -o "${bin}/${fullname}_isochr" -no-pie
-            printf "."
-
-            clang -g "${asm}/${fullname}_isochr.opt.s" \
-                -o "${bin}/${fullname}_isochr.opt" -no-pie
-            printf "."
-
-            # Run wu's tool with and without optimizations.
-            local err=$(opt -S -load util/wu.so -branch\
-                "${llvmir}/${fullname}.ll" -o "wu.ll" 2>&1)
-
-            echo $err | grep -q "LLVM ERROR"
-            local success=$?
-            if [ $success -ne 0 ]; then
-                mv "wu.ll" "${llvmir}/${fullname}_wu.ll"
-                opt -S -O1 "${llvmir}/${fullname}_wu.ll" \
-                    -o "${llvmir}/${fullname}_wu.opt.ll"
-
-                llc -x86-cmov-converter=false -filetype=asm \
-                    "${llvmir}/${fullname}_wu.ll" \
-                    -o "${asm}/${fullname}_wu.s"
-                printf "."
-
-                llc -x86-cmov-converter=false -filetype=asm \
-                    "${llvmir}/${fullname}_wu.opt.ll" \
-                    -o "${asm}/${fullname}_wu.opt.s"
-                printf "."
-
-                clang -g "${asm}/${fullname}_wu.s" \
-                    -o "${bin}/${fullname}_wu" -no-pie
-                printf "."
-
-                clang -g "${asm}/${fullname}_wu.opt.s" \
-                    -o "${bin}/${fullname}_wu.opt" -no-pie
-                printf "."
-            fi
-
-            echo "."
-        done
-    done
+    # srcs=($(ls $sources | grep "measure"))
+    # local -a measure=(${meta[measure]//,/ })
+    #
+    # for src in ${srcs[@]}; do
+    #     # Get rid of the language extension so we can use the src name.
+    #     local srcname=$(echo $src | sed "s/\.[^.]*$//")
+    #
+    #     # These measure files rely on a constant N to be the size of the input,
+    #     # so we compile the benchmark for size in range [32, 1024], with step 32:
+    #     for size in $(seq ${measure[0]} ${measure[1]} ${measure[2]}); do
+    #         local fullname="${srcname}_${size}"
+    #         printf "$srcname [$size] "
+    #         # Compile the src file.
+    #         clang -emit-llvm -S -Xclang -disable-O0-optnone -D_N=$size \
+    #             "${sources}/${src}" -o "${llvmir}/${fullname}.ll";
+    #
+    #         local -a libllvm=()
+    #         for lib in ${libs[@]}; do
+    #             local libname=$(echo $lib | sed "s/\.[^.]*$//")
+    #
+    #             # Compile the lib & link it with src
+    #             clang -emit-llvm -S -Xclang -disable-O0-optnone -D_N=$size \
+    #                 "${libraries}/${lib}" -o "${llvmir}/${libname}.ll";
+    #
+    #             libllvm+=("${llvmir}/${libname}.ll")
+    #         done
+    #
+    #         # Link the src file with all required libs.
+    #         llvm-link -S ${llvmir}/${fullname}.ll ${libllvm[@]} \
+    #             -o ${llvmir}/${fullname}.ll
+    #         printf "."
+    #
+    #         # Modify every loop to be rotated and in the canonical form.
+    #         opt -S -mem2reg -lowerswitch -loop-simplify -loop-rotate \
+    #             -rotation-max-header-size=1000 \
+    #             "${llvmir}/${fullname}.ll" -o "${llvmir}/${fullname}.ll"
+    #         printf "."
+    #
+    #         # Now the lib code is inside src.ll, so we can remove it to save
+    #         # space.
+    #         rm ${libllvm[@]}
+    #
+    #         # Apply optimizations (level 1).
+    #         opt -S -O1 "${llvmir}/${fullname}.ll" \
+    #             -o "${llvmir}/${fullname}.opt.ll"
+    #         printf "."
+    #
+    #         # Run the isochronous tool without optimizations & with optimizations.
+    #         # Since Wu's tool seems to try to transform all functions within
+    #         # a module, to be fair we don't select any specific function.
+    #         ../build/bin/lif -O0 "${llvmir}/${fullname}.ll" \
+    #             -o "${llvmir}/${fullname}_isochr.ll" &> /dev/null
+    #         printf "."
+    #
+    #         opt -S -O1 "${llvmir}/${fullname}_isochr.ll" -o \
+    #             "${llvmir}/${fullname}_isochr.opt.ll"
+    #         printf "."
+    #
+    #         # Generate the assembly files.
+    #         llc -filetype=asm "${llvmir}/${fullname}.ll" \
+    #             -o "${asm}/${fullname}.s"
+    #         printf "."
+    #
+    #         llc -filetype=asm "${llvmir}/${fullname}.opt.ll" \
+    #             -o "${asm}/${fullname}.opt.s"
+    #         printf "."
+    #
+    #         llc -x86-cmov-converter=false -filetype=asm \
+    #             "${llvmir}/${fullname}_isochr.ll" \
+    #             -o "${asm}/${fullname}_isochr.s"
+    #         printf "."
+    #
+    #         llc -x86-cmov-converter=false -filetype=asm \
+    #             "${llvmir}/${fullname}_isochr.opt.ll" \
+    #             -o "${asm}/${fullname}_isochr.opt.s"
+    #         printf "."
+    #
+    #         # Generate the exec. for each assembly file.
+    #         clang -g "${asm}/${fullname}.s" \
+    #             -o "${bin}/${fullname}" -no-pie
+    #         printf "."
+    #
+    #         clang -g "${asm}/${fullname}.opt.s" \
+    #             -o "${bin}/${fullname}.opt" -no-pie
+    #         printf "."
+    #
+    #         clang -g "${asm}/${fullname}_isochr.s" \
+    #             -o "${bin}/${fullname}_isochr" -no-pie
+    #         printf "."
+    #
+    #         clang -g "${asm}/${fullname}_isochr.opt.s" \
+    #             -o "${bin}/${fullname}_isochr.opt" -no-pie
+    #         printf "."
+    #
+    #         # Run wu's tool with and without optimizations.
+    #         local err=$(opt -S -load util/wu.so -branch\
+    #             "${llvmir}/${fullname}.ll" -o "wu.ll" 2>&1)
+    #
+    #         echo $err | grep -q "LLVM ERROR"
+    #         local success=$?
+    #         if [ $success -ne 0 ]; then
+    #             mv "wu.ll" "${llvmir}/${fullname}_wu.ll"
+    #             opt -S -O1 "${llvmir}/${fullname}_wu.ll" \
+    #                 -o "${llvmir}/${fullname}_wu.opt.ll"
+    #
+    #             llc -x86-cmov-converter=false -filetype=asm \
+    #                 "${llvmir}/${fullname}_wu.ll" \
+    #                 -o "${asm}/${fullname}_wu.s"
+    #             printf "."
+    #
+    #             llc -x86-cmov-converter=false -filetype=asm \
+    #                 "${llvmir}/${fullname}_wu.opt.ll" \
+    #                 -o "${asm}/${fullname}_wu.opt.s"
+    #             printf "."
+    #
+    #             clang -g "${asm}/${fullname}_wu.s" \
+    #                 -o "${bin}/${fullname}_wu" -no-pie
+    #             printf "."
+    #
+    #             clang -g "${asm}/${fullname}_wu.opt.s" \
+    #                 -o "${bin}/${fullname}_wu.opt" -no-pie
+    #             printf "."
+    #         fi
+    #
+    #         echo "."
+    #     done
+    # done
 }
 
 # Takes the an array of benhcmarks (paths) to be transformed.

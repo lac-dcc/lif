@@ -128,8 +128,9 @@ lif::bindAll(llvm::Function &F, const OutMap OM, const LoopWrapper &LW) {
         // conditions of the loop header. Otherwise, the initial value will be
         // a trash, which can produce undefined behavior.
         if (LW.LLBlocks.find(&BB) != LLEnd) {
-            auto *Init = new llvm::StoreInst(False, OutPtr);
-            Init->insertAfter(llvm::cast<llvm::Instruction>(OutPtr));
+            new llvm::StoreInst(
+                False, OutPtr,
+                llvm::cast<llvm::Instruction>(OutPtr)->getNextNode());
         }
         auto *Store = bindOut(BB, OutPtr, Incomings);
         MemInsts.push_back(llvm::cast<llvm::Instruction>(Store));
