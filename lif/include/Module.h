@@ -23,6 +23,7 @@
 #ifndef LIF_MODULE_H
 #define LIF_MODULE_H
 
+#include "Config.h"
 #include "Func.h"
 
 #include <llvm/ADT/SmallPtrSet.h>
@@ -49,7 +50,8 @@ findDerived(llvm::Module &M, const llvm::SmallPtrSetImpl<llvm::Function *> &Fs);
 /// \p Fs (or their new versions).
 llvm::SmallVector<std::unique_ptr<FuncWrapper>, 32>
 prepareModule(llvm::SmallVectorImpl<std::pair<llvm::Function *, bool>> &Fs,
-              llvm::Module &M, llvm::FunctionAnalysisManager &FAM);
+              config::Module &Config, llvm::Module &M,
+              llvm::FunctionAnalysisManager &FAM);
 } // namespace lif
 
 #endif

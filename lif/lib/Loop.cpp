@@ -40,22 +40,18 @@ LoopWrapper lif::prepare(llvm::LoopInfo &LI, llvm::LLVMContext &Ctx) {
 
     for (auto *L : LI.getLoopsInPreorder()) {
         auto *LH = L->getHeader();
-
-        // --loop-simplify
-        auto *LL = L->getLoopLatch();
-
-        // --loop-rotate
-        assert(L->isRotatedForm() && "loop is not in rotated form!");
+        LW.Headers.insert(LH);
 
         // Save every loop latch for future use, if necessary.
-        LW.LLBlocks.insert(LL);
+        llvm::SmallVector<llvm::BasicBlock *, 32> Latches;
+        L->getLoopLatches(Latches);
+        LW.Latches.insert(Latches.begin(), Latches.end());
 
         llvm::SmallVector<llvm::BasicBlock *, 4> ExitingBlocks;
         L->getExitingBlocks(ExitingBlocks);
         auto *Before = LH->getFirstNonPHI();
         for (auto *LE : ExitingBlocks) {
-            if (LE == LL) continue;
-
+            LW.ExitingBlocks.insert(LE);
             // For each exiting block LE, insert a phi-function at the LH
             // associated with the predicate of LE.
             auto *LET = llvm::cast<llvm::BranchInst>(LE->getTerminator());
@@ -63,8 +59,8 @@ LoopWrapper lif::prepare(llvm::LoopInfo &LI, llvm::LLVMContext &Ctx) {
             auto *Phi =
                 llvm::PHINode::Create(BoolTy, pred_size(LH), "p", Before);
 
-            for (auto P : predecessors(LH)) {
-                Phi->addIncoming(P == LL ? C : False, P);
+            for (auto *P : predecessors(LH)) {
+                Phi->addIncoming(LW.Latches.count(P) ? C : False, P);
                 LW.PredMap[C] = Phi;
             }
         }

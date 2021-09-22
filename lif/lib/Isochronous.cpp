@@ -33,37 +33,32 @@
 
 using namespace lif;
 
-llvm::PreservedAnalyses IsochronousPass::run(llvm::Module &M,
-                                             llvm::ModuleAnalysisManager &MAM) {
-    llvm::SmallVector<llvm::Function *, 32> Fs;
-    for (auto &F : M)
-        if (Names.count(F.getName())) Fs.push_back(&F);
-
-    auto &FAM =
-        MAM.getResult<llvm::FunctionAnalysisManagerModuleProxy>(M).getManager();
-
-    auto Derived = findDerived(
-        M, llvm::SmallPtrSet<llvm::Function *, 32>(Fs.begin(), Fs.end()));
-
-    // We transform every function selected by the user plus the derived ones.
-    // If no function was selected, we consider all functions from M as
-    // derived, as long as they are used by some other function. We need to
-    // filter functions that we don't have access to the definition.
-    if (Names.empty()) {
-        for (llvm::Function &F : M)
-            if (!F.use_empty() && !F.isDeclaration()) Derived.insert(&F);
+llvm::PreservedAnalyses
+lif::IsochronousPass::run(llvm::Module &M, llvm::ModuleAnalysisManager &MAM) {
+    llvm::SmallVector<llvm::Function *, 16> FromUser;
+    for (auto [Name, _] : this->Config) {
+        auto *F = M.getFunction(Name);
+        // We need to filter functions that we don't have access to the
+        // definition.
+        if (!F->isDeclaration()) FromUser.push_back(M.getFunction(Name));
     }
+
+    auto Derived = findDerived(M, llvm::SmallPtrSet<llvm::Function *, 32>(
+                                      FromUser.begin(), FromUser.end()));
 
     // List of functions that shall be isochronified, plus a bool indicating if
     // they are derived or not (i.e. Fs + Derived).
     llvm::SmallVector<std::pair<llvm::Function *, bool>, 32> NeedRepair;
 
     for (auto *F : Derived) NeedRepair.push_back({F, true});
-    for (auto *F : Fs)
+    for (auto *F : FromUser)
         if (!Derived.count(F)) NeedRepair.push_back({F, false});
 
-    auto Wrapped = prepareModule(NeedRepair, M, FAM);
+    auto &FAM =
+        MAM.getResult<llvm::FunctionAnalysisManagerModuleProxy>(M).getManager();
+
+    auto Wrapped = prepareModule(NeedRepair, this->Config, M, FAM);
     for (auto &FW : Wrapped) transformFunc(FW.get(), FAM);
 
     return llvm::PreservedAnalyses::none();
-} // namespace lif::isochronous
+}

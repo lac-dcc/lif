@@ -23,19 +23,24 @@
 
 #include "Func.h"
 
+#include <llvm/ADT/DenseMap.h>
 #include <llvm/ADT/DenseSet.h>
-#include <llvm/ADT/PostOrderIterator.h>
+#include <llvm/ADT/STLExtras.h>
+#include <llvm/ADT/SmallPtrSet.h>
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/Analysis/MemoryBuiltins.h>
+#include <llvm/Analysis/PostDominators.h>
 #include <llvm/Analysis/TargetLibraryInfo.h>
 #include <llvm/IR/Argument.h>
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/DerivedTypes.h>
+#include <llvm/IR/Dominators.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/InstrTypes.h>
 #include <llvm/IR/Instruction.h>
 #include <llvm/IR/Instructions.h>
+#include <llvm/IR/PassManager.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Use.h>
 #include <llvm/IR/Value.h>
@@ -141,8 +146,8 @@ LenMap lif::computeLength(llvm::Function &F,
             std::stack<llvm::Value *> Ptrs;
             Ptrs.push(Ptr);
 
-            // Arguments and globals are always be cached, since we compute
-            // their lengths before moving to the body of the function.
+            // Arguments and globals are always cached, since we compute their
+            // lengths before moving to the body of the function.
             bool Cached = false;
             llvm::DenseSet<llvm::Value *> Skip;
 
@@ -261,33 +266,77 @@ LenMap lif::computeLength(llvm::Function &F,
     return LM;
 }
 
-void lif::unifyExits(llvm::Function &F) {
-    llvm::SmallVector<llvm::ReturnInst *, 4> Returns;
-    for (auto &BB : F) {
-        for (auto &I : BB) {
-            auto *Ret = llvm::dyn_cast<llvm::ReturnInst>(&I);
-            if (Ret) Returns.push_back(Ret);
+/// Takes a function \p F  and traverses the dominance tree of F marking
+/// values as tainted, according to a configuration \p Config.
+static llvm::SmallPtrSet<llvm::Value *, 32>
+taint(llvm::Function &F, config::Func &Config,
+      llvm::SmallDenseMap<size_t, size_t, 8> &ArgIdx,
+      llvm::FunctionAnalysisManager &FAM) {
+    llvm::SmallPtrSet<llvm::Value *, 32> Tainted;
+    auto &DT = FAM.getResult<llvm::DominatorTreeAnalysis>(F);
+    auto &PDT = FAM.getResult<llvm::PostDominatorTreeAnalysis>(F);
+
+    std::stack<llvm::BasicBlock *> S;
+    std::stack<llvm::BasicBlock *> PDoms;
+    S.push(&F.getEntryBlock());
+
+    // We initially mark the arguments from Config as tainted.
+    for (auto [ArgName, OldIdx] : Config)
+        Tainted.insert(F.getArg(ArgIdx[OldIdx]));
+
+    // Traverse the dominance tree in a DFS-like manner. For each value, we:
+    // 1) Check if there's something in the PDom stack. If so, this means we've
+    // marked a predicate as tainted and thus we shall mark as tainted every
+    // value in paths until the PDom of such a predicate.
+    // 2) Check if one of the operands is tainted. If so, mark the value as
+    // tainted;
+    while (!S.empty()) {
+        auto *BB = S.top();
+        S.pop();
+
+        llvm::BasicBlock *PDom = nullptr;
+        if (!PDoms.empty()) {
+            // If we've reached the PDom that is at the top of the stack, we
+            // might not need to taint all the values in BB.
+            if (PDoms.top() == BB) PDoms.pop();
+            // If there's another PDom in the stack, we still need to taint all
+            // the values in BB.
+            if (!PDoms.empty()) PDom = PDoms.top();
+        }
+
+        for (auto &V : *BB) {
+            if (PDom) {
+                Tainted.insert(&V);
+                continue;
+            }
+
+            for (auto &Op : V.operands()) {
+                if (Tainted.count(llvm::cast<llvm::Value>(Op))) {
+                    Tainted.insert(&V);
+                    break;
+                }
+            }
+        }
+
+        // If the terminator is tainted (i.e. the predicate that governs it is
+        // tainted), push its PDom to the stack.
+        if (Tainted.count(BB->getTerminator()))
+            PDoms.push(PDT.getNode(BB)->getIDom()->getBlock());
+
+        // Push every child of BB in the dominance tree to the stack S.
+        // We first push the ones that post-dominate BB, so they are only
+        // visited after the others.
+        for (auto *Child : DT.getNode(BB)->children()) {
+            auto *BBChild = Child->getBlock();
+            if (PDT.dominates(BBChild, BB)) S.push(BBChild);
+        }
+        for (auto *Child : DT.getNode(BB)->children()) {
+            auto *BBChild = Child->getBlock();
+            if (!PDT.dominates(BBChild, BB)) S.push(BBChild);
         }
     }
 
-    if (Returns.size() == 1) return;
-
-    // We create a new basic block for the unique return point and transform
-    // all the other return points to uncond. branches.
-    auto *Ret = Returns[0];
-    auto *Exit =
-        llvm::BasicBlock::Create(F.getContext(), "", &F, Ret->getParent());
-    auto *Phi = llvm::PHINode::Create(Ret->getReturnValue()->getType(),
-                                      Returns.size(), "");
-
-    for (auto *Ret : Returns) {
-        Phi->addIncoming(Ret->getReturnValue(), Ret->getParent());
-        llvm::ReplaceInstWithInst(Ret, llvm::BranchInst::Create(Exit));
-    }
-
-    Exit->getInstList().insert(Exit->end(), Phi);
-    Exit->getInstList().insert(Exit->end(),
-                               llvm::ReturnInst::Create(F.getContext(), Phi));
+    return Tainted;
 }
 
 llvm::Value *lif::ctsel(llvm::Value *Cond, llvm::Value *VTrue,
@@ -487,7 +536,7 @@ static void applyTransformRules(FuncWrapper *FW,
             FW->F.getParent()->getDataLayout().getMaxPointerSizeInBits()),
         0, "shadow", FW->F.getEntryBlock().getTerminator());
 
-    auto LLEnd = FW->LW->LLBlocks.end();
+    auto LatchEnd = FW->LW->Latches.end();
     for (auto &BB : FW->F) {
         // We need to collect every phi instruction and store in a separate
         // vector because phi transform. fn removes the phi instruction, so we
@@ -497,10 +546,12 @@ static void applyTransformRules(FuncWrapper *FW,
         auto *OutPtr = FW->OM[&BB];
 
         bool IsLH = FW->LW->LI.isLoopHeader(&BB);
-        bool IsLL = FW->LW->LLBlocks.find(&BB) != LLEnd;
+        bool IsLL = FW->LW->Latches.find(&BB) != LatchEnd;
 
         for (auto &I : BB) {
-            if (FW->Skip.count(&I) || Incomings.empty()) continue;
+            if (FW->Skip.count(&I) || !FW->Tainted.count(&I) ||
+                Incomings.empty())
+                continue;
 
             if (auto *Phi = llvm::dyn_cast<llvm::PHINode>(&I)) {
                 if (!IsLH) Phis.push_back(Phi);
@@ -542,64 +593,95 @@ static void applyTransformRules(FuncWrapper *FW,
 }
 
 /// Takes a FunctionWrapper \p FW containing a function to be isochronified and
-/// replaces every early exiting point of a loop with a unconditional jump to
-/// the successor block that is inside the loop, essentially making every loop
-/// to have a single exit region.
-static void elimEarlyExits(FuncWrapper *FW) {
-    auto LLEnd = FW->LW->LLBlocks.end();
-    auto LExitEnd = FW->LW->ExitBlocks.end();
-    for (auto *LE : FW->LW->ExitingBlocks) {
-        // Skip loop latches, since they contain the loop termination condition
-        // and thus must not be transformed.
-        if (FW->LW->LLBlocks.find(LE) != LLEnd) continue;
-
-        auto *LET = LE->getTerminator();
-        llvm::BasicBlock *Inside = nullptr, *Outside = nullptr;
-
-        for (auto *Target : llvm::cast<llvm::BranchInst>(LET)->successors()) {
-            if (FW->LW->ExitBlocks.find(Target) == LExitEnd)
-                Inside = Target;
-            else
-                Outside = Target;
-        }
-
-        // TODO: we should actually consider the post dominator of the loop
-        // header, which should in turn post-dominate every loop exit block.
-        //
-        // Outside may be a basic block created to eliminate critical edges. In
-        // such case, it may become unreachable if we just ignore it. Thus, we
-        // need to reconnect it to the CFG somehow. If that is the case, we
-        // link LE to Outside and Outside to Inside.
-        auto Target = Inside;
-        if (pred_size(Outside) == 1) {
-            auto *T = llvm::cast<llvm::BranchInst>(Outside->getTerminator());
-            T->setSuccessor(0, Inside);
-            Target = Outside;
-        }
-
-        ReplaceInstWithInst(LET, llvm::BranchInst::Create(Target));
-    }
-}
-
-/// Takes a FunctionWrapper \p FW containing a function to be isochronified and
 /// eliminates every conditional statement that is not a loop termination
 /// condition.
 static void elimCondStmts(FuncWrapper *FW) {
-    auto LLEnd = FW->LW->LLBlocks.end();
-    // Replace each terminator with an uncond. br linked to the next basic
-    // block, following the reverse postorder.
-    llvm::ReversePostOrderTraversal<llvm::Function *> RPOT(&FW->F);
-    auto RPOTEnd = RPOT.end();
-    for (auto It = RPOT.begin(); It + 1 != RPOTEnd; ++It) {
-        auto *BB = *It;
-        auto *T = BB->getTerminator();
+    // Map of the number of predecessors of each basic block.
+    llvm::DenseMap<llvm::BasicBlock *, int> Pr;
+    for (auto &BB : FW->F) {
+        if (!FW->LW->Headers.count(&BB)) {
+            Pr[&BB] = llvm::pred_size(&BB);
+            continue;
+        }
 
-        // Do not mess with loop conditions.
-        if (FW->LW->LLBlocks.find(BB) != LLEnd) continue;
+        Pr[&BB] = 0;
+        for (auto *P : llvm::predecessors(&BB))
+            if (!FW->LW->Latches.count(P)) Pr[&BB]++;
+    }
 
-        // We must not remove loop conditions, so just skip them.
-        if (FW->LW->LLBlocks.find(BB) == LLEnd)
-            ReplaceInstWithInst(T, llvm::BranchInst::Create(*(It + 1)));
+    std::stack<llvm::BasicBlock *> S;
+    S.push(&FW->F.getEntryBlock());
+
+    auto updateState = [&FW, &Pr, &S](llvm::BasicBlock *Pred,
+                                      llvm::BasicBlock *BB) {
+        if (!FW->Tainted.count(Pred->getTerminator())) {
+            Pr[BB]--;
+            S.push(BB);
+        } else if (Pr[BB] > 1) {
+            Pr[BB]--;
+        } else {
+            S.push(BB);
+        }
+    };
+
+    while (!S.empty()) {
+        auto *BB = S.top();
+        S.pop();
+
+        auto *Br = llvm::dyn_cast<llvm::BranchInst>(BB->getTerminator());
+        // TODO: handle switch?
+        if (!Br) continue;
+
+        auto *Then = Br->getSuccessor(0);
+        if (!Br->isConditional()) {
+            // Ignore back edges (latches).
+            if (!FW->LW->Latches.count(BB)) {
+                updateState(BB, Then);
+                llvm::ReplaceInstWithInst(Br,
+                                          llvm::BranchInst::Create(S.top()));
+            }
+            continue;
+        }
+
+        auto *Else = Br->getSuccessor(1);
+        // If we're dealing with a br cond. + latch.
+        if (FW->LW->Latches.count(BB)) {
+            // "Then" is the header of the loop. We never push the header of a
+            // loop to the stack, since we've already visited it.
+            if (FW->LW->Headers.count(Then)) {
+                updateState(BB, Else);
+                Br->setSuccessor(1, S.top());
+            }
+            // "Else" is the header of the loop.
+            else {
+                updateState(BB, Then);
+                Br->setSuccessor(0, S.top());
+            }
+            continue;
+        }
+
+        // If we're dealing with an exiting block.
+        if (FW->LW->ExitingBlocks.count(BB)) {
+            // "Else" is inside the loop. We always link an exiting block
+            // with the block inside the loop (except for latches, of course).
+            if (FW->LW->ExitBlocks.count(Then)) {
+                updateState(BB, Then);
+                updateState(BB, Else);
+            }
+            // "Then" is inside the loop.
+            else {
+                updateState(BB, Else);
+                updateState(BB, Then);
+            }
+        }
+        // Else, it's a normal conditional branch, so it doesn't matter which
+        // path we take first.
+        else {
+            updateState(BB, Else);
+            updateState(BB, Then);
+        }
+
+        llvm::ReplaceInstWithInst(Br, llvm::BranchInst::Create(S.top()));
     }
 }
 
@@ -608,20 +690,18 @@ void lif::transformFunc(FuncWrapper *FW, llvm::FunctionAnalysisManager &FAM) {
     // pred. assignments.
     applyTransformRules(FW, FAM);
 
-    // Phase 2: eliminate every conditional statement that branches to outside
-    // a loop and is not the loop latch (i.e. the loop termination condition).
-    elimEarlyExits(FW);
-
-    // Phase 3: eliminate every conditional statement that is not a loop
-    // termination.
+    // Phase 2: eliminate every tainted conditional statement.
     elimCondStmts(FW);
 }
 
-FuncWrapper lif::wrapFunc(llvm::Function &F, bool IsDerived,
+FuncWrapper lif::wrapFunc(llvm::Function &F, config::Func &Config,
+                          bool IsDerived,
+                          llvm::SmallDenseMap<size_t, size_t, 8> &ArgIdx,
                           llvm::FunctionAnalysisManager &FAM) {
     FuncWrapper FW(F, IsDerived);
-    // Transform multiple return points into a unique exit block.
-    unifyExits(F);
+
+    // Taint values according to the observable inputs from the config file.
+    FW.Tainted = taint(F, Config, ArgIdx, FAM);
 
     // Prepare loops by inserting phi-functions at loop headers for every
     // predicate that branch out the loop.

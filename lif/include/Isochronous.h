@@ -24,11 +24,10 @@
 #ifndef LIF_ISOCHRONOUS_H
 #define LIF_ISOCHRONOUS_H
 
-#include <llvm/ADT/StringRef.h>
+#include "Config.h"
+
 #include <llvm/IR/Module.h>
 #include <llvm/IR/PassManager.h>
-
-#include <set>
 
 namespace lif {
 /// A pass that transforms a function into an isochronous version.
@@ -37,25 +36,23 @@ namespace lif {
 /// its inputs. Hence, this property can be used, e.g., for the mitigation of
 /// side channel leaks on a cryptography library.
 ///
-/// Currently, this pass cannot handle functions contanining loops.
+/// Requirement: functions must have unique exit points.
 class IsochronousPass : public llvm::PassInfoMixin<IsochronousPass> {
   public:
-    /// A constructor that takes the name of functions to be transformed and a
-    /// boolean indicating if this pass should insert the length of pointer
-    /// arguments.
-    IsochronousPass(std::set<llvm::StringRef> Names = {}) : Names(Names){};
+    /// A constructor that takes the module configuration (function names and
+    /// observable arguments).
+    IsochronousPass(config::Module &Config) : Config(Config){};
 
     /// Traverses the module \p M transforming functions into isochronous
-    /// versions. If FNames is not empty, then we transform only the functions
-    /// in there and skip the others.
+    /// versions.
     ///
     /// \returns the set of analyses preserved after running this pass.
     llvm::PreservedAnalyses run(llvm::Module &M,
                                 llvm::ModuleAnalysisManager &MAM);
 
   private:
-    /// A set storing the name of the functions that should be transformed.
-    std::set<llvm::StringRef> Names;
+    /// Configuration of the functions that must be transformed.
+    config::Module &Config;
 };
 } // namespace lif
 

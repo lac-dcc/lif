@@ -47,7 +47,7 @@ std::pair<llvm::SmallVector<Incoming, 4>,
 lif::bindIn(llvm::BasicBlock &BB, const OutMap OM, const LoopWrapper &LW) {
     llvm::SmallVector<Incoming, 4> Incomings;
     llvm::SmallVector<llvm::Instruction *, 4> MemInsts;
-    auto LLEnd = LW.LLBlocks.end();
+    auto LatchEnd = LW.Latches.end();
 
     for (auto *Bp : predecessors(&BB)) {
         auto *Terminator = Bp->getTerminator();
@@ -70,7 +70,7 @@ lif::bindIn(llvm::BasicBlock &BB, const OutMap OM, const LoopWrapper &LW) {
 
         // Whenever Bp is a Loop Latch containing the loop condition, we shall
         // not include its predicate in the incoming conditions of BB.
-        if (Br->isConditional() && LW.LLBlocks.find(Bp) == LLEnd) {
+        if (Br->isConditional() && LW.Latches.find(Bp) == LatchEnd) {
             auto *P = Br->getCondition();
             // If we are at an else branch, then we should negate the
             // predicate. Otherwise, just use the original condition.
@@ -116,7 +116,7 @@ lif::bindAll(llvm::Function &F, const OutMap OM, const LoopWrapper &LW) {
 
     auto *BoolTy = llvm::IntegerType::getInt1Ty(F.getContext());
     auto *False = llvm::ConstantInt::getFalse(BoolTy);
-    auto LLEnd = LW.LLBlocks.end();
+    auto LatchEnd = LW.Latches.end();
 
     for (auto &BB : F) {
         auto [Incomings, MemInstsIn] = bindIn(BB, OM, LW);
@@ -127,7 +127,7 @@ lif::bindAll(llvm::Function &F, const OutMap OM, const LoopWrapper &LW) {
         // outgoing variable as "false", for it is used to compute the incoming
         // conditions of the loop header. Otherwise, the initial value will be
         // a trash, which can produce undefined behavior.
-        if (LW.LLBlocks.find(&BB) != LLEnd) {
+        if (LW.Latches.find(&BB) != LatchEnd) {
             new llvm::StoreInst(
                 False, OutPtr,
                 llvm::cast<llvm::Instruction>(OutPtr)->getNextNode());

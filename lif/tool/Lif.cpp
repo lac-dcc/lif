@@ -30,16 +30,22 @@
 ///
 //===----------------------------------------------------------------------===//
 
+#include "CCFG.h"
 #include "Isochronous.h"
 
 #include <llvm/ADT/DenseSet.h>
+#include <llvm/ADT/PostOrderIterator.h>
 #include <llvm/ADT/SmallPtrSet.h>
 #include <llvm/IR/PassManager.h>
 #include <llvm/IRReader/IRReader.h>
 #include <llvm/Passes/PassBuilder.h>
 #include <llvm/Passes/StandardInstrumentations.h>
 #include <llvm/Support/CommandLine.h>
+#include <llvm/Support/ErrorOr.h>
+#include <llvm/Support/MemoryBuffer.h>
 #include <llvm/Support/SourceMgr.h>
+#include <llvm/Support/YAMLParser.h>
+#include <llvm/Support/YAMLTraits.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llvm/Transforms/Scalar/DCE.h>
 #include <llvm/Transforms/Scalar/IndVarSimplify.h>
@@ -50,75 +56,62 @@
 #include <llvm/Transforms/Scalar/SCCP.h>
 #include <llvm/Transforms/Scalar/SimplifyCFG.h>
 #include <llvm/Transforms/Utils/Mem2Reg.h>
-
-using namespace llvm;
+#include <llvm/Transforms/Utils/UnifyFunctionExitNodes.h>
 
 /// A category for the options specified for this tool.
-static cl::OptionCategory LifCategory("isochronous pass options");
+static llvm::cl::OptionCategory LifCategory("isochronous pass options");
 
 /// A required argument that specifies the module that will be transformed.
-static cl::opt<std::string> InputModule(cl::Positional,
-                                        cl::desc("<Module to be transformed>"),
-                                        cl::value_desc("bitcode filename"),
-                                        cl::init(""), cl::Required,
-                                        cl::cat(LifCategory));
+static llvm::cl::opt<std::string>
+    InputModule(llvm::cl::Positional,
+                llvm::cl::desc("<Module to be transformed>"),
+                llvm::cl::value_desc("bitcode file path"), llvm::cl::init(""),
+                llvm::cl::Required, llvm::cl::cat(LifCategory));
 
 /// An optional argument that specifies the name of the output file.
-static cl::opt<std::string>
-    OutputModule("o", cl::Positional,
-                 cl::desc("<Module after the transformations>"),
-                 cl::value_desc("bitcode filename"), cl::init("out.ll"),
-                 cl::cat(LifCategory));
-
-/// An optional argument that specifies whether the tool should try to unroll
-/// existing loops or not.
-static cl::opt<bool>
-    Unroll("unroll",
-           cl::desc("Try to unroll existing loops by (set unroll-count and/or "
-                    "unroll-threshold = the max number of loop iterations to "
-                    "perform a full unroll)"),
-           cl::init(false), cl::cat(LifCategory));
+static llvm::cl::opt<std::string>
+    OutputModule("o", llvm::cl::Positional,
+                 llvm::cl::desc("<Module after the transformations>"),
+                 llvm::cl::value_desc("bitcode file path"),
+                 llvm::cl::init("out.ll"), llvm::cl::cat(LifCategory));
 
 enum OptLevel { O0, O1, O2, O3 };
-const std::map<OptLevel, PassBuilder::OptimizationLevel> OptM = {
-    {O0, PassBuilder::OptimizationLevel::O0},
-    {O1, PassBuilder::OptimizationLevel::O1},
-    {O2, PassBuilder::OptimizationLevel::O2},
-    {O3, PassBuilder::OptimizationLevel::O3}};
+const std::map<OptLevel, llvm::PassBuilder::OptimizationLevel> OptM = {
+    {O0, llvm::PassBuilder::OptimizationLevel::O0},
+    {O1, llvm::PassBuilder::OptimizationLevel::O1},
+    {O2, llvm::PassBuilder::OptimizationLevel::O2},
+    {O3, llvm::PassBuilder::OptimizationLevel::O3}};
 
 /// An optional argument that specifies whether the tool should optimize the
 /// original & transformed functions.
-static cl::opt<OptLevel>
-    Opt(cl::desc("Optimization level"),
-        cl::values(clEnumVal(O0, "Optimization level 0 (same as opt -O0)"),
-                   clEnumVal(O1, "Optimization level 1 (same as opt -O1)"),
-                   clEnumVal(O2, "Optimization level 2 (same as opt -O2)"),
-                   clEnumVal(O3, "Optimization level 3 (same as opt -O3)")),
-        cl::init(O0), cl::cat(LifCategory));
+static llvm::cl::opt<OptLevel> Opt(
+    llvm::cl::desc("Optimization level"),
+    llvm::cl::values(clEnumVal(O0, "Optimization level 0 (same as opt -O0)"),
+                     clEnumVal(O1, "Optimization level 1 (same as opt -O1)"),
+                     clEnumVal(O2, "Optimization level 2 (same as opt -O2)"),
+                     clEnumVal(O3, "Optimization level 3 (same as opt -O3)")),
+    llvm::cl::init(O0), llvm::cl::cat(LifCategory));
 
-/// An optional argument that specifies the name of the functions that should
-/// be transformed.
-static cl::opt<std::string>
-    Names("names",
-          cl::desc("List of functions to be transformed. [empty = all]"),
-          cl::value_desc("f1,f2,f3...,fn"), cl::init(""), cl::cat(LifCategory));
+/// A required arguments that specifies the path to the module configuration
+/// file.
+static llvm::cl::opt<std::string>
+    ConfigYAML("config", llvm::cl::desc("<Configuration File>"),
+               llvm::cl::value_desc("yaml file path"), llvm::cl::init(""),
+               llvm::cl::Required, llvm::cl::cat(LifCategory));
 
 /// Applies the Isochronous pass to the selected functions.
-void runIsochronousPass(Module &M) {
-    // If no function name was specified, we transform all functions within the
-    // given module.
-    SmallVector<StringRef, 32> FNames;
-    StringRef(Names.getValue()).split(FNames, ",", -1, false);
-
-    PassInstrumentationCallbacks PIC;
-    StandardInstrumentations SI;
+void runIsochronousPass(llvm::Module &M, llvm::StringRef ConfigBuffer) {
+    llvm::PassInstrumentationCallbacks PIC;
+    llvm::StandardInstrumentations SI(/* DebugLogging */ false);
     SI.registerCallbacks(PIC);
 
-    PassBuilder PB(nullptr, PipelineTuningOptions(), None, &PIC);
-    LoopAnalysisManager LAM;
-    FunctionAnalysisManager FAM;
-    CGSCCAnalysisManager CGAM;
-    ModuleAnalysisManager MAM;
+    llvm::PassBuilder PB(/* DebugLogging */ false, nullptr,
+                         llvm::PipelineTuningOptions(), llvm::None, &PIC);
+
+    llvm::LoopAnalysisManager LAM;
+    llvm::FunctionAnalysisManager FAM;
+    llvm::CGSCCAnalysisManager CGAM;
+    llvm::ModuleAnalysisManager MAM;
 
     PB.registerLoopAnalyses(LAM);
     PB.registerFunctionAnalyses(FAM);
@@ -126,62 +119,84 @@ void runIsochronousPass(Module &M) {
     PB.registerModuleAnalyses(MAM);
     PB.crossRegisterProxies(LAM, FAM, CGAM, MAM);
 
-    ModulePassManager MPM;
-    FunctionPassManager FPM;
+    llvm::ModulePassManager MPM;
+    llvm::FunctionPassManager FPM;
+    FPM.addPass(llvm::UnifyFunctionExitNodesPass());
 
-    if (Unroll) {
-        LoopPassManager LPM;
-        LPM.addPass(LoopRotatePass());
-        LPM.addPass(IndVarSimplifyPass());
-        FPM.addPass(PromotePass());
-        FPM.addPass(SimplifyCFGPass());
-        FPM.addPass(createFunctionToLoopPassAdaptor(std::move(LPM)));
-        FPM.addPass(LoopUnrollPass());
-        MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
-    }
-
-    std::set<StringRef> Names(FNames.begin(), FNames.end());
-    MPM.addPass(lif::IsochronousPass(Names));
+    lif::config::Module Config;
+    llvm::yaml::Input InputYAML(ConfigBuffer);
+    InputYAML >> Config;
+    // MPM.addPass(lif::IsochronousPass(Config));
 
     if (Opt != O0)
         MPM.addPass(PB.buildPerModuleDefaultPipeline(OptM.find(Opt)->second));
+
+    for (auto &F : M) {
+        if (F.isDeclaration()) continue;
+        auto &LI = FAM.getResult<llvm::LoopAnalysis>(F);
+        lif::CCFG G(F, LI);
+        G.writeGraph();
+        auto TopSort = G.topological();
+        for (auto It = TopSort.begin(); It != TopSort.end(); ++It) {
+            // auto N = **It;
+            // if (std::holds_alternative<lif::CCFG::BasicBlockNode *>(N)) {
+            //     llvm::errs()
+            //         << *std::get<lif::CCFG::BasicBlockNode *>(N)->BB <<
+            //         "\n\n";
+            // } else {
+            //     auto H = *std::get<lif::CCFG::LoopNode *>(N)->G->Root;
+            //     llvm::errs()
+            //         << *std::get<lif::CCFG::BasicBlockNode *>(H)->BB <<
+            //         "\n\n";
+            // }
+        }
+        llvm::errs() << "FINISH\t" << F.getName() << "\n";
+    }
 
     MPM.run(M, MAM);
 }
 
 int main(int Argc, char **Argv) {
     // Hide all options apart from the ones specific to this tool.
-    cl::HideUnrelatedOptions(LifCategory);
+    llvm::cl::HideUnrelatedOptions(LifCategory);
 
     // Parse the command-line options that should be passed to the isochronous
     // pass.
-    cl::ParseCommandLineOptions(
+    llvm::cl::ParseCommandLineOptions(
         Argc, Argv,
         "transforms functions into versions that are isochronous.\n");
 
     // Makes sure llvm_shutdown() is called (which cleans up LLVM objects)
     //  http://llvm.org/docs/ProgrammersManual.html#ending-execution-with-llvm-shutdown
-    llvm_shutdown_obj SDO;
+    llvm::llvm_shutdown_obj SDO;
 
     // Parse the IR file passed on the command line.
-    SMDiagnostic Err;
-    LLVMContext Ctx;
-    std::unique_ptr<Module> M = parseIRFile(InputModule.getValue(), Err, Ctx);
+    llvm::SMDiagnostic Err;
+    llvm::LLVMContext Ctx;
+    std::unique_ptr<llvm::Module> M = parseIRFile(InputModule, Err, Ctx);
 
     if (!M) {
-        errs() << "Error reading bitcode file: " << InputModule << "\n";
-        Err.print(Argv[0], errs());
-        return -1;
+        llvm::errs() << "Error reading bitcode file: " << InputModule << "\n";
+        Err.print(Argv[0], llvm::errs());
+        return 1;
     }
 
-    runIsochronousPass(*M);
+    auto ConfigMB = llvm::MemoryBuffer::getFile(ConfigYAML);
+    if (!ConfigMB) {
+        llvm::errs() << "Error reading config (yaml) file: " << ConfigYAML
+                     << "\n";
+        Err.print(Argv[0], llvm::errs());
+        return 1;
+    }
+
+    runIsochronousPass(*M, (*ConfigMB)->getBuffer());
 
     std::error_code EC;
-    raw_fd_ostream OS(OutputModule.getValue(), EC);
+    llvm::raw_fd_ostream OS(OutputModule.getValue(), EC);
 
     if (EC) {
-        errs() << "Couldn't open " << OutputModule.getValue() << ": "
-               << EC.message() << "\n";
+        llvm::errs() << "Couldn't open " << OutputModule.getValue() << ": "
+                     << EC.message() << "\n";
         return 1;
     }
 

@@ -29,6 +29,7 @@
 #include <llvm/ADT/SmallPtrSet.h>
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/Analysis/TargetLibraryInfo.h>
+#include <llvm/IR/Argument.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Instructions.h>
@@ -89,6 +90,10 @@ struct AugmentInfo {
     llvm::SmallDenseMap<llvm::Function *, LenMap, 32> FLen;
     /// Map from a function and its index in a list of functions.
     llvm::SmallDenseMap<llvm::Function *, size_t, 32> FIdx;
+    /// Map from arguments old indices' to their new indices.
+    llvm::SmallDenseMap<llvm::Function *,
+                        llvm::SmallDenseMap<size_t, size_t, 8>, 32>
+        FArgIdx;
 };
 } // namespace
 
@@ -122,7 +127,7 @@ augmentInterfaces(llvm::SmallVectorImpl<std::pair<llvm::Function *, bool>> &Fs,
         llvm::SmallVector<llvm::Type *, 16> ArgTypes;
         llvm::SmallVector<llvm::Twine, 16> ArgNames;
 
-        // Keep track of the indices of each old argument.
+        // Keep track of the new indices of each old argument.
         llvm::SmallDenseMap<llvm::Argument *, size_t, 8> ArgIdx;
         size_t Idx = 0;
         unsigned NumPtrArgs = 0;
@@ -130,13 +135,14 @@ augmentInterfaces(llvm::SmallVectorImpl<std::pair<llvm::Function *, bool>> &Fs,
         // Start by collecting the argument types as well as their names.
         for (auto &Arg : F.args()) {
             ArgTypes.push_back(Arg.getType());
-            ArgNames.push_back(Arg.getName());
+            llvm::Twine Name(Arg.getName());
+            ArgNames.push_back(Name);
             ArgIdx[&Arg] = Idx;
 
             // If Arg is a pointer, we add a new int64 argument.
             if (llvm::isa<llvm::PointerType>(Arg.getType())) {
                 ArgTypes.push_back(llvm::IntegerType::getInt64Ty(Ctx));
-                ArgNames.push_back("N" + Arg.getName());
+                ArgNames.push_back("N" + Name);
                 Idx++;
                 NumPtrArgs++;
             }
@@ -177,9 +183,13 @@ augmentInterfaces(llvm::SmallVectorImpl<std::pair<llvm::Function *, bool>> &Fs,
         for (size_t i = 0; i < NewF->arg_size(); i++)
             (NewF->arg_begin() + i)->setName(ArgNames[i]);
 
-        // Replace all uses of each old arg.
-        for (auto &Arg : F.args())
-            Arg.replaceAllUsesWith(NewF->arg_begin() + ArgIdx[&Arg]);
+        // Replace all uses of each old arg & save their old indices.
+        Info.FArgIdx[NewF] = llvm::SmallDenseMap<size_t, size_t, 8>();
+        for (size_t i = 0; i < F.arg_size(); i++) {
+            auto *Arg = F.getArg(i);
+            Info.FArgIdx[NewF][i] = ArgIdx[Arg];
+            Arg->replaceAllUsesWith(NewF->arg_begin() + ArgIdx[Arg]);
+        }
 
         // Patch the pointer to LLVM function in the debug info descriptor.
         NewF->setSubprogram(F.getSubprogram());
@@ -208,13 +218,18 @@ augmentInterfaces(llvm::SmallVectorImpl<std::pair<llvm::Function *, bool>> &Fs,
 /// block.
 ///
 /// \returns A list of wrapped functions.
-static llvm::SmallVector<std::unique_ptr<FuncWrapper>, 32>
-wrapFunctions(llvm::SmallVectorImpl<std::pair<llvm::Function *, bool>> &Fs,
-              llvm::FunctionAnalysisManager &FAM) {
+static llvm::SmallVector<std::unique_ptr<FuncWrapper>, 32> wrapFunctions(
+    llvm::SmallVectorImpl<std::pair<llvm::Function *, bool>> &Fs,
+    config::Module &Config,
+    llvm::SmallDenseMap<llvm::Function *,
+                        llvm::SmallDenseMap<size_t, size_t, 8>, 32> &FArgIdx,
+    llvm::FunctionAnalysisManager &FAM) {
     llvm::SmallVector<std::unique_ptr<FuncWrapper>, 32> Wrapped;
 
     for (auto [F, IsDerived] : Fs) {
-        auto FW = std::make_unique<FuncWrapper>(wrapFunc(*F, IsDerived, FAM));
+        auto FW = std::make_unique<FuncWrapper>(wrapFunc(
+            *F, Config[F->getName().str()], IsDerived, FArgIdx[F], FAM));
+
         if (!IsDerived) {
             Wrapped.push_back(std::move(FW));
             continue;
@@ -330,7 +345,8 @@ fixCallSites(AugmentInfo *Info,
 
 llvm::SmallVector<std::unique_ptr<FuncWrapper>, 32>
 lif::prepareModule(llvm::SmallVectorImpl<std::pair<llvm::Function *, bool>> &Fs,
-                   llvm::Module &M, llvm::FunctionAnalysisManager &FAM) {
+                   config::Module &Config, llvm::Module &M,
+                   llvm::FunctionAnalysisManager &FAM) {
     // ==================== Phase 1 ====================
     // Augment the interface of some functions.
     auto Info = augmentInterfaces(Fs, M, FAM);
@@ -338,7 +354,7 @@ lif::prepareModule(llvm::SmallVectorImpl<std::pair<llvm::Function *, bool>> &Fs,
     // ==================== Phase 2 ====================
     // Compute path conditions, value lengths, preprocess loops and create new
     // entry blocks whenever necessary.
-    auto Wrapped = wrapFunctions(Fs, FAM);
+    auto Wrapped = wrapFunctions(Fs, Config, Info->FArgIdx, FAM);
 
     // ==================== Phase 3 ====================
     // Finally, we need to fix the call sites, since some functions were

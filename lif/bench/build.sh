@@ -13,13 +13,10 @@ build::single() {
     local llvmir=${bench}/llvm-ir
     local asm=${bench}/asm
     local bin=${bench}/bin
+    local config=${bench}/config.yaml
 
     # Create folders if they don't exist.
     mkdir -p $llvmir $asm $bin
-
-    # Parse the meta.yaml containing the name of the functions to transform.
-    local -A meta
-    parse::yaml ${bench}/meta.yaml meta
 
     # Get the src & lib files.
     local -a srcs=($(ls $sources | grep "main"))
@@ -50,26 +47,30 @@ build::single() {
             -o ${llvmir}/${srcname}.ll
 
         # Modify every loop to be rotated and in the canonical form.
-        opt -S -mem2reg -lowerswitch -loop-simplify -loop-rotate \
-            -rotation-max-header-size=1000 \
-            "${llvmir}/${srcname}.ll" -o "${llvmir}/${srcname}.ll"
+        opt -S -mem2reg -lowerswitch -mergereturn \
+            "${llvmir}/${srcname}.ll" \
+            -o "${llvmir}/${srcname}.ll"
         printf "."
 
         # Now the lib code is inside src.ll, so we can remove it to save
         # space.
         rm ${libllvm[@]}
 
-        # Apply optimizations (level 1).
-        opt -S -O1 "${llvmir}/${srcname}.ll" -o "${llvmir}/${srcname}.opt.ll"
+        # Apply optimizations.
+        opt -S -O3 "${llvmir}/${srcname}.ll" -o "${llvmir}/${srcname}.opt.ll"
         printf "."
 
         # Run the isochronous tool without optimizations & with optimizations.
-        ../build/bin/lif -O0 -names=${meta[functions]} \
+        echo ${config}
+        echo "../build/bin/lif -O0 -config=${config} \
+            ${llvmir}/${srcname}.ll -o \
+            ${llvmir}/${srcname}_isochr.ll"
+        ../build/bin/lif -O0 -config=${config}
             "${llvmir}/${srcname}.ll" -o "${llvmir}/${srcname}_isochr.ll" \
             &> /dev/null
         printf "."
 
-        opt -S -O1 "${llvmir}/${srcname}_isochr.ll" -o \
+        opt -S -O3 "${llvmir}/${srcname}_isochr.ll" -o \
             "${llvmir}/${srcname}_isochr.opt.ll"
         printf "."
 

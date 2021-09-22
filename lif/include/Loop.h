@@ -42,10 +42,12 @@ struct LoopWrapper {
     /// A map between the predicate that governs the outcome of a loop exiting,
     /// and the associated phi-functions inserted at the loop header.
     llvm::DenseMap<llvm::Value *, llvm::PHINode *> PredMap;
-    /// A set containing all the loop latches (LL), so it is easy to check if a
-    /// basic block is one of them. In the case of rotated loops, loop latches
-    /// are the ones that contain the loop condition.
-    llvm::SmallPtrSet<llvm::BasicBlock *, 32> LLBlocks;
+    /// A set containing all the loop latches, so it is easy to check if a
+    /// basic block is one of them.
+    llvm::SmallPtrSet<llvm::BasicBlock *, 32> Latches;
+    /// A set containing all the loop headers, so it is easy to check if a
+    /// basic block is one of them.
+    llvm::SmallPtrSet<llvm::BasicBlock *, 32> Headers;
     /// A set containing all the loop exiting blocks, so it is easy to check
     /// if a basic block is one of them.
     llvm::SmallPtrSet<llvm::BasicBlock *, 32> ExitingBlocks;

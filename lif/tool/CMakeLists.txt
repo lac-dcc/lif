@@ -5,6 +5,7 @@ add_executable(lif
     ../lib/Loop.cpp
     ../lib/Func.cpp
     ../lib/Module.cpp
+    ../lib/CCFG.cpp
     )
 
 target_link_libraries(lif LLVMPasses)
