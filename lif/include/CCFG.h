@@ -21,7 +21,6 @@
 /// back edges (i.e. acyclic).
 //===----------------------------------------------------------------------===//
 
-#include <cstdio>
 #include <llvm/ADT/GraphTraits.h>
 #include <llvm/ADT/Optional.h>
 #include <llvm/ADT/PostOrderIterator.h>
@@ -29,8 +28,8 @@
 #include <llvm/Analysis/LoopInfo.h>
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/Support/DOTGraphTraits.h>
-
 #include <llvm/Support/raw_ostream.h>
+
 #include <memory>
 #include <variant>
 
@@ -48,9 +47,9 @@ namespace lif {
 /// loop is natural (and thus have a single entry block as well), but the
 /// definition can be easily adapted to capture multiple entries.
 ///
-/// TODO: add taint information.
-/// A loop node becomes tainted whenever at least one of its exiting blocks is
-/// tainted.
+/// We mark nodes as tainted according to pre-computed information. A basic
+/// block is tainted if it ends with a tainted branch, whereas a loop is
+/// tainted if at least one of its exiting blocks is tainted.
 struct CCFG {
     struct LoopNode;
     struct BasicBlockNode;
@@ -65,6 +64,8 @@ struct CCFG {
         /// loop, if any. We need this to properly construct the CCFG, since
         /// loop exiting edges shall become edges leaving the collapsed node.
         LoopNode *Parent;
+        /// Indicates whether this node is tainted or not.
+        bool IsTainted;
         /// Every child of a node is itself a (sub) CCFG.
         llvm::SmallVector<Node *, 4> Children;
         /// Creates a node of type NodeT from a llvm BasicBlock \p BB, defining
@@ -89,6 +90,22 @@ struct CCFG {
             auto N = std::make_unique<Node>(BBN);
             this->G = std::make_unique<CCFG>(std::move(N));
         }
+        /// Sets the node as tainted according to pre-computed info.
+        void taint(llvm::DenseSet<llvm::Value *> &Tainted,
+                   const llvm::LoopInfo &LI) {
+            auto *BBN = std::get<BasicBlockNode *>(*this->G->Root);
+            auto *Header = BBN->BB;
+
+            llvm::SmallVector<llvm::BasicBlock *, 4> ExitingBlocks;
+            LI.getLoopFor(Header)->getExitingBlocks(ExitingBlocks);
+
+            BBN->IsTainted = Tainted.contains(Header->getTerminator());
+            this->IsTainted =
+                std::any_of(ExitingBlocks.begin(), ExitingBlocks.end(),
+                            [&Tainted](auto *BB) {
+                                return Tainted.contains(BB->getTerminator());
+                            });
+        }
     };
 
     struct BasicBlockNode : BaseNode<BasicBlockNode> {
@@ -97,6 +114,10 @@ struct CCFG {
         llvm::BasicBlock *BB;
         /// Sets the BasicBlock that corresponds to the BB node.
         void setContent(llvm::BasicBlock *BB) { this->BB = BB; }
+        /// Sets the node as tainted according to pre-computed info.
+        void taint(llvm::DenseSet<llvm::Value *> &Tainted) {
+            this->IsTainted = Tainted.contains(this->BB->getTerminator());
+        }
     };
 
     /// The root node of the CCFG, which is either the entry of the original
@@ -105,9 +126,10 @@ struct CCFG {
 
     /// Constructs a CCFG from a llvm function \p F, collapsing loops as single
     /// nodes.
-    CCFG(llvm::Function &F, const llvm::LoopInfo &LI);
+    CCFG(llvm::Function &F, llvm::DenseSet<llvm::Value *> &Tainted,
+         const llvm::LoopInfo &LI);
 
-    /// Constructs a CCFG from an root node \p Root. Unlike CCFG's public
+    /// Constructs a CCFG from an root node \p Root. Unlike CCFG's 2-params
     /// constructor, this one does not traverse basic blocks to convert all
     /// of them. It simply creates an instance of CCFG rooted at node Root.
     CCFG(NodePtr Root) : Root(std::move(Root)) {}
@@ -130,6 +152,7 @@ struct CCFG {
     ///
     /// \returns the root node of the CCFG.
     static Node *build(llvm::BasicBlock *BB,
+                       llvm::DenseSet<llvm::Value *> &Tainted,
                        llvm::DenseMap<llvm::BasicBlock *, Node *> &AsNode,
                        llvm::DenseSet<llvm::BasicBlock *> &InStack,
                        const llvm::LoopInfo &LI, LoopNode *Parent = nullptr);
@@ -140,14 +163,17 @@ struct CCFG {
     /// new) parent. The Parent returned is \p Parent if BB isn't a loop
     /// header; otherwise, it is a loop node corresponing to the collapsed
     /// loop.
-    static std::pair<Node *, LoopNode *> convert(llvm::BasicBlock *BB,
-                                                 const llvm::LoopInfo &LI,
-                                                 LoopNode *Parent = nullptr) {
+    static std::pair<Node *, LoopNode *>
+    convert(llvm::BasicBlock *BB, llvm::DenseSet<llvm::Value *> &Tainted,
+            const llvm::LoopInfo &LI, LoopNode *Parent = nullptr) {
         if (LI.isLoopHeader(BB)) {
             auto *LN = LoopNode::make(BB, Parent);
+            LN->taint(Tainted, LI);
             return {new Node(LN), LN};
         } else {
-            return {new Node(BasicBlockNode::make(BB, Parent)), Parent};
+            auto *BBN = BasicBlockNode::make(BB, Parent);
+            BBN->taint(Tainted);
+            return {new Node(BBN), Parent};
         }
     }
 };
@@ -234,6 +260,10 @@ struct llvm::DOTGraphTraits<lif::CCFG::Node *> : public DefaultDOTGraphTraits {
         std::string Shape = std::holds_alternative<LoopNode *>(*N)
                                 ? "shape=circle"
                                 : "shape=box";
-        return "margin=0 " + Shape;
+        std::string Style = " style=\"rounded";
+        Style += std::visit([](auto &&N) { return N->IsTainted; }, *N)
+                     ? ",filled\" fillcolor=\"#EA325C\" fontcolor=white"
+                     : "\"";
+        return "margin=0 " + Shape + Style;
     }
 };

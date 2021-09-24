@@ -22,7 +22,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "Func.h"
+#include "CCFG.h"
 
+#include <algorithm>
 #include <llvm/ADT/DenseMap.h>
 #include <llvm/ADT/DenseSet.h>
 #include <llvm/ADT/STLExtras.h>
@@ -268,72 +270,40 @@ LenMap lif::computeLength(llvm::Function &F,
 
 /// Takes a function \p F  and traverses the dominance tree of F marking
 /// values as tainted, according to a configuration \p Config.
-static llvm::SmallPtrSet<llvm::Value *, 32>
+static llvm::DenseSet<llvm::Value *>
 taint(llvm::Function &F, config::Func &Config,
       llvm::SmallDenseMap<size_t, size_t, 8> &ArgIdx,
       llvm::FunctionAnalysisManager &FAM) {
-    llvm::SmallPtrSet<llvm::Value *, 32> Tainted;
+
+    llvm::DenseSet<llvm::Value *> Tainted;
     auto &DT = FAM.getResult<llvm::DominatorTreeAnalysis>(F);
-    auto &PDT = FAM.getResult<llvm::PostDominatorTreeAnalysis>(F);
 
     std::stack<llvm::BasicBlock *> S;
-    std::stack<llvm::BasicBlock *> PDoms;
-    S.push(&F.getEntryBlock());
+    S.push(DT.getRoot());
 
     // We initially mark the arguments from Config as tainted.
     for (auto [ArgName, OldIdx] : Config)
         Tainted.insert(F.getArg(ArgIdx[OldIdx]));
 
-    // Traverse the dominance tree in a DFS-like manner. For each value, we:
-    // 1) Check if there's something in the PDom stack. If so, this means we've
-    // marked a predicate as tainted and thus we shall mark as tainted every
-    // value in paths until the PDom of such a predicate.
-    // 2) Check if one of the operands is tainted. If so, mark the value as
-    // tainted;
+    // Check if an operand is tainted or not.
+    auto IsOpTainted = [&Tainted](auto &Op) {
+        return Tainted.contains(llvm::cast<llvm::Value>(Op));
+    };
+
+    // Traverse the dominance tree in a DFS-like manner, propagating taint
+    // information. We only consider data dependence.
     while (!S.empty()) {
         auto *BB = S.top();
         S.pop();
 
-        llvm::BasicBlock *PDom = nullptr;
-        if (!PDoms.empty()) {
-            // If we've reached the PDom that is at the top of the stack, we
-            // might not need to taint all the values in BB.
-            if (PDoms.top() == BB) PDoms.pop();
-            // If there's another PDom in the stack, we still need to taint all
-            // the values in BB.
-            if (!PDoms.empty()) PDom = PDoms.top();
-        }
-
         for (auto &V : *BB) {
-            if (PDom) {
+            if (std::any_of(V.op_begin(), V.op_end(), IsOpTainted))
                 Tainted.insert(&V);
-                continue;
-            }
-
-            for (auto &Op : V.operands()) {
-                if (Tainted.count(llvm::cast<llvm::Value>(Op))) {
-                    Tainted.insert(&V);
-                    break;
-                }
-            }
         }
-
-        // If the terminator is tainted (i.e. the predicate that governs it is
-        // tainted), push its PDom to the stack.
-        if (Tainted.count(BB->getTerminator()))
-            PDoms.push(PDT.getNode(BB)->getIDom()->getBlock());
 
         // Push every child of BB in the dominance tree to the stack S.
-        // We first push the ones that post-dominate BB, so they are only
-        // visited after the others.
-        for (auto *Child : DT.getNode(BB)->children()) {
-            auto *BBChild = Child->getBlock();
-            if (PDT.dominates(BBChild, BB)) S.push(BBChild);
-        }
-        for (auto *Child : DT.getNode(BB)->children()) {
-            auto *BBChild = Child->getBlock();
-            if (!PDT.dominates(BBChild, BB)) S.push(BBChild);
-        }
+        for (auto *Child : DT.getNode(BB)->children())
+            S.push(Child->getBlock());
     }
 
     return Tainted;
@@ -686,12 +656,14 @@ static void elimCondStmts(FuncWrapper *FW) {
 }
 
 void lif::transformFunc(FuncWrapper *FW, llvm::FunctionAnalysisManager &FAM) {
+    auto G = CCFG(FW->F, FW->Tainted, FW->LW->LI);
+    G.writeGraph();
     // Phase 1: apply the transformation rules to the load, stores, phis and
     // pred. assignments.
-    applyTransformRules(FW, FAM);
+    // applyTransformRules(FW, FAM);
 
     // Phase 2: eliminate every tainted conditional statement.
-    elimCondStmts(FW);
+    // elimCondStmts(FW);
 }
 
 FuncWrapper lif::wrapFunc(llvm::Function &F, config::Func &Config,

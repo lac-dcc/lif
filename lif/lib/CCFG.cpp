@@ -26,10 +26,12 @@
 
 using namespace lif;
 
-lif::CCFG::CCFG(llvm::Function &F, const llvm::LoopInfo &LI) {
+lif::CCFG::CCFG(llvm::Function &F, llvm::DenseSet<llvm::Value *> &Tainted,
+                const llvm::LoopInfo &LI) {
     llvm::DenseMap<llvm::BasicBlock *, Node *> AsNode;
     llvm::DenseSet<llvm::BasicBlock *> InStack;
-    this->Root = NodePtr(build(&F.getEntryBlock(), AsNode, InStack, LI));
+    this->Root =
+        NodePtr(build(&F.getEntryBlock(), Tainted, AsNode, InStack, LI));
 }
 
 /// Takes a basic block \p BB and converts to a CCFG. Whenever we're
@@ -37,12 +39,13 @@ lif::CCFG::CCFG(llvm::Function &F, const llvm::LoopInfo &LI) {
 ///
 /// \returns a CCFG that corresponds to BB.
 CCFG::Node *lif::CCFG::build(llvm::BasicBlock *BB,
+                             llvm::DenseSet<llvm::Value *> &Tainted,
                              llvm::DenseMap<llvm::BasicBlock *, Node *> &AsNode,
                              llvm::DenseSet<llvm::BasicBlock *> &InStack,
                              const llvm::LoopInfo &LI, LoopNode *Parent) {
     InStack.insert(BB);
 
-    auto [N, NewParent] = convert(BB, LI, Parent);
+    auto [N, NewParent] = convert(BB, Tainted, LI, Parent);
     bool IsLoopNode = std::holds_alternative<LoopNode *>(*N);
     AsNode[BB] = N;
 
@@ -77,7 +80,7 @@ CCFG::Node *lif::CCFG::build(llvm::BasicBlock *BB,
         // We might have already visited ChildBB.
         auto *M = AsNode.count(ChildBB)
                       ? AsNode[ChildBB]
-                      : build(ChildBB, AsNode, InStack, LI, NewParent);
+                      : build(ChildBB, Tainted, AsNode, InStack, LI, NewParent);
 
         // If the edge (BB, ChildBB) is an exiting edge, then we set ChildT as
         // a child of BB's Parent. Recall that loops are collapsed in a CCFG,
@@ -142,7 +145,7 @@ static std::string dotFileName(lif::CCFG::Node *N) {
 
 static void writeDotFile(lif::CCFG::Node *N) {
     auto Filename = dotFileName(N);
-    llvm::errs() << "Writing " << Filename << "...";
+    llvm::errs() << "Writing " << Filename << " ...";
 
     std::error_code EC;
     llvm::raw_fd_ostream File(Filename, EC, llvm::sys::fs::OF_Text);
