@@ -55,6 +55,8 @@
 #include <llvm/Transforms/Scalar/NewGVN.h>
 #include <llvm/Transforms/Scalar/SCCP.h>
 #include <llvm/Transforms/Scalar/SimplifyCFG.h>
+#include <llvm/Transforms/Utils/LoopSimplify.h>
+#include <llvm/Transforms/Utils/LowerSwitch.h>
 #include <llvm/Transforms/Utils/Mem2Reg.h>
 #include <llvm/Transforms/Utils/UnifyFunctionExitNodes.h>
 
@@ -121,39 +123,24 @@ void runIsochronousPass(llvm::Module &M, llvm::StringRef ConfigBuffer) {
 
     llvm::ModulePassManager MPM;
     llvm::FunctionPassManager FPM;
+
+    FPM.addPass(llvm::PromotePass());
+    FPM.addPass(llvm::LowerSwitchPass());
     FPM.addPass(llvm::UnifyFunctionExitNodesPass());
+    FPM.addPass(llvm::LoopSimplifyPass());
+    MPM.addPass(llvm::createModuleToFunctionPassAdaptor(std::move(FPM)));
 
     lif::config::Module Config;
     llvm::yaml::Input InputYAML(ConfigBuffer);
     InputYAML >> Config;
     MPM.addPass(lif::IsochronousPass(Config));
 
-    if (Opt != O0)
+    if (Opt != O0) {
         MPM.addPass(PB.buildPerModuleDefaultPipeline(OptM.find(Opt)->second));
-
-    // for (auto &F : M) {
-    // if (F.isDeclaration()) continue;
-    // auto &LI = FAM.getResult<llvm::LoopAnalysis>(F);
-    // lif::CCFG G(F, LI);
-    // G.writeGraph();
-    // auto TopSort = G.topological();
-    // for (auto It = TopSort.begin(); It != TopSort.end(); ++It) {
-    // auto N = **It;
-    // if (std::holds_alternative<lif::CCFG::BasicBlockNode *>(N)) {
-    //     llvm::errs()
-    //         << *std::get<lif::CCFG::BasicBlockNode *>(N)->BB <<
-    //         "\n\n";
-    // } else {
-    //     auto H = *std::get<lif::CCFG::LoopNode *>(N)->G->Root;
-    //     llvm::errs()
-    //         << *std::get<lif::CCFG::BasicBlockNode *>(H)->BB <<
-    //         "\n\n";
-    // }
-    // }
-    // llvm::errs() << "FINISH\t" << F.getName() << "\n";
-    // }
+    }
 
     MPM.run(M, MAM);
+
 }
 
 int main(int Argc, char **Argv) {

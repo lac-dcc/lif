@@ -30,99 +30,118 @@
 
 using namespace lif;
 
-OutMap lif::allocOut(llvm::Function &F) {
+OutMap lif::allocOut(llvm::Function &F, const LoopWrapper &LW,
+                     const llvm::DenseSet<llvm::Value *> &Tainted) {
     OutMap OM(F.size());
-    auto *Before = &*F.getEntryBlock().getFirstInsertionPt();
-    auto *BoolTy = llvm::IntegerType::getInt1Ty(F.getContext());
+    auto InsertionPoint = &*F.getEntryBlock().getFirstInsertionPt();
+    auto BoolTy = llvm::IntegerType::getInt1Ty(F.getContext());
 
     // Allocate an outgoing variable for every basic block in F.
-    for (auto &BB : F)
-        OM[&BB] = new llvm::AllocaInst(BoolTy, 0, "out.", Before);
+    for (auto &BB : F) {
+        auto Out = new llvm::AllocaInst(BoolTy, 0, "out.", InsertionPoint);
+        auto Freezed =
+            LW.ExitingBlocks.contains(&BB) &&
+                    Tainted.contains(BB.getTerminator())
+                ? new llvm::AllocaInst(BoolTy, 0, "out.freezed", InsertionPoint)
+                : nullptr;
+        OM[&BB] = {Out, Freezed};
+    }
 
     return OM;
 }
 
-std::pair<llvm::SmallVector<Incoming, 4>,
-          llvm::SmallVector<llvm::Instruction *, 4>>
-lif::bindIn(llvm::BasicBlock &BB, const OutMap OM, const LoopWrapper &LW) {
-    llvm::SmallVector<Incoming, 4> Incomings;
+std::pair<Incoming, llvm::SmallVector<llvm::Instruction *, 4>>
+lif::bindIn(llvm::BasicBlock &BB, const OutMap OM, const LoopWrapper &LW,
+            const llvm::DenseSet<llvm::Value *> &Tainted) {
+    Incoming In;
     llvm::SmallVector<llvm::Instruction *, 4> MemInsts;
     auto LatchEnd = LW.Latches.end();
 
-    for (auto *Bp : predecessors(&BB)) {
-        auto *Terminator = Bp->getTerminator();
-        auto *Br = llvm::dyn_cast<llvm::BranchInst>(Terminator);
+    for (auto Pred : predecessors(&BB)) {
+        auto T = Pred->getTerminator();
+        auto Branch = llvm::dyn_cast<llvm::BranchInst>(T);
 
         // TODO: Handle switch, etc...
-        if (!Br) continue;
+        if (!Branch) continue;
 
         // Get the address of the instruction associated with the first
         // insertion pointer.
-        auto *Before = &*BB.getFirstInsertionPt();
+        auto InsertionPoint = BB.getFirstNonPHI();
 
         // Out map must have been constructed already; thus, every
-        // basic block should be associated with an out variable.
-        auto OutPtr = llvm::cast<llvm::AllocaInst>(OM.lookup(Bp));
-        llvm::Instruction *C =
-            new llvm::LoadInst(OutPtr->getAllocatedType(), OutPtr, "", Before);
+        // basic block should be associated with an out variable. In the case of
+        // loop exiting edges that are tainted, we consider the freezed outgoing
+        // condition.
+        auto OutPtr = LW.ExitBlocks.contains(&BB) &&
+                              LW.ExitingBlocks.contains(Pred) &&
+                              Tainted.contains(Pred->getTerminator())
+                          ? OM.lookup(Pred).second
+                          : OM.lookup(Pred).first;
+
+        llvm::Instruction *C = new llvm::LoadInst(OutPtr->getAllocatedType(),
+                                                  OutPtr, "", InsertionPoint);
 
         MemInsts.push_back(C);
 
         // Whenever Bp is a Loop Latch containing the loop condition, we shall
         // not include its predicate in the incoming conditions of BB.
-        if (Br->isConditional() && LW.Latches.find(Bp) == LatchEnd) {
-            auto *P = Br->getCondition();
+        if (Branch->isConditional() && LW.Latches.find(Pred) == LatchEnd) {
+            auto P = Branch->getCondition();
             // If we are at an else branch, then we should negate the
             // predicate. Otherwise, just use the original condition.
-            if (Br->getSuccessor(1) == &BB)
-                P = llvm::BinaryOperator::CreateNot(P, "", Before);
+            if (Branch->getSuccessor(1) == &BB)
+                P = llvm::BinaryOperator::CreateNot(P, "", InsertionPoint);
 
-            C = llvm::BinaryOperator::CreateAnd(C, P, "in.", Before);
+            C = llvm::BinaryOperator::CreateAnd(C, P, "in.", InsertionPoint);
         }
 
-        // Insert to the beginning of the vector to preserve the insertion
-        // order at the basic block.
-        Incomings.insert(Incomings.begin(), {C, Bp});
+        In[Pred] = C;
     }
 
-    return {Incomings, MemInsts};
+    return {In, MemInsts};
 }
 
-llvm::StoreInst *
-lif::bindOut(llvm::BasicBlock &BB, llvm::Value *OutPtr,
-             const llvm::SmallVectorImpl<Incoming> &Incomings) {
-    // Compute and store the proper value at OutPtr.
-    llvm::Value *OutVal;
-    llvm::Instruction *Before;
+std::pair<llvm::StoreInst *, llvm::StoreInst *>
+lif::bindOut(llvm::BasicBlock &BB, llvm::Value *OutPtr, llvm::Value *FreezedPtr,
+             const Incoming &In, const LoopWrapper &LW) {
+    auto InsertionPoint = BB.getTerminator();
+    auto BoolTy = llvm::IntegerType::getInt1Ty(BB.getContext());
+    auto True = llvm::ConstantInt::getTrue(BoolTy);
 
-    if (Incomings.empty()) {
-        // There are no incoming conditions, so we set the out value as
-        // true.
-        auto *BoolTy = llvm::IntegerType::getInt1Ty(BB.getContext());
-        OutVal = llvm::ConstantInt::getTrue(BoolTy);
-        Before = llvm::cast<llvm::Instruction>(OutPtr)->getNextNode();
-    } else {
-        OutVal = fold(Incomings);
-        Before = llvm::cast<llvm::Instruction>(OutVal)->getNextNode();
+    // If there are no incoming conditions, we set the out value as true.
+    llvm::Value *OutVal = True;
+    if (!In.empty()) OutVal = fold(In, InsertionPoint, LW);
+
+    auto StoreOut = new llvm::StoreInst(OutVal, OutPtr, InsertionPoint);
+    llvm::StoreInst *StoreFreezed = nullptr;
+
+    if (FreezedPtr) {
+        auto LoadFreezed = new llvm::LoadInst(BoolTy, FreezedPtr,
+                                              "load.freezed", InsertionPoint);
+        auto OrFreezed = llvm::BinaryOperator::CreateOr(
+            LoadFreezed, OutVal, "or.freezed", InsertionPoint);
+        StoreFreezed =
+            new llvm::StoreInst(OrFreezed, FreezedPtr, InsertionPoint);
     }
 
-    return new llvm::StoreInst(OutVal, OutPtr, Before);
+    return {StoreOut, StoreFreezed};
 }
 
 std::pair<InMap, llvm::SmallVector<llvm::Instruction *, 32>>
-lif::bindAll(llvm::Function &F, const OutMap OM, const LoopWrapper &LW) {
+lif::bindAll(llvm::Function &F, const OutMap OM, const LoopWrapper &LW,
+             const llvm::DenseSet<llvm::Value *> &Tainted) {
     InMap IM(F.size());
     llvm::SmallVector<llvm::Instruction *, 32> MemInsts;
 
-    auto *BoolTy = llvm::IntegerType::getInt1Ty(F.getContext());
-    auto *False = llvm::ConstantInt::getFalse(BoolTy);
+    auto BoolTy = llvm::IntegerType::getInt1Ty(F.getContext());
+    auto False = llvm::ConstantInt::getFalse(BoolTy);
     auto LatchEnd = LW.Latches.end();
 
     for (auto &BB : F) {
-        auto [Incomings, MemInstsIn] = bindIn(BB, OM, LW);
-        IM[&BB] = Incomings;
+        auto [In, MemInstsIn] = bindIn(BB, OM, LW, Tainted);
+        IM[&BB] = In;
         MemInsts.insert(MemInsts.end(), MemInstsIn.begin(), MemInstsIn.end());
-        auto *OutPtr = OM.lookup(&BB);
+        auto [OutPtr, FreezedPtr] = OM.lookup(&BB);
         // Whenever BB is a loop latch, we need to initialize its reserved
         // outgoing variable as "false", for it is used to compute the incoming
         // conditions of the loop header. Otherwise, the initial value will be
@@ -132,29 +151,50 @@ lif::bindAll(llvm::Function &F, const OutMap OM, const LoopWrapper &LW) {
                 False, OutPtr,
                 llvm::cast<llvm::Instruction>(OutPtr)->getNextNode());
         }
-        auto *Store = bindOut(BB, OutPtr, Incomings);
-        MemInsts.push_back(llvm::cast<llvm::Instruction>(Store));
+        auto [StoreOut, StoreFreezed] = bindOut(BB, OutPtr, FreezedPtr, In, LW);
+        MemInsts.push_back(StoreOut);
+        if (StoreFreezed) MemInsts.push_back(StoreFreezed);
     }
 
     return {IM, MemInsts};
 }
 
-llvm::BinaryOperator *
-lif::fold(const llvm::SmallVectorImpl<Incoming> &Incomings) {
-    auto *Before =
-        llvm::cast<llvm::Instruction>(Incomings.back().Cond)->getNextNode();
-
-    auto Or = [Before](llvm::Value *X, llvm::Value *Y) {
-        return llvm::BinaryOperator::CreateOr(X, Y, "", Before);
+llvm::Value *lif::fold(const Incoming &In, llvm::Instruction *InsertionPoint,
+                       const LoopWrapper &LW) {
+    auto Or = [InsertionPoint](auto X, auto Y) {
+        return llvm::BinaryOperator::CreateOr(X, Y, "cond.fold",
+                                              InsertionPoint);
     };
 
-    auto *BoolTy = llvm::IntegerType::getInt1Ty(Before->getContext());
-    auto *False = llvm::ConstantInt::getFalse(BoolTy);
-    auto *IncEnd = Incomings.end();
+    auto BoolTy = llvm::IntegerType::getInt1Ty(InsertionPoint->getContext());
+    llvm::Value *Fold = llvm::ConstantInt::getFalse(BoolTy);
 
-    auto *Fold = Or(False, Incomings[0].Cond);
-    for (auto It = Incomings.begin() + 1; It != IncEnd; ++It)
-        Fold = Or(Fold, It->Cond);
+    auto BB = InsertionPoint->getParent();
+    if (!LW.Headers.contains(BB)) {
+        for (auto [_, Cond] : In) Fold = Or(Fold, Cond);
+        return Fold;
+    }
 
-    return Fold;
+    auto L = LW.LI.getLoopFor(BB);
+    auto PreHeader = L->getLoopPreheader();
+    assert(PreHeader &&
+           "error: we require loops to have a preheader! please, run the "
+           "--loop-simplify pass.");
+
+    auto Latch = L->getLoopLatch();
+    assert(Latch &&
+           "error: we require loops to have a unique latch! please, run the "
+           "--loop-simplify pass.");
+
+    assert(In.size() == 2 &&
+           "error: wrong number of incoming conditions for loop header!");
+
+    auto BackedgeNotTaken = llvm::BinaryOperator::CreateNot(
+        LW.BackedgeTakenPhi.lookup(BB), "backedge.nottaken", InsertionPoint);
+
+    auto AndFw =
+        llvm::BinaryOperator::CreateAnd(BackedgeNotTaken, In.lookup(PreHeader),
+                                        "fwcond.and.btaken", InsertionPoint);
+
+    return Or(AndFw, In.lookup(Latch));
 }

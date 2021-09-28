@@ -37,7 +37,7 @@ llvm::PreservedAnalyses
 lif::IsochronousPass::run(llvm::Module &M, llvm::ModuleAnalysisManager &MAM) {
     llvm::SmallVector<llvm::Function *, 16> FromUser;
     for (auto [Name, _] : this->Config) {
-        auto *F = M.getFunction(Name);
+        auto F = M.getFunction(Name);
         // We need to filter functions that we don't have access to the
         // definition.
         if (!F->isDeclaration()) FromUser.push_back(M.getFunction(Name));
@@ -50,15 +50,15 @@ lif::IsochronousPass::run(llvm::Module &M, llvm::ModuleAnalysisManager &MAM) {
     // they are derived or not (i.e. Fs + Derived).
     llvm::SmallVector<std::pair<llvm::Function *, bool>, 32> NeedRepair;
 
-    for (auto *F : Derived) NeedRepair.push_back({F, true});
-    for (auto *F : FromUser)
+    for (auto F : Derived) NeedRepair.push_back({F, true});
+    for (auto F : FromUser)
         if (!Derived.count(F)) NeedRepair.push_back({F, false});
 
     auto &FAM =
         MAM.getResult<llvm::FunctionAnalysisManagerModuleProxy>(M).getManager();
 
     auto Wrapped = prepareModule(NeedRepair, this->Config, M, FAM);
-    for (auto &FW : Wrapped) transformFunc(FW.get(), FAM);
+    for (auto &FW : Wrapped) rewriteFunc(FW.get(), FAM);
 
     return llvm::PreservedAnalyses::none();
 }

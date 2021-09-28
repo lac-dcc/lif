@@ -90,37 +90,35 @@ llvm::Value *ctsel(llvm::Value *Cond, llvm::Value *VTrue, llvm::Value *VFalse,
 /// PtrLen.
 ///
 /// \returns The llvm value representing the select between GEP and Shadow.
-llvm::Value *transformGEP(llvm::GetElementPtrInst *GEP,
-                          llvm::AllocaInst *Shadow, llvm::Value *PtrLen,
-                          llvm::Value *Cond, llvm::Instruction *Before);
+llvm::Value *rewriteGEP(llvm::GetElementPtrInst *GEP, llvm::AllocaInst *Shadow,
+                        llvm::Value *PtrLen, llvm::Value *Cond,
+                        llvm::Instruction *Before);
 
 /// Transforms \p Load into a set of instructions according to the outgoing
 /// condition of the basic block (i.e. the fold of the incoming conds.) that
 /// contains \p Load.
-void transformLoad(llvm::LoadInst &Load, llvm::AllocaInst *Shadow,
-                   llvm::Value *PtrLen, llvm::Value *Cond);
+void rewriteLoad(llvm::LoadInst &Load, llvm::AllocaInst *Shadow,
+                 llvm::Value *PtrLen, llvm::Value *Cond);
 
 /// Transforms \p Store into a set of instructions according to the incoming
 /// conditions of the basic block that contains \p Store.
-void transformStore(llvm::StoreInst &Store, llvm::AllocaInst *Shadow,
-                    llvm::Value *PtrLen, llvm::Value *Cond);
+void rewriteStore(llvm::StoreInst &Store, llvm::AllocaInst *Shadow,
+                  llvm::Value *PtrLen, llvm::Value *Cond);
 
-/// Transforms \p Phi into a set of instructions according to the incoming
-/// conditions of the basic block that contains \Phi.
+/// Partially rewrite phi functions to adjust them according to the
+/// linearization of the CFG.
+void rewritePhis(FuncWrapper *FW, llvm::FunctionAnalysisManager &FAM);
+
+/// Transforms \p P (the definition of some a loop-exiting predicate) in a way
+/// that it respects the associated \p Phi. That is, whenever \p P becomes true,
+/// it cannot change back to false.
 ///
-/// Note: If the transformation occurs, \p Phi is removed from the basic
-/// block.
-void transformPhi(llvm::PHINode &Phi,
-                  const llvm::SmallVectorImpl<Incoming> &Incomings);
-
-/// Transforms \p P (the definition of some predicate used in a branch inside a
-/// loop) in a way that it respects the associated \p Phi. That is, whenever
-/// \p P becomes true, it cannot change back to false.
-void transformPredAssign(llvm::Instruction &P, llvm::PHINode &Phi);
+/// \returns the corresponding new value.
+llvm::Value *rewriteExitingPredicate(llvm::Instruction &P, llvm::PHINode &Phi);
 
 /// Transform \p F into isochronous by applying the proper rules to each
 /// instruction.
-void transformFunc(FuncWrapper *FW, llvm::FunctionAnalysisManager &FAM);
+void rewriteFunc(FuncWrapper *FW, llvm::FunctionAnalysisManager &FAM);
 
 /// Takes a function \p F, computes the path conditions, unifies the exit
 /// points and wrap everything together into a single structure.

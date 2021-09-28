@@ -55,22 +55,22 @@ lif::findDerived(llvm::Module &M,
     auto PushCalls = [&](llvm::Function &F) {
         for (auto &BB : F)
             for (auto &I : BB) {
-                auto *Call = llvm::dyn_cast<llvm::CallInst>(&I);
+                auto Call = llvm::dyn_cast<llvm::CallInst>(&I);
                 if (!Call) continue;
 
-                auto *G = Call->getCalledFunction();
+                auto G = Call->getCalledFunction();
                 if (!G->isDeclaration() && Derived.count(G)) S.push(G);
             }
     };
 
     // Initialize the stack with the functions called by the ones that should
     // be transformed.
-    for (auto *F : Fs) PushCalls(*F);
+    for (auto F : Fs) PushCalls(*F);
 
     // For each function F in the stack S, insert F in the derived list and
     // push all functions called by F to the stack.
     while (!S.empty()) {
-        auto *G = S.top();
+        auto G = S.top();
         S.pop();
         Derived.insert(G);
         PushCalls(*G);
@@ -169,10 +169,10 @@ augmentInterfaces(llvm::SmallVectorImpl<std::pair<llvm::Function *, bool>> &Fs,
             ArgNames.push_back(".cond");
         }
 
-        auto *FTy = F.getFunctionType();
-        auto *NewFTy = llvm::FunctionType::get(F.getReturnType(), ArgTypes,
-                                               FTy->isVarArg());
-        auto *NewF =
+        auto FTy = F.getFunctionType();
+        auto NewFTy = llvm::FunctionType::get(F.getReturnType(), ArgTypes,
+                                              FTy->isVarArg());
+        auto NewF =
             llvm::Function::Create(NewFTy, F.getLinkage(), F.getAddressSpace());
 
         M.getFunctionList().insert(F.getIterator(), NewF);
@@ -186,7 +186,7 @@ augmentInterfaces(llvm::SmallVectorImpl<std::pair<llvm::Function *, bool>> &Fs,
         // Replace all uses of each old arg & save their old indices.
         Info.FArgIdx[NewF] = llvm::SmallDenseMap<size_t, size_t, 8>();
         for (size_t i = 0; i < F.arg_size(); i++) {
-            auto *Arg = F.getArg(i);
+            auto Arg = F.getArg(i);
             Info.FArgIdx[NewF][i] = ArgIdx[Arg];
             Arg->replaceAllUsesWith(NewF->arg_begin() + ArgIdx[Arg]);
         }
@@ -236,23 +236,23 @@ static llvm::SmallVector<std::unique_ptr<FuncWrapper>, 32> wrapFunctions(
         }
 
         auto &Entry = F->getEntryBlock();
-        auto *NewEntry =
+        auto NewEntry =
             llvm::BasicBlock::Create(F->getContext(), "", F, &Entry);
         llvm::BranchInst::Create(&Entry, NewEntry);
 
         // Set the incoming condition of the old entry block. The incoming
         // condition is the argument inserted by the augmentInterfaces
         // function, which is always the last argument.
-        auto *Cond = F->getArg(F->arg_size() - 1);
-        FW->IM[&Entry] = llvm::SmallVector<Incoming, 1>({{Cond, NewEntry}});
+        auto Cond = F->getArg(F->arg_size() - 1);
+        FW->IM[&Entry][NewEntry] = Cond;
 
         // Similarly, set the outgoing condition of the old entry block. Notice
         // that the old entry block had none incoming edge before and thus its
         // old outgoing condition was set to true. Now, it has a single
         // incoming edge, whose outgoing condition implicitly equals to the new
         // added condition argument.
-        auto *OutVal = FW->OM[&Entry];
-        auto *I = *std::next(OutVal->user_begin(), OutVal->getNumUses() - 1);
+        auto OutVal = FW->OM[&Entry].first;
+        auto I = *std::next(OutVal->user_begin(), OutVal->getNumUses() - 1);
         llvm::cast<llvm::StoreInst>(I)->setOperand(0, Cond);
 
         Wrapped.push_back(std::move(FW));
@@ -272,10 +272,10 @@ fixCallSites(AugmentInfo *Info,
     auto FIdxEnd = Info->FIdx.end();
     // Check for calls to the modified functions and replace them with a new
     // call passing the length of each ptr arg.
-    for (auto *NewF : Info->NeedFix) {
-        auto *OldF = Info->Replace[NewF];
+    for (auto NewF : Info->NeedFix) {
+        auto OldF = Info->Replace[NewF];
         while (!OldF->use_empty()) {
-            auto *U = OldF->user_back();
+            auto U = OldF->user_back();
 
             // If CS is not a call, then probably it is storing F's address so
             // it can be used as an indirect call somewhere. This is hard to
@@ -290,7 +290,7 @@ fixCallSites(AugmentInfo *Info,
                 continue;
             }
 
-            auto *Call = llvm::cast<llvm::CallInst>(U);
+            auto Call = llvm::cast<llvm::CallInst>(U);
             assert(Call->getCalledFunction() == OldF);
             llvm::SmallVector<llvm::Value *, 16> Args;
 
@@ -301,8 +301,8 @@ fixCallSites(AugmentInfo *Info,
 
                 if (!llvm::isa<llvm::PointerType>(Arg->getType())) continue;
 
-                auto *Len = Info->FLen[Call->getCaller()][Arg];
-                auto *LenArgTy = (NewF->arg_begin() + Idx)->getType();
+                auto Len = Info->FLen[Call->getCaller()][Arg];
+                auto LenArgTy = (NewF->arg_begin() + Idx)->getType();
 
                 if (Len->getType()->getScalarSizeInBits() <
                     LenArgTy->getScalarSizeInBits())
@@ -323,15 +323,14 @@ fixCallSites(AugmentInfo *Info,
                 auto IdxIt = Info->FIdx.find(Call->getCaller());
 
                 if (IdxIt != FIdxEnd) {
-                    auto Incomings =
-                        Wrapped[IdxIt->second]->IM[Call->getParent()];
-                    if (Incomings.size() > 0) C = fold(Incomings);
+                    auto In = Wrapped[IdxIt->second]->IM[Call->getParent()];
+                    C = fold(In, Call, *Wrapped[IdxIt->second]->LW);
                 }
 
                 Args.push_back(C);
             }
 
-            auto *NewCall = llvm::CallInst::Create(NewF, Args);
+            auto NewCall = llvm::CallInst::Create(NewF, Args);
             NewCall->setCallingConv(NewF->getCallingConv());
 
             if (!Call->use_empty()) Call->replaceAllUsesWith(NewCall);

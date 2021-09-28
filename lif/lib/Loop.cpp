@@ -25,6 +25,7 @@
 #include "Loop.h"
 
 #include <llvm/ADT/SmallVector.h>
+#include <llvm/IR/CFG.h>
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Instructions.h>
@@ -35,40 +36,62 @@ using namespace lif;
 LoopWrapper lif::prepare(llvm::LoopInfo &LI, llvm::LLVMContext &Ctx) {
     LoopWrapper LW(LI);
 
-    auto *BoolTy = llvm::IntegerType::getInt1Ty(Ctx);
-    auto *False = llvm::ConstantInt::getFalse(BoolTy);
+    auto BoolTy = llvm::IntegerType::getInt1Ty(Ctx);
+    auto True = llvm::ConstantInt::getTrue(BoolTy);
+    auto False = llvm::ConstantInt::getFalse(BoolTy);
 
-    for (auto *L : LI.getLoopsInPreorder()) {
-        auto *LH = L->getHeader();
-        LW.Headers.insert(LH);
+    for (auto L : LI.getLoopsInPreorder()) {
+        auto Header = L->getHeader();
+        LW.Headers.insert(Header);
+
+        assert(L->getLoopPreheader() &&
+               "error: we require loops to have a preheader! please, run the "
+               "--loop-simplify pass.");
+
+        auto Latch = L->getLoopLatch();
+        assert(
+            Latch &&
+            "error: we require loops to have a unique latch! please, run the "
+            "--loop-simplify pass.");
 
         // Save every loop latch for future use, if necessary.
-        llvm::SmallVector<llvm::BasicBlock *, 32> Latches;
-        L->getLoopLatches(Latches);
-        LW.Latches.insert(Latches.begin(), Latches.end());
+        LW.Latches.insert(Latch);
+
+        // Insert a phi function to identify, during the execution, whether the
+        // backedge was taken or not.
+        auto NumHeaderPred = llvm::pred_size(Header);
+        auto InsertionPoint = Header->getFirstNonPHI();
+        LW.BackedgeTakenPhi[Header] = llvm::PHINode::Create(
+            BoolTy, NumHeaderPred, "backedge.taken", InsertionPoint);
+
+        for (auto Pred : llvm::predecessors(Header))
+            LW.BackedgeTakenPhi[Header]->addIncoming(
+                Pred == Latch ? True : False, Pred);
 
         llvm::SmallVector<llvm::BasicBlock *, 4> ExitingBlocks;
         L->getExitingBlocks(ExitingBlocks);
-        auto *Before = LH->getFirstNonPHI();
-        for (auto *LE : ExitingBlocks) {
-            LW.ExitingBlocks.insert(LE);
+
+        for (auto Exiting : ExitingBlocks) {
+            LW.ExitingBlocks.insert(Exiting);
             // For each exiting block LE, insert a phi-function at the LH
             // associated with the predicate of LE.
-            auto *LET = llvm::cast<llvm::BranchInst>(LE->getTerminator());
-            auto *C = LET->getCondition();
-            auto *Phi =
-                llvm::PHINode::Create(BoolTy, pred_size(LH), "p", Before);
+            auto T = llvm::cast<llvm::BranchInst>(Exiting->getTerminator());
+            auto C = T->getCondition();
+            auto Phi = llvm::PHINode::Create(
+                BoolTy, NumHeaderPred,
+                (T->hasName() ? T->getName() : "exitpred") + ".freezed",
+                InsertionPoint);
 
-            for (auto *P : predecessors(LH)) {
-                Phi->addIncoming(LW.Latches.count(P) ? C : False, P);
-                LW.PredMap[C] = Phi;
+            for (auto Pred : llvm::predecessors(Header)) {
+                Phi->addIncoming(LW.Latches.count(Pred) ? C : False, Pred);
+                LW.ExitPredPhi[C] = Phi;
             }
         }
 
         // Save every loop exit block as well.
         llvm::SmallVector<llvm::BasicBlock *, 4> ExitBlocks;
         L->getExitBlocks(ExitBlocks);
-        for (auto *LE : ExitBlocks) LW.ExitBlocks.insert(LE);
+        for (auto Exit : ExitBlocks) LW.ExitBlocks.insert(Exit);
     }
 
     return LW;

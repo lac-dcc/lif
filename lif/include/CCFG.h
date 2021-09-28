@@ -21,6 +21,7 @@
 /// back edges (i.e. acyclic).
 //===----------------------------------------------------------------------===//
 
+#include <llvm/ADT/DenseMap.h>
 #include <llvm/ADT/GraphTraits.h>
 #include <llvm/ADT/Optional.h>
 #include <llvm/ADT/PostOrderIterator.h>
@@ -56,8 +57,6 @@ struct CCFG {
 
     /// A CCFG node can be either a BB node or a Loop node.
     using Node = std::variant<BasicBlockNode *, LoopNode *>;
-    using NodePtr = std::unique_ptr<Node>;
-    using CCFGPtr = std::unique_ptr<CCFG>;
 
     template <typename NodeT> struct BaseNode {
         /// Parent corresponds to the the node that represents the inner most
@@ -66,8 +65,13 @@ struct CCFG {
         LoopNode *Parent;
         /// Indicates whether this node is tainted or not.
         bool IsTainted;
-        /// Every child of a node is itself a (sub) CCFG.
-        llvm::SmallVector<Node *, 4> Children;
+        // We keep both endpoints of edges.
+        llvm::SmallVector<Node, 4> Succs;
+        llvm::SmallVector<Node, 4> Preds;
+        // We also keep a vector of refs to the successors, to be used by
+        // GraphTraits.
+        // TODO: any better/more efficient way to handle this?
+        llvm::SmallVector<Node *, 4> SuccsRef;
         /// Creates a node of type NodeT from a llvm BasicBlock \p BB, defining
         /// its corresponding \p Parent and content.
         ///
@@ -83,29 +87,12 @@ struct CCFG {
     struct LoopNode : BaseNode<LoopNode> {
         /// The collapsed tree that corresponds to the actual loop (without any
         /// back edges).
-        CCFGPtr G;
+        std::unique_ptr<CCFG> G;
         /// Sets the CCFG that corresponds to the loop node.
-        void setContent(llvm::BasicBlock *BB) {
-            auto *BBN = BasicBlockNode::make(BB, this);
-            auto N = std::make_unique<Node>(BBN);
-            this->G = std::make_unique<CCFG>(std::move(N));
-        }
+        void setContent(llvm::BasicBlock *BB);
         /// Sets the node as tainted according to pre-computed info.
         void taint(llvm::DenseSet<llvm::Value *> &Tainted,
-                   const llvm::LoopInfo &LI) {
-            auto *BBN = std::get<BasicBlockNode *>(*this->G->Root);
-            auto *Header = BBN->BB;
-
-            llvm::SmallVector<llvm::BasicBlock *, 4> ExitingBlocks;
-            LI.getLoopFor(Header)->getExitingBlocks(ExitingBlocks);
-
-            BBN->IsTainted = Tainted.contains(Header->getTerminator());
-            this->IsTainted =
-                std::any_of(ExitingBlocks.begin(), ExitingBlocks.end(),
-                            [&Tainted](auto *BB) {
-                                return Tainted.contains(BB->getTerminator());
-                            });
-        }
+                   const llvm::LoopInfo &LI);
     };
 
     struct BasicBlockNode : BaseNode<BasicBlockNode> {
@@ -113,31 +100,66 @@ struct CCFG {
         /// controlled by LLVM, so we shouldn't use unique_ptr.
         llvm::BasicBlock *BB;
         /// Sets the BasicBlock that corresponds to the BB node.
-        void setContent(llvm::BasicBlock *BB) { this->BB = BB; }
+        void setContent(llvm::BasicBlock *BB);
         /// Sets the node as tainted according to pre-computed info.
-        void taint(llvm::DenseSet<llvm::Value *> &Tainted) {
-            this->IsTainted = Tainted.contains(this->BB->getTerminator());
-        }
+        void taint(llvm::DenseSet<llvm::Value *> &Tainted);
     };
 
+    /// Takes a CCFG::Node \p N and extract the corresponding llvm basic block.
+    /// If N is a LoopNode, then the corresponding basic block is the loop
+    /// header.
+    ///
+    /// \returns a llvm BasicBlock.
+    static llvm::BasicBlock *extractBB(Node &N) {
+        if (std::holds_alternative<LoopNode *>(N)) {
+            auto LHeader = *std::get<LoopNode *>(N)->G->Root;
+            return std::get<BasicBlockNode *>(LHeader)->BB;
+        } else {
+            return std::get<BasicBlockNode *>(N)->BB;
+        }
+    }
+
     /// The root node of the CCFG, which is either the entry of the original
-    /// CFG or the header of a loop.
-    NodePtr Root;
+    /// CFG or the header of a loop. If root is nil, the graph is empty.
+    std::unique_ptr<Node> Root;
 
     /// Constructs a CCFG from a llvm function \p F, collapsing loops as single
     /// nodes.
-    CCFG(llvm::Function &F, llvm::DenseSet<llvm::Value *> &Tainted,
-         const llvm::LoopInfo &LI);
+    static CCFG make(llvm::Function &F, llvm::DenseSet<llvm::Value *> &Tainted,
+                     const llvm::LoopInfo &LI);
 
-    /// Constructs a CCFG from an root node \p Root. Unlike CCFG's 2-params
-    /// constructor, this one does not traverse basic blocks to convert all
-    /// of them. It simply creates an instance of CCFG rooted at node Root.
-    CCFG(NodePtr Root) : Root(std::move(Root)) {}
+    /// Constructs an empty CCFG.
+    CCFG() {}
+
+    /// Constructs a CCFG from a root node \p Root.
+    CCFG(std::unique_ptr<Node> Root) : Root(std::move(Root)) {}
 
     /// Sorts the CCFG topologically.
     ///
     /// \returns a reverse post order of the nodes.
     llvm::ReversePostOrderTraversal<Node *> topological();
+
+    /// Produces a compact topological sort of the CCFG.
+    /// TODO: add the definition of bindex.
+    ///
+    /// \returns an iterator for the compact reverse post order.
+    std::vector<Node *> bindex(llvm::FunctionAnalysisManager &FAM,
+                               const llvm::LoopInfo &LI);
+
+    using EdgeReplacementMap = std::map<Node, std::map<Node, Node>>;
+    /// Traverses the compact topological order transforming edges to eliminate
+    /// secret-dependent branches. We use Moll & Hack's partial linearization
+    /// algorithm published at PLDI:
+    /// https://compilers.cs.uni-saarland.de/papers/moll_parlin_pldi18.pdf
+    ///
+    /// Partial linearization is done in-place, so the original edges are
+    /// lost in the process.
+    ///
+    /// \returns a map from a node to a list of pairs where the first element is
+    /// the old target of that edge and the second element is the new target
+    /// (empty if nothing has changed).
+    EdgeReplacementMap plinearize(llvm::FunctionAnalysisManager &FAM,
+                                  const llvm::LoopInfo &LI);
 
     /// Produces multiple dot files for visualization of the CCFG. The dot file
     /// named as funcName.dot corresponds to the outermost CCFG, whereas the
@@ -159,23 +181,10 @@ struct CCFG {
 
     /// Takes a basic block \p BB and converts to a CCFG node.
     ///
-    /// \returns a BasicBlockNode corresponding to BB, plus the (possibly
-    /// new) parent. The Parent returned is \p Parent if BB isn't a loop
-    /// header; otherwise, it is a loop node corresponing to the collapsed
-    /// loop.
-    static std::pair<Node *, LoopNode *>
-    convert(llvm::BasicBlock *BB, llvm::DenseSet<llvm::Value *> &Tainted,
-            const llvm::LoopInfo &LI, LoopNode *Parent = nullptr) {
-        if (LI.isLoopHeader(BB)) {
-            auto *LN = LoopNode::make(BB, Parent);
-            LN->taint(Tainted, LI);
-            return {new Node(LN), LN};
-        } else {
-            auto *BBN = BasicBlockNode::make(BB, Parent);
-            BBN->taint(Tainted);
-            return {new Node(BBN), Parent};
-        }
-    }
+    /// \returns the CCFG node corresponding to BB.
+    static Node *convert(llvm::BasicBlock *BB,
+                         llvm::DenseSet<llvm::Value *> &Tainted,
+                         const llvm::LoopInfo &LI, LoopNode *Parent = nullptr);
 };
 } // namespace lif
 
@@ -185,11 +194,11 @@ template <> struct llvm::GraphTraits<lif::CCFG::Node *> {
 
     using ChildIteratorType = llvm::SmallVector<NodeRef, 4>::iterator;
     static ChildIteratorType child_begin(NodeRef N) {
-        return std::visit([](auto &&N) { return N->Children.begin(); }, *N);
+        return std::visit([](auto &&N) { return N->SuccsRef.begin(); }, *N);
     }
 
     static ChildIteratorType child_end(NodeRef N) {
-        return std::visit([](auto &&N) { return N->Children.end(); }, *N);
+        return std::visit([](auto &&N) { return N->SuccsRef.end(); }, *N);
     };
 
     using nodes_iterator = llvm::po_iterator<NodeRef>;
@@ -208,12 +217,12 @@ struct llvm::DOTGraphTraits<lif::CCFG::Node *> : public DefaultDOTGraphTraits {
     static std::string getGraphName(const NodeRef N) {
         // We check if N has a parent. If so, it means it is inside a loop so
         // we add this information to the graph name.
-        auto *Parent = std::visit([](auto &&N) { return N->Parent; }, *N);
+        auto Parent = std::visit([](auto &&N) { return N->Parent; }, *N);
 
         std::string SuffixGraphName = "";
         if (Parent) {
-            auto *Header =
-                std::get<lif::CCFG::BasicBlockNode *>(*Parent->G->Root)->BB;
+            auto LRoot = *Parent->G->Root;
+            auto Header = std::get<lif::CCFG::BasicBlockNode *>(LRoot)->BB;
             std::string HeaderName;
 
             if (Header->hasName()) {
@@ -230,7 +239,7 @@ struct llvm::DOTGraphTraits<lif::CCFG::Node *> : public DefaultDOTGraphTraits {
             SuffixGraphName = " [loop @ " + HeaderName + "]";
         }
 
-        auto *BB = std::get<BasicBlockNode *>(*N)->BB;
+        auto BB = std::get<BasicBlockNode *>(*N)->BB;
         auto FuncName = BB->getParent()->getName().str();
         return "CCFG for " + FuncName + SuffixGraphName;
     }
@@ -243,7 +252,7 @@ struct llvm::DOTGraphTraits<lif::CCFG::Node *> : public DefaultDOTGraphTraits {
             LabelPrefix = "Loop @ ";
         }
 
-        auto *BB = std::get<BasicBlockNode *>(*M)->BB;
+        auto BB = std::get<BasicBlockNode *>(*M)->BB;
         std::string Name;
 
         if (BB->hasName()) {
