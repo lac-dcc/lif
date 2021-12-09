@@ -30,6 +30,7 @@
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Function.h>
+#include <llvm/IR/Instruction.h>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/Value.h>
 
@@ -90,8 +91,8 @@ OutMap allocOut(llvm::Function &F, const LoopWrapper &LW,
 ///
 /// \returns a list of incoming conditions plus a list the Load/Stores created.
 std::pair<Incoming, llvm::SmallVector<llvm::Instruction *, 4>>
-bindIn(llvm::BasicBlock &BB, const OutMap OM, const LoopWrapper &LW,
-       const llvm::DenseSet<llvm::Value *> &Tainted);
+bindIn(llvm::BasicBlock &BB, llvm::Instruction *Before, const OutMap OM,
+       const LoopWrapper &LW, const llvm::DenseSet<llvm::Value *> &Tainted);
 
 /// Computes the outgoing condition for \p BB.
 ///
@@ -99,11 +100,11 @@ bindIn(llvm::BasicBlock &BB, const OutMap OM, const LoopWrapper &LW,
 /// to compute the outgoing condition.
 ///
 /// \returns the Store created to set the value of the outgoing condition. In
-/// addition, if its a loop exiting block, returns the store corresponding to
-/// the freezed outgoing condition.
-std::pair<llvm::StoreInst *, llvm::StoreInst *>
+/// addition, if its a loop exiting block, returns the load+store corresponding
+/// to the freezed outgoing condition.
+std::tuple<llvm::StoreInst *, llvm::LoadInst *, llvm::StoreInst *>
 bindOut(llvm::BasicBlock &BB, llvm::Value *OutPtr, llvm::Value *FreezedPtr,
-        const Incoming &In, const LoopWrapper &LW);
+        llvm::Instruction *Before, const Incoming &In, const LoopWrapper &LW);
 
 /// Traverses the basic blocks of \p F, binding the proper incoming and outgoing
 /// conditions to them.
@@ -121,7 +122,7 @@ bindAll(llvm::Function &F, const OutMap OM, const LoopWrapper &LW,
 /// applying the | (or) operator.
 ///
 /// \returns a new value representing the folded condition.
-llvm::Value *fold(const Incoming &In, llvm::Instruction *InsertionPoint,
+llvm::Value *fold(const Incoming &In, llvm::Instruction *Before,
                   const LoopWrapper &LW);
 } // namespace lif
 

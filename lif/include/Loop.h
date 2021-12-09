@@ -70,7 +70,7 @@ struct LoopWrapper {
 /// \returns a map between the predicates and the phi-functions created, a
 /// a set containing the loop latches, and sets containing the exiting and
 /// exit blocks.
-LoopWrapper prepare(llvm::LoopInfo &LI, llvm::LLVMContext &Ctx);
+LoopWrapper wrapLoop(llvm::LoopInfo &LI, llvm::LLVMContext &Ctx);
 } // namespace lif
 
 #endif

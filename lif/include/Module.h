@@ -32,9 +32,45 @@
 #include <llvm/IR/Module.h>
 #include <llvm/IR/PassManager.h>
 
-#include <memory>
+#include <set>
 
 namespace lif {
+
+/// Wrapped type info. For example, if we have a function foo(i32 *), we
+/// change it to foo(%i32.wrapped *), where %i32.wrapped = type { i32 *, i64 },
+/// such that the second field (i64) is the length of the i32 pointer. A
+/// second example would be a function bar(%struct *s), where %struct = type
+/// { i32 *, ... }. In this case, we transform it to foo(%struct.extended *),
+/// where %struct.extended corresponds to %struct but with its pointers
+/// transformed into their wrapped version (as above).
+using WrappedFieldSizes = llvm::DenseMap<size_t, size_t>;
+using WrappedType = std::pair <llvm::Type *, WrappedFieldSizes>;
+
+/// A wrapper around a module to store additional information.
+struct ModuleWrapper {
+    /// The actual llvm module:
+    llvm::Module &M;
+    /// A map from types to their wrapped versions:
+    llvm::DenseMap<llvm::Type *, llvm::Type *> WrappedTypes;
+    /// A map from wrapped types to their unwrapped versions
+    /// (reverse of Wrapped Types):
+    llvm::DenseMap<llvm::Type *, llvm::Type *> UnwrappedTypes;
+    /// Set of functions that had their interfaces modified and thus need
+    /// fixes on their calling sites (their new versions).
+    std::vector<llvm::Function *> NeedFix;
+    /// Map from modified functions to their old versions.
+    llvm::DenseMap<llvm::Function *, llvm::Function *> Replace;
+    /// Initialize the underlying llvm module.
+    ModuleWrapper(llvm::Module &M) : M(M) {}
+};
+
+/// Takes a module \p M and wraps it to store additional information. We fill
+/// the map of wrapped types by wrapping structs and pointers that are arguments
+/// of functions.
+///
+/// \returns a wrapped module.
+ModuleWrapper wrapModule(llvm::Module &M);
+
 /// Searches for the derived functions from \p Fs, i.e. each function called
 /// by F as well as the ones called by F's callees and so on.
 ///
@@ -49,8 +85,8 @@ findDerived(llvm::Module &M, const llvm::SmallPtrSetImpl<llvm::Function *> &Fs);
 /// \returns a List of the wrapped functions corresponding to the functions in
 /// \p Fs (or their new versions).
 llvm::SmallVector<std::unique_ptr<FuncWrapper>, 32>
-prepareModule(llvm::SmallVectorImpl<std::pair<llvm::Function *, bool>> &Fs,
-              config::Module &Config, llvm::Module &M,
+prepareModule(ModuleWrapper *M, config::Module &Config,
+              llvm::DenseMap<llvm::Function *, bool> Fs,
               llvm::FunctionAnalysisManager &FAM);
 } // namespace lif
 

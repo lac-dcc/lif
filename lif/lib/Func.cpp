@@ -24,8 +24,7 @@
 #include "Func.h"
 #include "CCFG.h"
 
-#include <algorithm>
-#include <functional>
+#include <llvm/ADT/ArrayRef.h>
 #include <llvm/ADT/DenseMap.h>
 #include <llvm/ADT/DenseSet.h>
 #include <llvm/ADT/STLExtras.h>
@@ -45,6 +44,7 @@
 #include <llvm/IR/InstrTypes.h>
 #include <llvm/IR/Instruction.h>
 #include <llvm/IR/Instructions.h>
+#include <llvm/IR/Operator.h>
 #include <llvm/IR/PassManager.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Use.h>
@@ -52,232 +52,286 @@
 #include <llvm/Support/Casting.h>
 #include <llvm/Transforms/Utils/BasicBlockUtils.h>
 
+#include <algorithm>
+#include <functional>
+#include <memory>
 #include <stack>
 #include <variant>
 
 using namespace lif;
 
-// FIXME: Compute length of arrays inside structs (recursive?).
-// TODO: Refactor everything... argh, so ugly!!!!!!
-LenMap lif::computeLength(llvm::Function &F,
-                          const llvm::TargetLibraryInfo *TLI) {
+LenMap
+lif::inferLength(llvm::Function &F,
+                 llvm::DenseMap<llvm::Type *, llvm::Type *> UnwrappedTypes,
+                 const llvm::TargetLibraryInfo *TLI) {
     LenMap LM;
+
+    auto &Ctx = F.getContext();
     auto DL = F.getParent()->getDataLayout();
-    auto Int64Ty = llvm::IntegerType::getInt64Ty(F.getContext());
 
-    // Helper function to early propagate the length to users of arguments or
-    // globals.
-    auto Propagate = [&LM](llvm::Value *V) {
-        for (auto U : V->users())
-            if (llvm::isa<llvm::PointerType>(U->getType())) LM[U] = LM[V];
+    auto Int32Ty = llvm::IntegerType::getInt32Ty(Ctx);
+    auto Int64Ty = llvm::IntegerType::getInt64Ty(Ctx);
+    auto Zero32 = llvm::ConstantInt::get(Int32Ty, 0);
+    auto Zero64 = llvm::ConstantInt::get(Int64Ty, 0);
+    auto One32 = llvm::ConstantInt::get(Int32Ty, 1);
+
+    auto InsertionPoint = F.getEntryBlock().getTerminator();
+    auto getArrayLength = [Int64Ty](llvm::ArrayType *ArrTy) {
+        size_t Len = 1;
+        while (ArrTy) {
+            Len *= ArrTy->getNumElements();
+            ArrTy = llvm::dyn_cast<llvm::ArrayType>(ArrTy->getElementType());
+        }
+        return llvm::ConstantInt::get(Int64Ty, Len);
     };
 
-    // We first compute the length of the pointer arguments. This is quite
-    // simple, since we require each pointer to be immediately followed by its
-    // length. TODO: get the length from annotations?.
-    auto ArgEnd = F.arg_end();
-    for (auto It = F.arg_begin(); It != ArgEnd; ++It) {
-        auto V = &*It;
-        if (!llvm::isa<llvm::PointerType>(V->getType())) continue;
-
-        auto Len = &*(It + 1);
-        assert(llvm::isa<llvm::IntegerType>(Len->getType()) &&
-               "pointer argument must be followed by its length!");
-
-        LM[V] = Len;
-        Propagate(V);
-    }
-
-    auto dynCastNestedArrType = [](auto Ty) {
-        return llvm::dyn_cast<llvm::ArrayType>(Ty->getElementType());
+    auto getCallToMalloc = [](llvm::Value *V) -> llvm::CallInst * {
+        auto Call = llvm::dyn_cast<llvm::CallInst>(V);
+        if (Call && Call->getCalledFunction()->getName() == "malloc")
+            return Call;
+        else
+            return nullptr;
     };
 
-    // Then we compute the length of all global values.
-    for (auto &Global : F.getParent()->globals()) {
-        if (LM.count(&Global)) continue;
+    auto inferFromType = [&getArrayLength, Zero64](llvm::Type *Ty) {
+        std::vector<llvm::Value *> Length;
+        if (auto ArrTy = llvm::dyn_cast<llvm::ArrayType>(Ty)) {
+            Length.push_back(getArrayLength(ArrTy));
+        } else if (auto StructTy = llvm::dyn_cast<llvm::StructType>(Ty)) {
+            for (auto FieldTy : StructTy->elements()) {
+                auto ArrTy = llvm::dyn_cast<llvm::ArrayType>(FieldTy);
+                // The field may be e.g. a pointer corresponding to an array.
+                // In this case, we'll compute its length later (there must
+                // be an alloca or malloc call somewhere...).
+                auto FieldLen = ArrTy ? getArrayLength(ArrTy) : Zero64;
+                Length.push_back(FieldLen);
+            }
+        } else {
+            Length.push_back(Zero64);
+        }
+        return makeSharedLength(Length);
+    };
 
-        auto PtrTy = llvm::dyn_cast<llvm::PointerType>(Global.getType());
-        if (!PtrTy) continue;
+    for (auto &G : F.getParent()->globals())
+        LM[&G] = inferFromType(G.getValueType());
 
-        auto Len = llvm::ConstantInt::get(Int64Ty, 1);
-        auto ArrTy = dynCastNestedArrType(PtrTy);
+    for (auto &Arg : F.args()) {
+        auto ArgTy = Arg.getType();
 
-        if (ArrTy) {
-            auto NumElems = ArrTy->getNumElements();
-            while ((ArrTy = dynCastNestedArrType(ArrTy)))
-                NumElems *= ArrTy->getNumElements();
-            Len = llvm::ConstantInt::get(Int64Ty, NumElems);
+        if (!UnwrappedTypes.count(ArgTy)) {
+            auto StructTy = llvm::dyn_cast<llvm::StructType>(
+                ArgTy->isPointerTy() ? ArgTy->getPointerElementType() : ArgTy);
+
+            if (!StructTy) {
+                LM[&Arg] = makeSharedLength({Zero64});
+                continue;
+            }
+
+            std::vector<llvm::Value *> Length;
+            for (auto FieldTy : StructTy->elements()) {
+                // TODO: handle nested structs?
+                auto ArrTy = llvm::dyn_cast<llvm::ArrayType>(FieldTy);
+                Length.push_back(ArrTy ? getArrayLength(ArrTy) : Zero64);
+            }
+
+            LM[&Arg] = makeSharedLength(Length);
+            continue;
         }
 
-        LM[&Global] = Len;
-        Propagate(&Global);
+        assert(ArgTy->isPointerTy());
+        auto ArgElTy = ArgTy->getPointerElementType();
+        assert(ArgElTy->isStructTy());
+
+        auto FieldName =
+            (Arg.hasName() ? Arg.getName().str() : "arg") + ".field";
+
+        auto UnwrappedArgTy = UnwrappedTypes[ArgTy];
+        assert(UnwrappedArgTy->isPointerTy());
+
+        auto UnwrappedArgElTy = UnwrappedArgTy->getPointerElementType();
+        if (!UnwrappedArgElTy->isStructTy()) {
+            auto ArgElTy = ArgTy->getPointerElementType();
+            auto LenPtr = llvm::GetElementPtrInst::CreateInBounds(
+                ArgElTy, &Arg, {Zero32, One32}, FieldName + "0.length.ptr",
+                InsertionPoint);
+            auto LoadLen = new llvm::LoadInst(
+                Int64Ty, LenPtr, FieldName + "0.length", InsertionPoint);
+            LM[&Arg] = makeSharedLength({LoadLen, Zero64});
+            LM[LenPtr] = makeSharedLength({Zero64});
+            continue;
+        }
+
+        auto StructTy = llvm::cast<llvm::StructType>(ArgElTy);
+        std::vector<llvm::Value *> Length;
+        for (size_t Idx = 0; Idx < StructTy->getNumElements(); Idx++) {
+            auto FieldTy = StructTy->getTypeAtIndex(Idx);
+            if (!UnwrappedTypes.count(FieldTy)) {
+                auto ArrTy = llvm::dyn_cast<llvm::ArrayType>(FieldTy);
+                auto FieldLen = ArrTy ? getArrayLength(ArrTy) : Zero64;
+                Length.push_back(FieldLen);
+                continue;
+            }
+
+            assert(FieldTy->isPointerTy());
+            auto FieldElTy = FieldTy->getPointerElementType();
+            assert(FieldElTy->isStructTy());
+
+            auto FieldPtr = llvm::GetElementPtrInst::CreateInBounds(
+                ArgElTy, &Arg, {Zero32, llvm::ConstantInt::get(Int32Ty, Idx)},
+                FieldName + std::to_string(Idx) + ".ptr", InsertionPoint);
+
+            auto LoadField =
+                new llvm::LoadInst(FieldTy, FieldPtr, "", InsertionPoint);
+
+            auto LenPtr = llvm::GetElementPtrInst::CreateInBounds(
+                FieldElTy, LoadField, {Zero32, One32},
+                FieldName + std::to_string(Idx) + ".length.ptr",
+                InsertionPoint);
+
+            auto LoadLen = new llvm::LoadInst(
+                Int64Ty, LenPtr, FieldName + std::to_string(Idx) + ".length",
+                InsertionPoint);
+
+            LM[LoadField] = LM[FieldPtr] = makeSharedLength({LoadLen, Zero64});
+            LM[LenPtr] = makeSharedLength({LoadLen});
+
+            // We push LoadLen as the length of the wrapped field for
+            // convenience. It is actually the length of the pointer
+            // wrapped by this struct.
+            Length.push_back(LoadLen);
+        }
+
+        LM[&Arg] = makeSharedLength(Length);
     }
 
-    // For phis, we create a phi to select between the length of the pointers.
-    // We leave the incoming values (the lengths) as holes to be filled after
-    // we've computed the length of the other values.
-    llvm::DenseMap<
-        llvm::PHINode *,
-        llvm::SmallVector<std::pair<llvm::BasicBlock *, llvm::Value *>, 8>>
-        PhiLens;
+    auto setGEPLength = [&LM](llvm::GEPOperator *GEP) {
+        auto PtrOp = GEP->getPointerOperand();
+        auto SrcTy = GEP->getSourceElementType();
 
-    // Returns true if V is a pointer and it is either an argument or a global
-    // value.
-    auto isNonLocalPtr = [](llvm::Value *V) {
-        return (llvm::isa<llvm::Argument>(V) ||
-                llvm::isa<llvm::GlobalValue>(V)) &&
-               llvm::isa<llvm::PointerType>(V->getType());
+        if (!SrcTy->isStructTy()) {
+            LM[GEP] = LM[PtrOp];
+            return;
+        }
+
+        assert(GEP->getNumIndices() >= 2);
+        auto FieldIdx = llvm::cast<llvm::ConstantInt>(GEP->getOperand(2));
+        auto Length = LM[PtrOp]->at(FieldIdx->getZExtValue());
+
+        LM[GEP] = makeSharedLength({Length});
     };
 
-    // Returns true if V is a malloc, realloc, calloc, etc.
-    auto isMemAllocCall = [TLI](llvm::Value *V) {
-        return llvm::isa<llvm::CallInst>(V) && llvm::isAllocLikeFn(V, TLI);
-    };
-
-    // Now we compute the length of the pointers used inside the F's body.
+    // TODO: How to handle phis?
     for (auto &BB : F) {
         for (auto &I : BB) {
-            // We only care for pointers...
-            auto PtrTy = I.getType();
-            if (!llvm::isa<llvm::PointerType>(PtrTy)) continue;
-
-            // We've already computed the length of this guy, so just move on.
             if (LM.count(&I)) continue;
+            if (auto Alloca = llvm::dyn_cast<llvm::AllocaInst>(&I)) {
+                LM[Alloca] = inferFromType(Alloca->getAllocatedType());
+                continue;
+            }
 
-            // If it is not a alloca inst, malloc, a global array or an
-            // argument ptr, we need to move back until we reach the base
-            // instruction. However, we may be lucky if we reach a GEP
-            // instruction in which we can extract the array type.
-            llvm::Value *Ptr = &I;
-            std::stack<llvm::Value *> Ptrs;
-            Ptrs.push(Ptr);
+            if (llvm::isAllocationFn(&I, TLI, true)) {
+                auto Call = llvm::cast<llvm::CallInst>(&I);
+                auto Length = llvm::getMallocArraySize(Call, DL, TLI);
+                LM[Call] = makeSharedLength({Length});
+                continue;
+            }
 
-            // Arguments and globals are always cached, since we compute their
-            // lengths before moving to the body of the function.
-            bool Cached = false;
-            llvm::DenseSet<llvm::Value *> Skip;
+            if (auto Call = getCallToMalloc(&I)) {
+                auto MallocArg = Call->getArgOperand(0);
+                auto Mul = llvm::cast<llvm::MulOperator>(MallocArg);
+                auto Length = Mul->getOperand(0);
+                LM[Call] = makeSharedLength({Length});
+                continue;
+            }
 
-            while (!(Cached || llvm::isa<llvm::AllocaInst>(Ptr) ||
-                     isNonLocalPtr(Ptr) || isMemAllocCall(Ptr))) {
-                // We already computed this? So no need to go ahead.
-                if (LM.count(Ptr)) {
-                    Cached = true;
-                    break;
-                };
+            if (auto BitCast = llvm::dyn_cast<llvm::BitCastInst>(&I)) {
+                auto PtrOp = BitCast->getOperand(0);
 
-                // Is this a GEP? If so, is it pointing to an array? Yes? Cool!
-                auto GEP = llvm::dyn_cast<llvm::GetElementPtrInst>(Ptr);
-                if (GEP &&
-                    llvm::isa<llvm::ArrayType>(GEP->getPointerOperandType()))
-                    break;
+                if (auto GEP = llvm::dyn_cast<llvm::GEPOperator>(PtrOp))
+                    setGEPLength(GEP);
 
-                // Is this is a phi node? If so, we create a second phi node to
-                // select between the length of the pointers.
-                auto Phi = llvm::dyn_cast<llvm::PHINode>(Ptr);
-                if (Phi && llvm::isa<llvm::PointerType>(Phi->getType())) {
-                    llvm::SmallVector<
-                        std::pair<llvm::BasicBlock *, llvm::Value *>, 8>
-                        IncEdges;
-                    llvm::SmallVector<llvm::BasicBlock *, 4> Cycles;
+                LM[BitCast] = LM[PtrOp];
+                continue;
+            }
 
-                    for (auto BB : Phi->blocks()) {
-                        // Ignore cycles!
-                        if (BB == Phi->getParent()) {
-                            Cycles.push_back(BB);
-                            continue;
-                        }
+            if (auto Load = llvm::dyn_cast<llvm::LoadInst>(&I)) {
+                auto PtrOp = Load->getPointerOperand();
 
-                        auto V = Phi->getIncomingValueForBlock((BB));
-                        IncEdges.push_back({BB, V});
-                    }
+                if (auto GEP = llvm::dyn_cast<llvm::GEPOperator>(PtrOp))
+                    setGEPLength(GEP);
 
-                    // In case we have cycles, i.e. |Incs| < number of
-                    // predecessors, we fill the remaining wholes by repeating
-                    // previous values. Does this make sense??
-                    auto V = IncEdges.back().second;
-                    for (auto BB : Cycles) IncEdges.push_back({BB, V});
+                LM[Load] = LM[PtrOp];
+                continue;
+            }
 
-                    auto Len = llvm::PHINode::Create(Int64Ty, IncEdges.size(),
-                                                     "", Phi->getNextNode());
+            if (auto GEP = llvm::dyn_cast<llvm::GEPOperator>(&I)) {
+                setGEPLength(GEP);
+                continue;
+            }
 
-                    PhiLens[Len] = IncEdges;
-                    LM[Phi] = Len;
-                    Cached = true;
-                    break;
+            // TODO: Handle PHI nodes!
+            if (auto Phi = llvm::dyn_cast<llvm::PHINode>(&I)) {
+                auto Ty = Phi->getType();
+                if (!Ty->isPointerTy()) continue;
+                if (!Ty->isStructTy()) {
+                    LM[Phi] = makeSharedLength({Zero64});
+                    continue;
                 }
 
-                // TODO: is there any better approach for this backward step?
-                for (auto &Op :
-                     llvm::cast<llvm::Instruction>(Ptr)->operands()) {
-                    auto OpTy = Op->getType();
-                    if (llvm::isa<llvm::PointerType>(OpTy)) {
-                        Ptr = Op;
-                        Ptrs.push(Ptr);
-                        Cached = LM.count(Ptr);
-                        break;
-                    }
-                }
+                auto NumFields = Ty->getStructNumElements();
+                std::vector<llvm::Value *> Length(NumFields, Zero64);
+                LM[Phi] = makeSharedLength(Length);
+                continue;
             }
 
-            llvm::Value *Len;
-            // Hell yeah! No need to compute again!
-            if (Cached) Len = LM[Ptr];
+            auto Store = llvm::dyn_cast<llvm::StoreInst>(&I);
+            if (!Store) continue;
 
-            // We're lucky! It is a GEP and the type is an array.
-            else if (auto GEP = llvm::dyn_cast<llvm::GetElementPtrInst>(Ptr)) {
-                auto ArrTy =
-                    llvm::cast<llvm::ArrayType>(GEP->getPointerOperandType());
-                auto NumElems = ArrTy->getNumElements();
+            auto ValOp = Store->getValueOperand();
+            if (!ValOp->getType()->isPointerTy()) continue;
 
-                while ((ArrTy = dynCastNestedArrType(ArrTy)))
-                    NumElems *= ArrTy->getNumElements();
+            auto PtrOp = Store->getPointerOperand();
+            while (auto BitCast = llvm::dyn_cast<llvm::BitCastInst>(PtrOp))
+                PtrOp = BitCast->getOperand(0);
 
-                Len = llvm::ConstantInt::get(Int64Ty, NumElems);
-            }
+            auto GEP = llvm::dyn_cast<llvm::GEPOperator>(PtrOp);
+            if (!GEP || !GEP->getSourceElementType()->isStructTy()) continue;
 
-            // Okay, not a GEP. Perhaps an alloca?
-            else if (auto Alloca = llvm::dyn_cast<llvm::AllocaInst>(Ptr)) {
-                auto ArrTy =
-                    llvm::dyn_cast<llvm::ArrayType>(Alloca->getAllocatedType());
+            assert(GEP->getNumIndices() >= 2);
+            auto FieldIdx = llvm::cast<llvm::ConstantInt>(GEP->getOperand(2))
+                                ->getZExtValue();
 
-                if (ArrTy && !Alloca->isArrayAllocation()) {
-                    auto NumElems = ArrTy->getNumElements();
+            auto GEPPtrOp = GEP->getPointerOperand();
+            LM[GEPPtrOp]->at(FieldIdx) = LM[ValOp]->at(FieldIdx);
+            setGEPLength(GEP);
 
-                    while ((ArrTy = dynCastNestedArrType(ArrTy)))
-                        NumElems *= ArrTy->getNumElements();
+            auto PtrTy = GEP->getPointerOperandType();
+            auto SrcTy = GEP->getSourceElementType();
+            auto FieldTy = SrcTy->getStructElementType(FieldIdx);
 
-                    Len = llvm::ConstantInt::get(Int64Ty, NumElems);
-                } else {
-                    Len = Alloca->getArraySize();
-                }
-            }
+            if (!UnwrappedTypes.count(PtrTy) || UnwrappedTypes.count(FieldTy))
+                continue;
 
-            // Nothing yet... so it has to be a malloc call!
-            else {
-                auto Call = llvm::cast<llvm::CallInst>(Ptr);
-                Len = getMallocArraySize(Call, DL, TLI);
-            }
+            assert(LM[GEP]->size() == 1);
+            auto Name = (GEPPtrOp->hasName() ? GEPPtrOp->getName().str() : "") +
+                        ".field" + std::to_string(FieldIdx) + ".length";
 
-            while (!Ptrs.empty()) {
-                LM[Ptrs.top()] = Len;
-                Ptrs.pop();
-            }
+            auto InsertionPoint = Store->getNextNode();
+            auto LenGEP = llvm::GetElementPtrInst::CreateInBounds(
+                SrcTy, GEPPtrOp, {Zero32, One32}, Name + ".ptr", InsertionPoint);
+
+            new llvm::StoreInst(LM[GEP]->at(0), LenGEP, InsertionPoint);
         }
     }
-
-    // Finally, we fill the gaps of the phi nodes that we've created.
-    for (auto [Phi, IncEdges] : PhiLens)
-        for (auto [BB, V] : IncEdges) Phi->addIncoming(LM[V], BB);
 
     return LM;
 }
 
 /// Takes a function \p F  and traverses the dominance tree of F marking
 /// values as tainted, according to a configuration \p Config.
-static llvm::DenseSet<llvm::Value *>
-taint(llvm::Function &F, config::Func &Config,
-      llvm::SmallDenseMap<size_t, size_t, 8> &ArgIdx,
-      llvm::FunctionAnalysisManager &FAM) {
+static llvm::DenseSet<llvm::Value *> taint(llvm::Function &F,
+                                           config::Func &Config,
+                                           llvm::FunctionAnalysisManager &FAM) {
 
     llvm::DenseSet<llvm::Value *> Tainted;
     auto &DT = FAM.getResult<llvm::DominatorTreeAnalysis>(F);
@@ -285,11 +339,10 @@ taint(llvm::Function &F, config::Func &Config,
     std::stack<llvm::BasicBlock *> S;
     S.push(DT.getRoot());
 
-    // We initially mark the arguments from Config as tainted.
-    for (auto [ArgName, OldIdx] : Config)
-        Tainted.insert(F.getArg(ArgIdx[OldIdx]));
+    // We initially mark the arguments from Config as tainted:
+    for (auto [_, Idx] : Config) Tainted.insert(F.getArg(Idx));
 
-    // Check if an operand is tainted or not.
+   // Check if an operand is tainted or not.
     auto IsOpTainted = [&Tainted](auto &Op) {
         return Tainted.contains(llvm::cast<llvm::Value>(Op));
     };
@@ -300,10 +353,16 @@ taint(llvm::Function &F, config::Func &Config,
         auto BB = S.top();
         S.pop();
 
+        // We first mark values as tainted, as an intermediate step:
         for (auto &V : *BB) {
             if (std::any_of(V.op_begin(), V.op_end(), IsOpTainted))
                 Tainted.insert(&V);
         }
+
+        // Then, if the terminator of the basic block was marked as tainted,
+        // we mark the entire basic block as tainted -- this is what we
+        // really need:
+        if (Tainted.contains(BB->getTerminator())) Tainted.insert(BB);
 
         // Push every child of BB in the dominance tree to the stack S.
         for (auto Child : DT.getNode(BB)->children()) S.push(Child->getBlock());
@@ -317,139 +376,111 @@ llvm::Value *lif::ctsel(llvm::Value *Cond, llvm::Value *VTrue,
     return llvm::SelectInst::Create(Cond, VTrue, VFalse, "", Before);
 }
 
-llvm::Value *lif::rewriteGEP(llvm::GetElementPtrInst *GEP,
-                             llvm::AllocaInst *Shadow, llvm::Value *PtrLen,
-                             llvm::Value *Cond, llvm::Instruction *Before) {
-    // If GEP operand pointer is of array type, it may be a multidimensional
-    // array so we need to compute the actual index.
-    //
-    // Example 1: an access like A[1][1] may be translated to a getlementptr
-    // .. i32 0, i64 1, i64 1.  In this situation, the actual index would be
-    // 2^0 * 1 + 2^1 * 1 = 3.
-    //
-    // Example 2: Let A be the third field of some struct. In this case, the
-    // GEP inst. would be something like getlementptr ... i32 0, i32 2, i64
-    // 1, i64 1. Hence, the actual index would be 0 + 2 + 2^0 * 1 + 2^1 * 1
-    // = 5. For computing the safety of the access we are interested in the
-    // index related to the array, so in this case it would be 3 as well.
-    //
-    // TODO: We can simplify this code if we change the behavior of
-    // computeLength for multidimensional arrays (and structs). Instead of
-    // computing a single value, we can store a list of lengths (e.g. a
-    // matrix [3][3] would be stored as two lengths [3, 3]). This way, we
-    // already know how much operand indices we need to aggregate (in case
-    // we're explicit dealing with a multidimensional array). For simple
-    // pointers we'd store the length as a list of size 1, so we know that
-    // we should compare with the last idx operand. The "base" GEP operand
-    // pointer type is always a pointer.
-    auto PtrOpTy = llvm::cast<llvm::PointerType>(GEP->getPointerOperandType())
-                       ->getElementType();
+/// Takes a pointer operand (either from a load or a store) and transforms it
+/// into a safe pointer. That is, if the access to its corresponding address
+/// should not happen and is not safe, then we replace it with an access
+/// to \p Shadow.
+///
+/// \returns The llvm value representing the new safe pointer operand.
+static llvm::Value *rewritePtrOp(llvm::Value *PtrOp, llvm::AllocaInst *Shadow,
+                                 LenMap &LM, llvm::Value *Cond,
+                                 llvm::Instruction *Before) {
+    auto &Ctx = Shadow->getContext();
+    auto Int64Ty = llvm::IntegerType::getInt64Ty(Ctx);
+    auto BoolTy = llvm::IntegerType::getInt1Ty(Ctx);
+    auto True = llvm::ConstantInt::getTrue(BoolTy);
 
-    size_t OpIdx = 1;
-    // Move until we found the pointed element (which can be an array).
-    while ((llvm::isa<llvm::PointerType>(PtrOpTy) ||
-            llvm::isa<llvm::StructType>(PtrOpTy)) &&
-           OpIdx < GEP->getNumOperands() - 1) {
-        OpIdx++;
-        if (llvm::isa<llvm::PointerType>(PtrOpTy)) {
-            PtrOpTy = llvm::cast<llvm::PointerType>(PtrOpTy)->getElementType();
-        } else {
-            auto Op = llvm::cast<llvm::ConstantInt>(GEP->getOperand(OpIdx));
-            PtrOpTy = llvm::cast<llvm::StructType>(PtrOpTy)->getElementType(
-                Op->getSExtValue());
+    auto arrayShape = [Int64Ty](llvm::ArrayType *Ty) {
+        std::vector<llvm::Value *> Shape;
+        while (Ty) {
+            auto NumEl = Ty->getNumElements();
+            Shape.push_back(llvm::ConstantInt::get(Int64Ty, NumEl));
+            Ty = llvm::dyn_cast<llvm::ArrayType>(Ty->getElementType());
         }
-    }
-
-    auto Idx = GEP->getOperand(OpIdx);
-    auto ArrIdxMult = 1;
-
-    auto MatchType = [Before](llvm::Value *&A, llvm::Value *&B) {
-        auto ATy = A->getType();
-        auto BTy = B->getType();
-        int ANumBits = ATy->getScalarSizeInBits();
-        int BNumBits = BTy->getScalarSizeInBits();
-        if (ANumBits < BNumBits)
-            A = new llvm::SExtInst(A, BTy, "", Before);
-        else if (BNumBits < ANumBits)
-            B = new llvm::SExtInst(B, ATy, "", Before);
+        return Shape;
     };
 
-    if (llvm::isa<llvm::ArrayType>(PtrOpTy)) {
-        auto ArrIdx = GEP->getOperand(OpIdx);
-        auto ArrIdxTy = ArrIdx->getType();
-        MatchType(ArrIdx, Idx);
-        Idx = llvm::BinaryOperator::CreateMul(
-            ArrIdx, llvm::ConstantInt::get(ArrIdxTy, ArrIdxMult), "", Before);
+    auto matchType = [Before](llvm::Value *A, llvm::Value *B) {
+        auto Pair = std::make_pair(A, B);
+        auto ATy = A->getType();
+        auto BTy = B->getType();
+        auto ANumBits = ATy->getScalarSizeInBits();
+        auto BNumBits = BTy->getScalarSizeInBits();
 
-        while (OpIdx < GEP->getNumIndices()) {
-            ArrIdxMult *= 2;
-            OpIdx++;
-            auto ArrIdx = GEP->getOperand(OpIdx);
-            auto ArrIdxTy = ArrIdx->getType();
-            MatchType(ArrIdx, Idx);
-            ArrIdx = llvm::BinaryOperator::CreateMul(
-                ArrIdx, llvm::ConstantInt::get(ArrIdxTy, ArrIdxMult), "",
-                Before);
-            MatchType(ArrIdx, Idx);
-            Idx = llvm::BinaryOperator::CreateAdd(Idx, ArrIdx, "", Before);
+        if (ANumBits < BNumBits)
+            Pair.first = new llvm::SExtInst(A, BTy, "", Before);
+        else if (BNumBits < ANumBits)
+            Pair.second = new llvm::SExtInst(B, ATy, "", Before);
+
+        return Pair;
+    };
+
+    // We move back searching for a GEP related to PtrOp. If there is such a
+    // GEP, we need adapt Cond so that we keep the access to PtrOp if (i) the
+    // access should happen, i.e. Cond is true, or (ii) the access is safe.
+    //
+    // TODO: Which other intermediate insts. could we have beside BitCasts?
+    auto Base = PtrOp;
+    while (llvm::isa<llvm::BitCastInst>(PtrOp))
+        Base = llvm::cast<llvm::BitCastInst>(PtrOp)->getOperand(0);
+
+    if (auto GEP = llvm::dyn_cast<llvm::GEPOperator>(Base)) {
+        auto GEPSrcTy = GEP->getSourceElementType();
+        auto NumIndices = GEP->getNumIndices();
+
+        if (GEPSrcTy->isArrayTy()) {
+            auto Shape = arrayShape(llvm::cast<llvm::ArrayType>(GEPSrcTy));
+            assert(NumIndices - 1 <= Shape.size());
+
+            llvm::Value *IsSafe = True;
+            for (size_t Idx = 1; Idx < NumIndices; Idx++) {
+                auto [IdxVal, Length] =
+                    matchType(GEP->getOperand(Idx + 1), Shape[Idx - 1]);
+                auto IsIdxSafe = llvm::ICmpInst::Create(
+                    llvm::Instruction::ICmp, llvm::ICmpInst::ICMP_SLT, IdxVal,
+                    Length, "idx" + std::to_string(Idx) + ".safe", Before);
+                IsSafe = llvm::BinaryOperator::CreateAnd(IsSafe, IsIdxSafe, "",
+                                                         Before);
+            }
+            IsSafe->setName("access.safe");
+            Cond = llvm::BinaryOperator::CreateOr(Cond, IsSafe, "", Before);
+        } else if (GEPSrcTy->isStructTy()) {
+            assert(NumIndices == 2);
+            Cond = llvm::BinaryOperator::CreateOr(Cond, True, "", Before);
+        } else {
+            assert(NumIndices == 1);
+            auto Length = LM[GEP]->at(0);
+            auto IsIdxSafe = llvm::ICmpInst::Create(
+                llvm::Instruction::ICmp, llvm::ICmpInst::ICMP_SLT,
+                GEP->getOperand(1), Length, "idx0.safe", Before);
+            Cond = llvm::BinaryOperator::CreateOr(Cond, IsIdxSafe, "", Before);
         }
     }
 
-    MatchType(Idx, PtrLen);
-    auto IsSafe = llvm::ICmpInst::Create(llvm::Instruction::ICmp,
-                                         llvm::ICmpInst::ICMP_SLT, Idx, PtrLen,
-                                         "", Before);
+    auto Cast = new llvm::BitCastInst(Shadow, PtrOp->getType(), "", Before);
+    PtrOp = ctsel(Cond, PtrOp, Cast, Before);
+    PtrOp->setName("ctsel");
 
-    // Check if (i) the incoming condition is true OR (ii) the access to the
-    // original array at Idx is safe. If (i), we execute the original
-    // instruction as it is. If (ii), we also execute the original
-    // instruction as it is because we know the access is inbounds.
-    // Otherwise, we access a shadow memory.
-    auto NewPtr = ctsel(
-        llvm::BinaryOperator::CreateOr(Cond, IsSafe, "safe.", Before), GEP,
-        new llvm::BitCastInst(Shadow, GEP->getType(), "", Before), Before);
-
-    NewPtr->setName("select.ptr.");
-    return NewPtr;
+    return PtrOp;
 }
 
 void lif::rewriteLoad(llvm::LoadInst &Load, llvm::AllocaInst *Shadow,
-                      llvm::Value *PtrLen, llvm::Value *Cond) {
-    // The pointer operand may be a GEP in the form of a ConstantExpr. In
-    // this case, we transform it into a GEP instruction so we can handle
-    // easier.
-    auto PtrOp = Load.getPointerOperand();
-    if (auto ConstExpr = llvm::dyn_cast<llvm::ConstantExpr>(PtrOp)) {
-        auto GEP =
-            llvm::cast<llvm::GetElementPtrInst>(ConstExpr->getAsInstruction());
-        GEP->insertBefore(&Load);
-        Load.setOperand(Load.getPointerOperandIndex(), GEP);
-    }
-    // If the pointer operand is a GEP we need to transform it in order to
-    // ensure the safety of the memory access.
-    PtrOp = Load.getPointerOperand();
-    if (auto GEP = llvm::dyn_cast<llvm::GetElementPtrInst>(PtrOp))
-        Load.setOperand(Load.getPointerOperandIndex(),
-                        rewriteGEP(GEP, Shadow, PtrLen, Cond, &Load));
+                      LenMap &LM, llvm::Value *Cond) {
+    Load.setOperand(
+        Load.getPointerOperandIndex(),
+        rewritePtrOp(Load.getPointerOperand(), Shadow, LM, Cond, &Load));
 }
 
 void lif::rewriteStore(llvm::StoreInst &Store, llvm::AllocaInst *Shadow,
-                       llvm::Value *PtrLen, llvm::Value *Cond) {
-    // Let addr' be either the original addr accessed by Store or the addr
-    // got after transforming a GEP inst. Let val' be either val or
-    // Load(addr'), according to the incoming conditions. Replace Store(val,
-    // addr) by Store(val', addr').
+                       LenMap &LM, llvm::Value *Cond) {
+    // Let addr' be either the original addr accessed by Store or the
+    // addr got after transforming a GEP inst. Let val' be either val
+    // or Load(addr'), according to the incoming conditions. Replace
+    // Store(val, addr) with Store(val', addr').
     auto StoreVal = Store.getValueOperand();
-    auto StorePtr = Store.getPointerOperand();
-
-    // If the Ptr operand is a GEP instruction, then we need to transform it
-    // in in order to ensure the safety of the memory access. If not, this
-    // load does not need to be transformed.  We fold the incoming
-    // conditions from InV into a single value by applying the operator |
-    // (or) to get the condition.
-    if (auto GEP = llvm::dyn_cast<llvm::GetElementPtrInst>(StorePtr))
-        Store.setOperand(Store.getPointerOperandIndex(),
-                         rewriteGEP(GEP, Shadow, PtrLen, Cond, &Store));
+    auto StorePtr =
+        rewritePtrOp(Store.getPointerOperand(), Shadow, LM, Cond, &Store);
+    Store.setOperand(Store.getPointerOperandIndex(), StorePtr);
 
     auto Load = new llvm::LoadInst(StoreVal->getType(), StorePtr, "", &Store);
     auto SelectVal = ctsel(Cond, StoreVal, Load, &Store);
@@ -469,16 +500,6 @@ llvm::Value *lif::rewriteExitingPredicate(llvm::Instruction &P,
     return PredAssign;
 }
 
-/// Takes a basic block \p BB and check if it is tainted. A basic block is
-/// tainted if its terminator is tainted (and for that its terminator must be
-/// some kind of conditional branch).
-///
-/// \returns bool
-static inline bool isBBlockTainted(llvm::BasicBlock *BB,
-                                   llvm::DenseSet<llvm::Value *> &Tainted) {
-    return Tainted.contains(BB->getTerminator());
-}
-
 /// Takes a set of tainted instructions and return the corresponding tainted
 /// basic blocks.
 ///
@@ -488,13 +509,9 @@ taintedBBlocks(llvm::DenseSet<llvm::Value *> &Tainted) {
     std::set<llvm::BasicBlock *> BBTainted;
 
     for (auto V : Tainted) {
-        // We use tainted arguments to taint instructions, but we don't need
-        // them here.
-        if (llvm::isa<llvm::Argument>(V)) continue;
-
-        auto I = llvm::cast<llvm::Instruction>(V);
-        auto BB = I->getParent();
-        if (isBBlockTainted(BB, Tainted)) BBTainted.insert(BB);
+        // Skip any value that is not a basic block:
+        auto BB = llvm::dyn_cast<llvm::BasicBlock>(V);
+        if (BB && Tainted.contains(BB)) BBTainted.insert(BB);
     }
 
     return std::vector<llvm::BasicBlock *>(BBTainted.begin(), BBTainted.end());
@@ -532,12 +549,8 @@ static std::vector<llvm::BasicBlock *> influenceRegion(llvm::BasicBlock *BB,
 
 /// Takes a FunctionWrapper \p FW containing a function to be isochronified and
 /// applies the transformation rules whenever necessary.
-static void applyRewriteRules(FuncWrapper *FW,
+static void applyRewriteRules(FuncWrapper *FW, LenMap &LM,
                               llvm::FunctionAnalysisManager &FAM) {
-    // Get the length associated with each pointer (either local or argument).
-    auto LM = computeLength(FW->F,
-                            &FAM.getResult<llvm::TargetLibraryAnalysis>(FW->F));
-
     // Initialize the shadow memory as a pointer to an integer. We use
     // MaxPointerSize to ensure absence of overflow.
     auto Shadow = new llvm::AllocaInst(
@@ -563,7 +576,7 @@ static void applyRewriteRules(FuncWrapper *FW,
 
             auto In = FW->IM[BB];
             auto OutPtr = FW->OM[BB].first;
-            bool isBBTainted = isBBlockTainted(BB, FW->Tainted);
+            bool isBBTainted = FW->Tainted.contains(BB);
 
             for (auto &I : *BB) {
                 if (FW->Skip.contains(&I) || In.empty()) continue;
@@ -593,116 +606,18 @@ static void applyRewriteRules(FuncWrapper *FW,
                                                  OutPtr, "", &I);
                 FW->Skip.insert(OutVal);
 
-                if (auto Load = llvm::dyn_cast<llvm::LoadInst>(&I)) {
-                    auto PtrLen = LM[Load->getPointerOperand()];
-                    rewriteLoad(*Load, Shadow, PtrLen, OutVal);
-                } else if (auto Store = llvm::dyn_cast<llvm::StoreInst>(&I)) {
-                    auto PtrLen = LM[Store->getPointerOperand()];
-                    rewriteStore(*Store, Shadow, PtrLen, OutVal);
-                }
+                if (auto Load = llvm::dyn_cast<llvm::LoadInst>(&I))
+                    rewriteLoad(*Load, Shadow, LM, OutVal);
+                else if (auto Store = llvm::dyn_cast<llvm::StoreInst>(&I))
+                    rewriteStore(*Store, Shadow, LM, OutVal);
             }
         }
-    }
-}
-
-static void rewriteTerminator(lif::CCFG::Node &N,
-                              lif::CCFG::EdgeReplacementMap &NewCCFG) {
-    assert(std::holds_alternative<lif::CCFG::BasicBlockNode *>(N) &&
-           "rewriteTerminator should only be applied to BB nodes!");
-
-    auto Succs = std::visit([](auto &&N) { return N->Succs; }, N);
-    auto BB = std::get<lif::CCFG::BasicBlockNode *>(N)->BB;
-    auto T = BB->getTerminator();
-
-    // If the node is tainted, we need to replace the terminator with an
-    // unconditional jump.
-    if (std::visit([](auto &&N) { return N->IsTainted; }, N)) {
-        assert(Succs.size() == 1 && "error: tainted node was not linearized!");
-        auto NewSucc = CCFG::extractBB(Succs[0]);
-        llvm::ReplaceInstWithInst(T, llvm::BranchInst::Create(NewSucc));
-    }
-
-    // Otherwise, we still might need to replace some of BB's edges, due to the
-    // linearization.
-    else {
-        llvm::SmallDenseSet<std::pair<llvm::BasicBlock *, llvm::BasicBlock *>,
-                            4>
-            OldToNew;
-
-        for (auto It : NewCCFG[N]) {
-            auto OldSucc = It.first, NewSucc = It.second;
-            auto OldSuccBB = CCFG::extractBB(OldSucc);
-            auto NewSuccBB = CCFG::extractBB(NewSucc);
-            OldToNew.insert({OldSuccBB, NewSuccBB});
-        }
-
-        // TODO: It would probably be more efficient to check if the block is a
-        // loop exiting. Consider that in upcoming refactorings.
-        if (auto P = std::visit([](auto &&N) { return N->Parent; }, N)) {
-            for (auto It : NewCCFG[P]) {
-                auto OldSucc = It.first, NewSucc = It.second;
-                auto OldSuccBB = CCFG::extractBB(OldSucc);
-                auto NewSuccBB = CCFG::extractBB(NewSucc);
-                OldToNew.insert({OldSuccBB, NewSuccBB});
-            }
-        }
-
-        for (auto [OldSucc, NewSucc] : OldToNew)
-            T->replaceSuccessorWith(OldSucc, NewSucc);
-    }
-}
-
-/// Traverses the linearized CCFG, using its edges to rewrite (i.e. linearized)
-/// the corresponding CFG.
-static void rewriteCFG(lif::CCFG *G, lif::CCFG::EdgeReplacementMap &NewCCFG,
-                       lif::CCFG::LoopNode *L = nullptr) {
-    std::stack<lif::CCFG::Node> S;
-    std::set<lif::CCFG::Node> Visited;
-
-    S.push(*G->Root);
-    while (!S.empty()) {
-        auto M = S.top();
-        S.pop();
-
-        // If it is a LoopNode, open it.
-        if (std::holds_alternative<lif::CCFG::LoopNode *>(M)) {
-            auto L = std::get<lif::CCFG::LoopNode *>(M);
-            rewriteCFG(L->G.get(), NewCCFG, L);
-        }
-        // Else, rewrite its terminator.
-        else {
-            rewriteTerminator(M, NewCCFG);
-        }
-
-        Visited.insert(M);
-        auto Succs = std::visit([](auto &&M) { return M->Succs; }, M);
-
-        for (auto Succ : Succs)
-            if (!Visited.count(Succ)) S.push(Succ);
     }
 }
 
 void lif::rewritePhis(FuncWrapper *FW, llvm::FunctionAnalysisManager &FAM) {
-    // We construct a structure Dphi mapping a phi function to a set of
-    // pairs (Old Block, New Block, Value), where New Block is a new incoming
-    // block (after linearization) for that phi function and Value is a new
-    // incoming value.  Notice that Value might be the same as before
-    // linearization, but might as well be, for instance, a combination of
-    // ctsels merging multiple old incoming values. We then use Dphi as a guide
-    // to rewrite all phi functions.
-    using DPhiInfo = std::tuple<
-        // Old Incoming Block
-        llvm::BasicBlock *,
-        // New incoming block
-        llvm::BasicBlock *,
-        // New incoming value
-        llvm::Value *>;
-
-    llvm::DenseMap<llvm::PHINode *, llvm::SmallVector<DPhiInfo, 4>> DPhi;
-    llvm::DenseMap<llvm::BasicBlock *, llvm::SmallPtrSet<llvm::BasicBlock *, 4>>
-        R;
-
-    // Is 'A' reachable from 'B'? We compute this incrementally.
+    // Is 'A' reachable from 'B'? We compute this incrementally:
+    llvm::DenseMap<llvm::BasicBlock *, llvm::DenseSet<llvm::BasicBlock *>> R;
     auto isReachableFrom = [&R](auto A, auto B) {
         if (A == B) {
             R[A].insert(B);
@@ -735,147 +650,282 @@ void lif::rewritePhis(FuncWrapper *FW, llvm::FunctionAnalysisManager &FAM) {
     };
 
     auto &DT = FAM.getResult<llvm::DominatorTreeAnalysis>(FW->F);
-    llvm::DenseMap<
-        // Phi function added to compute -- possibly undef -- incoming value.
-        llvm::PHINode *,
-        // Insertion point for the phi function.
-        llvm::Instruction *>
-        Unlinked;
-
-    for (auto &BB : FW->F) {
-        unsigned PredSize = llvm::pred_size(&BB);
-        auto InsertionPointNext = BB.getTerminator();
-        auto InsertionPoint = InsertionPointNext->getPrevNode();
-
-        for (auto Succ : llvm::successors(&BB)) {
-            for (auto &Phi : Succ->phis()) {
-                // If (BB, Succ) is a backedge, we  use its original incoming
-                // value, since we assume backedges to be unique and,
-                // consequently, the information flowing from a backedge to a
-                // phi function shall not be altered.
-                if (DT.dominates(Succ, &BB)) {
-                    DPhi[&Phi].push_back(
-                        {&BB, &BB, Phi.getIncomingValueForBlock(&BB)});
-                    continue;
-                }
-
-                for (auto &U : Phi.incoming_values()) {
-                    auto From = Phi.getIncomingBlock(U);
-                    auto Val = U.get();
-
-                    // If (From, Succ) is a backedge, we ignore it, for
-                    // we're certainly visiting a forward edge to a loop header
-                    // and it doesn't make sense to include backedge info.
-                    if (DT.dominates(Succ, From)) continue;
-
-                    // If Val is a constant or From (old incoming block)
-                    // dominates BB (new incoming block), we can just use Val as
-                    // it is.
-                    if (llvm::isa<llvm::Constant>(Val) ||
-                        DT.dominates(From, &BB)) {
-
-                        DPhi[&Phi].push_back({From, &BB, Val});
-                        continue;
-                    }
-
-                    // Otherwise, we create a phi function for Val.
-                    auto ValTy = Val->getType();
-                    auto MaybeUndef =
-                        llvm::PHINode::Create(ValTy, PredSize, "val.phi");
-
-                    for (auto Pred : llvm::predecessors(&BB)) {
-                        MaybeUndef->addIncoming(
-                            isReachableFrom(Pred, From)
-                                ? Val
-                                : llvm::UndefValue::get(ValTy),
-                            Pred);
-                    }
-
-                    DPhi[&Phi].push_back({From, &BB, Val});
-                    Unlinked[MaybeUndef] = InsertionPoint;
-                }
-            }
-        }
-    }
-
-    for (auto [Phi, InsertionPoint] : Unlinked)
-        Phi->insertBefore(InsertionPoint);
-
     // For every loop-exit predicate, we have created a corresponding phi
     // function at the loop header. Since at this point we have already
-    // linearized the CFG, it may be that the predicate doesn't dominate all its
-    // uses anymore (we may have been using it to compute path conditions). In
-    // such cases, we replace its use with its corresponding phi function.
+    // linearized the CFG, it may be that the predicate doesn't dominate all
+    // its uses anymore (we may have been using it to compute path conditions).
+    // In such cases, we replace its use with its corresponding phi function.
     for (auto [LoopExitPred, Phi] : FW->LW->ExitPredPhi) {
         LoopExitPred->replaceUsesWithIf(Phi, [&DT](llvm::Use &U) {
-            auto User = llvm::cast<llvm::Instruction>(U.getUser());
-            return !DT.dominates(U.get(), User);
+            return !DT.dominates(U.get(), U);
         });
     }
 
-    for (auto [Phi, IncList] : DPhi) {
-        auto BB = Phi->getParent();
-        auto NumPred = llvm::pred_size(BB);
-        auto NewPhi = llvm::PHINode::Create(
-            Phi->getType(), NumPred,
-            (Phi->hasName() ? Phi->getName() : "phi") + ".rewritten", Phi);
+    for (auto &BB : FW->F) {
+        auto PredSize = llvm::pred_size(&BB);
+        llvm::SmallPtrSet<llvm::BasicBlock *, 4> Preds(llvm::pred_begin(&BB),
+                                                       llvm::pred_end(&BB));
+        std::vector<llvm::PHINode *> Rewritten;
+        for (auto &Phi : BB.phis()) {
+            // List of incoming basic blocks that hasn't changed
+            // and because of that we can keep the incoming values:
+            llvm::SmallVector<llvm::BasicBlock *, 4> UnchangedFroms;
+            // List of incoming values whose corresponding incoming blocks
+            // are not a predecessor of BB anymore, plus their corresponding
+            // incoming block:
+            llvm::SmallVector<std::pair<llvm::BasicBlock *, llvm::Value *>, 4>
+                UnlinkedIncs;
 
-        size_t Idx = 0;
-        for (; Idx < NumPred; Idx++) {
-            auto [_, FromNew, Val] = IncList[Idx];
-            NewPhi->addIncoming(Val, FromNew);
+            auto NewPhi = llvm::PHINode::Create(
+                Phi.getType(), PredSize,
+                (Phi.hasName() ? Phi.getName() : "phi") + ".rewritten", &Phi);
+
+            size_t Added = 0;
+            for (auto &Inc : Phi.incoming_values()) {
+                auto From = Phi.getIncomingBlock(Inc);
+                auto Val = Inc.get();
+
+                if (Preds.contains(From)) {
+                    NewPhi->addIncoming(Val, From);
+                    UnchangedFroms.push_back(From);
+                    Added++;
+                } else {
+                    UnlinkedIncs.push_back({From, Val});
+                }
+            }
+
+            // Get the intersection between (possibly new) predecessors
+            // and old predecessors of BB:
+            llvm::SmallPtrSet<llvm::BasicBlock *, 4> Workset(Preds);
+            for (auto From : UnchangedFroms) Workset.erase(From);
+
+            assert(Workset.size() == PredSize - Added);
+            // For each new predecessors P', we check if there is any inc.
+            // val that reaches P'. If so, we change the inc. block of this
+            // value to P'; otherwise, we add an undef inc. val for P':
+            for (auto From : Workset) {
+                llvm::Value *FromVal = llvm::UndefValue::get(Phi.getType());
+
+                auto End = UnlinkedIncs.end();
+                for (auto It = UnlinkedIncs.begin(); It != End; ++It) {
+                    auto [OldFrom, Val] = *It;
+                    if (!isReachableFrom(From, OldFrom)) continue;
+
+                    UnlinkedIncs.erase(It);
+                    // If Val is a constant or the new incoming block (From)
+                    // is dominated by the old incoming block (OldFrom), we
+                    // can just use Val as it is.
+                    if (llvm::isa<llvm::Constant>(Val) ||
+                        DT.dominates(OldFrom, From)) {
+
+                        FromVal = Val;
+                        break;
+                    }
+
+                    // Else, we add a phi node to get the value of Val if
+                    // available or undef otherwise:
+                    auto MaybeUndef = llvm::PHINode::Create(
+                        Val->getType(), llvm::pred_size(From), "incval.phi",
+                        From->getFirstNonPHI());
+
+                    for (auto Pred : llvm::predecessors(From)) {
+                        MaybeUndef->addIncoming(
+                            isReachableFrom(Pred, OldFrom)
+                                ? Val
+                                : llvm::UndefValue::get(Val->getType()),
+                            Pred);
+                    }
+
+                    FromVal = MaybeUndef;
+                    break;
+                }
+
+                NewPhi->addIncoming(FromVal, From);
+            }
+
+            Rewritten.push_back(&Phi);
+            llvm::Value *PhiSelect = NewPhi;
+
+            for (auto [OldFrom, Val] : UnlinkedIncs) {
+                auto Cond = FW->IM[&BB][OldFrom];
+
+                llvm::Instruction *InsertionPoint =
+                    llvm::isa<llvm::Instruction>(Cond)
+                        ? llvm::cast<llvm::Instruction>(Cond)->getNextNode()
+                        : BB.getFirstNonPHI();
+
+                PhiSelect = llvm::SelectInst::Create(
+                    Cond, Val, PhiSelect, "phi.fold", InsertionPoint);
+            }
+
+            Phi.replaceAllUsesWith(PhiSelect);
         }
 
-        llvm::Value *PhiFold = NewPhi;
-        auto NumInc = IncList.size();
-
-        for (; Idx < NumInc; Idx++) {
-            auto [FromOld, _, Val] = IncList[Idx];
-            auto Cond = FW->IM[BB][FromOld];
-
-            assert(Cond &&
-                   "error: missing incoming condition for phi rewrite!");
-
-            PhiFold = llvm::SelectInst::Create(Cond, Val, PhiFold, "phi.fold",
-                                               BB->getTerminator());
-        }
-
-        Phi->replaceAllUsesWith(PhiFold);
-        Phi->eraseFromParent();
+        for (auto &Phi : Rewritten) Phi->removeFromParent();
     }
 }
 
-void lif::rewriteFunc(FuncWrapper *FW, llvm::FunctionAnalysisManager &FAM) {
-    auto G = CCFG::make(FW->F, FW->Tainted, FW->LW->LI);
-    auto NewCCFG = G.plinearize(FAM, FW->LW->LI);
+std::vector<llvm::BasicBlock *>
+lif::compactOrder(FuncWrapper *FW, llvm::FunctionAnalysisManager &FAM) {
+    std::vector<llvm::BasicBlock *> BBs;
 
-    // Step 1: apply the transformation rules to the load, stores and definition
-    // of loop-exiting predicates, to ensure the correctness of the produced
-    // code.
-    applyRewriteRules(FW, FAM);
+    // Simply run CCFG's compact order and ignore loop nodes:
+    auto Entry = CCFG::Node::make(&FW->F.getEntryBlock(), FW->LW->LI);
 
-    // Step 2: Partial linearization of the CFG.
-    rewriteCFG(&G, NewCCFG);
-    FAM.invalidate(FW->F, {});
+    for (auto N : CCFG::compactOrder(Entry, FW->LW->LI, FAM)) {
+        if (std::holds_alternative<llvm::BasicBlock *>(N->Val))
+            BBs.push_back(N->asBasicBlock());
+    }
 
-    // Step 3: Since we have (partially) linearized the CFG, we need to adjust
-    // the old phi functions.
+    return BBs;
+}
+
+void lif::plinearize(FuncWrapper *FW, llvm::FunctionAnalysisManager &FAM) {
+    auto CompactOrder = compactOrder(FW, FAM);
+    llvm::DenseMap<llvm::BasicBlock *, size_t> Index;
+
+    for (size_t Idx = 0; Idx < CompactOrder.size(); Idx++)
+        Index[CompactOrder[Idx]] = Idx;
+
+    // Use the index map to get the first bb that appear in compact order:
+    auto min = [&Index](auto &BBs) {
+        llvm::BasicBlock *MinBB = nullptr;
+        for (auto BB : BBs)
+            if (!MinBB || Index[BB] < Index[MinBB]) MinBB = BB;
+        return MinBB;
+    };
+
+    auto isLoopTainted =
+        [FW](llvm::SmallVectorImpl<llvm::BasicBlock *> &ExitingBlocks) {
+            for (auto Ex : ExitingBlocks)
+                if (FW->Tainted.contains(Ex)) return true;
+
+            return false;
+        };
+
+    // Set of deferral edges maintained by Moll & Hack's algorithm.
+    std::set<std::pair<llvm::BasicBlock *, llvm::BasicBlock *>> D;
+    for (auto BB : CompactOrder) {
+        // Set of deferral edges that leave BB:
+        llvm::DenseSet<llvm::BasicBlock *> T;
+        for (auto E : D)
+            if (E.first == BB) T.insert(E.second);
+
+
+        auto IsExitingBB = FW->LW->ExitingBlocks.contains(BB);
+        auto L = FW->LW->LI.getLoopFor(BB);
+
+        llvm::SmallVector<llvm::BasicBlock *, 4> ExitBlocks;
+        llvm::SmallVector<llvm::BasicBlock *, 4> ExitingBlocks;
+        bool IsLoopTainted = false;
+
+        if (L) {
+            L->getExitBlocks(ExitBlocks);
+            L->getExitingBlocks(ExitingBlocks);
+            IsLoopTainted = isLoopTainted(ExitingBlocks);
+        }
+
+        // If M is clean (equivalent as uniform in Moll & Hack's algorithm):
+        if (!FW->Tainted.contains(BB)) {
+            auto End = llvm::succ_end(BB);
+            for (auto It = llvm::succ_begin(BB); It != End; ++It) {
+                llvm::SmallPtrSet<llvm::BasicBlock *, 8> S;
+                auto Succ = *It;
+                auto IsExitSucc = FW->LW->ExitBlocks.contains(Succ);
+
+                // If BB is an exiting block and the loop is tainted
+                // we redirect every exiting edge to the same node:
+                if (IsExitingBB && IsExitSucc && IsLoopTainted) {
+                    S.insert(ExitBlocks.begin(), ExitBlocks.end());
+                } else {
+                    S.insert(Succ);
+                }
+
+                // S = T U {N or Exits}
+                S.insert(T.begin(), T.end());
+                auto Next = min(S);
+
+                // D = D U {(Next, t) | t in (T U {N}) \ {Next}}, i.e.
+                // D = D U {(Next, t) | t in S \ {Next}}.
+                S.erase(Next);
+                for (auto Target : S) D.insert({Next, Target});
+
+                if (Next == Succ) continue;
+
+                // Update successor:
+                auto Br = llvm::cast<llvm::BranchInst>(BB->getTerminator());
+                Br->setSuccessor(It.getSuccessorIndex(), Next);
+            }
+        }
+
+        // If BB is tainted (equivalent as divergent in Moll & Hack's
+        // algorithm):
+        else if (llvm::succ_size(BB) > 0) {
+            llvm::SmallPtrSet<llvm::BasicBlock *, 8> S;
+            // S = {s | (b, s) in E(G)}
+            S.insert(llvm::succ_begin(BB), llvm::succ_end(BB));
+            // T U S
+            S.insert(T.begin(), T.end());
+
+            auto Next = min(S);
+
+            // D = D U {(Next, t) | t in (T U S) \ {Next}}
+            S.erase(Next);
+            for (auto Target : S) D.insert({Next, Target});
+
+            auto Br = llvm::cast<llvm::BranchInst>(BB->getTerminator());
+
+            auto End = llvm::succ_end(BB);
+            for (auto It = llvm::succ_begin(BB); It != End; ++It) {
+                auto Succ = *It;
+                if (Next != Succ)
+                    Br->setSuccessor(It.getSuccessorIndex(), Next);
+            }
+        }
+
+        // D = D \ {(M, N) | (M, N) in D}, where M is fixed as the
+        // current node. Equivalent to C++20 erase_if:
+        for (auto It = D.begin(), End = D.end(); It != End;) {
+            if (It->first == BB)
+                It = D.erase(It);
+            else {
+                ++It;
+            }
+        }
+    }
+}
+
+void lif::rewriteFunc(FuncWrapper *FW, LenMap &LM,
+                      llvm::FunctionAnalysisManager &FAM) {
+    auto PA = llvm::PreservedAnalyses::all();
+    PA.abandon(llvm::DominatorTreeAnalysis::ID());
+    FAM.invalidate(FW->F, PA);
+
+    // Step 1: apply the transformation rules to the load, stores and
+    // definition of loop-exiting predicates, to ensure the correctness
+    // of the produced code:
+    applyRewriteRules(FW, LM, FAM);
+
+    // Step 2: Partial linearization of the CFG:
+    plinearize(FW, FAM);
+    FAM.invalidate(FW->F, PA);
+
+    // Step 3: Since we have (partially) linearized the CFG, we need
+    // to adjust the old phi functions:
     rewritePhis(FW, FAM);
 }
 
 FuncWrapper lif::wrapFunc(llvm::Function &F, config::Func &Config,
-                          bool IsDerived,
-                          llvm::SmallDenseMap<size_t, size_t, 8> &ArgIdx,
-                          llvm::FunctionAnalysisManager &FAM) {
+                          bool IsDerived, llvm::FunctionAnalysisManager &FAM) {
     FuncWrapper FW(F, IsDerived);
 
     // Taint values according to the observable inputs from the config file.
-    FW.Tainted = taint(F, Config, ArgIdx, FAM);
+    FW.Tainted = taint(F, Config, FAM);
 
     // Prepare loops by inserting phi-functions at loop headers for every
     // predicate that branch out the loop.
     auto &LI = FAM.getResult<llvm::LoopAnalysis>(F);
-    auto LW = prepare(LI, F.getContext());
+    auto LW = wrapLoop(LI, F.getContext());
     FW.LW = std::make_unique<LoopWrapper>(LW);
 
     // Bind the outgoing and incoming conditions to all basic blocks.

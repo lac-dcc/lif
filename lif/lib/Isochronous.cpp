@@ -28,6 +28,7 @@
 
 #include <llvm/ADT/SmallPtrSet.h>
 #include <llvm/ADT/SmallVector.h>
+#include <llvm/IR/Function.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IR/PassManager.h>
 
@@ -48,17 +49,24 @@ lif::IsochronousPass::run(llvm::Module &M, llvm::ModuleAnalysisManager &MAM) {
 
     // List of functions that shall be isochronified, plus a bool indicating if
     // they are derived or not (i.e. Fs + Derived).
-    llvm::SmallVector<std::pair<llvm::Function *, bool>, 32> NeedRepair;
+    llvm::DenseMap<llvm::Function *, bool> NeedRepair;
 
-    for (auto F : Derived) NeedRepair.push_back({F, true});
+    for (auto F : Derived) NeedRepair[F] = true;
     for (auto F : FromUser)
-        if (!Derived.count(F)) NeedRepair.push_back({F, false});
+        if (!Derived.count(F)) NeedRepair[F] = false;
 
     auto &FAM =
         MAM.getResult<llvm::FunctionAnalysisManagerModuleProxy>(M).getManager();
 
-    auto Wrapped = prepareModule(NeedRepair, this->Config, M, FAM);
-    for (auto &FW : Wrapped) rewriteFunc(FW.get(), FAM);
+    auto MW = std::make_unique<ModuleWrapper>(wrapModule(M));
+    auto Wrapped = prepareModule(MW.get(), this->Config, NeedRepair, FAM);
 
+    llvm::DenseMap<llvm::Function *, LenMap> FnToLenMap;
+    for (auto &F : M) {
+        if (!F.isDeclaration())
+            FnToLenMap[&F] = inferLength(F, MW->UnwrappedTypes, nullptr);
+    }
+
+    for (auto &FW : Wrapped) rewriteFunc(FW.get(), FnToLenMap[&FW->F], FAM);
     return llvm::PreservedAnalyses::none();
 }

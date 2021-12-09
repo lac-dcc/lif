@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+// along with this program. If not, see <https://www.gnu.org/licenses/>.
 //===----------------------------------------------------------------------===//
 ///
 /// \file
@@ -22,402 +22,334 @@
 
 #include "CCFG.h"
 
-#include <llvm/ADT/DenseMap.h>
+#include <llvm/ADT/DenseSet.h>
+#include <llvm/ADT/SmallPtrSet.h>
+#include <llvm/ADT/SmallVector.h>
 #include <llvm/Analysis/LoopInfo.h>
+#include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/CFG.h>
 #include <llvm/IR/Dominators.h>
-#include <llvm/Support/GraphWriter.h>
+#include <llvm/IR/Instructions.h>
+#include <llvm/IR/PassManager.h>
+#include <llvm/IR/Value.h>
+#include <stack>
+#include <variant>
 
-#include <functional>
-#include <set>
+using namespace lif::CCFG;
 
-using namespace lif;
-
-void lif::CCFG::LoopNode::setContent(llvm::BasicBlock *BB) {
-    auto BBN = BasicBlockNode::make(BB, this);
-    auto N = std::make_unique<Node>(BBN);
-    this->G = std::make_unique<CCFG>(std::move(N));
+Node *lif::CCFG::Node::make(llvm::BasicBlock *BB, const llvm::LoopInfo &LI,
+                            bool IsSubgraph) {
+    auto N = new Node();
+    if (!IsSubgraph && LI.isLoopHeader(BB))
+        N->Val = LI.getLoopFor(BB);
+    else
+        N->Val = BB;
+    return N;
 }
 
-void lif::CCFG::LoopNode::taint(llvm::DenseSet<llvm::Value *> &Tainted,
-                                const llvm::LoopInfo &LI) {
-    auto BBN = std::get<BasicBlockNode *>(*this->G->Root);
-    auto Header = BBN->BB;
+ChildrenTy lif::CCFG::Node::successors(const llvm::LoopInfo &LI,
+                                       bool Invalidate) {
+    if (!Invalidate && !this->Successors.empty()) return this->Successors;
+    this->Successors.clear();
 
-    llvm::SmallVector<llvm::BasicBlock *, 4> ExitingBlocks;
-    LI.getLoopFor(Header)->getExitingBlocks(ExitingBlocks);
+    if (std::holds_alternative<llvm::BasicBlock *>(this->Val)) {
+        auto BB = std::get<llvm::BasicBlock *>(this->Val);
 
-    BBN->IsTainted = Tainted.contains(Header->getTerminator());
-    this->IsTainted = std::any_of(
-        ExitingBlocks.begin(), ExitingBlocks.end(),
-        [&Tainted](auto BB) { return Tainted.contains(BB->getTerminator()); });
-}
+        auto L = LI.getLoopFor(BB);
+        llvm::BasicBlock *Header = nullptr;
+        llvm::SmallVector<llvm::BasicBlock *, 4> Tmp;
 
-void lif::CCFG::BasicBlockNode::setContent(llvm::BasicBlock *BB) {
-    this->BB = BB;
-}
-
-void lif::CCFG::BasicBlockNode::taint(llvm::DenseSet<llvm::Value *> &Tainted) {
-    this->IsTainted = Tainted.contains(this->BB->getTerminator());
-}
-
-lif::CCFG lif::CCFG::make(llvm::Function &F,
-                          llvm::DenseSet<llvm::Value *> &Tainted,
-                          const llvm::LoopInfo &LI) {
-    CCFG G;
-    llvm::DenseMap<llvm::BasicBlock *, Node *> AsNode;
-    llvm::DenseSet<llvm::BasicBlock *> InStack;
-    G.Root = std::unique_ptr<Node>(
-        build(&F.getEntryBlock(), Tainted, AsNode, InStack, LI));
-    return G;
-}
-
-/// Takes a basic block \p BB and converts to a CCFG. Whenever we're
-/// visiting a node that is inside a loop
-///
-/// \returns a CCFG that corresponds to BB.
-CCFG::Node *lif::CCFG::build(llvm::BasicBlock *BB,
-                             llvm::DenseSet<llvm::Value *> &Tainted,
-                             llvm::DenseMap<llvm::BasicBlock *, Node *> &AsNode,
-                             llvm::DenseSet<llvm::BasicBlock *> &InStack,
-                             const llvm::LoopInfo &LI, LoopNode *Parent) {
-    InStack.insert(BB);
-
-    auto M = convert(BB, Tainted, LI, Parent);
-    bool IsLoopNode = std::holds_alternative<LoopNode *>(*M);
-    AsNode[BB] = M;
-
-    auto L = LI.getLoopFor(BB);
-    llvm::SmallVector<llvm::BasicBlock *, 4> ExitBlocksVec;
-    if (L) L->getExitBlocks(ExitBlocksVec);
-
-    llvm::SmallPtrSet<llvm::BasicBlock *, 4> ExitBlocksSet;
-    for (auto ExitBB : ExitBlocksVec) ExitBlocksSet.insert(ExitBB);
-
-    /// Takes nodes \p M and N and creates a new edge between them.
-    auto AddEdgeToNode = [](Node *M, Node *N) {
-        std::visit(
-            [N](auto &&M) {
-                M->SuccsRef.push_back(N);
-                M->Succs.push_back(*N);
-            },
-            *M);
-        std::visit([M](auto &&N) { N->Preds.push_back(*M); }, *N);
-    };
-
-    /// Takes nodes \p M and N and creates a new edge between N and the parent
-    /// of node M.
-    auto AddEdgeToParent = [](Node *M, Node *N) {
-        auto P = std::visit([](auto &&M) { return M->Parent; }, *M);
-        assert(P && "error: trying to add edge to null parent!");
-        P->SuccsRef.push_back(N);
-        P->Succs.push_back(*N);
-        std::visit([P](auto &&N) { N->Preds.push_back(P); }, *N);
-    };
-
-    for (auto Succ : llvm::successors(BB)) {
-        // If Succ is in the recursion stack, then (BB, Succ) is a back edge and
-        // we don't want it.
-        if (InStack.contains(Succ)) continue;
-
-        // We might have already visited Succ.
-        Node *N = nullptr;
-        if (AsNode.count(Succ)) {
-            N = AsNode[Succ];
-        } else {
-            LoopNode *SuccParent = nullptr;
-            // We're moving to inside the loop headed by node M.
-            if (LI.isLoopHeader(BB) && L->contains(Succ))
-                SuccParent = std::get<LoopNode *>(*M);
-            // We're moving to outside the loop that contains node M.
-            else if (Parent && ExitBlocksSet.contains(Succ))
-                SuccParent = Parent->Parent;
-            // We're moving to the same loop depth.
-            else
-                SuccParent = Parent;
-
-            N = build(Succ, Tainted, AsNode, InStack, LI, SuccParent);
+        if (L) {
+            Header = L->getHeader();
+            L->getExitBlocks(Tmp);
         }
 
-        // If the edge (BB, Succ) is an exiting edge, then we set node N as
-        // a child of BB's Parent. Recall that loops are collapsed in a CCFG,
-        // so the exiting edges of a loop in a CFG become edges leaving its
-        // corresponding parent node.
-        if (ExitBlocksSet.contains(Succ)) {
-            // Recall that if BB was converted to a loop node M (i.e. BB is a
-            // loop header), then the parent of the nodes within the loop is
-            // the loop node M (i.e. we must not use its parent).
-            if (IsLoopNode)
-                AddEdgeToNode(M, N);
-            else
-                AddEdgeToParent(M, N);
-        } else if (IsLoopNode) {
-            // If BB is a loop header, then M is the loop node corresponding to
-            // the collapsed loop. But we know that the edge (BB, Succ) isn't
-            // an exiting edge, so now we must consider the underlying CCFG
-            // stored in the loop node.
-            AddEdgeToNode(std::get<LoopNode *>(*M)->G->Root.get(), N);
-        } else {
-            AddEdgeToNode(M, N);
+        llvm::DenseSet<llvm::BasicBlock *> ExitBlocks(Tmp.begin(), Tmp.end());
+
+        for (auto Succ : llvm::successors(BB)) {
+            // If we're inside a loop and succ is an exit block, we
+            // ignore this edge, since this edge will appear at the
+            // loop node:
+            if (L && ExitBlocks.contains(Succ)) continue;
+            // If we're visiting a backedge, we also ignore it:
+            if (L && L->isLoopLatch(BB) && Header == Succ) continue;
+            this->Successors.push_back(Node::make(Succ, LI));
         }
-    }
-
-    InStack.erase(BB);
-    return M;
-}
-
-lif::CCFG::Node *lif::CCFG::convert(llvm::BasicBlock *BB,
-                                    llvm::DenseSet<llvm::Value *> &Tainted,
-                                    const llvm::LoopInfo &LI,
-                                    LoopNode *Parent) {
-    if (LI.isLoopHeader(BB)) {
-        auto LN = LoopNode::make(BB, Parent);
-        LN->taint(Tainted, LI);
-        return new Node(LN);
     } else {
-        auto BBN = BasicBlockNode::make(BB, Parent);
-        BBN->taint(Tainted);
-        return new Node(BBN);
+        auto L = std::get<llvm::Loop *>(this->Val);
+        llvm::SmallVector<llvm::BasicBlock *, 4> ExitBlocks;
+        L->getExitBlocks(ExitBlocks);
+
+        for (auto Ex : ExitBlocks)
+            this->Successors.push_back(Node::make(Ex, LI));
     }
+
+    return this->Successors;
 }
 
-llvm::ReversePostOrderTraversal<lif::CCFG::Node *> lif::CCFG::topological() {
-    return llvm::ReversePostOrderTraversal<Node *>(this->Root.get());
+llvm::BasicBlock *lif::CCFG::Node::asBasicBlock() {
+    if (std::holds_alternative<llvm::Loop *>(this->Val))
+        return std::get<llvm::Loop *>(this->Val)->getHeader();
+    else
+        return std::get<llvm::BasicBlock *>(this->Val);
 }
 
-std::vector<lif::CCFG::Node *>
-lif::CCFG::bindex(llvm::FunctionAnalysisManager &FAM,
-                  const llvm::LoopInfo &LI) {
-    // Get the corresponding function, so we can use LLVM's dominance tree.
-    auto N = std::holds_alternative<LoopNode *>(*this->Root)
-                 ? std::get<LoopNode *>(*this->Root)->G->Root.get()
-                 : this->Root.get();
-    auto F = std::get<BasicBlockNode *>(*N)->BB->getParent();
-    // A BasicBlockNode is the immediate dominator of a node M if its
-    // underlying BasicBlock is the immediate dominator of M. Similarly, a
-    // LoopNode is the immediate dominator of a node M if M's immediate
-    // dominator is part of the corresponding loop.
+std::vector<Node *> lif::CCFG::postOrder(Node *Entry, const llvm::LoopInfo &LI) {
+    std::function<void(Node *, llvm::DenseSet<llvm::BasicBlock *> &,
+                       std::vector<Node *> &)>
+        go = [&LI, &go](auto M, auto &Visited, auto &Nodes) {
+            Visited.insert(M->asBasicBlock());
+
+            for (auto N : M->successors(LI)) {
+                auto BB = N->asBasicBlock();
+                if (!Visited.contains(BB)) go(N, Visited, Nodes);
+            }
+
+            Nodes.push_back(M);
+        };
+
+    llvm::DenseSet<llvm::BasicBlock *> Visited;
+    std::vector<Node *> Nodes;
+
+    go(Entry, Visited, Nodes);
+    return Nodes;
+}
+
+std::vector<Node *>
+lif::CCFG::compactOrder(Node *Entry, const llvm::LoopInfo &LI,
+                        llvm::FunctionAnalysisManager &FAM) {
+    auto F = Entry->asBasicBlock()->getParent();
     auto &DT = FAM.getResult<llvm::DominatorTreeAnalysis>(*F);
-    auto IsIDom = [&DT, &LI](Node *N, Node *M) {
-        bool IsNLoopNode = std::holds_alternative<LoopNode *>(*N);
-        bool IsMLoopNode = std::holds_alternative<LoopNode *>(*M);
 
-        if (IsNLoopNode) N = std::get<LoopNode *>(*N)->G->Root.get();
-        if (IsMLoopNode) M = std::get<LoopNode *>(*M)->G->Root.get();
+    // A loop L is the immediate dominator of a node N (in the CCFG)
+    // if N's immediate dominator (in the CFG) is part of L.
+    auto IsIDom = [&DT, &LI](auto N, auto M) {
+        bool IsLoop = std::holds_alternative<llvm::Loop *>(N->Val);
 
-        auto A = std::get<BasicBlockNode *>(*N)->BB;
-        auto B = std::get<BasicBlockNode *>(*M)->BB;
-        auto IDomB = DT.getNode(B)->getIDom();
+        auto BBN = N->asBasicBlock();
+        auto BBM = M->asBasicBlock();
+        auto IDom = DT.getNode(BBM)->getIDom();
 
-        auto LA = LI.getLoopFor(A);
-        auto LIDomB = LI.getLoopFor(IDomB->getBlock());
+        auto LN = LI.getLoopFor(BBN);
+        auto LIDom = LI.getLoopFor(IDom->getBlock());
 
-        return (IsNLoopNode && LIDomB && LA->contains(LIDomB)) ||
-               (IDomB == DT.getNode(A));
+        return (IsLoop && LIDom && LN->contains(LIDom)) ||
+               (IDom == DT.getNode(BBN));
     };
 
-    auto RPOT = this->topological();
-    auto It = RPOT.begin();
-    auto End = RPOT.end();
+    // Topological sort is just reverse post-order.
+    auto PostOrder = postOrder(Entry, LI);
+    auto It = PostOrder.rbegin();
+    auto End = PostOrder.rend();
 
-    std::function<std::vector<Node *>(
-        llvm::ReversePostOrderTraversal<Node *>::rpo_iterator)>
-        compact = [&IsIDom, &End, &compact](auto It) {
+    std::function<void(std::vector<Node *>::reverse_iterator,
+                       std::vector<Node *> &)>
+        go = [&IsIDom, &LI, &FAM, &End, &go](auto It, auto &Nodes) {
             auto N = *It;
-            std::vector<Node *> BIndex;
-            BIndex.push_back(N);
+            Nodes.push_back(N);
+
+            if (std::holds_alternative<llvm::Loop *>(N->Val)) {
+                auto H = Node::make(N->asBasicBlock(), LI, true);
+                auto LNodes = compactOrder(H, LI, FAM);
+                Nodes.insert(Nodes.end(), LNodes.begin(), LNodes.end());
+            }
 
             ++It;
             while (It != End) {
                 auto M = *It;
-
-                if (IsIDom(N, M)) {
-                    auto SubBIndex = compact(It);
-                    BIndex.insert(std::end(BIndex), std::begin(SubBIndex),
-                                  std::end(SubBIndex));
-                }
-
+                if (IsIDom(N, M)) go(It, Nodes);
                 ++It;
             }
-
-            return BIndex;
         };
 
-    return compact(It);
+    std::vector<Node *> Nodes;
+    go(It, Nodes);
+
+    return Nodes;
 }
 
-lif::CCFG::EdgeReplacementMap
-lif::CCFG::plinearize(llvm::FunctionAnalysisManager &FAM,
-                      const llvm::LoopInfo &LI) {
-    auto BList = this->bindex(FAM, LI);
-    llvm::DenseMap<Node *, size_t> BIndex;
+// EdgeReplacementMapTy
+// lif::CCFG::plinearize(Node *Entry, llvm::DenseSet<llvm::Value *> &Tainted,
+//                       const llvm::LoopInfo &LI,
+//                       llvm::FunctionAnalysisManager &FAM) {
+//     return EdgeReplacementMapTy();
+    // auto Nodes = compactOrder(Entry, LI, FAM);
 
-    for (size_t I = 0; I < BList.size(); I++) BIndex[BList[I]] = I;
+    // llvm::DenseMap<Node *, size_t> Index;
+    // for (size_t Idx = 0; Idx < Nodes.size(); Idx++) Index[Nodes[Idx]] = Idx;
 
-    // Use BIndex to get the first node that appear in the compact order.
-    auto min = [&BIndex](llvm::SmallPtrSet<Node *, 8> Ns) {
-        Node *M = nullptr;
-        for (auto N : Ns)
-            if (!M || BIndex[N] < BIndex[M]) M = N;
-        return M;
+    // // Use the index map to get the first node that appear in compact order:
+    // auto min = [&Index](llvm::SmallPtrSetImpl<Node *> &Ns) {
+    //     Node *M = nullptr;
+    //     for (auto N : Ns)
+    //         if (!M || Index[N] < Index[M]) M = N;
+    //     return M;
+    // };
+
+    // // Set of deferral edges maintained by Moll & Hack's algorithm.
+    // using Edge = std::pair<Node *, Node *>;
+    // std::set<Edge> D;
+
+    // auto printNode = [](Node *N) {
+    //     llvm::BasicBlock *BB = nullptr;
+    //     std::pair<std::string, std::string> Shape;
+
+    //     if (std::holds_alternative<llvm::Loop *>(N->Val)) {
+    //         BB = std::get<llvm::Loop *>(N->Val)->getHeader();
+    //         Shape = {"(", ")"};
+    //     } else {
+    //         BB = std::get<llvm::BasicBlock *>(N->Val);
+    //         Shape = {"[", "]"};
+    //     }
+
+    //     std::string BBName;
+    //     llvm::raw_string_ostream OS(BBName);
+    //     BB->printAsOperand(OS, false);
+
+    //     llvm::errs() << Shape.first << BBName << Shape.second;
+    // };
+
+    // EdgeReplacementMapTy ERM;
+    // for (auto M : Nodes) {
+    //     printNode(M);
+    //     llvm::errs() << "\n";
+    //     auto BBM = M->asBasicBlock();
+    //     auto Terminator = BBM->getTerminator();
+    //     llvm::Loop *L = nullptr;
+
+    //     // If M is a loop, we linearize the content of the loop:
+    //     if (std::holds_alternative<llvm::Loop *>(M->Val)) {
+    //         L = std::get<llvm::Loop *>(M->Val);
+    //         auto H = Node::make(BBM, LI, true);
+    //         for (auto [N, ERMLoop] : plinearize(H, Tainted, LI, FAM))
+    //             ERM[N] = ERMLoop;
+
+    //         // Force edges to update in the CCFG:
+    //         M->successors(LI, true);
+    //     }
+
+    //     // Set of deferral edges that leave M:
+    //     llvm::DenseSet<Node *> T;
+    //     for (auto E : D)
+    //         if (E.first == M) T.insert(E.second);
+
+    //     // If M is clean (equivalent as uniform in Moll & Hack's algorithm):
+    //     if (!isTainted(M, Tainted) && !L) {
+    //         size_t Idx = 0;
+    //         for (auto N : M->successors(LI)) {
+    //             llvm::SmallPtrSet<Node *, 8> S{N};
+    //             // S = T U {N}
+    //             for (auto Target : T) S.insert(Target);
+    //             auto Next = min(S);
+
+    //             if (Next != N) {
+    //                 auto Br = llvm::cast<llvm::BranchInst>(Terminator);
+    //                 auto BBNext = Next->asBasicBlock();
+    //                 Br->setSuccessor(Idx, BBNext);
+    //                 // If edge has changed, update the replacement map:
+    //                 auto BBN = N->asBasicBlock();
+    //                 ERM[BBM][BBN] = BBNext;
+    //             }
+
+    //             // D = D U {(Next, t) | t in (T U {N}) \ {Next}}, i.e.
+    //             // D = D U {(Next, t) | t in S \ {Next}}.
+    //             S.erase(Next);
+    //             for (auto Target : S) D.insert({Next, Target});
+
+    //             Idx++;
+    //         }
+    //     }
+
+    //     // If M is tainted (equivalent as divergent in Moll & Hack's algorithm):
+    //     else {
+    //         llvm::SmallPtrSet<Node *, 8> S;
+    //         // S = {s | (M, N) in E(G)}
+    //         for (auto N : M->successors(LI)) S.insert(N);
+    //         // T U S
+    //         for (auto Target : T) S.insert(Target);
+    //         auto Next = min(S);
+
+    //         // llvm::errs() << "+++++++++++++++\n";
+    //         // for (auto N : S) {
+    //         //     printNode(N);
+    //         //     llvm::errs() << "\n";
+    //         // }
+    //         // printNode(Next);
+    //         // llvm::errs() << "\n";
+    //         // llvm::errs() << "+++++++++++++++\n";
+
+    //         auto Br = llvm::cast<llvm::BranchInst>(Terminator);
+    //         auto BBNext = Next->asBasicBlock();
+    //         size_t Idx = 0;
+    //         for (auto BBN : llvm::successors(BBM)) {
+    //             llvm::errs() << "CHANGING TAINTED: " << *BBM << "\n"
+    //                          << *BBNext << "\n\n";
+    //             // If edge has changed, update the replacement map:
+    //             if (BBNext != BBN) {
+    //                 Br->setSuccessor(Idx, BBNext);
+    //                 ERM[BBM][BBN] = BBNext;
+    //             }
+    //             Idx++;
+    //         }
+
+    //         // D = D U {(Next, t) | t in (T U S) \ {Next}}
+    //         S.erase(Next);
+    //         for (auto Target : S) D.insert({Next, Target});
+    //     }
+
+    //     // D = D \ {(M, N) | (M, N) in D}, where M is fixed as the
+    //     // current node. Equivalent to C++20 erase_if:
+    //     for (auto It = D.begin(), End = D.end(); It != End;) {
+    //         if (It->first == M)
+    //             It = D.erase(It);
+    //         else {
+    //             ++It;
+    //         }
+    //     }
+
+    //     // Force edges to update in the CCFG:
+    //     M->successors(LI, true);
+    // }
+
+    // return ERM;
+// }
+
+void lif::CCFG::prettyPrint(Node *Entry, const llvm::LoopInfo &LI,
+                            llvm::FunctionAnalysisManager &FAM) {
+    auto printNode = [](Node *N) {
+        auto BB = N->asBasicBlock();
+        std::pair<std::string, std::string> Shape;
+
+        if (std::holds_alternative<llvm::Loop *>(N->Val))
+            Shape = {"(", ")"};
+        else
+            Shape = {"[", "]"};
+
+        std::string BBName;
+        llvm::raw_string_ostream OS(BBName);
+        BB->printAsOperand(OS, false);
+
+        llvm::errs() << Shape.first << BBName << Shape.second;
     };
 
-    // Set of deferral edges maintained by Moll & Hack's algorithm.
-    using Edge = std::pair<Node *, Node *>;
-    std::set<Edge> D;
+    auto BB = Entry->asBasicBlock();
+    auto PrintHeader = "===== " + BB->getParent()->getName().str() + " =====";
+    llvm::errs() << PrintHeader << "\n";
 
-    EdgeReplacementMap NewCCFG;
-    for (auto M : BList) {
-        // If M is a LoopNode, we linearize its underlying CCFG, which
-        // corresponds to the loop.
-        if (std::holds_alternative<LoopNode *>(*M)) {
-            auto L = std::get<LoopNode *>(*M);
-            for (auto [Node, EdgeMap] : L->G->plinearize(FAM, LI))
-                NewCCFG[Node] = EdgeMap;
+    for (auto M : compactOrder(Entry, LI, FAM)) {
+        printNode(M);
+        llvm::errs() << ": { ";
+
+        auto Succs = M->successors(LI);
+        for (size_t Idx = 0; Idx < Succs.size(); Idx++) {
+            auto N = Succs[Idx];
+            printNode(N);
+            if (Idx < Succs.size() - 1) llvm::errs() << ", ";
         }
 
-        // Set of deferral edges that leave M.
-        llvm::DenseSet<Node *> T;
-        for (auto E : D)
-            if (E.first == M) T.insert(E.second);
-
-        auto OldSuccs = std::visit([](auto &&M) { return M->SuccsRef; }, *M);
-        llvm::SmallVector<Node *, 4> NewSuccs;
-
-        // If M is clean (equivalent as uniform in Moll & Hack's algorithm).
-        if (!std::visit([](auto &&M) { return M->IsTainted; }, *M)) {
-            for (auto N : OldSuccs) {
-                llvm::SmallPtrSet<Node *, 8> S({N});
-                // S = T U {N}
-                S.insert(T.begin(), T.end());
-                auto Next = min(S);
-                NewSuccs.push_back(Next);
-                if (Next != N) NewCCFG[*M][*N] = *Next;
-                // D = D U {(Next, t) | t in (T U {N}) \ {Next}}, i.e.
-                // D = D U {(Next, t) | t in S \ {Next}}.
-                S.erase(Next);
-                for (auto TargetPtr : S) D.insert({Next, TargetPtr});
-            }
-        }
-
-        // If M is tainted (equivalent as divergent in Moll & Hack's
-        // algorithm).
-        else {
-            llvm::SmallPtrSet<Node *, 8> S;
-            // S = {s | (M, N) in E(G)}
-            S.insert(OldSuccs.begin(), OldSuccs.end());
-            // T U S
-            S.insert(T.begin(), T.end());
-            auto Next = min(S);
-            NewSuccs.push_back(Next);
-            for (auto N : OldSuccs)
-                if (Next != N) NewCCFG[*M][*N] = *Next;
-            // D = D U {(Next, t) | t in (T U S) \ {Next}}
-            S.erase(Next);
-            for (auto Target : S) D.insert({Next, Target});
-        }
-
-        // D = D \ {(M, N) | (M, N) in D}, where M is fixed as the curerent
-        // Equivalent to C++20 erase_if.
-        for (auto It = D.begin(), End = D.end(); It != End;) {
-            if (It->first == M)
-                It = D.erase(It);
-            else
-                ++It;
-        }
-
-        // Update edges.
-        std::visit(
-            [&OldSuccs, &NewSuccs](auto &&M) {
-                llvm::SmallPtrSet<Node *, 4> Diff(OldSuccs.begin(),
-                                                  OldSuccs.end());
-                for (auto N : NewSuccs) Diff.erase(N);
-                // TODO: is there any more efficient way to do this?
-                for (auto N : Diff) {
-                    // Node M is no longer a predecessor of N.
-                    std::visit(
-                        [M](auto &&N) {
-                            std::set<Node> NewPreds;
-                            for (auto Pred : N->Preds) NewPreds.insert(Pred);
-                            NewPreds.erase(M);
-                            N->Preds.assign(NewPreds.begin(), NewPreds.end());
-                        },
-                        *N);
-                }
-
-                M->SuccsRef.clear();
-                M->Succs.clear();
-                for (auto Succ : NewSuccs) {
-                    M->SuccsRef.push_back(Succ);
-                    M->Succs.push_back(*Succ);
-                }
-            },
-            *M);
+        llvm::errs() << " }\n";
     }
 
-    return NewCCFG;
-}
-
-static std::string dotFileName(lif::CCFG::Node &N) {
-    // First, get the name of the function. We check for the parent node (if
-    // any) to verify if we're inside a loop.
-    auto Parent = std::visit([](auto &&N) { return N->Parent; }, N);
-
-    auto BB = std::get<lif::CCFG::BasicBlockNode *>(N)->BB;
-    auto FuncName = BB->getParent()->getName().str();
-
-    // Define the suffix of the filename.
-    std::string SuffixFileName = "";
-    if (Parent) {
-        auto LRoot = *Parent->G->Root;
-        auto LHeader = std::get<lif::CCFG::BasicBlockNode *>(LRoot)->BB;
-        std::string HeaderName;
-        if (LHeader->hasName()) {
-            HeaderName = BB->getName().str();
-        } else {
-            llvm::raw_string_ostream OS(HeaderName);
-            LHeader->printAsOperand(OS, false);
-        }
-
-        HeaderName.erase(std::remove(HeaderName.begin(), HeaderName.end(), '%'),
-                         HeaderName.end());
-
-        SuffixFileName = "[loop@" + HeaderName + "]";
-    }
-
-    return FuncName + SuffixFileName + ".dot";
-}
-
-static void writeDotFile(lif::CCFG::Node &N) {
-    auto Filename = dotFileName(N);
-    llvm::errs() << "Writing " << Filename << " ...";
-
-    std::error_code EC;
-    llvm::raw_fd_ostream File(Filename, EC, llvm::sys::fs::OF_Text);
-
-    if (!EC)
-        llvm::WriteGraph(File, &N);
-    else
-        llvm::errs() << " error opening dot file for writing!";
-
+    for (size_t Idx = 0; Idx < PrintHeader.size(); Idx++) llvm::errs() << "=";
     llvm::errs() << "\n";
-}
-
-void lif::CCFG::writeGraph() {
-    std::stack<lif::CCFG::Node> S;
-    S.push(*this->Root);
-
-    std::set<lif::CCFG::Node> Visited;
-    while (!S.empty()) {
-        auto N = S.top();
-        Visited.insert(N);
-        S.pop();
-
-        writeDotFile(N);
-
-        auto Succs = std::visit([](auto &&N) { return N->Succs; }, N);
-        for (auto M : Succs) {
-            if (!Visited.count(M) && std::holds_alternative<LoopNode *>(M))
-                S.push(*std::get<LoopNode *>(M)->G->Root);
-        }
-    }
 }

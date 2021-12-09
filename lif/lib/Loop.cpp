@@ -33,7 +33,7 @@
 
 using namespace lif;
 
-LoopWrapper lif::prepare(llvm::LoopInfo &LI, llvm::LLVMContext &Ctx) {
+LoopWrapper lif::wrapLoop(llvm::LoopInfo &LI, llvm::LLVMContext &Ctx) {
     LoopWrapper LW(LI);
 
     auto BoolTy = llvm::IntegerType::getInt1Ty(Ctx);

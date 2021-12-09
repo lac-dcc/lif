@@ -107,8 +107,8 @@ void runIsochronousPass(llvm::Module &M, llvm::StringRef ConfigBuffer) {
     llvm::StandardInstrumentations SI(/* DebugLogging */ false);
     SI.registerCallbacks(PIC);
 
-    llvm::PassBuilder PB(/* DebugLogging */ false, nullptr,
-                         llvm::PipelineTuningOptions(), llvm::None, &PIC);
+    llvm::PassBuilder PB(
+        nullptr, llvm::PipelineTuningOptions(), llvm::None, &PIC);
 
     llvm::LoopAnalysisManager LAM;
     llvm::FunctionAnalysisManager FAM;
