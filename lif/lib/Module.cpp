@@ -532,10 +532,5 @@ lif::prepareModule(ModuleWrapper *MW, config::Module &Config,
     // replaced by new ones in phase 1.
     fixCallSites(MW, FnToWrapped);
 
-    // ==================== Phase 4 ====================
-    /// Try to infer length of pointers, filling the length fields of the
-    /// modified arguments (wrapped/extended types).
-    /// TODO
-
     return Wrapped;
 }

@@ -1,0 +1,5 @@
+des_setkey:
+  key: 0
+
+des_ecb_crypt:
+  from: 1

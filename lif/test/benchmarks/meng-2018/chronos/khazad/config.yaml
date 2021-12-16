@@ -1,0 +1,5 @@
+khazad_setkey:
+  in_key: 0
+
+khazad_crypt:
+  plaintext: 2

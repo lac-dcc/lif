@@ -28,7 +28,9 @@
 
 #include <llvm/ADT/DenseMap.h>
 #include <llvm/ADT/SmallVector.h>
+#include <llvm/Analysis/LoopInfo.h>
 #include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Dominators.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Instruction.h>
 #include <llvm/IR/Instructions.h>
@@ -70,7 +72,7 @@ using OutMap =
                    std::pair<
                        // Outgoing condition of general basic blocks
                        llvm::AllocaInst *,
-                       // Freezed outgoing condition of a tainted exiting block
+                       // Frozen outgoing condition of a tainted exiting block
                        llvm::AllocaInst *>>;
 
 /// Allocates a variable for each basic block in \p F, representing their
@@ -92,7 +94,8 @@ OutMap allocOut(llvm::Function &F, const LoopWrapper &LW,
 /// \returns a list of incoming conditions plus a list the Load/Stores created.
 std::pair<Incoming, llvm::SmallVector<llvm::Instruction *, 4>>
 bindIn(llvm::BasicBlock &BB, llvm::Instruction *Before, const OutMap OM,
-       const LoopWrapper &LW, const llvm::DenseSet<llvm::Value *> &Tainted);
+       const LoopWrapper &LW, const llvm::DenseSet<llvm::Value *> &Tainted,
+       const llvm::DominatorTree &DT);
 
 /// Computes the outgoing condition for \p BB.
 ///
@@ -101,9 +104,9 @@ bindIn(llvm::BasicBlock &BB, llvm::Instruction *Before, const OutMap OM,
 ///
 /// \returns the Store created to set the value of the outgoing condition. In
 /// addition, if its a loop exiting block, returns the load+store corresponding
-/// to the freezed outgoing condition.
+/// to the frozen outgoing condition.
 std::tuple<llvm::StoreInst *, llvm::LoadInst *, llvm::StoreInst *>
-bindOut(llvm::BasicBlock &BB, llvm::Value *OutPtr, llvm::Value *FreezedPtr,
+bindOut(llvm::BasicBlock &BB, llvm::Value *OutPtr, llvm::Value *FrozenPtr,
         llvm::Instruction *Before, const Incoming &In, const LoopWrapper &LW);
 
 /// Traverses the basic blocks of \p F, binding the proper incoming and outgoing
@@ -116,7 +119,8 @@ bindOut(llvm::BasicBlock &BB, llvm::Value *OutPtr, llvm::Value *FreezedPtr,
 /// list of the Load/Stores generated.
 std::pair<InMap, llvm::SmallVector<llvm::Instruction *, 32>>
 bindAll(llvm::Function &F, const OutMap OM, const LoopWrapper &LW,
-        const llvm::DenseSet<llvm::Value *> &Tainted);
+        const llvm::DenseSet<llvm::Value *> &Tainted,
+        const llvm::DominatorTree &DT);
 
 /// Fold a list of incoming conds. (\p In) into a single value by
 /// applying the | (or) operator.

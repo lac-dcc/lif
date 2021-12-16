@@ -1,0 +1,5 @@
+do_twofish_setkey:
+  key: 0
+
+do_twofish_encrypt:
+  in: 2

@@ -1,0 +1,5 @@
+anubis_setkey:
+  in_key: 0
+
+anubis_crypt:
+  plaintext: 2

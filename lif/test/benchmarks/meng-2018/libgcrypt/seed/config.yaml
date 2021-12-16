@@ -1,0 +1,5 @@
+do_setkey:
+  key: 0
+
+do_encrypt:
+  inbuf: 2

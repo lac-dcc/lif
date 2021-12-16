@@ -75,7 +75,7 @@ lif::inferLength(llvm::Function &F,
     auto Zero64 = llvm::ConstantInt::get(Int64Ty, 0);
     auto One32 = llvm::ConstantInt::get(Int32Ty, 1);
 
-    auto InsertionPoint = F.getEntryBlock().getTerminator();
+    auto InsertionPoint = F.getEntryBlock().getFirstNonPHI();
     auto getArrayLength = [Int64Ty](llvm::ArrayType *ArrTy) {
         size_t Len = 1;
         while (ArrTy) {
@@ -204,16 +204,34 @@ lif::inferLength(llvm::Function &F,
         LM[&Arg] = makeSharedLength(Length);
     }
 
-    auto setGEPLength = [&LM](llvm::GEPOperator *GEP) {
-        auto PtrOp = GEP->getPointerOperand();
-        auto SrcTy = GEP->getSourceElementType();
+    auto setGEPLength = [&LM, &inferFromType](llvm::GEPOperator *GEP) {
+        auto ResultElTy = GEP->getResultElementType();
+        if (ResultElTy->isStructTy()) {
+            LM[GEP] = inferFromType(ResultElTy);
+            return;
+        }
 
-        if (!SrcTy->isStructTy()) {
+        auto PtrOp = GEP->getPointerOperand();
+        auto SrcElTy = GEP->getSourceElementType();
+
+        if (SrcElTy->isArrayTy()) {
+            if (GEP->getNumIndices() == 1) {
+                LM[GEP] = LM[PtrOp];
+                return;
+            }
+
+            assert(GEP->getNumIndices() == 2);
+            LM[GEP] = inferFromType(SrcElTy->getArrayElementType());
+            return;
+        }
+
+        if (!SrcElTy->isStructTy()) {
+            assert(GEP->getNumIndices() == 1);
             LM[GEP] = LM[PtrOp];
             return;
         }
 
-        assert(GEP->getNumIndices() >= 2);
+        assert(GEP->getNumIndices() == 2);
         auto FieldIdx = llvm::cast<llvm::ConstantInt>(GEP->getOperand(2));
         auto Length = LM[PtrOp]->at(FieldIdx->getZExtValue());
 
@@ -289,6 +307,9 @@ lif::inferLength(llvm::Function &F,
 
             auto ValOp = Store->getValueOperand();
             if (!ValOp->getType()->isPointerTy()) continue;
+
+            if (auto GEP = llvm::dyn_cast<llvm::GEPOperator>(ValOp))
+                setGEPLength(GEP);
 
             auto PtrOp = Store->getPointerOperand();
             while (auto BitCast = llvm::dyn_cast<llvm::BitCastInst>(PtrOp))
@@ -619,11 +640,7 @@ void lif::rewritePhis(FuncWrapper *FW, llvm::FunctionAnalysisManager &FAM) {
     // Is 'A' reachable from 'B'? We compute this incrementally:
     llvm::DenseMap<llvm::BasicBlock *, llvm::DenseSet<llvm::BasicBlock *>> R;
     auto isReachableFrom = [&R](auto A, auto B) {
-        if (A == B) {
-            R[A].insert(B);
-            return true;
-        }
-
+        if (A == B) R[A].insert(B);
         if (R[A].contains(B)) return true;
 
         std::stack<llvm::BasicBlock *> S;
@@ -639,7 +656,9 @@ void lif::rewritePhis(FuncWrapper *FW, llvm::FunctionAnalysisManager &FAM) {
             S.pop();
             Visited.insert(C);
 
+            if (A == C) R[A].insert(B);
             if (R[A].contains(C)) return true;
+
             for (auto D : llvm::successors(C)) {
                 R[D].insert(C);
                 if (!Visited.contains(D)) S.push(D);
@@ -746,14 +765,12 @@ void lif::rewritePhis(FuncWrapper *FW, llvm::FunctionAnalysisManager &FAM) {
             Rewritten.push_back(&Phi);
             llvm::Value *PhiSelect = NewPhi;
 
+            auto InsertionPoint = BB.getFirstNonPHI();
+            for (size_t Idx = 0; Idx < FW->IM[&BB].size(); Idx++)
+                InsertionPoint = InsertionPoint->getNextNode();
+
             for (auto [OldFrom, Val] : UnlinkedIncs) {
                 auto Cond = FW->IM[&BB][OldFrom];
-
-                llvm::Instruction *InsertionPoint =
-                    llvm::isa<llvm::Instruction>(Cond)
-                        ? llvm::cast<llvm::Instruction>(Cond)->getNextNode()
-                        : BB.getFirstNonPHI();
-
                 PhiSelect = llvm::SelectInst::Create(
                     Cond, Val, PhiSelect, "phi.fold", InsertionPoint);
             }
@@ -874,13 +891,7 @@ void lif::plinearize(FuncWrapper *FW, llvm::FunctionAnalysisManager &FAM) {
             for (auto Target : S) D.insert({Next, Target});
 
             auto Br = llvm::cast<llvm::BranchInst>(BB->getTerminator());
-
-            auto End = llvm::succ_end(BB);
-            for (auto It = llvm::succ_begin(BB); It != End; ++It) {
-                auto Succ = *It;
-                if (Next != Succ)
-                    Br->setSuccessor(It.getSuccessorIndex(), Next);
-            }
+            llvm::ReplaceInstWithInst(Br, llvm::BranchInst::Create(Next, Br));
         }
 
         // D = D \ {(M, N) | (M, N) in D}, where M is fixed as the
@@ -930,7 +941,8 @@ FuncWrapper lif::wrapFunc(llvm::Function &F, config::Func &Config,
 
     // Bind the outgoing and incoming conditions to all basic blocks.
     FW.OM = allocOut(F, LW, FW.Tainted);
-    auto [IM, MemInsts] = bindAll(F, FW.OM, LW, FW.Tainted);
+    auto &DT = FAM.getResult<llvm::DominatorTreeAnalysis>(F);
+    auto [IM, MemInsts] = bindAll(F, FW.OM, LW, FW.Tainted, DT);
     FW.IM = IM;
 
     // Fill Skip with the Load/Stores generated after binding the conditions

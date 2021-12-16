@@ -43,8 +43,8 @@ struct LoopWrapper {
     /// and the associated phi-functions inserted at the loop header.
     llvm::DenseMap<llvm::Value *, llvm::PHINode *> ExitPredPhi;
     /// A map between a loop header and its corresponding phi function that says
-    /// whether the backedge was taken or not.
-    llvm::DenseMap<llvm::BasicBlock *, llvm::PHINode *> BackedgeTakenPhi;
+    /// whether the forward edge was taken or not.
+    llvm::DenseMap<llvm::BasicBlock *, llvm::PHINode *> FwedgeTakenPhi;
     /// A set containing all the loop latches, so it is easy to check if a
     /// basic block is one of them.
     llvm::SmallPtrSet<llvm::BasicBlock *, 32> Latches;

@@ -1,0 +1,5 @@
+des_ekey:
+  k: 0
+
+des_encrypt:
+  src: 2

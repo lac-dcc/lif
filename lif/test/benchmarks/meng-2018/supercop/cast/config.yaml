@@ -1,0 +1,5 @@
+CAST_set_key:
+  data: 0
+
+CAST_encrypt:
+  data: 1

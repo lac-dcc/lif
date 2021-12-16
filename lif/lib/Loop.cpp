@@ -61,12 +61,11 @@ LoopWrapper lif::wrapLoop(llvm::LoopInfo &LI, llvm::LLVMContext &Ctx) {
         // backedge was taken or not.
         auto NumHeaderPred = llvm::pred_size(Header);
         auto InsertionPoint = Header->getFirstNonPHI();
-        LW.BackedgeTakenPhi[Header] = llvm::PHINode::Create(
-            BoolTy, NumHeaderPred, "backedge.taken", InsertionPoint);
+        LW.FwedgeTakenPhi[Header] = llvm::PHINode::Create(
+            BoolTy, NumHeaderPred, "fwedge.taken", InsertionPoint);
 
-        for (auto Pred : llvm::predecessors(Header))
-            LW.BackedgeTakenPhi[Header]->addIncoming(
-                Pred == Latch ? True : False, Pred);
+        LW.FwedgeTakenPhi[Header]->addIncoming(True, L->getLoopPreheader());
+        LW.FwedgeTakenPhi[Header]->addIncoming(False, Latch);
 
         llvm::SmallVector<llvm::BasicBlock *, 4> ExitingBlocks;
         L->getExitingBlocks(ExitingBlocks);
@@ -79,7 +78,7 @@ LoopWrapper lif::wrapLoop(llvm::LoopInfo &LI, llvm::LLVMContext &Ctx) {
             auto C = T->getCondition();
             auto Phi = llvm::PHINode::Create(
                 BoolTy, NumHeaderPred,
-                (T->hasName() ? T->getName() : "exitpred") + ".freezed",
+                (T->hasName() ? T->getName() : "exitpred") + ".frozen",
                 InsertionPoint);
 
             for (auto Pred : llvm::predecessors(Header)) {

@@ -1,0 +1,5 @@
+cast6_setkey:
+  in_key: 1
+
+cast6_encrypt:
+  inbuf: 2
