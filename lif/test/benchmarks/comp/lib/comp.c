@@ -1,7 +1,7 @@
 #include "../include/comp.h"
 
-int comp(S *a, int32_t *b, int n) {
+int comp(int *a, int *b, int n) {
     for (int i = 0; i < n; i++)
-        if (a->p[i] != b[i]) return 0;
+        if (a[i] != b[i]) return 0;
     return 1;
 }

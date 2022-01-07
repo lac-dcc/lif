@@ -68,7 +68,7 @@
       (let [{:keys [exit err]} (lif base-llvm config lif-llvm)]
         (when (not= exit 0) (println (with-color :red exit " => " err))))
       ;; Optimize both the original code and lif's output:
-      (dorun (pmap #(opt %1 %2 "-O3")
+      (dorun (pmap #(opt %1 %2 "-O3" "-unroll-count=0")
                    [base-llvm lif-llvm]
                    [opt-llvm lifopt-llvm]))
       ;; Emit the corresponding asm files:
@@ -85,7 +85,7 @@
   (let [orig (str (fs/path benchmark "bin" "opt"))
         lif (str (fs/path benchmark "bin" "lifopt"))
         ;; Get the list of input files as file:
-        inputs (map fs/file (files-by-ext (fs/path benchmark "input") "txt"))
+        inputs (map fs/file (files-by-ext (fs/path benchmark "input") "bin"))
         ;; Run the original program onto the inputs:
         result-orig (mapv #(->> % (shell/sh orig :in) :out str/trim) inputs)
         ;; Run the lif version onto the inputs:
@@ -95,6 +95,7 @@
         ;; OK or Fail message:
         result-msg (if result-matched? [:green "[pass]"] [:red "[fail]"])]
     (println "Veryifing" benchmark "..." (apply with-color result-msg))))
+
 
 (let [;; Parse the arguments from command line:
       {:keys [action options exit-msg ok?]} (parse-cli *command-line-args*)
