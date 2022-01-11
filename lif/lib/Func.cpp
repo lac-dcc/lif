@@ -256,8 +256,23 @@ lif::inferLength(llvm::Function &F,
 
             if (auto Call = getCallToMalloc(&I)) {
                 auto MallocArg = Call->getArgOperand(0);
-                auto Mul = llvm::cast<llvm::MulOperator>(MallocArg);
-                auto Length = Mul->getOperand(0);
+                llvm::Value *Length = nullptr;
+
+                if (auto Const = llvm::dyn_cast<llvm::ConstantInt>(MallocArg)) {
+                    // Get the next instruction, which should be a bitcast.
+                    // We need the size in bytes of the type being allocated.
+                    auto BitCast = llvm::cast<llvm::BitCastInst>(
+                        Call->getNextNonDebugInstruction());
+                    auto TypeSize = BitCast->getType()
+                                        ->getPointerElementType()
+                                        ->getScalarSizeInBits();
+                    Length = llvm::ConstantInt::get(
+                        Int64Ty, Const->getZExtValue() / (TypeSize / 8));
+                } else {
+                    auto Mul = llvm::cast<llvm::MulOperator>(MallocArg);
+                    Length = Mul->getOperand(0);
+                }
+
                 LM[Call] = makeSharedLength({Length});
                 continue;
             }
