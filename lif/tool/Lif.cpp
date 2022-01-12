@@ -67,14 +67,14 @@ static llvm::cl::OptionCategory LifCategory("isochronous pass options");
 static llvm::cl::opt<std::string>
     InputModule(llvm::cl::Positional,
                 llvm::cl::desc("<Module to be transformed>"),
-                llvm::cl::value_desc("bitcode file path"), llvm::cl::init(""),
+                llvm::cl::value_desc("Bitcode filepath"), llvm::cl::init(""),
                 llvm::cl::Required, llvm::cl::cat(LifCategory));
 
 /// An optional argument that specifies the name of the output file.
 static llvm::cl::opt<std::string>
     OutputModule("o", llvm::cl::Positional,
-                 llvm::cl::desc("<Module after the transformations>"),
-                 llvm::cl::value_desc("bitcode file path"),
+                 llvm::cl::desc("<Transformed module>"),
+                 llvm::cl::value_desc("Bitcode filepath"),
                  llvm::cl::init("out.ll"), llvm::cl::cat(LifCategory));
 
 enum OptLevel { O0, O1, O2, O3 };
@@ -88,17 +88,18 @@ const std::map<OptLevel, llvm::PassBuilder::OptimizationLevel> OptM = {
 /// original & transformed functions.
 static llvm::cl::opt<OptLevel> Opt(
     llvm::cl::desc("Optimization level"),
-    llvm::cl::values(clEnumVal(O0, "Optimization level 0 (same as opt -O0)"),
-                     clEnumVal(O1, "Optimization level 1 (same as opt -O1)"),
-                     clEnumVal(O2, "Optimization level 2 (same as opt -O2)"),
-                     clEnumVal(O3, "Optimization level 3 (same as opt -O3)")),
+    llvm::cl::values(clEnumVal(O0, "Optimization level 0"),
+                     clEnumVal(O1, "Optimization level 1"),
+                     clEnumVal(O2, "Optimization level 2"),
+                     clEnumVal(O3, "Optimization level 3")),
     llvm::cl::init(O0), llvm::cl::cat(LifCategory));
 
 /// A required arguments that specifies the path to the module configuration
 /// file.
 static llvm::cl::opt<std::string>
-    ConfigYAML("config", llvm::cl::desc("<Configuration File>"),
-               llvm::cl::value_desc("yaml file path"), llvm::cl::init(""),
+    ConfigYAML("config",
+               llvm::cl::desc("<Configuration file with tainted inputs>"),
+               llvm::cl::value_desc("Config filepath"), llvm::cl::init(""),
                llvm::cl::Required, llvm::cl::cat(LifCategory));
 
 /// Applies the Isochronous pass to the selected functions.

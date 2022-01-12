@@ -371,37 +371,104 @@ static llvm::DenseSet<llvm::Value *> taint(llvm::Function &F,
 
     llvm::DenseSet<llvm::Value *> Tainted;
     auto &DT = FAM.getResult<llvm::DominatorTreeAnalysis>(F);
+    auto &PDT = FAM.getResult<llvm::PostDominatorTreeAnalysis>(F);
 
     std::stack<llvm::BasicBlock *> S;
     S.push(DT.getRoot());
 
+    // Stack of tainted blocks for control dependence.
+    std::stack<llvm::BasicBlock *> T;
+
+    // Mark nodes as "done" so we can identify whether all children
+    // of a node were visited already.
+    llvm::SmallDenseSet<llvm::BasicBlock *> Done;
+
     // We initially mark the arguments from Config as tainted:
     for (auto [_, Idx] : Config) Tainted.insert(F.getArg(Idx));
 
-   // Check if an operand is tainted or not.
+    // Check if an operand is tainted or not.
     auto IsOpTainted = [&Tainted](auto &Op) {
         return Tainted.contains(llvm::cast<llvm::Value>(Op));
     };
 
     // Traverse the dominance tree in a DFS-like manner, propagating taint
-    // information. We only consider data dependence.
+    // information. We consider data dependence for every variable and
+    // control dependence only for phis & loads:
     while (!S.empty()) {
         auto BB = S.top();
-        S.pop();
+
+        // If we're visiting the immediate post dominator of the node A in T,
+        // then every child of A that remains to be visited is a post dominator
+        // of A, so we can pop A from T. Notice, however, that we still need to
+        // check control dependence for phi functions.
+        bool CheckPhiCDep = false;
+        if (!T.empty() && PDT.getNode(T.top())->getIDom()->getBlock() == BB) {
+            CheckPhiCDep = true;
+            T.pop();
+        }
+
+        // If every child of BB in the DT is already done, then we've
+        // visited BB already, so we can just pop it:
+        auto ChildBegin = DT.getNode(BB)->children().begin();
+        auto ChildEnd = DT.getNode(BB)->children().end();
+
+        bool BlockDone = true;
+        for (auto It = ChildBegin; It != ChildEnd; ++It)
+            BlockDone &= Done.contains((*It)->getBlock());
+
+        if (BlockDone) {
+            Done.insert(BB);
+            S.pop();
+            // If BB in T, we can just pop it, for we've already visited
+            // every block control dependent on BB.
+            if (!T.empty() && T.top() == BB) T.pop();
+            continue;
+        }
 
         // We first mark values as tainted, as an intermediate step:
         for (auto &V : *BB) {
-            if (std::any_of(V.op_begin(), V.op_end(), IsOpTainted))
-                Tainted.insert(&V);
+            bool DDep = std::any_of(V.op_begin(), V.op_end(), IsOpTainted);
+            bool LoadCDep = llvm::isa<llvm::LoadInst>(V) && !T.empty();
+            bool PhiCDep = llvm::isa<llvm::PHINode>(V) && CheckPhiCDep;
+            if (DDep || LoadCDep || PhiCDep) Tainted.insert(&V);
         }
 
-        // Then, if the terminator of the basic block was marked as tainted,
-        // we mark the entire basic block as tainted -- this is what we
-        // really need:
-        if (Tainted.contains(BB->getTerminator())) Tainted.insert(BB);
+        // Then, if the terminator of the basic block was marked as
+        // tainted, we mark the entire basic block as tainted -- this
+        // is what we really need:
+        if (Tainted.contains(BB->getTerminator())) {
+            Tainted.insert(BB);
+            T.push(BB);
+        }
+
+        // If we've reached a leaf, we're done with this node.
+        if (ChildBegin == ChildEnd) {
+            Done.insert(BB);
+            continue;
+        }
 
         // Push every child of BB in the dominance tree to the stack S.
-        for (auto Child : DT.getNode(BB)->children()) S.push(Child->getBlock());
+        // We first push those that are not post dominators of BB and
+        // then the those that are post dominators of BB.
+        llvm::BasicBlock *ChildIPDom = nullptr;
+        for (auto It = ChildBegin; It != ChildEnd; ++It) {
+            auto Child = *It;
+            auto ChildBB = Child->getBlock();
+
+            if (!PDT.dominates(ChildBB, BB)) {
+                S.push(ChildBB);
+                continue;
+            }
+
+            if (PDT.getNode(BB)->getIDom() == Child) ChildIPDom = ChildBB;
+        }
+
+        if (ChildIPDom) S.push(ChildIPDom);
+        for (auto It = ChildBegin; It != ChildEnd; ++It) {
+            auto ChildBB = (*It)->getBlock();
+            if (PDT.dominates(ChildBB, BB) && ChildBB != ChildIPDom)
+                S.push(ChildBB);
+        }
     }
 
     return Tainted;
