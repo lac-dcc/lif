@@ -36,7 +36,7 @@ representation of the program, that is, on its [control-flow graph
 (CFG)](https://en.wikipedia.org/wiki/Control-flow_graph). The CFG of
 our example can be seen in part (b) of the figure below.
 
-![The proposed transformation](https://anonymous.4open.science/r/sc-ccs22/images/PosterPicture.png)
+![The proposed transformation](images/PosterPicture.png)
 
 We then use partial control-flow linearization, plus a lot of
 rewriting rules, to convert the program seen in part (b) above into
@@ -74,7 +74,7 @@ many properties. In particular, the transformation preserves dominance
 and post-dominance relations. Below we show a example of partially
 linearized program:
 
-![Example of linearization](https://anonymous.4open.science/r/sc-ccs22/images/PCFL.png)
+![Example of linearization](images/PCFL.png)
 
 Yet, notice that our transformation differs a bit from the original
 description of partial control-flow linearization. In particular, we
