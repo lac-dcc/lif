@@ -90,9 +90,9 @@ changes in the original algorithm.
 in the [Low-Level Virtual Machine (LLVM)](https://llvm.org/). It
 was implemented with LLVM 13.0 and currently works as a tool based
 on the LLVM API. For more details on how to build and use it, 
-check the README inside folder `lif`.
+check the README inside folder [lif/](lif/).
 
 * `lif/test`: This folder contains the test framework that we used
 to verify the correctness of the prototype. All the benchmarks that
-we used can be found at `lif/test/benchmarks`. For more details, check
-the README in `lif/test`.
+we used can be found at [lif/test/benchmarks/](lif/test/benchmarks/). For more details, check
+the README in [lif/test/](lif/test/).
