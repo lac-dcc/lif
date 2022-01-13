@@ -4,8 +4,8 @@
 # Side-Channel Elimination via Partial Control-Flow Linearization
 
 This repository contains the implementation of the techniques
-described in the paper "Partial Control-Flow Linearization Eliminates
-Time-Based Side Channels", which is currently under review. [Partial
+described in the paper "Side-Channel Elimination via Partial Control-Flow Linearization", 
+which is currently under review. [Partial
 control-flow linearization](https://dl.acm.org/doi/abs/10.1145/3296979.3192413)
 is a code transformation technique invented by folks from
 [Saarland-U's Compiler Design Lab](http://www.cdl.uni-saarland.de/) to
