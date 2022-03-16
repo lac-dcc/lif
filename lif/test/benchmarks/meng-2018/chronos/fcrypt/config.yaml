@@ -1,5 +1,0 @@
-fcrypt_setkey:
-  key: 0
-
-fcrypt_encrypt:
-  src: 2

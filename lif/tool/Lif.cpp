@@ -30,8 +30,9 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "CCFG.h"
-#include "Isochronous.h"
+#include "Analysis/Taint.h"
+#include "Transform/CCFG.h"
+#include "Transform/Isochronous.h"
 
 #include <llvm/ADT/DenseSet.h>
 #include <llvm/ADT/PostOrderIterator.h>
@@ -55,6 +56,7 @@
 #include <llvm/Transforms/Scalar/NewGVN.h>
 #include <llvm/Transforms/Scalar/SCCP.h>
 #include <llvm/Transforms/Scalar/SimplifyCFG.h>
+#include <llvm/Transforms/Utils/LCSSA.h>
 #include <llvm/Transforms/Utils/LoopSimplify.h>
 #include <llvm/Transforms/Utils/LowerSwitch.h>
 #include <llvm/Transforms/Utils/Mem2Reg.h>
@@ -94,16 +96,8 @@ static llvm::cl::opt<OptLevel> Opt(
                      clEnumVal(O3, "Optimization level 3")),
     llvm::cl::init(O0), llvm::cl::cat(LifCategory));
 
-/// A required arguments that specifies the path to the module configuration
-/// file.
-static llvm::cl::opt<std::string>
-    ConfigYAML("config",
-               llvm::cl::desc("<Configuration file with tainted inputs>"),
-               llvm::cl::value_desc("Config filepath"), llvm::cl::init(""),
-               llvm::cl::Required, llvm::cl::cat(LifCategory));
-
 /// Applies the Isochronous pass to the selected functions.
-void runIsochronousPass(llvm::Module &M, llvm::StringRef ConfigBuffer) {
+void runIsochronousPass(llvm::Module &M) {
     llvm::PassInstrumentationCallbacks PIC;
     llvm::StandardInstrumentations SI(/* DebugLogging */ false);
     SI.registerCallbacks(PIC);
@@ -115,6 +109,8 @@ void runIsochronousPass(llvm::Module &M, llvm::StringRef ConfigBuffer) {
     llvm::FunctionAnalysisManager FAM;
     llvm::CGSCCAnalysisManager CGAM;
     llvm::ModuleAnalysisManager MAM;
+
+    MAM.registerPass([&] { return lif::analysis::TaintAnalysis(); });
 
     PB.registerLoopAnalyses(LAM);
     PB.registerFunctionAnalyses(FAM);
@@ -129,13 +125,12 @@ void runIsochronousPass(llvm::Module &M, llvm::StringRef ConfigBuffer) {
     FPM.addPass(llvm::LowerSwitchPass());
     FPM.addPass(llvm::UnifyFunctionExitNodesPass());
     FPM.addPass(llvm::LoopSimplifyPass());
+    FPM.addPass(llvm::LCSSAPass());
     MPM.addPass(llvm::createModuleToFunctionPassAdaptor(std::move(FPM)));
 
-    lif::config::Module Config;
-    llvm::yaml::Input InputYAML(ConfigBuffer);
-    InputYAML >> Config;
-    MPM.addPass(lif::IsochronousPass(Config));
+    MPM.addPass(lif::transform::IsochronousPass());
 
+    // TODO: is there any optimization that may break side-channel defenses?
     if (Opt != O0) {
         MPM.addPass(PB.buildPerModuleDefaultPipeline(OptM.find(Opt)->second));
     }
@@ -169,15 +164,8 @@ int main(int Argc, char **Argv) {
         return 1;
     }
 
-    auto ConfigMB = llvm::MemoryBuffer::getFile(ConfigYAML);
-    if (!ConfigMB) {
-        llvm::errs() << "Error reading config (yaml) file: " << ConfigYAML
-                     << "\n";
-        Err.print(Argv[0], llvm::errs());
-        return 1;
-    }
 
-    runIsochronousPass(*M, (*ConfigMB)->getBuffer());
+    runIsochronousPass(*M);
 
     std::error_code EC;
     llvm::raw_fd_ostream OS(OutputModule.getValue(), EC);

@@ -1,5 +1,0 @@
-RunEncryptionKeySchedule:
-  key: 0
-
-PRESENT_encrypt:
-  block: 1

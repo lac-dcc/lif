@@ -10,17 +10,17 @@
 (defn emit-bin
   "Takes an assembly file and produces an executable from it, with
   debug information. It also takes a name for the output file."
-  [src out]
-  (shell/sh "clang" "-g" src "-o" out "-no-pie"))
+  [src out & args]
+  (apply shell/sh "clang" "-g" src "-o" out "-no-pie" args))
 
 (defn emit-llvm
   "Takes a source file and compiles it to its LLVM IR representation.
   The only optimization applied is --mem2reg, to promote memory to register.
   It also takes a name for the output file."
-  [src out]
+  [src out & args]
   (let [{:keys [exit] :as clang-result}
-        (shell/sh "clang" src "-o" out "-emit-llvm" "-S" "-Xclang"
-                  "-disable-O0-optnone" "-fno-discard-value-names")]
+        (apply shell/sh "clang" src "-o" out "-emit-llvm" "-S" "-Xclang"
+               "-disable-O0-optnone" "-fno-discard-value-names" args)]
     (if (zero? exit)
       (shell/sh "opt" "-S" "-mem2reg" out "-o" out)
       clang-result)))
@@ -38,11 +38,10 @@
   (apply shell/sh "opt" src "-o" out "-S" args))
 
 (defn lif
-  "Takes a LLVM IR file, the path to its corresponding config.yaml file,
-  a name for the output file, and an (optional) optimization level
-  (integer 0, 1, 2, or 3)."
-  ([src config out opt]
+  "Takes a LLVM IR file, a name for the output file, and an (optional)
+  optimization level (integer 0, 1, 2, or 3)."
+  ([src out opt]
    (let [;; TODO: change for a non-hardcoded path.
          lif-bin "/home/luigi/workspace/lif/lif/bin/lif"]
-     (shell/sh lif-bin src (str "--config=" config) (str "-O" opt) "-o" out)))
-  ([src config out] (lif src config out 0)))
+     (shell/sh lif-bin src (str "-O" opt) "-o" out)))
+  ([src out] (lif src out 0)))

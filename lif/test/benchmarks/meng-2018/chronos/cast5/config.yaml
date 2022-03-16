@@ -1,5 +1,0 @@
-cast5_setkey:
-  key: 0
-
-cast5_encrypt:
-  inbuf: 2

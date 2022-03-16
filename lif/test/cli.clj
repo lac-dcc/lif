@@ -11,15 +11,13 @@
    ;; 2. An include folder with the header files;
    ;; 3. A main folder with a main.c file;
    ;; 4. An input folder with n > 0 input files; and
-   ;; 5. A config.yaml file with the info required by Lif (tainted arguments).
    ["-b" "--benchmarks PATH"
     "Path to a specific benchmark (allow multiple entries).
      \t\t\t     The benchmark folder must contain:
      \t\t\t       1. A lib folder with the source code;
      \t\t\t       2. An include folder with the headers;
      \t\t\t       3. A main folder with a main.c file;
-     \t\t\t       4. An input folder with n > 0 files; and
-     \t\t\t       5. A config.yaml file with the tainted arguments."
+     \t\t\t       4. An input folder with n > 0 files; and"
     :multi true
     :update-fn conj
     :default []]

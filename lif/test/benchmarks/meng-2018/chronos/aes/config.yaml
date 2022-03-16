@@ -1,5 +1,0 @@
-crypto_aes_expand_key:
-  in_key: 0
-
-aes_encrypt:
-  in: 2

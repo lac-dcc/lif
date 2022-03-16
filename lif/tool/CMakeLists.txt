@@ -1,11 +1,11 @@
 add_executable(lif
     Lif.cpp
-    ../lib/CCFG.cpp
-    ../lib/Cond.cpp
-    ../lib/Loop.cpp
-    ../lib/Func.cpp
-    ../lib/Module.cpp
-    ../lib/Isochronous.cpp
+    ../lib/Transform/CCFG.cpp
+    ../lib/Transform/Cond.cpp
+    ../lib/Transform/Loop.cpp
+    ../lib/Transform/Func.cpp
+    ../lib/Transform/Isochronous.cpp
+    ../lib/Analysis/Taint.cpp
     )
 
 target_link_libraries(lif LLVMPasses)
