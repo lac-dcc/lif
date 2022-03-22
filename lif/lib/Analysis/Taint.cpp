@@ -120,9 +120,10 @@ void lif::analysis::taintLocal(llvm::CallInst *Call, TaintedInfo &T) {
     if (!Annotation.equals_insensitive("secret")) return;
 
     // The first argument corresponds to a pointer to the annotated variable
-    // (bitcast instruction).
-    auto Annotated = llvm::cast<llvm::BitCastInst>(
-        Call->getArgOperand(0))->getOperand(0);
+    // (might be a bitcast instruction).
+    auto Annotated = Call->getArgOperand(0);
+    if (llvm::isa<llvm::BitCastInst>(Annotated))
+        Annotated = llvm::cast<llvm::BitCastInst>(Annotated)->getOperand(0);
 
     T.insert(Annotated);
 }
@@ -349,21 +350,21 @@ void lif::analysis::taintFunction(
             DFS.push(A);
 
             // Traverse the children of A a first time, looking to A's ipdom:
-            auto IPDomA = PDT.getNode(BlockA)->getIDom();
+            auto BlockIPDomA = PDT.getNode(BlockA)->getIDom()->getBlock();
             bool IPDomAFound = false;
             for (auto Child : A->children()) {
-                if (IPDomA == Child) {
+                if (BlockIPDomA == Child->getBlock()) {
                     IPDomAFound = true;
                     break;
                 }
             }
 
             // Push the ipdom of A first so it is the last child to be visited:
-            if (IPDomAFound) DFS.push(IPDomA);
+            if (IPDomAFound) DFS.push(DT.getNode(BlockIPDomA));
 
             // Push the remaining children:
             for (auto Child : A->children())
-                if (Child != IPDomA) DFS.push(Child);
+                if (Child->getBlock() != BlockIPDomA) DFS.push(Child);
         }
 
         // We rerun the taint analysis if we find an store that taints an

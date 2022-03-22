@@ -4,6 +4,7 @@
  */
 
 #include "../include/ssl3.h"
+#include "../../../include/taint.h"
 
 #include <assert.h>
 #include <string.h>

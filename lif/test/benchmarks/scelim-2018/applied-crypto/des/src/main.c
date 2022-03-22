@@ -1,21 +1,14 @@
 #include "../include/des.h"
+#include "../../../../include/taint.h"
 
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <valgrind/memcheck.h>
-
-#ifdef ENABLE_CTGRIND
-#define ct_secret(addr, len) VALGRIND_MAKE_MEM_UNDEFINED(addr, len)
-#else
-#define ct_secret(addr, len)
-#endif
-
 int main() {
-    __attribute__((annotate("secret"))) uint8_t in_key[32];
-    __attribute__((annotate("secret"))) unsigned char in[8];
+    secret uint8_t in_key[32];
+    secret unsigned char in[8];
 
     /* for (int i = 0; i < 32; i++) { */
     /*     int x; */

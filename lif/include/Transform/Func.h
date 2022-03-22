@@ -69,7 +69,11 @@ struct FuncWrapper {
 /// update in-place.
 using ValueLength = std::shared_ptr<std::vector<llvm::Value *>>;
 
-inline ValueLength makeSharedLength(const std::vector<llvm::Value *> &Length) {
+inline ValueLength copyLength(ValueLength &Length) {
+    return ValueLength(Length);
+}
+
+inline ValueLength makeLength(const std::vector<llvm::Value *> &Length) {
     return std::make_shared<std::vector<llvm::Value *>>(Length);
 }
 

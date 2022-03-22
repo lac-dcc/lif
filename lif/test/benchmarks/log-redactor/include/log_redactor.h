@@ -1,0 +1,17 @@
+#ifndef LOG_REDACTOR_H
+#define LOG_REDACTOR_H
+
+/**
+ * This function will do the following:
+ * - For each array A in log[] that contains pattern, it will replace every
+ *   number in A by a star symbol (*).
+ * L0: The number of arrays in log
+ * L1: The size of each array withing log
+ * P: The size of the pattern.
+ */
+void log_redactor(
+    char *log[], char *pattern, const unsigned L0,
+    const int L1, const int P
+);
+
+#endif // LOG_REDACTOR_H

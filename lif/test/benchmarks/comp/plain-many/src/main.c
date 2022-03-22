@@ -1,33 +1,22 @@
 #include "../include/comp.h"
+#include "../../../include/taint.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <valgrind/memcheck.h>
-
-#ifdef ENABLE_CTGRIND
-#define ct_secret(addr, len) VALGRIND_MAKE_MEM_UNDEFINED(addr, len)
-#else
-#define ct_secret(addr, len)
-#endif
-
 int main() {
-    int n;
-    int m;
+    int n, m;
 
-    /* scanf("%d", &n); */
-    /* scanf("%d", &m); */
-
-    // Read like Constantine:
+    // For constantine, we will need another way to define n and m;
+    // otherwise, "read" will taint them.
     read(0, &n, sizeof(int));
     read(0, &m, sizeof(int));
 
     int **a = (int **) malloc(5 * sizeof(int *));
     for (int i = 0; i < 5; i++) a[i] = (int *) malloc(n * sizeof(int));
 
-    __attribute__((annotate("secret"))) int *b =
-        (int *) malloc(n * sizeof(int));
+    secret int *b = (int *) malloc(n * sizeof(int));
 
     /* for (int i = 0; i < n ; i++) scanf("%d", &a[i]); */
     /* for (int i = 0; i < n ; i++) scanf("%d", &b[i]); */

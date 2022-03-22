@@ -1,15 +1,8 @@
 #include "../include/3way.h"
+#include "../../../../include/taint.h"
 
 #include <stdio.h>
 #include <unistd.h>
-
-#include <valgrind/memcheck.h>
-
-#ifdef ENABLE_CTGRIND
-#define ct_secret(addr, len) VALGRIND_MAKE_MEM_UNDEFINED(addr, len)
-#else
-#define ct_secret(addr, len)
-#endif
 
 /* void printvec(const char *chrs, int32_t *d) { */
 /*     printf("%20s : %08x %08x %08x \n", chrs, d[2], d[1], d[0]); */
@@ -47,8 +40,8 @@ int main() {
     // Main from Constantine:
     twy_ctx gc;
 
-    __attribute__((annotate("secret"))) int32_t in_key[3];
-    __attribute__((annotate("secret"))) int32_t in[3];
+    secret int32_t in_key[3];
+    secret int32_t in[3];
 
     read(0, in_key, sizeof(int32_t) * 3);
     read(0, in, sizeof(int32_t) * 3);

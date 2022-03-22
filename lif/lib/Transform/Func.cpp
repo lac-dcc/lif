@@ -106,7 +106,7 @@ LenMap lif::transform::inferLength(
         } else {
             Length.push_back(Zero64);
         }
-        return makeSharedLength(Length);
+        return makeLength(Length);
     };
 
     for (auto &G : F.getParent()->globals())
@@ -120,7 +120,7 @@ LenMap lif::transform::inferLength(
                 ArgTy->isPointerTy() ? ArgTy->getPointerElementType() : ArgTy);
 
             if (!StructTy) {
-                LM[&Arg] = makeSharedLength({Zero64});
+                LM[&Arg] = makeLength({Zero64});
                 continue;
             }
 
@@ -131,7 +131,7 @@ LenMap lif::transform::inferLength(
                 Length.push_back(ArrTy ? getArrayLength(ArrTy) : Zero64);
             }
 
-            LM[&Arg] = makeSharedLength(Length);
+            LM[&Arg] = makeLength(Length);
             continue;
         }
 
@@ -153,8 +153,8 @@ LenMap lif::transform::inferLength(
                 InsertionPoint);
             auto LoadLen = new llvm::LoadInst(
                 Int64Ty, LenPtr, FieldName + "0.length", InsertionPoint);
-            LM[&Arg] = makeSharedLength({LoadLen, Zero64});
-            LM[LenPtr] = makeSharedLength({Zero64});
+            LM[&Arg] = makeLength({LoadLen, Zero64});
+            LM[LenPtr] = makeLength({Zero64});
             continue;
         }
 
@@ -189,8 +189,8 @@ LenMap lif::transform::inferLength(
                 Int64Ty, LenPtr, FieldName + std::to_string(Idx) + ".length",
                 InsertionPoint);
 
-            LM[LoadField] = LM[FieldPtr] = makeSharedLength({LoadLen, Zero64});
-            LM[LenPtr] = makeSharedLength({LoadLen});
+            LM[LoadField] = LM[FieldPtr] = makeLength({LoadLen, Zero64});
+            LM[LenPtr] = makeLength({LoadLen});
 
             // We push LoadLen as the length of the wrapped field for
             // convenience. It is actually the length of the pointer
@@ -198,7 +198,7 @@ LenMap lif::transform::inferLength(
             Length.push_back(LoadLen);
         }
 
-        LM[&Arg] = makeSharedLength(Length);
+        LM[&Arg] = makeLength(Length);
     }
 
     auto setGEPLength = [&LM, &inferFromType](llvm::GEPOperator *GEP) {
@@ -232,7 +232,7 @@ LenMap lif::transform::inferLength(
         auto FieldIdx = llvm::cast<llvm::ConstantInt>(GEP->getOperand(2));
         auto Length = LM[PtrOp]->at(FieldIdx->getZExtValue());
 
-        LM[GEP] = makeSharedLength({Length});
+        LM[GEP] = makeLength({Length});
     };
 
     // TODO: How to handle phis?
@@ -247,7 +247,7 @@ LenMap lif::transform::inferLength(
             auto Call = llvm::dyn_cast<llvm::CallInst>(&I);
             if (Call && llvm::isAllocationFn(Call, TLI, true)) {
                 auto Length = llvm::getMallocArraySize(Call, DL, TLI);
-                LM[Call] = makeSharedLength({Length});
+                LM[Call] = makeLength({Length});
                 continue;
             }
 
@@ -257,7 +257,7 @@ LenMap lif::transform::inferLength(
                 if (auto GEP = llvm::dyn_cast<llvm::GEPOperator>(PtrOp))
                     setGEPLength(GEP);
 
-                LM[BitCast] = LM[PtrOp];
+                LM[BitCast] = copyLength(LM[PtrOp]);
                 continue;
             }
 
@@ -267,7 +267,7 @@ LenMap lif::transform::inferLength(
                 if (auto GEP = llvm::dyn_cast<llvm::GEPOperator>(PtrOp))
                     setGEPLength(GEP);
 
-                LM[Load] = LM[PtrOp];
+                LM[Load] = copyLength(LM[PtrOp]);
                 continue;
             }
 
@@ -281,13 +281,13 @@ LenMap lif::transform::inferLength(
                 auto Ty = Phi->getType();
                 if (!Ty->isPointerTy()) continue;
                 if (!Ty->isStructTy()) {
-                    LM[Phi] = makeSharedLength({Zero64});
+                    LM[Phi] = makeLength({Zero64});
                     continue;
                 }
 
                 auto NumFields = Ty->getStructNumElements();
                 std::vector<llvm::Value *> Length(NumFields, Zero64);
-                LM[Phi] = makeSharedLength(Length);
+                LM[Phi] = makeLength(Length);
                 continue;
             }
 
@@ -308,8 +308,9 @@ LenMap lif::transform::inferLength(
             if (!GEP || !GEP->getSourceElementType()->isStructTy()) continue;
 
             assert(GEP->getNumIndices() >= 2);
-            auto FieldIdx = llvm::cast<llvm::ConstantInt>(GEP->getOperand(2))
-                                ->getZExtValue();
+            uint64_t FieldIdx = llvm::cast<llvm::ConstantInt>(
+                GEP->getOperand(2)
+            )->getZExtValue();
 
             auto GEPPtrOp = GEP->getPointerOperand();
             LM[GEPPtrOp]->at(FieldIdx) = LM[

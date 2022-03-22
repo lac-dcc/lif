@@ -107,10 +107,10 @@
                    [(with-ctgrind lif-llvm) (with-ctgrind lifopt-llvm)]
                    [(with-ctgrind lif-asm) (with-ctgrind lifopt-asm)]))
       ;; Produce the corresponding binaries:
-      (dorun (pmap #(emit-bin %1 %2 "-lssl" "-lcrypto")
+      (dorun (pmap #(emit-bin %1 %2 "-lssl" "-lcrypto" "-lm")
                    [base-asm opt-asm lif-asm lifopt-asm]
                    [base-bin opt-bin lif-bin lifopt-bin]))
-      (dorun (pmap #(emit-bin %1 %2 "-lssl" "-lcrypto")
+      (dorun (pmap #(emit-bin %1 %2 "-lssl" "-lcrypto" "-lm")
                    [(with-ctgrind base-asm) (with-ctgrind opt-asm)
                     (with-ctgrind lif-asm) (with-ctgrind lifopt-asm)]
                    [(with-ctgrind base-bin) (with-ctgrind opt-bin)

@@ -3,8 +3,6 @@
 
 #include <stdint.h>
 
-#define secret __attribute__((annotate("secret")))
-
 typedef struct uint8ptr_wrapped_ty {
     uint8_t *buf;
     uint64_t len;

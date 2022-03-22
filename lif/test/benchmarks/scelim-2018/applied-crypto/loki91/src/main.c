@@ -1,20 +1,13 @@
 #include "../include/loki91.h"
+#include "../../../../include/taint.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <valgrind/memcheck.h>
-
-#ifdef ENABLE_CTGRIND
-#define ct_secret(addr, len) VALGRIND_MAKE_MEM_UNDEFINED(addr, len)
-#else
-#define ct_secret(addr, len)
-#endif
-
 int main(void) {
-    __attribute__((annotate("secret"))) unsigned char in[8];
-    __attribute__((annotate("secret"))) unsigned char in_key[24];
+    secret unsigned char in[8];
+    secret unsigned char in_key[24];
 
     /* for (int i = 0; i < 8; i++) { */
     /*     int x; */
