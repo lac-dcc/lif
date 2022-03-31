@@ -59,10 +59,11 @@ void taintGlobals(llvm::Module &M, TaintedInfo &T);
 void taintLocal(llvm::CallInst *Call, TaintedInfo &T);
 
 /// Traverses the dominance tree of a function \p F, marking variables
-/// as tainted. For that, we rely on the backward slice of a variable,
-/// which is composed by its data and (for phi nodes and loads)
-/// control dependencies. For stores (e.g. to an array position) we
-/// overapproximate by tainting the entire structure.
+/// as tainted. We run a sort of "look-ahead" analysis, making use of
+/// the information that a branch will be linearized to decide whether
+/// to propagate control dependence or not: control dependence is only
+/// propagated to values that escape the influence region of a tainted
+/// predicate (through a phi function or store + load).
 void taintFunction(
     llvm::Function &F, TaintedInfo &T, llvm::FunctionAnalysisManager &FAM);
 }; // namespace lif::analysis

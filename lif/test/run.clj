@@ -68,7 +68,10 @@
     (shell/with-sh-dir benchmark
       (println "Compiling" benchmark "...")
       ;; Emit the llvm intermediate files:
-      (dorun (pmap #(emit-llvm %1 %2 "-fno-discard-value-names")
+      (dorun (pmap #(emit-llvm
+                     %1 %2
+                     ;; "-DENABLE_MEASURE_TIME"
+                     "-fno-discard-value-names")
                    (concat libs srcs) (concat libs-llvm srcs-llvm)))
       ;; Emit code with ctgrind enabled:
       (dorun (pmap #(emit-llvm

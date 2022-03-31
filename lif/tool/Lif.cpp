@@ -121,11 +121,11 @@ void runIsochronousPass(llvm::Module &M) {
     llvm::ModulePassManager MPM;
     llvm::FunctionPassManager FPM;
 
-    FPM.addPass(llvm::PromotePass());
     FPM.addPass(llvm::LowerSwitchPass());
     FPM.addPass(llvm::UnifyFunctionExitNodesPass());
     FPM.addPass(llvm::LoopSimplifyPass());
     FPM.addPass(llvm::LCSSAPass());
+    FPM.addPass(llvm::PromotePass());
     MPM.addPass(llvm::createModuleToFunctionPassAdaptor(std::move(FPM)));
 
     MPM.addPass(lif::transform::IsochronousPass());

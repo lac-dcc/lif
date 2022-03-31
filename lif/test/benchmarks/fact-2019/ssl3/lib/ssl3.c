@@ -13,17 +13,12 @@
 #include <stdio.h>
 
 #include <openssl/sha.h>
-#include <openssl/md5.h>
 
 #define l2n(l, c)                                                              \
     (*((c)++) = (unsigned char)(((l) >> 24L) & 0xff),                          \
      *((c)++) = (unsigned char)(((l) >> 16L) & 0xff),                          \
      *((c)++) = (unsigned char)(((l) >> 8L) & 0xff),                           \
      *((c)++) = (unsigned char)(((l)) & 0xff))
-
-static void md_transform(SHA_CTX *ctx, const unsigned char *block) {
-    SHA1_Transform(ctx, block);
-}
 
 static void md_final_raw(SHA_CTX *ctx, unsigned char *md_out)
 {
@@ -96,17 +91,17 @@ int32_t __ssl3_cbc_digest_record(
         }
 
         uint64_t overhang = header->len - md_block_size;
-        md_transform((SHA_CTX *) md_state_buf, header_buf);
+        SHA1_Transform((SHA_CTX *) md_state_buf, header_buf);
         memcpy(first_block, &header_buf[md_block_size], overhang);
 
         uint64_t cpylen = md_block_size - overhang;;
         memcpy(&first_block[overhang], data_buf, cpylen);
-        md_transform((SHA_CTX *) md_state_buf, first_block);
+        SHA1_Transform((SHA_CTX *) md_state_buf, first_block);
 
         uint64_t loopbound = k / md_block_size - 1;
         for (uint64_t i = 1; i < loopbound; i++) {
             uint64_t idx = md_block_size * i - overhang;
-            md_transform((SHA_CTX *) md_state_buf, &data_buf[idx]);
+            SHA1_Transform((SHA_CTX *) md_state_buf, &data_buf[idx]);
         }
     }
 
@@ -146,7 +141,7 @@ int32_t __ssl3_cbc_digest_record(
             block[j] = b;
         }
 
-        md_transform((SHA_CTX *) md_state_buf, block);
+        SHA1_Transform((SHA_CTX *) md_state_buf, block);
         md_final_raw((SHA_CTX *) md_state_buf, block);
 
         for (uint64_t j = 0; j < md_size; j++) {

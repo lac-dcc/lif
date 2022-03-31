@@ -1,9 +1,14 @@
 #include "../include/log_redactor.h"
+#include "../../include/taint.h"
 
+#ifdef ENABLE_UNROLL
+void log_redactor(char *log[], char *pattern) {
+#else
 void log_redactor(
     char *log[], char *pattern, const unsigned L0,
     const int L1, const int P
 ) {
+#endif
     for (unsigned i = 0; i < L0; i++) {
         unsigned found = 0;
 
@@ -16,8 +21,8 @@ void log_redactor(
             if (k == P) found = 1;
         }
 
+        if (!found) continue;
         for (unsigned j = 0; j < L1; j++) {
-            if (!found) continue;
             if (log[i][j] >= '0' && log[i][j] <= '9')
                 log[i][j] = '*';
         }

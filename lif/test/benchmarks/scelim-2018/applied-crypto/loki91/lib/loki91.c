@@ -193,16 +193,8 @@ short exp8(short base,     /* base of exponentiation */
     short accum = base; /* superincreasing sequence of base */
     short result = 1;   /* result of exponentiation */
 
-    // ==================================================================
-    // || LIF CHANGES: Arg. "base" is tainted and thus the predicate   ||
-    // || base == 0 is tainted as well. There is a control dependence  ||
-    // || from base == 0 to exponent, which implies that all exits     ||
-    // || of the while loop will be tainted and the loop will become   ||
-    // || infinite. Thus, we modify this function so we can still use  ||
-    // || this benchmark in our experiments.                           ||
-    // ==================================================================
-    /* if (base == 0)      /\* if zero base specified then *\/ */
-    /*     return (0);     /\* the result is "0" if base = 0 *\/ */
+    if (base == 0)      /* if zero base specified then */
+        return (0);     /* the result is "0" if base = 0 */
 
     while (exponent != 0)
     {         /* repeat while exponent non-zero */
@@ -211,7 +203,8 @@ short exp8(short base,     /* base of exponentiation */
         exponent >>= 1;                   /* shift exponent to next digit */
         accum = mult8(accum, accum, gen); /* & square */
     }
-    return base == 0 ? 0 : result;
+
+    return (result);
 }
 
 /* return S-box value for input i */

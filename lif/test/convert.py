@@ -9,7 +9,7 @@ binary = []
 with open(input_file, 'r') as f:
     for line in f:
         binary += list(map(
-            lambda x: struct.pack('B', int(x, 0)),
+            lambda x: struct.pack('i', int(x, 0)),
             line.strip().split()
             # lambda x: struct.pack('c', x.encode('ascii')),
             # line.strip()

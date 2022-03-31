@@ -301,24 +301,12 @@ void fmonty(
 // information.
 // -----------------------------------------------------------------------------
 void swap_conditional(uint64_t *a, uint64_t *b, uint64_t swapi) {
-    // ==================================================================
-    // || LIF CHANGES: Lif's current taint analysis it too rigorous,   ||
-    // || so it would cause the loop below to be tainted, due to       ||
-    // || control dependence on swapi. Thus, we rewrote this function  ||
-    // || a bit, to allow it to be tested.
-    // ==================================================================
-    /* if (swapi == 1) { */
-    /*     for (uint32_t i = 0; i < 5; i++) { */
-    /*         uint64_t x = a[i]; */
-    /*         a[i] = b[i]; */
-    /*         b[i] = x; */
-    /*     } */
-    /* } */
-    for (uint32_t i = 0; i < 5; i++) {
-        if (swapi != 1) continue;
-        uint64_t x = a[i];
-        a[i] = b[i];
-        b[i] = x;
+    if (swapi == 1) {
+        for (uint32_t i = 0; i < 5; i++) {
+            uint64_t x = a[i];
+            a[i] = b[i];
+            b[i] = x;
+        }
     }
 }
 

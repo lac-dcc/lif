@@ -513,13 +513,17 @@ std::vector<llvm::BasicBlock *> lif::transform::influenceRegion(
 static void applyRewriteRules(
     FuncWrapper *FW, LenMap &LM, llvm::FunctionAnalysisManager &FAM
 ) {
+    auto InsPoint = FW->F.getEntryBlock().getTerminator();
     // Initialize the shadow memory as a pointer to an integer. We use
     // MaxPointerSize to ensure absence of overflow.
-    auto Shadow = new llvm::AllocaInst(
-        llvm::IntegerType::get(
-            FW->F.getContext(),
-            FW->F.getParent()->getDataLayout().getMaxPointerSizeInBits()),
-        0, "shadow", FW->F.getEntryBlock().getTerminator());
+    auto ShadowTy = llvm::IntegerType::get(
+        FW->F.getContext(),
+        FW->F.getParent()->getDataLayout().getMaxPointerSizeInBits());
+    auto ShadowZero = llvm::ConstantInt::get(ShadowTy, 0);
+    auto Shadow = new llvm::AllocaInst(ShadowTy, 0, "shadow", InsPoint);
+    // We initialize Shadow so ctgrind doesn't consider it as
+    // unitialized and produces false positives.
+    new llvm::StoreInst(ShadowZero, Shadow, InsPoint);
 
     // We rewrite instructions in regions between a tainted node N and its post
     // dominator, which we call as the influence region of N. Because there
@@ -785,17 +789,23 @@ void lif::transform::rewritePhis(
             Rewritten.push_back(&Phi);
             llvm::Instruction *PhiSelect = NewPhi;
 
+            llvm::Instruction *InsPoint = nullptr;
             for (auto [OldFrom, Val] : UnlinkedIncs) {
-                auto Cond = FW->IM[&BB][OldFrom];
+                auto Cond = llvm::dyn_cast<llvm::Instruction>(
+                    FW->IM[&BB][OldFrom]
+                );
+                if (Cond && (!InsPoint || InsPoint->comesBefore(Cond)))
+                    InsPoint = Cond->getNextNode();
+            }
+            if (!InsPoint) InsPoint = BB.getFirstNonPHI();
+
+            for (auto [OldFrom, Val] : UnlinkedIncs) {
+                llvm::Value *Cond = FW->IM[&BB][OldFrom];
 
                 // FIXME: Val might not have been defined here.
                 PhiSelect = llvm::SelectInst::Create(
-                    Cond, Val, PhiSelect, "phi.fold");
-
-                if (auto CondInst = llvm::dyn_cast<llvm::Instruction>(Cond))
-                    PhiSelect->insertAfter(CondInst);
-                else
-                    PhiSelect->insertBefore(BB.getFirstNonPHI());
+                    Cond, Val, PhiSelect, "phi.fold", InsPoint
+                );
             }
 
             Phi.replaceAllUsesWith(PhiSelect);

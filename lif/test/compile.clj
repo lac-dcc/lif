@@ -11,7 +11,7 @@
   "Takes an assembly file and produces an executable from it, with
   debug information. It also takes a name for the output file."
   [src out & args]
-  (apply shell/sh "clang" "-g" src "-o" out "-no-pie" args))
+  (apply shell/sh "clang" src "-o" out "-no-pie" args))
 
 (defn emit-llvm
   "Takes a source file and compiles it to its LLVM IR representation.

@@ -1,6 +1,22 @@
 #ifndef LOG_REDACTOR_H
 #define LOG_REDACTOR_H
 
+#ifdef ENABLE_UNROLL
+#ifndef L0
+#define N 3
+#endif
+
+#ifndef L1
+#define L1 10
+#endif
+
+#ifndef P
+#define P 4
+#endif
+
+void log_redactor(char *log[], char *pattern);
+
+#else
 /**
  * This function will do the following:
  * - For each array A in log[] that contains pattern, it will replace every
@@ -13,5 +29,6 @@ void log_redactor(
     char *log[], char *pattern, const unsigned L0,
     const int L1, const int P
 );
+#endif
 
 #endif // LOG_REDACTOR_H

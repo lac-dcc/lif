@@ -4,6 +4,17 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#ifdef ENABLE_MEASURE_TIME
+#include <stdint.h>
+#include <time.h>
+
+#define _NS_PER_SECO_ND 1000000000
+#define INLINE __attribute__((__always_inline__)) inline
+INLINE uint64_t nanoseconds(struct timespec t) {
+    return t.tv_sec * _NS_PER_SECO_ND + t.tv_nsec;
+}
+#endif
+
 /* void printvec(const char *chrs, int32_t *d) { */
 /*     printf("%20s : %08x %08x %08x \n", chrs, d[2], d[1], d[0]); */
 /* } */
@@ -50,8 +61,20 @@ int main() {
     ct_secret(in_key, 3);
     ct_secret(in, 3);
 
+#ifdef ENABLE_MEASURE_TIME
+    struct timespec start, end;
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
+#endif
+
     twy_key(in_key, &gc);
     encrypt(&gc, in);
+
+#ifdef ENABLE_MEASURE_TIME
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
+    uint64_t delta = nanoseconds(end) - nanoseconds(start);
+    printf("Time: %ld\n", delta);
+#endif
+
     write(1, in, sizeof(int32_t) * 3);
 
     return 0;

@@ -134,7 +134,6 @@ void lif::analysis::taintFunction(
     TaintedInfo TAux;
 
     const auto &TLI = FAM.getResult<llvm::TargetLibraryAnalysis>(F);
-    auto &LI = FAM.getResult<llvm::LoopAnalysis>(F);
     auto &DT = FAM.getResult<llvm::DominatorTreeAnalysis>(F);
     auto &PDT = FAM.getResult<llvm::PostDominatorTreeAnalysis>(F);
 
@@ -159,68 +158,28 @@ void lif::analysis::taintFunction(
         // 2 => done
         llvm::DenseMap<llvm::DomTreeNode *, uint8_t> NodeMark;
 
-        // Stack of tainted basic block for control dependence. We also store
-        // the number of edges that the predicate controls within a loop.
-        std::stack<std::pair<llvm::BasicBlock *, unsigned>> CDep;
+        // Set of tainted blocks for which we should consider control dependence
+        // (e.g. the immediate PDom of a tainted predicate P, whose phi nodes
+        // correspond to values that escape the influence region of P).
+        llvm::DenseSet<llvm::BasicBlock *> CDep;
 
-        // Traverse the dominance tree in a DFS-like manner, propagating taint
-        // information. A variable is tainted if its backward slice (data +
-        // control dependencies) contains a tainted variable.
+        // Traverse the dominance tree in a DFS-like manner, propagating
+        // taint information. A variable is tainted if its backward slice
+        // (data + control dependencies) contains a tainted variable.
         //
-        // Within loops, we adopt the following strategy: "Only propagate
-        // control dependencies within the loop if that branch has two or more
-        // edges pointing within the loop".
-        //
-        // We require loops to be in closed form (run -lcssa pass).
+        // We only propagate control dependence for values that escape
+        // the influence region of a tainted predicate.
         while (!DFS.empty()) {
-            llvm::DomTreeNode *A = DFS.top();
+            llvm::DomTreeNode *N = DFS.top();
             DFS.pop();
 
+            if (!NodeMark.count(N)) NodeMark[N] = 0;
+            NodeMark[N]++;
 
-            if (!NodeMark.count(A)) NodeMark[A] = 0;
-            NodeMark[A]++;
+            if (NodeMark[N] == 2) continue;
+            llvm::BasicBlock *BlockN = N->getBlock();
 
-            llvm::BasicBlock *BlockA = A->getBlock();
-            llvm::BasicBlock *BlockB = nullptr;
-            llvm::BasicBlock *IPDomBlockB = nullptr;
-            unsigned NumEdgesWithinLoop = 0;
-
-            if (!CDep.empty()) {
-                BlockB = CDep.top().first;
-                NumEdgesWithinLoop = CDep.top().second;
-                IPDomBlockB = PDT.getNode(BlockB)->getIDom()->getBlock();
-            }
-
-            // Inside loops, we only propagate control dependence if the tainted
-            // predicate controls more than one edge.
-            bool PropCDep = BlockB && (
-                !(LI.getLoopDepth(BlockB) > 0 &&
-                  LI.getLoopFor(BlockB)->contains(BlockA)) ||
-                NumEdgesWithinLoop > 1
-            ) && IPDomBlockB != BlockA;
-            // If A is the immediate post-dominator of B, in most cases we
-            // should disconsider it, as there shouldn't usually be
-            // control-dependence edges to the post-dominator of a node.
-            // We need, however, to consider control dependence for phi nodes
-            // in the immediate post-dominator of B.
-            //
-            // TODO: implement this with gating, which allows us to transform
-            // control into data dependence.
-            bool PropIDomCDep = BlockB && (
-                !(LI.getLoopDepth(BlockB) > 0 &&
-                  LI.getLoopFor(BlockB)->contains(BlockA)) ||
-                NumEdgesWithinLoop > 1
-            ) && IPDomBlockB == BlockA;
-
-            // If A == B, which implies that A's number is 2, we're done
-            // visiting it. In this case, we pop BlockB from the
-            // control-dependence stack. We also pop BlockB if BlockA is the
-            // immediate post-dominator of BlockB, which we have left as the
-            // last child to be visited.
-            if ((BlockA == BlockB) || (IPDomBlockB == BlockA)) CDep.pop();
-            if (NodeMark[A] == 2) continue;
-
-            for (auto &V : *BlockA) {
+            for (auto &V : *BlockN) {
                 auto Call = llvm::dyn_cast<llvm::CallInst>(&V);
                 if (!Call) {
                     bool DDep;
@@ -251,8 +210,11 @@ void lif::analysis::taintFunction(
                         );
                     }
 
-                    bool PhiCDep = llvm::isa<llvm::PHINode>(V) && PropIDomCDep;
-                    if (DDep || PropCDep || PhiCDep) TAux.insert(&V);
+                    bool PropCDep = CDep.contains(BlockN) && (
+                        Load || llvm::isa<llvm::PHINode>(V)
+                    );
+
+                    if (DDep || PropCDep) TAux.insert(&V);
                     continue;
                 }
 
@@ -323,36 +285,21 @@ void lif::analysis::taintFunction(
                 if (TContextCall.contains(Callee)) TAux.insert(Call);
             }
 
-            if (TAux.contains(BlockA->getTerminator())) {
-                unsigned NumEdgesWithinLoop = 0;
+            if (TAux.contains(BlockN->getTerminator())) {
+                CDep.insert(PDT.getNode(BlockN)->getIDom()->getBlock());
+                TAux.insert(BlockN);
 
-                if (auto LA = LI.getLoopFor(BlockA)) {
-                    llvm::SmallVector<llvm::BasicBlock *, 4> V;
-                    LA->getExitBlocks(V);
-
-                    llvm::SmallDenseSet<llvm::BasicBlock *, 4> ExitBlocks(
-                        V.begin(), V.end()
-                    );
-
-                    for (auto Succ : llvm::successors(BlockA)) {
-                        if (!ExitBlocks.contains(Succ)) NumEdgesWithinLoop++;
-                    }
-                }
-
-                CDep.push({BlockA, NumEdgesWithinLoop});
-                TAux.insert(BlockA);
-
-                if (llvm::isa<llvm::ReturnInst>(BlockA->getTerminator()))
+                if (llvm::isa<llvm::ReturnInst>(BlockN->getTerminator()))
                     TAux.insert(&F);
             }
 
             // Push node A again to the stack so we visit a second time:
-            DFS.push(A);
+            DFS.push(N);
 
             // Traverse the children of A a first time, looking to A's ipdom:
-            auto BlockIPDomA = PDT.getNode(BlockA)->getIDom()->getBlock();
+            auto BlockIPDomA = PDT.getNode(BlockN)->getIDom()->getBlock();
             bool IPDomAFound = false;
-            for (auto Child : A->children()) {
+            for (auto Child : N->children()) {
                 if (BlockIPDomA == Child->getBlock()) {
                     IPDomAFound = true;
                     break;
@@ -363,7 +310,7 @@ void lif::analysis::taintFunction(
             if (IPDomAFound) DFS.push(DT.getNode(BlockIPDomA));
 
             // Push the remaining children:
-            for (auto Child : A->children())
+            for (auto Child : N->children())
                 if (Child->getBlock() != BlockIPDomA) DFS.push(Child);
         }
 
