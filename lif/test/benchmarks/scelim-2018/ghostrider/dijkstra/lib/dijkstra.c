@@ -15,11 +15,12 @@ int dijkstra(int n, int s, int t, int e[][INPUT_SIZE]) {
 #ifdef ENABLE_UNROLL
     for (int i = 0; i < INPUT_SIZE; ++i) dis[i] = e[s][i];
     for (int i = 0; i < INPUT_SIZE; ++i) {
+        for (int j = 0; j < INPUT_SIZE; ++j) {
 #else
     for (int i = 0; i < n; ++i) dis[i] = e[s][i];
     for (int i = 0; i < n; ++i) {
-#endif
         for (int j = 0; j < n; ++j) {
+#endif
             if (!vis[j] && (bestj < 0 || dis[j] < dis[bestj])) {
                 bestj = j + x; // fix implicit flow here, x is secret (.h)
                 // ===========================================================

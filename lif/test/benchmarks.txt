@@ -6,6 +6,7 @@ benchmarks/mu
 benchmarks/scelim-2018/applied-crypto/3way
 benchmarks/scelim-2018/applied-crypto/des
 benchmarks/scelim-2018/applied-crypto/loki91
+benchmarks/scelim-2018/chronos/cast5
 benchmarks/scelim-2018/ghostrider/dijkstra
 benchmarks/fact-2019/ssl3
 benchmarks/fact-2019/donna

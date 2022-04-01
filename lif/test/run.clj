@@ -146,18 +146,27 @@
                                      inputs))
             ;; Check programs produced by lif with ctgrind:
             safe-lif? (every? false?
-                              (pmap #(branch-on-secret? (with-ctgrind lif) %)
+                              (pmap #(branch-on-secret?
+                                      (with-ctgrind lif) %)
                                     inputs))
+            safe-lifopt? (every? false?
+                                 (pmap #(branch-on-secret?
+                                         (with-ctgrind lifopt) %)
+                                       inputs))
             ;; OK or Fail messages due to leak:
             leak-msg-orig (if safe-orig?
                             [:green "[orig = safe]"]
                             [:red "[orig = leak]"])
             leak-msg-lif (if safe-lif?
                            [:green "[lif = safe]"]
-                           [:red "[lif = leak]"])]
+                           [:red "[lif = leak]"])
+            leak-msg-lifopt (if safe-lifopt?
+                           [:green "[lifopt = safe]"]
+                           [:red "[lifopt = leak]"])]
         (println (apply with-color result-msg)
                  (apply with-color leak-msg-orig)
-                 (apply with-color leak-msg-lif)))))
+                 (apply with-color leak-msg-lif)
+                 (apply with-color leak-msg-lifopt)))))
 
 (let [;; Parse the arguments from command line:
       {:keys [action options exit-msg ok?]} (parse-cli *command-line-args*)

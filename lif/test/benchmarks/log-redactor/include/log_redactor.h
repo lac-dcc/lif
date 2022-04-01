@@ -3,7 +3,7 @@
 
 #ifdef ENABLE_UNROLL
 #ifndef L0
-#define N 3
+#define L0 3
 #endif
 
 #ifndef L1

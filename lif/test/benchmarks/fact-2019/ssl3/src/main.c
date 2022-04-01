@@ -69,7 +69,7 @@ int main() {
 #ifdef ENABLE_MEASURE_TIME
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
     uint64_t delta = nanoseconds(end) - nanoseconds(start);
-    printf("Time: %ld\n", delta);
+    printf("\nTime: %ld\n", delta);
 #endif
 
     write(1, mac_out.buf, mac_out.len * sizeof(uint8_t));

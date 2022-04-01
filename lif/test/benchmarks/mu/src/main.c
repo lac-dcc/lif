@@ -36,7 +36,7 @@ int main() {
 #ifdef ENABLE_MEASURE_TIME
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
     uint64_t delta = nanoseconds(end) - nanoseconds(start);
-    printf("Time: %ld\n", delta);
+    printf("\nTime: %ld\n", delta);
 #endif
 
     /* printf("%d\t%d\t%d\n", a[0], a[1], a[2]); */
