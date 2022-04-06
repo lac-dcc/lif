@@ -8,5 +8,7 @@ benchmarks/scelim-2018/applied-crypto/des
 benchmarks/scelim-2018/applied-crypto/loki91
 benchmarks/scelim-2018/chronos/cast5
 benchmarks/scelim-2018/ghostrider/dijkstra
+benchmarks/scelim-2018/ghostrider/findmax
+benchmarks/scelim-2018/ghostrider/histogram
 benchmarks/fact-2019/ssl3
 benchmarks/fact-2019/donna

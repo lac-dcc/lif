@@ -3,11 +3,11 @@
 
 #ifdef ENABLE_UNROLL
 #ifndef N
-#define N 32
+#define N 5
 #endif
 
 #ifndef M
-#define M 32
+#define M 1024
 #endif
 
 int comp(int **a, int *b);

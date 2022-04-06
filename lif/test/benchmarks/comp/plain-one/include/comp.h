@@ -3,7 +3,7 @@
 
 #ifdef ENABLE_UNROLL
 #ifndef N
-#define N 32
+#define N 1024
 #endif
 
 int comp(int *a, int *b);
