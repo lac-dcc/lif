@@ -87,7 +87,7 @@ changes in the original algorithm.
 ## Experiments
 
 The charts below compare our implementation with three different tools
-to linearize programs: [Lif](https://github.com/lac-dcc/lif), [Constantine](https://github.com/pietroborrello/constantine) and [SC-Eliminator](https://bitbucket.org/mengwu/timingsyn). The last two tools come in two versions: with (Orig) our without (CFL) data-flow linearization. We show:
+to linearize programs. [Constantine](https://github.com/pietroborrello/constantine) and [SC-Eliminator](https://bitbucket.org/mengwu/timingsyn) come in two versions: with (Orig) our without (CFL) data-flow linearization. We show:
 
 * Running time of transformed programs (top): How does the proposed
   approach impact the running time of programs?
