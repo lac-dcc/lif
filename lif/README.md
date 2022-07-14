@@ -29,14 +29,17 @@ For that, you can proceed as follows:
 #include <stdio.h>
 
 int comp(int *a, int *b, int n) {
-    for (int i = 0; i < n; i++)
-      if (a[i] != b[i]) return 0;
+    for (int i = 0; i < n; i++) {
+        // "b" is secret => conditional is tainted
+        if (a[i] != b[i]) return 0;
+    }
     return 1;
 }
 
 int main() {
     int a[4] = {0, 0, 0, 0};
-    int b[4] = {0, 0, 0, 0};
+    // Define array "b" as secret
+    __attribute__((annotate("secret"))) int b[4] = {0, 0, 0, 0};
     printf("%d\n", comp(a, b, 4));
     return 0;
 }
@@ -47,6 +50,5 @@ $ clang -S -emit-llvm -Xclang -disable-O0-optnone comp.c -o comp.ll
 ```
 
 ## Options
-- `config=path/to/config.yaml`: Configuration file with the tainted inputs
 - `o=<bitcode filepath>`: Transformed module
 - `O<0..3>`: Optimization level
