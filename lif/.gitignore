@@ -17,7 +17,8 @@ __pycache__/
 bin/
 
 # Benchmark generated files
-bench/**/asm
-bench/**/bin
-bench/**/llvm-ir
-bench/**/results
+test/**/asm
+test/**/bin
+test/**/llvm-ir
+test/**/results
+test/.nrepl-port
