@@ -110,3 +110,6 @@ check the README inside folder [lif/](lif/).
 to verify the correctness of the prototype. All the benchmarks that
 we used can be found at [lif/test/benchmarks/](lif/test/benchmarks/). For more details, check
 the README in [lif/test/](lif/test/).
+
+* `prototype/`: This folder contains an initial skeleton of the control-flow
+linearization algorithm implemented in Haskell.

@@ -1,0 +1,144 @@
+begin:
+    alloc(b, 3)
+    store(0, b, 0)
+    store(0, b, 1)
+    store(0, b, 2)
+    jmp(loop.0)
+
+loop.0:
+    load(b0, b, 0)
+    mov(x0, b0 << 1)
+    store(x0, b, 0)
+
+    load(b1, b, 1)
+    mov(x1, b1 << 1)
+    store(x1, b, 1)
+
+    load(b2, b, 2)
+    mov(x2, b2 << 1)
+    store(x2, b, 2)
+    jmp(if.0)
+
+if.0:
+    load(a0, a, 0)
+    mov(y0, a0 & 1)
+    mov(p0, y0 != 0)
+    br(p0, body.0, if.1)
+
+body.0:
+    load(b3, b, 2)
+    mov(x3, b3 | 1)
+    store(x3, b, 2)
+    jmp(if.1)
+
+if.1:
+    load(a1, a, 1)
+    mov(y1, a1 & 1)
+    mov(p1, y1 != 0)
+    br(p1, body.1, if.2)
+
+body.1:
+    load(b4, b, 1)
+    mov(x4, b4 | 1)
+    store(x4, b, 1)
+    jmp(if.2)
+
+if.2:
+    load(a2, a, 2)
+    mov(y2, a2 & 1)
+    mov(p2, y2 != 0)
+    br(p2, body.2, endloop.0)
+
+body.2:
+    load(b5, b, 0)
+    mov(x5, b5 | 1)
+    store(x5, b, 0)
+    jmp(endloop.0)
+
+endloop.0:
+    load(a3, a, 0)
+    mov(y3, a3 >> 1)
+    store(y3, a, 0)
+
+    load(a4, a, 1)
+    mov(y4, a4 >> 1)
+    store(y4, a, 1)
+
+    load(a5, a, 2)
+    mov(y5, a5 >> 1)
+    store(y5, a, 2)
+    jmp(loop.1)
+
+loop.1:
+    load(b6, b, 0)
+    mov(x6, b6 << 1)
+    store(x6, b, 0)
+
+    load(b7, b, 1)
+    mov(x7, b7 << 1)
+    store(x7, b, 1)
+
+    load(b8, b, 2)
+    mov(x8, b8 << 1)
+    store(x8, b, 2)
+    jmp(if.3)
+
+if.3: 
+    load(a6, a, 0)
+    mov(y6, a6 & 1)
+    mov(p3, y6 != 0)
+    br(p3, body.3, if.4)
+
+body.3:
+    load(b9, b, 2)
+    mov(x9, b9 | 1)
+    store(x9, b, 2)
+    jmp(if.4)
+
+if.4:
+    load(a7, a, 1)
+    mov(y7, a7 & 1)
+    mov(p4, y7 != 0)
+    br(p4, body.4, if.5)
+
+body.4:
+    load(b10, b, 1)
+    mov(x10, b10 | 1)
+    store(x10, b, 1)
+    jmp(if.5)
+
+if.5:
+    load(a8, a, 1)
+    mov(y8, a8 & 1)
+    mov(p5, y8 != 0)
+    br(p5, body.5, endloop.1)
+
+body.5:
+    load(b11, b, 0)
+    mov(x11, b11 | 1)
+    store(x11, b, 0)
+    jmp(endloop.1)
+
+endloop.1:
+    load(a9, a, 0)
+    mov(y9, a9 >> 1)
+    store(y9, a, 0)
+
+    load(a10, a, 1)
+    mov(y10, a10 >> 1)
+    store(y10, a, 1)
+
+    load(a11, a, 2)
+    mov(y11, a11 >> 1)
+    store(y11, a, 2)
+    jmp(end)
+
+end:
+    load(b12, b, 0)
+    store(b12, a, 0)
+
+    load(b13, b, 1)
+    store(b13, a, 1)
+
+    load(b14, b, 2)
+    store(b14, a, 2)

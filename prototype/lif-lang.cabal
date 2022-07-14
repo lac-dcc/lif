@@ -1,0 +1,90 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 534e623f0a1d10fa91239a40b4816d5ba621c2e8e095701ee76ed13e2542b5a0
+
+name:           lif-lang
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/luigidcsoares/lif/tree/master/lang#readme>
+homepage:       https://github.com/luigidcsoares/lif/tree/master/lang#readme
+bug-reports:    https://github.com/luigidcsoares/lif/tree/master/lang/issues
+author:         Luigi D. C. Soares
+maintainer:     luigidcsoares@gmail.com
+copyright:      2020 Luigi D. C. Soares
+license:        GPL-3
+license-file:   LICENSE.txt
+build-type:     Simple
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/luigidcsoares/lif/tree/master/lang
+
+library
+  exposed-modules:
+      Core.Error
+      Core.Eval
+      Core.Lang
+      Core.Parser
+      Flow.Block
+      Flow.Cfg
+      Flow.DomTree
+      Internal.Constraint
+      Internal.Dot
+      Internal.Graph
+      Internal.Map
+      Pass.Invariant
+  other-modules:
+      Paths_lif_lang
+  hs-source-dirs:
+      src
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , bytestring
+    , containers
+    , hspec
+    , mtl
+    , parsec
+  default-language: Haskell2010
+
+executable lif-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_lif_lang
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , bytestring
+    , containers
+    , hspec
+    , lif-lang
+    , mtl
+    , parsec
+  default-language: Haskell2010
+
+test-suite lif-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_lif_lang
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , bytestring
+    , containers
+    , hspec
+    , lif-lang
+    , mtl
+    , parsec
+  default-language: Haskell2010
