@@ -1,0 +1,24 @@
+# Cmake
+compile_commands.json
+cmake_install.cmake
+CMakeCache.txt
+CMakeFiles/
+
+# Ninja
+*ninja*
+
+# Clang
+.clangd
+
+# Python
+__pycache__/
+
+# Exec
+bin/
+
+# Benchmark generated files
+test/**/asm
+test/**/bin
+test/**/llvm-ir
+test/**/results
+test/.nrepl-port
