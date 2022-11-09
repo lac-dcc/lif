@@ -8,5 +8,11 @@ add_executable(lif
     ../lib/Analysis/Taint.cpp
     )
 
-target_link_libraries(lif LLVMPasses)
+target_link_libraries(lif
+    LLVMCore
+    LLVMIRReader
+    LLVMSupport
+    LLVMPasses
+    LLVMAnalysis
+    LLVMTransformUtils)
 target_include_directories(lif PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../include")
