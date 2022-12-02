@@ -3,7 +3,7 @@
 
 ## Requirements
 - CMake >= 3.18.4
-- LLVM >= 13.0.0
+- LLVM == 13.0.0
 - Clang >= 13.0.0
 - A generator for CMake (GNU Make, Ninja, etc)
 

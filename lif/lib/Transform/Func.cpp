@@ -914,6 +914,7 @@ void lif::transform::plinearize(
         // If BB is tainted (equivalent as divergent in Moll & Hack's
         // algorithm):
         else if (llvm::succ_size(BB) > 0) {
+            llvm::errs() << FW->F.getName() << "\n";
             llvm::SmallPtrSet<llvm::BasicBlock *, 8> S;
             // S = {s | (b, s) in E(G)}
             S.insert(llvm::succ_begin(BB), llvm::succ_end(BB));
