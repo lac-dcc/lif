@@ -1,5 +1,10 @@
 #include "../include/findmax.h"
 
+#define CHECK_INST_COUNT 1 // ADDED TO CHECK OP INVARIANCE
+#ifdef CHECK_INST_COUNT // ADDED TO CHECK OP INVARIANCE
+volatile int foo = 0;
+#endif
+
 #ifdef ENABLE_UNROLL
 int max(int h[]) {
 #else

@@ -8,11 +8,12 @@ output_file = sys.argv[1] + '.bin'
 binary = []
 with open(input_file, 'r') as f:
     for line in f:
+        if line.isspace(): continue
         binary += list(map(
-            lambda x: struct.pack('i', int(x, 0)),
-            line.strip().split()
-            # lambda x: struct.pack('c', x.encode('ascii')),
-            # line.strip()
+            # lambda x: struct.pack('i', int(x, 0)),
+            # line.strip().split()
+            lambda x: struct.pack('c', x.encode('ascii')),
+            line.strip()
         ))
 
 with open(output_file, 'wb') as f:

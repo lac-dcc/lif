@@ -44,12 +44,12 @@ int main() {
     header.buf = (uint8_t *) malloc(header.len * sizeof(uint8_t));
     data.buf = (uint8_t *) malloc(data.len * sizeof(uint8_t));
 
-    secret uint64_t data_plus_mac_size = data.len - data.buf[127];
-
     SHA1_Init((SHA_CTX *) md_state.buf);
 
     read(0, header.buf, header.len * sizeof(uint8_t));
     read(0, data.buf, data.len * sizeof(uint8_t));
+
+    secret uint64_t data_plus_mac_size = data.len - data.buf[127];
 
     // Mark input as secret for ct_grind check:
     ct_secret(md_state.buf, sizeof(uint8_t) * md_state.len);
