@@ -19,6 +19,6 @@ bin/
 # Benchmark generated files
 test/**/asm
 test/**/bin
-test/**/llvm-ir
+# test/**/llvm-ir
 test/**/results
 test/.nrepl-port
