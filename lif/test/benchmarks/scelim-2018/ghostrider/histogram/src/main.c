@@ -38,4 +38,6 @@ int main() {
 #endif
 
     write(1, out, sizeof(int) * INPUT_SIZE);
+
+    return 0;
 }
