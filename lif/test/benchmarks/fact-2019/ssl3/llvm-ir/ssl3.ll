@@ -12,8 +12,9 @@ target triple = "x86_64-pc-linux-gnu"
 @.str.3 = private unnamed_addr constant [11 x i8] c"lib/ssl3.c\00", align 1
 @__PRETTY_FUNCTION__.__ssl3_cbc_digest_record = private unnamed_addr constant [135 x i8] c"int32_t __ssl3_cbc_digest_record(uint8ptr_wrapped_ty *, uint8ptr_wrapped_ty *, uint8ptr_wrapped_ty *, uint8ptr_wrapped_ty *, uint64_t)\00", align 1
 @.str.4 = private unnamed_addr constant [33 x i8] c"header->len <= 2 * md_block_size\00", align 1
-@.str.5 = private unnamed_addr constant [15 x i8] c"nowrap:0,1,2,3\00", section "llvm.metadata"
-@llvm.global.annotations = appending global [1 x { i8*, i8*, i8*, i32, i8* }] [{ i8*, i8*, i8*, i32, i8* } { i8* bitcast (i32 (%struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, i64)* @__ssl3_cbc_digest_record to i8*), i8* getelementptr inbounds ([15 x i8], [15 x i8]* @.str.5, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.1, i32 0, i32 0), i32 32, i8* null }], section "llvm.metadata"
+@.str.5 = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
+@.str.6 = private unnamed_addr constant [15 x i8] c"nowrap:0,1,2,3\00", section "llvm.metadata"
+@llvm.global.annotations = appending global [1 x { i8*, i8*, i8*, i32, i8* }] [{ i8*, i8*, i8*, i32, i8* } { i8* bitcast (i32 (%struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, i64)* @__ssl3_cbc_digest_record to i8*), i8* getelementptr inbounds ([15 x i8], [15 x i8]* @.str.6, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.1, i32 0, i32 0), i32 38, i8* null }], section "llvm.metadata"
 
 ; Function Attrs: noinline nounwind sspstrong uwtable
 define dso_local i32 @__ssl3_cbc_digest_record(%struct.uint8ptr_wrapped_ty* noundef %md_state, %struct.uint8ptr_wrapped_ty* noundef %mac_out, %struct.uint8ptr_wrapped_ty* noundef %header, %struct.uint8ptr_wrapped_ty* noundef %data, i64 noundef %data_plus_mac_size) #0 {
@@ -25,23 +26,26 @@ entry:
   %first_block = alloca [128 x i8], align 16
   %length_bytes = alloca [16 x i8], align 16
   %block = alloca [128 x i8], align 16
+  %foo = alloca i32, align 4
+  %_zzq_args = alloca [6 x i64], align 16
+  %_zzq_result = alloca i64, align 8
   %md_state_buf1 = bitcast i8** %md_state_buf to i8*
-  call void @llvm.var.annotation(i8* %md_state_buf1, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.1, i32 0, i32 0), i32 37, i8* null)
+  call void @llvm.var.annotation(i8* %md_state_buf1, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.1, i32 0, i32 0), i32 43, i8* null)
   %buf = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %md_state, i32 0, i32 0
   %0 = load i8*, i8** %buf, align 8
   store i8* %0, i8** %md_state_buf, align 8
   %mac_out_buf2 = bitcast i8** %mac_out_buf to i8*
-  call void @llvm.var.annotation(i8* %mac_out_buf2, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.1, i32 0, i32 0), i32 38, i8* null)
+  call void @llvm.var.annotation(i8* %mac_out_buf2, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.1, i32 0, i32 0), i32 44, i8* null)
   %buf3 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %mac_out, i32 0, i32 0
   %1 = load i8*, i8** %buf3, align 8
   store i8* %1, i8** %mac_out_buf, align 8
   %header_buf4 = bitcast i8** %header_buf to i8*
-  call void @llvm.var.annotation(i8* %header_buf4, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.1, i32 0, i32 0), i32 39, i8* null)
+  call void @llvm.var.annotation(i8* %header_buf4, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.1, i32 0, i32 0), i32 45, i8* null)
   %buf5 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %header, i32 0, i32 0
   %2 = load i8*, i8** %buf5, align 8
   store i8* %2, i8** %header_buf, align 8
   %data_buf6 = bitcast i8** %data_buf to i8*
-  call void @llvm.var.annotation(i8* %data_buf6, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.1, i32 0, i32 0), i32 40, i8* null)
+  call void @llvm.var.annotation(i8* %data_buf6, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.1, i32 0, i32 0), i32 46, i8* null)
   %buf7 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %data, i32 0, i32 0
   %3 = load i8*, i8** %buf7, align 8
   store i8* %3, i8** %data_buf, align 8
@@ -86,7 +90,7 @@ if.then24:                                        ; preds = %if.end
   br label %if.end25
 
 if.else:                                          ; preds = %if.end
-  call void @__assert_fail(i8* noundef getelementptr inbounds ([15 x i8], [15 x i8]* @.str.2, i64 0, i64 0), i8* noundef getelementptr inbounds ([11 x i8], [11 x i8]* @.str.3, i64 0, i64 0), i32 noundef 75, i8* noundef getelementptr inbounds ([135 x i8], [135 x i8]* @__PRETTY_FUNCTION__.__ssl3_cbc_digest_record, i64 0, i64 0)) #6
+  call void @__assert_fail(i8* noundef getelementptr inbounds ([15 x i8], [15 x i8]* @.str.2, i64 0, i64 0), i8* noundef getelementptr inbounds ([11 x i8], [11 x i8]* @.str.3, i64 0, i64 0), i32 noundef 81, i8* noundef getelementptr inbounds ([135 x i8], [135 x i8]* @__PRETTY_FUNCTION__.__ssl3_cbc_digest_record, i64 0, i64 0)) #6
   unreachable
 
 if.end25:                                         ; preds = %if.then24
@@ -100,7 +104,7 @@ if.then29:                                        ; preds = %if.end25
   br label %if.end31
 
 if.else30:                                        ; preds = %if.end25
-  call void @__assert_fail(i8* noundef getelementptr inbounds ([33 x i8], [33 x i8]* @.str.4, i64 0, i64 0), i8* noundef getelementptr inbounds ([11 x i8], [11 x i8]* @.str.3, i64 0, i64 0), i32 noundef 76, i8* noundef getelementptr inbounds ([135 x i8], [135 x i8]* @__PRETTY_FUNCTION__.__ssl3_cbc_digest_record, i64 0, i64 0)) #6
+  call void @__assert_fail(i8* noundef getelementptr inbounds ([33 x i8], [33 x i8]* @.str.4, i64 0, i64 0), i8* noundef getelementptr inbounds ([11 x i8], [11 x i8]* @.str.3, i64 0, i64 0), i32 noundef 82, i8* noundef getelementptr inbounds ([135 x i8], [135 x i8]* @__PRETTY_FUNCTION__.__ssl3_cbc_digest_record, i64 0, i64 0)) #6
   unreachable
 
 if.end31:                                         ; preds = %if.then29
@@ -191,11 +195,11 @@ if.end66:                                         ; preds = %for.end, %if.end31
   %add69 = add i64 %add68, 1
   br label %for.cond71
 
-for.cond71:                                       ; preds = %for.inc168, %if.end66
-  %k.1 = phi i64 [ %k.0, %if.end66 ], [ %k.2, %for.inc168 ]
-  %i70.0 = phi i64 [ %num_starting_blocks.0, %if.end66 ], [ %inc169, %for.inc168 ]
+for.cond71:                                       ; preds = %for.inc172, %if.end66
+  %k.1 = phi i64 [ %k.0, %if.end66 ], [ %k.2, %for.inc172 ]
+  %i70.0 = phi i64 [ %num_starting_blocks.0, %if.end66 ], [ %inc173, %for.inc172 ]
   %cmp72 = icmp ult i64 %i70.0, %add69
-  br i1 %cmp72, label %for.body74, label %for.end170
+  br i1 %cmp72, label %for.body74, label %for.end174
 
 for.body74:                                       ; preds = %for.cond71
   %23 = bitcast [128 x i8]* %block to i8*
@@ -347,53 +351,73 @@ for.end146:                                       ; preds = %for.cond80
   %38 = bitcast i8* %37 to %struct.SHAstate_st*
   %arraydecay148 = getelementptr inbounds [128 x i8], [128 x i8]* %block, i64 0, i64 0
   call void @md_final_raw(%struct.SHAstate_st* noundef %38, i8* noundef %arraydecay148)
+  store i32 0, i32* %foo, align 4
   br label %for.cond150
 
-for.cond150:                                      ; preds = %for.inc165, %for.end146
-  %j149.0 = phi i64 [ 0, %for.end146 ], [ %inc166, %for.inc165 ]
+for.cond150:                                      ; preds = %for.inc169, %for.end146
+  %j149.0 = phi i64 [ 0, %for.end146 ], [ %inc170, %for.inc169 ]
   %cmp151 = icmp ult i64 %j149.0, 20
-  br i1 %cmp151, label %for.body153, label %for.end167
+  br i1 %cmp151, label %for.body153, label %for.end171
 
 for.body153:                                      ; preds = %for.cond150
   %tobool154 = trunc i8 %frombool79 to i1
-  br i1 %tobool154, label %cond.true156, label %cond.false159
+  br i1 %tobool154, label %if.then155, label %if.else158
 
-cond.true156:                                     ; preds = %for.body153
-  %arrayidx157 = getelementptr inbounds [128 x i8], [128 x i8]* %block, i64 0, i64 %j149.0
-  %39 = load i8, i8* %arrayidx157, align 1
-  %conv158 = zext i8 %39 to i32
-  br label %cond.end160
-
-cond.false159:                                    ; preds = %for.body153
-  br label %cond.end160
-
-cond.end160:                                      ; preds = %cond.false159, %cond.true156
-  %cond161 = phi i32 [ %conv158, %cond.true156 ], [ 0, %cond.false159 ]
+if.then155:                                       ; preds = %for.body153
+  %arrayidx156 = getelementptr inbounds [128 x i8], [128 x i8]* %block, i64 0, i64 %j149.0
+  %39 = load i8, i8* %arrayidx156, align 1
   %40 = load i8*, i8** %mac_out_buf, align 8
-  %arrayidx162 = getelementptr inbounds i8, i8* %40, i64 %j149.0
-  %41 = load i8, i8* %arrayidx162, align 1
-  %conv163 = zext i8 %41 to i32
-  %or = or i32 %conv163, %cond161
-  %conv164 = trunc i32 %or to i8
-  store i8 %conv164, i8* %arrayidx162, align 1
-  br label %for.inc165
+  %arrayidx157 = getelementptr inbounds i8, i8* %40, i64 %j149.0
+  store i8 %39, i8* %arrayidx157, align 1
+  br label %if.end161
 
-for.inc165:                                       ; preds = %cond.end160
-  %inc166 = add i64 %j149.0, 1
-  br label %for.cond150, !llvm.loop !9
+if.else158:                                       ; preds = %for.body153
+  %41 = load i8*, i8** %mac_out_buf, align 8
+  %arrayidx159 = getelementptr inbounds i8, i8* %41, i64 %j149.0
+  store i8 0, i8* %arrayidx159, align 1
+  %42 = load i32, i32* %foo, align 4
+  %inc160 = add nsw i32 %42, 1
+  store i32 %inc160, i32* %foo, align 4
+  br label %if.end161
 
-for.end167:                                       ; preds = %for.cond150
-  br label %for.inc168
+if.end161:                                        ; preds = %if.else158, %if.then155
+  %arrayidx162 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 0
+  store volatile i64 1296236546, i64* %arrayidx162, align 16
+  %43 = ptrtoint i32* %foo to i64
+  %arrayidx163 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 1
+  store volatile i64 %43, i64* %arrayidx163, align 8
+  %arrayidx164 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 2
+  store volatile i64 4, i64* %arrayidx164, align 16
+  %arrayidx165 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 3
+  store volatile i64 0, i64* %arrayidx165, align 8
+  %arrayidx166 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 4
+  store volatile i64 0, i64* %arrayidx166, align 16
+  %arrayidx167 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 5
+  store volatile i64 0, i64* %arrayidx167, align 8
+  %arrayidx168 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 0
+  %44 = call i64 asm sideeffect "rolq $$3,  %rdi ; rolq $$13, %rdi\0A\09rolq $$61, %rdi ; rolq $$51, %rdi\0A\09xchgq %rbx,%rbx", "={dx},{ax},0,~{cc},~{memory},~{dirflag},~{fpsr},~{flags}"(i64* %arrayidx168, i64 0) #7, !srcloc !9
+  store volatile i64 %44, i64* %_zzq_result, align 8
+  %45 = load volatile i64, i64* %_zzq_result, align 8
+  %46 = load i32, i32* %foo, align 4
+  %call = call i32 (i8*, ...) @printf(i8* noundef getelementptr inbounds ([4 x i8], [4 x i8]* @.str.5, i64 0, i64 0), i32 noundef %46)
+  br label %for.inc169
 
-for.inc168:                                       ; preds = %for.end167
-  %inc169 = add i64 %i70.0, 1
-  br label %for.cond71, !llvm.loop !10
+for.inc169:                                       ; preds = %if.end161
+  %inc170 = add i64 %j149.0, 1
+  br label %for.cond150, !llvm.loop !10
 
-for.end170:                                       ; preds = %for.cond71
+for.end171:                                       ; preds = %for.cond150
+  br label %for.inc172
+
+for.inc172:                                       ; preds = %for.end171
+  %inc173 = add i64 %i70.0, 1
+  br label %for.cond71, !llvm.loop !11
+
+for.end174:                                       ; preds = %for.cond71
   br label %return
 
-return:                                           ; preds = %for.end170, %if.then51
-  %retval.0 = phi i32 [ 0, %if.then51 ], [ 1, %for.end170 ]
+return:                                           ; preds = %for.end174, %if.then51
+  %retval.0 = phi i32 [ 0, %if.then51 ], [ 1, %for.end174 ]
   ret i32 %retval.0
 }
 
@@ -552,6 +576,8 @@ entry:
   ret void
 }
 
+declare i32 @printf(i8* noundef, ...) #4
+
 attributes #0 = { noinline nounwind sspstrong uwtable "frame-pointer"="all" "min-legal-vector-width"="0" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "tune-cpu"="generic" }
 attributes #1 = { inaccessiblememonly nofree nosync nounwind willreturn }
 attributes #2 = { noreturn nounwind "frame-pointer"="all" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "tune-cpu"="generic" }
@@ -559,6 +585,7 @@ attributes #3 = { argmemonly nofree nounwind willreturn writeonly }
 attributes #4 = { "frame-pointer"="all" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "tune-cpu"="generic" }
 attributes #5 = { argmemonly nofree nounwind willreturn }
 attributes #6 = { noreturn nounwind }
+attributes #7 = { nounwind }
 
 !llvm.module.flags = !{!0, !1, !2, !3, !4}
 !llvm.ident = !{!5}
@@ -572,5 +599,6 @@ attributes #6 = { noreturn nounwind }
 !6 = distinct !{!6, !7}
 !7 = !{!"llvm.loop.mustprogress"}
 !8 = distinct !{!8, !7}
-!9 = distinct !{!9, !7}
+!9 = !{i64 2148238333, i64 2148238369, i64 2148238437}
 !10 = distinct !{!10, !7}
+!11 = distinct !{!11, !7}

@@ -6,16 +6,17 @@ target triple = "x86_64-pc-linux-gnu"
 %struct.uint8ptr_wrapped_ty = type { i8*, i64 }
 %struct.SHAstate_st = type { i32, i32, i32, i32, i32, i32, i32, [16 x i32], i32 }
 
-@llvm.global.annotations = appending global [1 x { i8*, i8*, i8*, i32, i8* }] [{ i8*, i8*, i8*, i32, i8* } { i8* bitcast (i32 (%struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, i64)* @__ssl3_cbc_digest_record to i8*), i8* getelementptr inbounds ([15 x i8], [15 x i8]* @.str.5, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.1, i32 0, i32 0), i32 32, i8* null }], section "llvm.metadata"
+@llvm.global.annotations = appending global [1 x { i8*, i8*, i8*, i32, i8* }] [{ i8*, i8*, i8*, i32, i8* } { i8* bitcast (i32 (%struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, i64)* @__ssl3_cbc_digest_record to i8*), i8* getelementptr inbounds ([15 x i8], [15 x i8]* @.str.6, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.1, i32 0, i32 0), i32 38, i8* null }], section "llvm.metadata"
 @.str = private unnamed_addr constant [7 x i8] c"secret\00", section "llvm.metadata"
 @.str.1 = private unnamed_addr constant [11 x i8] c"lib/ssl3.c\00", section "llvm.metadata"
 @.str.2 = private unnamed_addr constant [15 x i8] c"data->len >= k\00", align 1
 @.str.3 = private unnamed_addr constant [11 x i8] c"lib/ssl3.c\00", align 1
 @__PRETTY_FUNCTION__.__ssl3_cbc_digest_record = private unnamed_addr constant [135 x i8] c"int32_t __ssl3_cbc_digest_record(uint8ptr_wrapped_ty *, uint8ptr_wrapped_ty *, uint8ptr_wrapped_ty *, uint8ptr_wrapped_ty *, uint64_t)\00", align 1
 @.str.4 = private unnamed_addr constant [33 x i8] c"header->len <= 2 * md_block_size\00", align 1
-@.str.5 = private unnamed_addr constant [15 x i8] c"nowrap:0,1,2,3\00", section "llvm.metadata"
-@.str.6 = private unnamed_addr constant [7 x i8] c"secret\00", section "llvm.metadata"
-@.str.1.7 = private unnamed_addr constant [11 x i8] c"src/main.c\00", section "llvm.metadata"
+@.str.5 = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
+@.str.6 = private unnamed_addr constant [15 x i8] c"nowrap:0,1,2,3\00", section "llvm.metadata"
+@.str.7 = private unnamed_addr constant [7 x i8] c"secret\00", section "llvm.metadata"
+@.str.1.8 = private unnamed_addr constant [11 x i8] c"src/main.c\00", section "llvm.metadata"
 
 ; Function Attrs: noinline nounwind sspstrong uwtable
 define dso_local i32 @__ssl3_cbc_digest_record(%struct.uint8ptr_wrapped_ty* noundef %md_state, %struct.uint8ptr_wrapped_ty* noundef %mac_out, %struct.uint8ptr_wrapped_ty* noundef %header, %struct.uint8ptr_wrapped_ty* noundef %data, i64 noundef %data_plus_mac_size) #0 {
@@ -150,28 +151,31 @@ entry:
   %first_block = alloca [128 x i8], align 16
   %length_bytes = alloca [16 x i8], align 16
   %block = alloca [128 x i8], align 16
+  %foo = alloca i32, align 4
+  %_zzq_args = alloca [6 x i64], align 16
+  %_zzq_result = alloca i64, align 8
   store i1 true, i1* %out., align 1
   store i1 false, i1* %out.20, align 1
   store i1 false, i1* %out.49, align 1
   store i1 false, i1* %out.56, align 1
   store i1 false, i1* %out.58, align 1
   %md_state_buf1 = bitcast i8** %md_state_buf to i8*
-  call void @llvm.var.annotation(i8* %md_state_buf1, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.1, i32 0, i32 0), i32 37, i8* null)
+  call void @llvm.var.annotation(i8* %md_state_buf1, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.1, i32 0, i32 0), i32 43, i8* null)
   %buf = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %md_state, i32 0, i32 0
   %0 = load i8*, i8** %buf, align 8
   store i8* %0, i8** %md_state_buf, align 8
   %mac_out_buf2 = bitcast i8** %mac_out_buf to i8*
-  call void @llvm.var.annotation(i8* %mac_out_buf2, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.1, i32 0, i32 0), i32 38, i8* null)
+  call void @llvm.var.annotation(i8* %mac_out_buf2, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.1, i32 0, i32 0), i32 44, i8* null)
   %buf3 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %mac_out, i32 0, i32 0
   %1 = load i8*, i8** %buf3, align 8
   store i8* %1, i8** %mac_out_buf, align 8
   %header_buf4 = bitcast i8** %header_buf to i8*
-  call void @llvm.var.annotation(i8* %header_buf4, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.1, i32 0, i32 0), i32 39, i8* null)
+  call void @llvm.var.annotation(i8* %header_buf4, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.1, i32 0, i32 0), i32 45, i8* null)
   %buf5 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %header, i32 0, i32 0
   %2 = load i8*, i8** %buf5, align 8
   store i8* %2, i8** %header_buf, align 8
   %data_buf6 = bitcast i8** %data_buf to i8*
-  call void @llvm.var.annotation(i8* %data_buf6, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.1, i32 0, i32 0), i32 40, i8* null)
+  call void @llvm.var.annotation(i8* %data_buf6, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.1, i32 0, i32 0), i32 46, i8* null)
   %buf7 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %data, i32 0, i32 0
   %3 = load i8*, i8** %buf7, align 8
   store i8* %3, i8** %data_buf, align 8
@@ -238,7 +242,7 @@ if.else:                                          ; preds = %if.end
   %in.67 = and i1 %13, %14
   %cond.fold68 = or i1 false, %in.67
   store i1 %cond.fold68, i1* %out.10, align 1
-  call void @__assert_fail(i8* noundef getelementptr inbounds ([15 x i8], [15 x i8]* @.str.2, i64 0, i64 0), i8* noundef getelementptr inbounds ([11 x i8], [11 x i8]* @.str.3, i64 0, i64 0), i32 noundef 75, i8* noundef getelementptr inbounds ([135 x i8], [135 x i8]* @__PRETTY_FUNCTION__.__ssl3_cbc_digest_record, i64 0, i64 0)) #7
+  call void @__assert_fail(i8* noundef getelementptr inbounds ([15 x i8], [15 x i8]* @.str.2, i64 0, i64 0), i8* noundef getelementptr inbounds ([11 x i8], [11 x i8]* @.str.3, i64 0, i64 0), i32 noundef 81, i8* noundef getelementptr inbounds ([135 x i8], [135 x i8]* @__PRETTY_FUNCTION__.__ssl3_cbc_digest_record, i64 0, i64 0)) #7
   br label %UnifiedUnreachableBlock
 
 if.end25:                                         ; preds = %if.then24
@@ -264,7 +268,7 @@ if.else30:                                        ; preds = %if.end25
   %in.72 = and i1 %18, %19
   %cond.fold73 = or i1 false, %in.72
   store i1 %cond.fold73, i1* %out.13, align 1
-  call void @__assert_fail(i8* noundef getelementptr inbounds ([33 x i8], [33 x i8]* @.str.4, i64 0, i64 0), i8* noundef getelementptr inbounds ([11 x i8], [11 x i8]* @.str.3, i64 0, i64 0), i32 noundef 76, i8* noundef getelementptr inbounds ([135 x i8], [135 x i8]* @__PRETTY_FUNCTION__.__ssl3_cbc_digest_record, i64 0, i64 0)) #7
+  call void @__assert_fail(i8* noundef getelementptr inbounds ([33 x i8], [33 x i8]* @.str.4, i64 0, i64 0), i8* noundef getelementptr inbounds ([11 x i8], [11 x i8]* @.str.3, i64 0, i64 0), i32 noundef 82, i8* noundef getelementptr inbounds ([135 x i8], [135 x i8]* @__PRETTY_FUNCTION__.__ssl3_cbc_digest_record, i64 0, i64 0)) #7
   br label %UnifiedUnreachableBlock
 
 if.end31:                                         ; preds = %if.then29
@@ -397,18 +401,18 @@ if.end66:                                         ; preds = %for.end, %if.end31
   %add69 = add i64 %add68, 1
   br label %for.cond71
 
-for.cond71:                                       ; preds = %for.inc168, %if.end66
-  %k.1.rewritten = phi i64 [ %k.0.rewritten, %if.end66 ], [ %k.2.lcssa.rewritten, %for.inc168 ]
-  %i70.0.rewritten = phi i64 [ %num_starting_blocks.0.rewritten, %if.end66 ], [ %inc169, %for.inc168 ]
-  %fwedge.taken1.rewritten = phi i1 [ true, %if.end66 ], [ false, %for.inc168 ]
-  %exitpred.frozen2.rewritten = phi i1 [ %cmp72, %for.inc168 ], [ false, %if.end66 ]
+for.cond71:                                       ; preds = %for.inc172, %if.end66
+  %k.1.rewritten = phi i64 [ %k.0.rewritten, %if.end66 ], [ %k.2.lcssa.rewritten, %for.inc172 ]
+  %i70.0.rewritten = phi i64 [ %num_starting_blocks.0.rewritten, %if.end66 ], [ %inc173, %for.inc172 ]
+  %fwedge.taken1.rewritten = phi i1 [ true, %if.end66 ], [ false, %for.inc172 ]
+  %exitpred.frozen2.rewritten = phi i1 [ %cmp72, %for.inc172 ], [ false, %if.end66 ]
   %48 = load i1, i1* %out.58, align 1
   %49 = load i1, i1* %out.22, align 1
   %fwcond.and.fwtaken90 = and i1 %fwedge.taken1.rewritten, %49
   %cond.fold91 = or i1 %fwcond.and.fwtaken90, %48
   store i1 %cond.fold91, i1* %out.23, align 1
   %cmp72 = icmp ult i64 %i70.0.rewritten, %add69
-  br i1 %cmp72, label %for.body74, label %for.end170
+  br i1 %cmp72, label %for.body74, label %for.end174
 
 for.body74:                                       ; preds = %for.cond71
   %50 = load i1, i1* %out.23, align 1
@@ -498,8 +502,8 @@ if.end100:                                        ; preds = %if.end99, %if.then8
   %b.1.rewritten = phi i8 [ %58, %if.then87 ], [ %b.0.rewritten, %if.end99 ]
   %70 = load i1, i1* %out.30, align 1
   %71 = load i1, i1* %out.27, align 1
-  %cond.fold107 = or i1 false, %70
-  %cond.fold108 = or i1 %cond.fold107, %71
+  %cond.fold107 = or i1 false, %71
+  %cond.fold108 = or i1 %cond.fold107, %70
   store i1 %cond.fold108, i1* %out.31, align 1
   %inc101 = add i64 %k.2.rewritten, 1
   %tobool = trunc i8 %frombool to i1
@@ -521,8 +525,8 @@ land.end:                                         ; preds = %land.rhs
   %76 = xor i1 %tobool, true
   %in.111 = and i1 %75, %76
   %phi.fold = select i1 %in.111, i1 false, i1 %phi.rewritten
-  %cond.fold112 = or i1 false, %74
-  %cond.fold113 = or i1 %cond.fold112, %in.111
+  %cond.fold112 = or i1 false, %in.111
+  %cond.fold113 = or i1 %cond.fold112, %74
   store i1 %cond.fold113, i1* %out.33, align 1
   %frombool105 = zext i1 %phi.fold to i8
   %tobool106 = trunc i8 %frombool to i1
@@ -539,16 +543,16 @@ land.rhs108:                                      ; preds = %land.end
   br label %land.end112
 
 land.end112:                                      ; preds = %land.rhs108
-  %phi.rewritten177 = phi i1 [ %cmp110, %land.rhs108 ]
+  %phi.rewritten187 = phi i1 [ %cmp110, %land.rhs108 ]
   %79 = load i1, i1* %out.34, align 1
   %80 = load i1, i1* %out.33, align 1
   %81 = xor i1 %tobool106, true
   %in.116 = and i1 %80, %81
-  %phi.fold178 = select i1 %in.116, i1 false, i1 %phi.rewritten177
+  %phi.fold188 = select i1 %in.116, i1 false, i1 %phi.rewritten187
   %cond.fold117 = or i1 false, %in.116
   %cond.fold118 = or i1 %cond.fold117, %79
   store i1 %cond.fold118, i1* %out.35, align 1
-  %frombool113 = zext i1 %phi.fold178 to i8
+  %frombool113 = zext i1 %phi.fold188 to i8
   %tobool114 = trunc i8 %frombool105 to i1
   br label %cond.false
 
@@ -573,12 +577,12 @@ cond.false:                                       ; preds = %land.end112
 cond.end:                                         ; preds = %cond.true
   %cond.rewritten = phi i32 [ 128, %cond.true ]
   %87 = load i1, i1* %out.37, align 1
-  %phi.fold179 = select i1 %87, i32 %conv116, i32 %cond.rewritten
+  %phi.fold189 = select i1 %87, i32 %conv116, i32 %cond.rewritten
   %88 = load i1, i1* %out.36, align 1
-  %cond.fold123 = or i1 false, %88
-  %cond.fold124 = or i1 %cond.fold123, %87
+  %cond.fold123 = or i1 false, %87
+  %cond.fold124 = or i1 %cond.fold123, %88
   store i1 %cond.fold124, i1* %out.38, align 1
-  %conv117 = trunc i32 %phi.fold179 to i8
+  %conv117 = trunc i32 %phi.fold189 to i8
   %tobool118 = trunc i8 %frombool113 to i1
   br label %if.then119
 
@@ -596,9 +600,9 @@ if.end120:                                        ; preds = %if.then119
   %92 = load i1, i1* %out.38, align 1
   %93 = xor i1 %tobool118, true
   %in.127 = and i1 %92, %93
-  %phi.fold180 = select i1 %in.127, i8 %conv117, i8 %b.2.rewritten
-  %cond.fold128 = or i1 false, %91
-  %cond.fold129 = or i1 %cond.fold128, %in.127
+  %phi.fold190 = select i1 %in.127, i8 %conv117, i8 %b.2.rewritten
+  %cond.fold128 = or i1 false, %in.127
+  %cond.fold129 = or i1 %cond.fold128, %91
   store i1 %cond.fold129, i1* %out.40, align 1
   %tobool121 = trunc i8 %frombool79 to i1
   br label %land.lhs.true
@@ -635,11 +639,11 @@ if.end125:                                        ; preds = %if.then124
   %103 = load i1, i1* %out.40, align 1
   %104 = xor i1 %tobool121, true
   %in.135 = and i1 %103, %104
-  %phi.fold181 = select i1 %in.134, i8 %phi.fold180, i8 %b.3.rewritten
-  %phi.fold182 = select i1 %in.135, i8 %phi.fold180, i8 %phi.fold181
-  %cond.fold136 = or i1 false, %101
-  %cond.fold137 = or i1 %cond.fold136, %in.135
-  %cond.fold138 = or i1 %cond.fold137, %in.134
+  %phi.fold191 = select i1 %in.134, i8 %phi.fold190, i8 %b.3.rewritten
+  %phi.fold192 = select i1 %in.135, i8 %phi.fold190, i8 %phi.fold191
+  %cond.fold136 = or i1 false, %in.135
+  %cond.fold137 = or i1 %cond.fold136, %in.134
+  %cond.fold138 = or i1 %cond.fold137, %101
   store i1 %cond.fold138, i1* %out.43, align 1
   %sub126 = sub i64 64, 8
   %cmp127 = icmp uge i64 %j.0.rewritten, %sub126
@@ -678,28 +682,28 @@ cond.false137:                                    ; preds = %if.then129
   %cond.fold144 = or i1 false, %in.143
   store i1 %cond.fold144, i1* %out.46, align 1
   %113 = load i1, i1* %out.46, align 1
-  %conv138 = zext i8 %phi.fold182 to i32
+  %conv138 = zext i8 %phi.fold192 to i32
   br label %cond.true132
 
 cond.end139:                                      ; preds = %cond.true132
   %cond140.rewritten = phi i32 [ %conv136, %cond.true132 ]
   %114 = load i1, i1* %out.46, align 1
-  %phi.fold183 = select i1 %114, i32 %conv138, i32 %cond140.rewritten
+  %phi.fold193 = select i1 %114, i32 %conv138, i32 %cond140.rewritten
   %115 = load i1, i1* %out.45, align 1
   %cond.fold145 = or i1 false, %114
   %cond.fold146 = or i1 %cond.fold145, %115
   store i1 %cond.fold146, i1* %out.47, align 1
-  %conv141 = trunc i32 %phi.fold183 to i8
+  %conv141 = trunc i32 %phi.fold193 to i8
   br label %if.end142
 
 if.end142:                                        ; preds = %cond.end139, %if.end125
-  %b.4.rewritten = phi i8 [ %conv141, %cond.end139 ], [ %phi.fold182, %if.end125 ]
+  %b.4.rewritten = phi i8 [ %conv141, %cond.end139 ], [ %phi.fold192, %if.end125 ]
   %116 = load i1, i1* %out.47, align 1
   %117 = load i1, i1* %out.43, align 1
   %118 = xor i1 %cmp127, true
   %in.147 = and i1 %117, %118
-  %cond.fold148 = or i1 false, %116
-  %cond.fold149 = or i1 %cond.fold148, %in.147
+  %cond.fold148 = or i1 false, %in.147
+  %cond.fold149 = or i1 %cond.fold148, %116
   store i1 %cond.fold149, i1* %out.48, align 1
   %arrayidx143 = getelementptr inbounds [128 x i8], [128 x i8]* %block, i64 0, i64 %j.0.rewritten
   store i8 %b.4.rewritten, i8* %arrayidx143, align 1
@@ -731,19 +735,20 @@ for.end146:                                       ; preds = %for.cond80
   store i64 128, i64* %arraydecay148.wrapped.field0.length.ptr, align 8
   store i8* %arraydecay148, i8** %arraydecay148.unwrapped, align 8
   call void @md_final_raw(%struct.SHAstate_st* %125, %struct.uint8ptr_wrapped_ty* %arraydecay148.wrapped)
+  store i32 0, i32* %foo, align 4
   br label %for.cond150
 
-for.cond150:                                      ; preds = %for.inc165, %for.end146
-  %j149.0.rewritten = phi i64 [ 0, %for.end146 ], [ %inc166, %for.inc165 ]
-  %fwedge.taken5.rewritten = phi i1 [ true, %for.end146 ], [ false, %for.inc165 ]
-  %exitpred.frozen6.rewritten = phi i1 [ %cmp151, %for.inc165 ], [ false, %for.end146 ]
+for.cond150:                                      ; preds = %for.inc169, %for.end146
+  %j149.0.rewritten = phi i64 [ 0, %for.end146 ], [ %inc170, %for.inc169 ]
+  %fwedge.taken5.rewritten = phi i1 [ true, %for.end146 ], [ false, %for.inc169 ]
+  %exitpred.frozen6.rewritten = phi i1 [ %cmp151, %for.inc169 ], [ false, %for.end146 ]
   %126 = load i1, i1* %out.56, align 1
   %127 = load i1, i1* %out.50, align 1
   %fwcond.and.fwtaken153 = and i1 %fwedge.taken5.rewritten, %127
   %cond.fold154 = or i1 %fwcond.and.fwtaken153, %126
   store i1 %cond.fold154, i1* %out.51, align 1
   %cmp151 = icmp ult i64 %j149.0.rewritten, 20
-  br i1 %cmp151, label %for.body153, label %for.end167
+  br i1 %cmp151, label %for.body153, label %for.end171
 
 for.body153:                                      ; preds = %for.cond150
   %128 = load i1, i1* %out.51, align 1
@@ -751,94 +756,134 @@ for.body153:                                      ; preds = %for.cond150
   %cond.fold156 = or i1 false, %in.155
   store i1 %cond.fold156, i1* %out.52, align 1
   %tobool154 = trunc i8 %frombool79 to i1
-  br label %cond.false159
+  br label %if.else158
 
-cond.true156:                                     ; preds = %cond.false159
+if.then155:                                       ; preds = %if.else158
   %129 = load i1, i1* %out.52, align 1
   %in.157 = and i1 %129, %tobool154
   %cond.fold158 = or i1 false, %in.157
   store i1 %cond.fold158, i1* %out.53, align 1
   %130 = load i1, i1* %out.53, align 1
-  %arrayidx157 = getelementptr inbounds [128 x i8], [128 x i8]* %block, i64 0, i64 %j149.0.rewritten
+  %arrayidx156 = getelementptr inbounds [128 x i8], [128 x i8]* %block, i64 0, i64 %j149.0.rewritten
   %idx1.safe174 = icmp slt i64 %j149.0.rewritten, 128
   %access.safe175 = and i1 true, %idx1.safe174
   %131 = or i1 %130, %access.safe175
   %132 = bitcast i64* %shadow to i8*
-  %ctsel176 = select i1 %131, i8* %arrayidx157, i8* %132
+  %ctsel176 = select i1 %131, i8* %arrayidx156, i8* %132
   %133 = load i8, i8* %ctsel176, align 1
-  %conv158 = zext i8 %133 to i32
-  br label %cond.end160
+  %134 = bitcast i64* %shadow to i8**
+  %ctsel177 = select i1 %130, i8** %mac_out_buf, i8** %134
+  %135 = load i8*, i8** %ctsel177, align 8
+  %arrayidx157 = getelementptr inbounds i8, i8* %135, i64 %j149.0.rewritten
+  %idx0.safe = icmp slt i64 %j149.0.rewritten, 0
+  %136 = or i1 %130, %idx0.safe
+  %137 = bitcast i64* %shadow to i8*
+  %ctsel178 = select i1 %136, i8* %arrayidx157, i8* %137
+  %138 = load i8, i8* %ctsel178, align 1
+  %select.val.179 = select i1 %130, i8 %133, i8 %138
+  store i8 %select.val.179, i8* %ctsel178, align 1
+  br label %if.end161
 
-cond.false159:                                    ; preds = %for.body153
-  %134 = load i1, i1* %out.52, align 1
-  %135 = xor i1 %tobool154, true
-  %in.159 = and i1 %134, %135
+if.else158:                                       ; preds = %for.body153
+  %139 = load i1, i1* %out.52, align 1
+  %140 = xor i1 %tobool154, true
+  %in.159 = and i1 %139, %140
   %cond.fold160 = or i1 false, %in.159
   store i1 %cond.fold160, i1* %out.54, align 1
-  %136 = load i1, i1* %out.54, align 1
-  br label %cond.true156
+  %141 = load i1, i1* %out.54, align 1
+  %142 = bitcast i64* %shadow to i8**
+  %ctsel180 = select i1 %141, i8** %mac_out_buf, i8** %142
+  %143 = load i8*, i8** %ctsel180, align 8
+  %arrayidx159 = getelementptr inbounds i8, i8* %143, i64 %j149.0.rewritten
+  %idx0.safe181 = icmp slt i64 %j149.0.rewritten, 0
+  %144 = or i1 %141, %idx0.safe181
+  %145 = bitcast i64* %shadow to i8*
+  %ctsel182 = select i1 %144, i8* %arrayidx159, i8* %145
+  %146 = load i8, i8* %ctsel182, align 1
+  %select.val.183 = select i1 %141, i8 0, i8 %146
+  store i8 %select.val.183, i8* %ctsel182, align 1
+  %147 = bitcast i64* %shadow to i32*
+  %ctsel184 = select i1 %141, i32* %foo, i32* %147
+  %148 = load i32, i32* %ctsel184, align 4
+  %inc160 = add nsw i32 %148, 1
+  %149 = bitcast i64* %shadow to i32*
+  %ctsel185 = select i1 %141, i32* %foo, i32* %149
+  %150 = load i32, i32* %ctsel185, align 4
+  %select.val.186 = select i1 %141, i32 %inc160, i32 %150
+  store i32 %select.val.186, i32* %ctsel185, align 4
+  br label %if.then155
 
-cond.end160:                                      ; preds = %cond.true156
-  %cond161.rewritten = phi i32 [ %conv158, %cond.true156 ]
-  %137 = load i1, i1* %out.54, align 1
-  %phi.fold184 = select i1 %137, i32 0, i32 %cond161.rewritten
-  %138 = load i1, i1* %out.53, align 1
-  %cond.fold161 = or i1 false, %137
-  %cond.fold162 = or i1 %cond.fold161, %138
+if.end161:                                        ; preds = %if.then155
+  %151 = load i1, i1* %out.54, align 1
+  %152 = load i1, i1* %out.53, align 1
+  %cond.fold161 = or i1 false, %152
+  %cond.fold162 = or i1 %cond.fold161, %151
   store i1 %cond.fold162, i1* %out.55, align 1
-  %139 = load i8*, i8** %mac_out_buf, align 8
-  %arrayidx162 = getelementptr inbounds i8, i8* %139, i64 %j149.0.rewritten
-  %140 = load i8, i8* %arrayidx162, align 1
-  %conv163 = zext i8 %140 to i32
-  %or = or i32 %conv163, %phi.fold184
-  %conv164 = trunc i32 %or to i8
-  store i8 %conv164, i8* %arrayidx162, align 1
-  br label %for.inc165
+  %arrayidx162 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 0
+  store volatile i64 1296236546, i64* %arrayidx162, align 16
+  %153 = ptrtoint i32* %foo to i64
+  %arrayidx163 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 1
+  store volatile i64 %153, i64* %arrayidx163, align 8
+  %arrayidx164 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 2
+  store volatile i64 4, i64* %arrayidx164, align 16
+  %arrayidx165 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 3
+  store volatile i64 0, i64* %arrayidx165, align 8
+  %arrayidx166 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 4
+  store volatile i64 0, i64* %arrayidx166, align 16
+  %arrayidx167 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 5
+  store volatile i64 0, i64* %arrayidx167, align 8
+  %arrayidx168 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 0
+  %154 = call i64 asm sideeffect "rolq $$3,  %rdi ; rolq $$13, %rdi\0A\09rolq $$61, %rdi ; rolq $$51, %rdi\0A\09xchgq %rbx,%rbx", "={dx},{ax},0,~{cc},~{memory},~{dirflag},~{fpsr},~{flags}"(i64* %arrayidx168, i64 0) #8, !srcloc !9
+  store volatile i64 %154, i64* %_zzq_result, align 8
+  %155 = load volatile i64, i64* %_zzq_result, align 8
+  %156 = load i32, i32* %foo, align 4
+  %call = call i32 (i8*, ...) @printf(i8* noundef getelementptr inbounds ([4 x i8], [4 x i8]* @.str.5, i64 0, i64 0), i32 noundef %156)
+  br label %for.inc169
 
-for.inc165:                                       ; preds = %cond.end160
-  %141 = load i1, i1* %out.55, align 1
-  %cond.fold163 = or i1 false, %141
+for.inc169:                                       ; preds = %if.end161
+  %157 = load i1, i1* %out.55, align 1
+  %cond.fold163 = or i1 false, %157
   store i1 %cond.fold163, i1* %out.56, align 1
-  %inc166 = add i64 %j149.0.rewritten, 1
-  br label %for.cond150, !llvm.loop !9
+  %inc170 = add i64 %j149.0.rewritten, 1
+  br label %for.cond150, !llvm.loop !10
 
-for.end167:                                       ; preds = %for.cond150
-  %142 = load i1, i1* %out.51, align 1
-  %143 = xor i1 %cmp151, true
-  %in.164 = and i1 %142, %143
+for.end171:                                       ; preds = %for.cond150
+  %158 = load i1, i1* %out.51, align 1
+  %159 = xor i1 %cmp151, true
+  %in.164 = and i1 %158, %159
   %cond.fold165 = or i1 false, %in.164
   store i1 %cond.fold165, i1* %out.57, align 1
-  br label %for.inc168
+  br label %for.inc172
 
-for.inc168:                                       ; preds = %for.end167
-  %144 = load i1, i1* %out.57, align 1
-  %cond.fold166 = or i1 false, %144
+for.inc172:                                       ; preds = %for.end171
+  %160 = load i1, i1* %out.57, align 1
+  %cond.fold166 = or i1 false, %160
   store i1 %cond.fold166, i1* %out.58, align 1
-  %inc169 = add i64 %i70.0.rewritten, 1
-  br label %for.cond71, !llvm.loop !10
+  %inc173 = add i64 %i70.0.rewritten, 1
+  br label %for.cond71, !llvm.loop !11
 
-for.end170:                                       ; preds = %for.cond71
-  %145 = load i1, i1* %out.23, align 1
-  %146 = xor i1 %cmp72, true
-  %in.167 = and i1 %145, %146
+for.end174:                                       ; preds = %for.cond71
+  %161 = load i1, i1* %out.23, align 1
+  %162 = xor i1 %cmp72, true
+  %in.167 = and i1 %161, %162
   %cond.fold168 = or i1 false, %in.167
   store i1 %cond.fold168, i1* %out.59, align 1
   br label %return
 
-return:                                           ; preds = %for.end170, %if.then51
-  %retval.0.rewritten = phi i32 [ 0, %if.then51 ], [ 1, %for.end170 ]
-  %147 = load i1, i1* %out.59, align 1
-  %148 = load i1, i1* %out.16, align 1
-  %cond.fold169 = or i1 false, %148
-  %cond.fold170 = or i1 %cond.fold169, %147
+return:                                           ; preds = %for.end174, %if.then51
+  %retval.0.rewritten = phi i32 [ 0, %if.then51 ], [ 1, %for.end174 ]
+  %163 = load i1, i1* %out.59, align 1
+  %164 = load i1, i1* %out.16, align 1
+  %cond.fold169 = or i1 false, %164
+  %cond.fold170 = or i1 %cond.fold169, %163
   store i1 %cond.fold170, i1* %out.60, align 1
   ret i32 %retval.0.rewritten
 
 UnifiedUnreachableBlock:                          ; preds = %if.else30, %if.else
-  %149 = load i1, i1* %out.13, align 1
-  %150 = load i1, i1* %out.10, align 1
-  %cond.fold171 = or i1 false, %149
-  %cond.fold172 = or i1 %cond.fold171, %150
+  %165 = load i1, i1* %out.13, align 1
+  %166 = load i1, i1* %out.10, align 1
+  %cond.fold171 = or i1 false, %166
+  %cond.fold172 = or i1 %cond.fold171, %165
   store i1 %cond.fold172, i1* %out.61, align 1
   unreachable
 }
@@ -1007,6 +1052,8 @@ entry:
   ret void
 }
 
+declare i32 @printf(i8* noundef, ...) #4
+
 ; Function Attrs: noinline nounwind sspstrong uwtable
 define dso_local i32 @main() #0 {
 entry:
@@ -1089,7 +1136,7 @@ entry:
   %mul28 = mul i64 %9, 1
   %call29 = call i64 @read(i32 noundef 0, i8* noundef %8, i64 noundef %mul28)
   %data_plus_mac_size30 = bitcast i64* %data_plus_mac_size to i8*
-  call void @llvm.var.annotation(i8* %data_plus_mac_size30, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.6, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.1.7, i32 0, i32 0), i32 52, i8* null)
+  call void @llvm.var.annotation(i8* %data_plus_mac_size30, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.7, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.1.8, i32 0, i32 0), i32 52, i8* null)
   %len31 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %data, i32 0, i32 1
   %10 = load i64, i64* %len31, align 8
   %buf32 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %data, i32 0, i32 0
@@ -1118,7 +1165,7 @@ entry:
   %arrayidx41 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 5
   store volatile i64 0, i64* %arrayidx41, align 8
   %arrayidx42 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 0
-  %16 = call i64 asm sideeffect "rolq $$3,  %rdi ; rolq $$13, %rdi\0A\09rolq $$61, %rdi ; rolq $$51, %rdi\0A\09xchgq %rbx,%rbx", "={dx},{ax},0,~{cc},~{memory},~{dirflag},~{fpsr},~{flags}"(i64* %arrayidx42, i64 0) #8, !srcloc !11
+  %16 = call i64 asm sideeffect "rolq $$3,  %rdi ; rolq $$13, %rdi\0A\09rolq $$61, %rdi ; rolq $$51, %rdi\0A\09xchgq %rbx,%rbx", "={dx},{ax},0,~{cc},~{memory},~{dirflag},~{fpsr},~{flags}"(i64* %arrayidx42, i64 0) #8, !srcloc !12
   store volatile i64 %16, i64* %_zzq_result, align 8
   %17 = load volatile i64, i64* %_zzq_result, align 8
   %arrayidx45 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args43, i64 0, i64 0
@@ -1140,7 +1187,7 @@ entry:
   %arrayidx53 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args43, i64 0, i64 5
   store volatile i64 0, i64* %arrayidx53, align 8
   %arrayidx54 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args43, i64 0, i64 0
-  %21 = call i64 asm sideeffect "rolq $$3,  %rdi ; rolq $$13, %rdi\0A\09rolq $$61, %rdi ; rolq $$51, %rdi\0A\09xchgq %rbx,%rbx", "={dx},{ax},0,~{cc},~{memory},~{dirflag},~{fpsr},~{flags}"(i64* %arrayidx54, i64 0) #8, !srcloc !12
+  %21 = call i64 asm sideeffect "rolq $$3,  %rdi ; rolq $$13, %rdi\0A\09rolq $$61, %rdi ; rolq $$51, %rdi\0A\09xchgq %rbx,%rbx", "={dx},{ax},0,~{cc},~{memory},~{dirflag},~{fpsr},~{flags}"(i64* %arrayidx54, i64 0) #8, !srcloc !13
   store volatile i64 %21, i64* %_zzq_result44, align 8
   %22 = load volatile i64, i64* %_zzq_result44, align 8
   %arrayidx58 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args56, i64 0, i64 0
@@ -1162,7 +1209,7 @@ entry:
   %arrayidx66 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args56, i64 0, i64 5
   store volatile i64 0, i64* %arrayidx66, align 8
   %arrayidx67 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args56, i64 0, i64 0
-  %26 = call i64 asm sideeffect "rolq $$3,  %rdi ; rolq $$13, %rdi\0A\09rolq $$61, %rdi ; rolq $$51, %rdi\0A\09xchgq %rbx,%rbx", "={dx},{ax},0,~{cc},~{memory},~{dirflag},~{fpsr},~{flags}"(i64* %arrayidx67, i64 0) #8, !srcloc !13
+  %26 = call i64 asm sideeffect "rolq $$3,  %rdi ; rolq $$13, %rdi\0A\09rolq $$61, %rdi ; rolq $$51, %rdi\0A\09xchgq %rbx,%rbx", "={dx},{ax},0,~{cc},~{memory},~{dirflag},~{fpsr},~{flags}"(i64* %arrayidx67, i64 0) #8, !srcloc !14
   store volatile i64 %26, i64* %_zzq_result57, align 8
   %27 = load volatile i64, i64* %_zzq_result57, align 8
   %arrayidx71 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args69, i64 0, i64 0
@@ -1184,7 +1231,7 @@ entry:
   %arrayidx79 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args69, i64 0, i64 5
   store volatile i64 0, i64* %arrayidx79, align 8
   %arrayidx80 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args69, i64 0, i64 0
-  %31 = call i64 asm sideeffect "rolq $$3,  %rdi ; rolq $$13, %rdi\0A\09rolq $$61, %rdi ; rolq $$51, %rdi\0A\09xchgq %rbx,%rbx", "={dx},{ax},0,~{cc},~{memory},~{dirflag},~{fpsr},~{flags}"(i64* %arrayidx80, i64 0) #8, !srcloc !14
+  %31 = call i64 asm sideeffect "rolq $$3,  %rdi ; rolq $$13, %rdi\0A\09rolq $$61, %rdi ; rolq $$51, %rdi\0A\09xchgq %rbx,%rbx", "={dx},{ax},0,~{cc},~{memory},~{dirflag},~{fpsr},~{flags}"(i64* %arrayidx80, i64 0) #8, !srcloc !15
   store volatile i64 %31, i64* %_zzq_result70, align 8
   %32 = load volatile i64, i64* %_zzq_result70, align 8
   %arrayidx84 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args82, i64 0, i64 0
@@ -1201,7 +1248,7 @@ entry:
   %arrayidx89 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args82, i64 0, i64 5
   store volatile i64 0, i64* %arrayidx89, align 8
   %arrayidx90 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args82, i64 0, i64 0
-  %34 = call i64 asm sideeffect "rolq $$3,  %rdi ; rolq $$13, %rdi\0A\09rolq $$61, %rdi ; rolq $$51, %rdi\0A\09xchgq %rbx,%rbx", "={dx},{ax},0,~{cc},~{memory},~{dirflag},~{fpsr},~{flags}"(i64* %arrayidx90, i64 0) #8, !srcloc !15
+  %34 = call i64 asm sideeffect "rolq $$3,  %rdi ; rolq $$13, %rdi\0A\09rolq $$61, %rdi ; rolq $$51, %rdi\0A\09xchgq %rbx,%rbx", "={dx},{ax},0,~{cc},~{memory},~{dirflag},~{fpsr},~{flags}"(i64* %arrayidx90, i64 0) #8, !srcloc !16
   store volatile i64 %34, i64* %_zzq_result83, align 8
   %35 = load volatile i64, i64* %_zzq_result83, align 8
   %36 = load i64, i64* %data_plus_mac_size, align 8
@@ -1248,10 +1295,11 @@ attributes #8 = { nounwind }
 !6 = distinct !{!6, !7}
 !7 = !{!"llvm.loop.mustprogress"}
 !8 = distinct !{!8, !7}
-!9 = distinct !{!9, !7}
+!9 = !{i64 2148238333, i64 2148238369, i64 2148238437}
 !10 = distinct !{!10, !7}
-!11 = !{i64 2148384488, i64 2148384524, i64 2148384592}
-!12 = !{i64 2148386159, i64 2148386195, i64 2148386263}
-!13 = !{i64 2148387824, i64 2148387860, i64 2148387928}
-!14 = !{i64 2148389477, i64 2148389513, i64 2148389581}
-!15 = !{i64 2148391142, i64 2148391178, i64 2148391246}
+!11 = distinct !{!11, !7}
+!12 = !{i64 2148384488, i64 2148384524, i64 2148384592}
+!13 = !{i64 2148386159, i64 2148386195, i64 2148386263}
+!14 = !{i64 2148387824, i64 2148387860, i64 2148387928}
+!15 = !{i64 2148389477, i64 2148389513, i64 2148389581}
+!16 = !{i64 2148391142, i64 2148391178, i64 2148391246}
