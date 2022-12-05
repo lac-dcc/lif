@@ -4,6 +4,12 @@
  */
 
 #include "../include/ssl3.h"
+
+#define CHECK_INST_COUNT 1 // ADDED TO CHECK OP INVARIANCE
+#ifdef CHECK_INST_COUNT // ADDED TO CHECK OP INVARIANCE
+#define ENABLE_CTGRIND 1
+#endif
+
 #include "../../../include/taint.h"
 
 #include <assert.h>
@@ -144,8 +150,26 @@ int32_t __ssl3_cbc_digest_record(
         SHA1_Transform((SHA_CTX *) md_state_buf, block);
         md_final_raw((SHA_CTX *) md_state_buf, block);
 
+#ifdef CHECK_INST_COUNT // ADDED TO CHECK OP INVARIANCE
+        int foo = 0;
+#endif
+
         for (uint64_t j = 0; j < md_size; j++) {
+#ifdef CHECK_INST_COUNT // ADDED TO CHECK OP INVARIANCE
+            if (is_block_b) {
+                mac_out_buf[j] = block[j];
+            } else {
+                mac_out_buf[j] = 0;
+                foo++;
+            }
+
+            // Mark foo as public to eliminate false positives due
+            // to non constant-time implementation of printf.
+            ct_public(&foo, sizeof(int));
+            printf("%d\n", foo);
+#else
             mac_out_buf[j] |= is_block_b ? block[j] : 0;
+#endif
         }
     }
 
