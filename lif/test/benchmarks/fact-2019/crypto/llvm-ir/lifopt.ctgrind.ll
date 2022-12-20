@@ -1257,18 +1257,18 @@ entry:
   call void @llvm.var.annotation(i8* nonnull %key.addr2, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.6, i64 0, i64 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.1.3, i64 0, i64 0), i32 290, i8* null)
   %2 = bitcast %struct.poly1305_state_internal_t* %state to i8*
   call void @llvm.memset.p0i8.i64(i8* noundef nonnull align 8 dereferenceable(96) %2, i8 0, i64 96, i1 false)
-  %arg.unwrapped = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped, i64 0, i32 0
-  %arg.wrapped.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped, i64 0, i32 1
-  store i64 0, i64* %arg.wrapped.field0.length.ptr, align 8
-  store i8* %key.unwrapped, i8** %arg.unwrapped, align 8
-  call void @_poly1305_init(%struct.poly1305_state_internal_t* nonnull %state, %struct.uint8ptr_wrapped_ty* nonnull %arg.wrapped)
-  call void @_poly1305_update(%struct.poly1305_state_internal_t* noundef nonnull %state, %struct.uint8ptr_wrapped_ty* noundef %m)
-  %3 = load i8*, i8** %out.addr, align 8
   %arg.unwrapped2 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped1, i64 0, i32 0
   %arg.wrapped1.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped1, i64 0, i32 1
   store i64 0, i64* %arg.wrapped1.field0.length.ptr, align 8
-  store i8* %3, i8** %arg.unwrapped2, align 8
-  call void @_poly1305_finish(%struct.poly1305_state_internal_t* nonnull %state, %struct.uint8ptr_wrapped_ty* nonnull %arg.wrapped1)
+  store i8* %key.unwrapped, i8** %arg.unwrapped2, align 8
+  call void @_poly1305_init(%struct.poly1305_state_internal_t* nonnull %state, %struct.uint8ptr_wrapped_ty* nonnull %arg.wrapped1)
+  call void @_poly1305_update(%struct.poly1305_state_internal_t* noundef nonnull %state, %struct.uint8ptr_wrapped_ty* noundef %m)
+  %3 = load i8*, i8** %out.addr, align 8
+  %arg.unwrapped = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped, i64 0, i32 0
+  %arg.wrapped.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped, i64 0, i32 1
+  store i64 0, i64* %arg.wrapped.field0.length.ptr, align 8
+  store i8* %3, i8** %arg.unwrapped, align 8
+  call void @_poly1305_finish(%struct.poly1305_state_internal_t* nonnull %state, %struct.uint8ptr_wrapped_ty* nonnull %arg.wrapped)
   ret i32 0
 }
 
@@ -1277,10 +1277,10 @@ define dso_local zeroext i1 @_crypto_onetimeauth_poly1305_verify(%struct.uint8pt
 entry:
   %h.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %h, i64 0, i32 1
   %h.field0.length = load i64, i64* %h.field0.length.ptr, align 8
-  %arraydecay.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %arg.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %h.unwrapped.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %arraydecay3.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %arraydecay.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %arg.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %0 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %h, i64 0, i32 0
   %h.unwrapped = load i8*, i8** %0, align 8
   %1 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %k, i64 0, i32 0
