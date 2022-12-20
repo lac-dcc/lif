@@ -221,8 +221,8 @@ if.end:                                           ; preds = %if.then, %entry
   %9 = load i1, i1* %out., align 1
   %10 = xor i1 %cmp, true
   %in.62 = and i1 %9, %10
-  %cond.fold63 = or i1 false, %in.62
-  %cond.fold64 = or i1 %cond.fold63, %8
+  %cond.fold63 = or i1 false, %8
+  %cond.fold64 = or i1 %cond.fold63, %in.62
   store i1 %cond.fold64, i1* %out.8, align 1
   %len22 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %data, i32 0, i32 1
   %11 = load i64, i64* %len22, align 8
@@ -394,8 +394,8 @@ if.end66:                                         ; preds = %for.end, %if.end31
   %46 = load i1, i1* %out.14, align 1
   %47 = xor i1 %cmp45, true
   %in.87 = and i1 %46, %47
-  %cond.fold88 = or i1 false, %45
-  %cond.fold89 = or i1 %cond.fold88, %in.87
+  %cond.fold88 = or i1 false, %in.87
+  %cond.fold89 = or i1 %cond.fold88, %45
   store i1 %cond.fold89, i1* %out.22, align 1
   %add68 = add i64 %num_starting_blocks.0.rewritten, 2
   %add69 = add i64 %add68, 1
@@ -549,8 +549,8 @@ land.end112:                                      ; preds = %land.rhs108
   %81 = xor i1 %tobool106, true
   %in.116 = and i1 %80, %81
   %phi.fold188 = select i1 %in.116, i1 false, i1 %phi.rewritten187
-  %cond.fold117 = or i1 false, %in.116
-  %cond.fold118 = or i1 %cond.fold117, %79
+  %cond.fold117 = or i1 false, %79
+  %cond.fold118 = or i1 %cond.fold117, %in.116
   store i1 %cond.fold118, i1* %out.35, align 1
   %frombool113 = zext i1 %phi.fold188 to i8
   %tobool114 = trunc i8 %frombool105 to i1
@@ -579,8 +579,8 @@ cond.end:                                         ; preds = %cond.true
   %87 = load i1, i1* %out.37, align 1
   %phi.fold189 = select i1 %87, i32 %conv116, i32 %cond.rewritten
   %88 = load i1, i1* %out.36, align 1
-  %cond.fold123 = or i1 false, %87
-  %cond.fold124 = or i1 %cond.fold123, %88
+  %cond.fold123 = or i1 false, %88
+  %cond.fold124 = or i1 %cond.fold123, %87
   store i1 %cond.fold124, i1* %out.38, align 1
   %conv117 = trunc i32 %phi.fold189 to i8
   %tobool118 = trunc i8 %frombool113 to i1
@@ -601,8 +601,8 @@ if.end120:                                        ; preds = %if.then119
   %93 = xor i1 %tobool118, true
   %in.127 = and i1 %92, %93
   %phi.fold190 = select i1 %in.127, i8 %conv117, i8 %b.2.rewritten
-  %cond.fold128 = or i1 false, %in.127
-  %cond.fold129 = or i1 %cond.fold128, %91
+  %cond.fold128 = or i1 false, %91
+  %cond.fold129 = or i1 %cond.fold128, %in.127
   store i1 %cond.fold129, i1* %out.40, align 1
   %tobool121 = trunc i8 %frombool79 to i1
   br label %land.lhs.true
@@ -641,9 +641,9 @@ if.end125:                                        ; preds = %if.then124
   %in.135 = and i1 %103, %104
   %phi.fold191 = select i1 %in.134, i8 %phi.fold190, i8 %b.3.rewritten
   %phi.fold192 = select i1 %in.135, i8 %phi.fold190, i8 %phi.fold191
-  %cond.fold136 = or i1 false, %in.135
+  %cond.fold136 = or i1 false, %101
   %cond.fold137 = or i1 %cond.fold136, %in.134
-  %cond.fold138 = or i1 %cond.fold137, %101
+  %cond.fold138 = or i1 %cond.fold137, %in.135
   store i1 %cond.fold138, i1* %out.43, align 1
   %sub126 = sub i64 64, 8
   %cmp127 = icmp uge i64 %j.0.rewritten, %sub126
@@ -816,8 +816,8 @@ if.else158:                                       ; preds = %for.body153
 if.end161:                                        ; preds = %if.then155
   %151 = load i1, i1* %out.54, align 1
   %152 = load i1, i1* %out.53, align 1
-  %cond.fold161 = or i1 false, %152
-  %cond.fold162 = or i1 %cond.fold161, %151
+  %cond.fold161 = or i1 false, %151
+  %cond.fold162 = or i1 %cond.fold161, %152
   store i1 %cond.fold162, i1* %out.55, align 1
   %arrayidx162 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 0
   store volatile i64 1296236546, i64* %arrayidx162, align 16
@@ -874,16 +874,16 @@ return:                                           ; preds = %for.end174, %if.the
   %retval.0.rewritten = phi i32 [ 0, %if.then51 ], [ 1, %for.end174 ]
   %163 = load i1, i1* %out.59, align 1
   %164 = load i1, i1* %out.16, align 1
-  %cond.fold169 = or i1 false, %164
-  %cond.fold170 = or i1 %cond.fold169, %163
+  %cond.fold169 = or i1 false, %163
+  %cond.fold170 = or i1 %cond.fold169, %164
   store i1 %cond.fold170, i1* %out.60, align 1
   ret i32 %retval.0.rewritten
 
 UnifiedUnreachableBlock:                          ; preds = %if.else30, %if.else
   %165 = load i1, i1* %out.13, align 1
   %166 = load i1, i1* %out.10, align 1
-  %cond.fold171 = or i1 false, %166
-  %cond.fold172 = or i1 %cond.fold171, %165
+  %cond.fold171 = or i1 false, %165
+  %cond.fold172 = or i1 %cond.fold171, %166
   store i1 %cond.fold172, i1* %out.61, align 1
   unreachable
 }
@@ -1295,11 +1295,11 @@ attributes #8 = { nounwind }
 !6 = distinct !{!6, !7}
 !7 = !{!"llvm.loop.mustprogress"}
 !8 = distinct !{!8, !7}
-!9 = !{i64 2148238333, i64 2148238369, i64 2148238437}
+!9 = !{i64 2148240467, i64 2148240503, i64 2148240571}
 !10 = distinct !{!10, !7}
 !11 = distinct !{!11, !7}
-!12 = !{i64 2148384488, i64 2148384524, i64 2148384592}
-!13 = !{i64 2148386159, i64 2148386195, i64 2148386263}
-!14 = !{i64 2148387824, i64 2148387860, i64 2148387928}
-!15 = !{i64 2148389477, i64 2148389513, i64 2148389581}
-!16 = !{i64 2148391142, i64 2148391178, i64 2148391246}
+!12 = !{i64 2148432443, i64 2148432479, i64 2148432547}
+!13 = !{i64 2148434114, i64 2148434150, i64 2148434218}
+!14 = !{i64 2148435779, i64 2148435815, i64 2148435883}
+!15 = !{i64 2148437432, i64 2148437468, i64 2148437536}
+!16 = !{i64 2148439097, i64 2148439133, i64 2148439201}

@@ -222,8 +222,8 @@ for.body32:                                       ; preds = %for.body32.lr.ph, %
   %40 = xor i1 %pred.alloca68.0.pred.alloca68.0.pred.alloca68.0.pred.load69, true
   %in.70 = and i1 %in.64, %40
   %in.71 = and i1 %cond.fold6136, %tobool35
-  %cond.fold73 = or i1 %in.71, %in.70
-  %cond.fold74 = or i1 %in.66, %cond.fold73
+  %cond.fold73 = or i1 %in.66, %in.70
+  %cond.fold74 = or i1 %in.71, %cond.fold73
   %indvars.iv.next53 = add nuw nsw i64 %indvars.iv52, 1
   %exitcond55.not = icmp eq i64 %indvars.iv.next53, %wide.trip.count54
   br i1 %exitcond55.not, label %for.end60, label %for.body32, !llvm.loop !16

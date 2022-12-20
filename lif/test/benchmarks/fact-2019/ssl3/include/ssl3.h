@@ -1,12 +1,8 @@
 #ifndef SSL3_H
 #define SSL3_H
 
+#include "../../include/fact.h"
 #include <stdint.h>
-
-typedef struct uint8ptr_wrapped_ty {
-    uint8_t *buf;
-    uint64_t len;
-} uint8ptr_wrapped_ty;
 
 // We annotate the indices of the arguments whose types we don't want
 // lif to wrap (because they're already wrapped).

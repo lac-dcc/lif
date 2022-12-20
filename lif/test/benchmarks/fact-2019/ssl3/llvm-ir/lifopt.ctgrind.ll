@@ -250,22 +250,20 @@ if.end100:                                        ; preds = %if.end99, %if.then8
   %30 = select i1 %in.135, i1 true, i1 %in.134
   %31 = select i1 %30, i1 %in.127, i1 false
   %phi.fold192 = select i1 %31, i8 %conv117, i8 0
-  %cond.fold137 = or i1 %in.135, %in.134
-  %cond.fold138 = or i1 %in.132, %cond.fold137
+  %cond.fold137 = or i1 %in.132, %in.134
+  %cond.fold138 = or i1 %in.135, %cond.fold137
   %cmp127 = icmp ugt i64 %j.0.rewritten58, 55
   br i1 %cmp127, label %if.then129, label %if.end142
 
 if.then129:                                       ; preds = %if.end100
-  %in.141 = or i1 %in.132, %in.134
   %sub134 = add nsw i64 %j.0.rewritten58, -56
   %arrayidx135 = getelementptr inbounds [16 x i8], [16 x i8]* %length_bytes, i64 0, i64 %sub134
   %32 = load i8, i8* %arrayidx135, align 1
   %phi.fold193.v = select i1 %in.135, i8 %phi.fold192, i8 %32
-  %cond.fold146 = or i1 %in.135, %in.141
   br label %if.end142
 
 if.end142:                                        ; preds = %if.then129, %if.end100
-  %out.47.2 = phi i1 [ %cond.fold146, %if.then129 ], [ %out.47.154, %if.end100 ]
+  %out.47.2 = phi i1 [ %cond.fold138, %if.then129 ], [ %out.47.154, %if.end100 ]
   %b.4.rewritten = phi i8 [ %phi.fold193.v, %if.then129 ], [ %phi.fold192, %if.end100 ]
   %33 = xor i1 %cmp127, true
   %in.147 = and i1 %cond.fold138, %33
@@ -634,11 +632,11 @@ attributes #11 = { nounwind }
 !6 = distinct !{!6, !7}
 !7 = !{!"llvm.loop.mustprogress"}
 !8 = distinct !{!8, !7}
-!9 = !{i64 2148238333, i64 2148238369, i64 2148238437}
+!9 = !{i64 2148240467, i64 2148240503, i64 2148240571}
 !10 = distinct !{!10, !7}
 !11 = distinct !{!11, !7}
-!12 = !{i64 2148384488, i64 2148384524, i64 2148384592}
-!13 = !{i64 2148386159, i64 2148386195, i64 2148386263}
-!14 = !{i64 2148387824, i64 2148387860, i64 2148387928}
-!15 = !{i64 2148389477, i64 2148389513, i64 2148389581}
-!16 = !{i64 2148391142, i64 2148391178, i64 2148391246}
+!12 = !{i64 2148432443, i64 2148432479, i64 2148432547}
+!13 = !{i64 2148434114, i64 2148434150, i64 2148434218}
+!14 = !{i64 2148435779, i64 2148435815, i64 2148435883}
+!15 = !{i64 2148437432, i64 2148437468, i64 2148437536}
+!16 = !{i64 2148439097, i64 2148439133, i64 2148439201}
