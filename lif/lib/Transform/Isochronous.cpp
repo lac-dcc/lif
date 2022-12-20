@@ -145,31 +145,5 @@ llvm::PreservedAnalyses lif::transform::IsochronousPass::run(
         rewriteFunc(WrappedFuncs[&F].get(), LM, FAM);
     }
 
-    // for (auto &F : M) {
-    //     if (F.isDeclaration()) continue;
-    //     llvm::errs() << "===== " << F.getName() << " (Tainted? "
-    //                  << TaintedCallees.contains(&F) << ") =====\n";
-    //     for (auto &Arg : F.args())
-    //         llvm::errs() << Arg << "\t" << "Tainted? "
-    //                      << Tainted.contains(&Arg) << "\n";
-
-    //     llvm::errs() << "++++++";
-    //     for (auto _ : F.getName()) llvm::errs() << "+";
-    //     llvm::errs() << "+++++++++++++++++++\n";
-
-    //     for (auto &BB : F) {
-    //         llvm::errs() << BB.getName() << " (BB tainted? "
-    //                      << Tainted.contains(&BB) << "):\n";
-    //         for (auto &I : BB)
-    //             llvm::errs() << I << "\t" << "Tainted? "
-    //                          << Tainted.contains(&I) << "\n";
-    //         llvm::errs() << "\n";
-    //     }
-
-    //     llvm::errs() << "======";
-    //     for (auto _ : F.getName()) llvm::errs() << "=";
-    //     llvm::errs() << "===================\n\n";
-    // }
-
     return llvm::PreservedAnalyses::none();
 }

@@ -96,11 +96,8 @@ void lif::analysis::taintGlobals(llvm::Module &M, TaintedInfo &T) {
 
         // The first field corresponds to a pointer to the annotated variable
         // (it is bitcast instruction).
-        auto Annotated = llvm::cast<llvm::BitCastInst>(
-            llvm::cast<llvm::ConstantExpr>(Struct->getOperand(0))
-                ->getAsInstruction()
-            )->getOperand(0);
-
+        auto Annotated = llvm::cast<llvm::ConstantExpr>(Struct->getOperand(0))
+                             ->getOperand(0);
         T.insert(Annotated);
     }
 }
