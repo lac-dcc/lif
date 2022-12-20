@@ -361,8 +361,8 @@ if.end:                                           ; preds = %for.end56, %for.end
   %43 = load i1, i1* %out.18, align 1
   %44 = xor i1 %cmp36, true
   %in.52 = and i1 %43, %44
-  %cond.fold53 = or i1 false, %42
-  %cond.fold54 = or i1 %cond.fold53, %in.52
+  %cond.fold53 = or i1 false, %in.52
+  %cond.fold54 = or i1 %cond.fold53, %42
   store i1 %cond.fold54, i1* %out.24, align 1
   %arraydecay57 = getelementptr inbounds [64 x i8], [64 x i8]* %block, i64 0, i64 0
   call void @sodium_memzero(i8* noundef %arraydecay57, i64 noundef 64)
@@ -845,8 +845,8 @@ if.end90:                                         ; preds = %for.end89, %for.end
   %68 = load i1, i1* %out.33, align 1
   %69 = xor i1 %cmp67, true
   %in.86 = and i1 %68, %69
-  %cond.fold87 = or i1 false, %67
-  %cond.fold88 = or i1 %cond.fold87, %in.86
+  %cond.fold87 = or i1 false, %in.86
+  %cond.fold88 = or i1 %cond.fold87, %67
   store i1 %cond.fold88, i1* %out.39, align 1
   %arraydecay91 = getelementptr inbounds [64 x i8], [64 x i8]* %block, i64 0, i64 0
   call void @sodium_memzero(i8* noundef %arraydecay91, i64 noundef 64)
@@ -883,6 +883,18 @@ entry:
   %input.field0.length = load i64, i64* %input.field0.length.ptr, align 8
   %k.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %k, i32 0, i32 1
   %k.field0.length = load i64, i64* %k.field0.length.ptr, align 8
+  %add.ptr50.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %add.ptr47.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %add.ptr44.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %arg.wrapped11 = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %add.ptr31.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %add.ptr28.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %add.ptr25.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %add.ptr22.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %add.ptr19.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %add.ptr16.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %add.ptr.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %arg.wrapped9 = alloca %struct.uint8ptr_wrapped_ty, align 8
   %add.ptr179.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %add.ptr177.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %add.ptr175.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
@@ -898,18 +910,6 @@ entry:
   %add.ptr155.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %add.ptr153.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %add.ptr151.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %arg.wrapped11 = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %add.ptr50.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %add.ptr47.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %add.ptr44.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %arg.wrapped9 = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %add.ptr31.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %add.ptr28.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %add.ptr25.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %add.ptr22.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %add.ptr19.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %add.ptr16.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %add.ptr.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %arg.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %out. = alloca i1, align 1
   store i1 false, i1* %out., align 1
@@ -1004,11 +1004,11 @@ entry:
   %x112 = bitcast i32* %x1 to i8*
   call void @llvm.var.annotation(i8* %x112, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([14 x i8], [14 x i8]* @.str.1, i32 0, i32 0), i32 29, i8* null)
   %7 = load i8*, i8** %k.addr, align 8
-  %arg.unwrapped = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped, i32 0, i32 0
-  %arg.wrapped.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped, i32 0, i32 1
-  store i64 0, i64* %arg.wrapped.field0.length.ptr, align 8
-  store i8* %7, i8** %arg.unwrapped, align 8
-  %call = call i32 @load32_le(%struct.uint8ptr_wrapped_ty* %arg.wrapped)
+  %arg.unwrapped10 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped9, i32 0, i32 0
+  %arg.wrapped9.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped9, i32 0, i32 1
+  store i64 0, i64* %arg.wrapped9.field0.length.ptr, align 8
+  store i8* %7, i8** %arg.unwrapped10, align 8
+  %call = call i32 @load32_le(%struct.uint8ptr_wrapped_ty* %arg.wrapped9)
   store i32 %call, i32* %x1, align 4
   %x213 = bitcast i32* %x2 to i8*
   call void @llvm.var.annotation(i8* %x213, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([14 x i8], [14 x i8]* @.str.1, i32 0, i32 0), i32 30, i8* null)
@@ -1115,11 +1115,11 @@ entry:
   %x641 = bitcast i32* %x6 to i8*
   call void @llvm.var.annotation(i8* %x641, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([14 x i8], [14 x i8]* @.str.1, i32 0, i32 0), i32 48, i8* null)
   %23 = load i8*, i8** %input.addr, align 8
-  %arg.unwrapped10 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped9, i32 0, i32 0
-  %arg.wrapped9.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped9, i32 0, i32 1
-  store i64 0, i64* %arg.wrapped9.field0.length.ptr, align 8
-  store i8* %23, i8** %arg.unwrapped10, align 8
-  %call42 = call i32 @load32_le(%struct.uint8ptr_wrapped_ty* %arg.wrapped9)
+  %arg.unwrapped12 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped11, i32 0, i32 0
+  %arg.wrapped11.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped11, i32 0, i32 1
+  store i64 0, i64* %arg.wrapped11.field0.length.ptr, align 8
+  store i8* %23, i8** %arg.unwrapped12, align 8
+  %call42 = call i32 @load32_le(%struct.uint8ptr_wrapped_ty* %arg.wrapped11)
   store i32 %call42, i32* %x6, align 4
   %x743 = bitcast i32* %x7 to i8*
   call void @llvm.var.annotation(i8* %x743, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([14 x i8], [14 x i8]* @.str.1, i32 0, i32 0), i32 49, i8* null)
@@ -1431,11 +1431,11 @@ for.end:                                          ; preds = %for.cond
   %134 = load i32, i32* %x0, align 4
   %135 = load i32, i32* %j0, align 4
   %add150 = add i32 %134, %135
-  %arg.unwrapped12 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped11, i32 0, i32 0
-  %arg.wrapped11.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped11, i32 0, i32 1
-  store i64 0, i64* %arg.wrapped11.field0.length.ptr, align 8
-  store i8* %133, i8** %arg.unwrapped12, align 8
-  call void @store32_le(%struct.uint8ptr_wrapped_ty* %arg.wrapped11, i32 %add150)
+  %arg.unwrapped = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped, i32 0, i32 0
+  %arg.wrapped.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped, i32 0, i32 1
+  store i64 0, i64* %arg.wrapped.field0.length.ptr, align 8
+  store i8* %133, i8** %arg.unwrapped, align 8
+  call void @store32_le(%struct.uint8ptr_wrapped_ty* %arg.wrapped, i32 %add150)
   %136 = load i8*, i8** %output.addr, align 8
   %add.ptr151 = getelementptr inbounds i8, i8* %136, i64 4
   %137 = load i32, i32* %x1, align 4
@@ -2274,8 +2274,8 @@ if.end28:                                         ; preds = %if.end23, %entry
   %38 = load i1, i1* %out., align 1
   %39 = xor i1 %cmp, true
   %in.69 = and i1 %38, %39
-  %cond.fold70 = or i1 false, %in.69
-  %cond.fold71 = or i1 %cond.fold70, %37
+  %cond.fold70 = or i1 false, %37
+  %cond.fold71 = or i1 %cond.fold70, %in.69
   store i1 %cond.fold71, i1* %out.22, align 1
   %len29 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %m, i32 0, i32 1
   %40 = load i64, i64* %len29, align 8
@@ -2496,9 +2496,9 @@ if.end87:                                         ; preds = %for.end84, %if.end5
   %85 = xor i1 %pred.load, true
   %in.106 = and i1 %84, %85
   %86 = load i1, i1* %out.20, align 1
-  %cond.fold107 = or i1 false, %86
-  %cond.fold108 = or i1 %cond.fold107, %83
-  %cond.fold109 = or i1 %cond.fold108, %in.106
+  %cond.fold107 = or i1 false, %in.106
+  %cond.fold108 = or i1 %cond.fold107, %86
+  %cond.fold109 = or i1 %cond.fold108, %83
   store i1 %cond.fold109, i1* %out.42, align 1
   ret void
 
@@ -2509,12 +2509,12 @@ UnifiedUnreachableBlock:                          ; preds = %if.else75, %if.else
   %90 = load i1, i1* %out.25, align 1
   %91 = load i1, i1* %out.16, align 1
   %92 = load i1, i1* %out.13, align 1
-  %cond.fold110 = or i1 false, %88
-  %cond.fold111 = or i1 %cond.fold110, %87
-  %cond.fold112 = or i1 %cond.fold111, %91
-  %cond.fold113 = or i1 %cond.fold112, %92
-  %cond.fold114 = or i1 %cond.fold113, %90
-  %cond.fold115 = or i1 %cond.fold114, %89
+  %cond.fold110 = or i1 false, %92
+  %cond.fold111 = or i1 %cond.fold110, %90
+  %cond.fold112 = or i1 %cond.fold111, %89
+  %cond.fold113 = or i1 %cond.fold112, %91
+  %cond.fold114 = or i1 %cond.fold113, %88
+  %cond.fold115 = or i1 %cond.fold114, %87
   store i1 %cond.fold115, i1* %out.43, align 1
   unreachable
 }
@@ -2549,18 +2549,18 @@ entry:
   %2 = bitcast %struct.poly1305_state_internal_t* %state to i8*
   call void @llvm.memset.p0i8.i64(i8* align 8 %2, i8 0, i64 96, i1 false)
   %3 = load i8*, i8** %key.addr, align 8
-  %arg.unwrapped = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped, i32 0, i32 0
-  %arg.wrapped.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped, i32 0, i32 1
-  store i64 0, i64* %arg.wrapped.field0.length.ptr, align 8
-  store i8* %3, i8** %arg.unwrapped, align 8
-  call void @_poly1305_init(%struct.poly1305_state_internal_t* %state, %struct.uint8ptr_wrapped_ty* %arg.wrapped)
-  call void @_poly1305_update(%struct.poly1305_state_internal_t* noundef %state, %struct.uint8ptr_wrapped_ty* noundef %m)
-  %4 = load i8*, i8** %out.addr, align 8
   %arg.unwrapped2 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped1, i32 0, i32 0
   %arg.wrapped1.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped1, i32 0, i32 1
   store i64 0, i64* %arg.wrapped1.field0.length.ptr, align 8
-  store i8* %4, i8** %arg.unwrapped2, align 8
-  call void @_poly1305_finish(%struct.poly1305_state_internal_t* %state, %struct.uint8ptr_wrapped_ty* %arg.wrapped1)
+  store i8* %3, i8** %arg.unwrapped2, align 8
+  call void @_poly1305_init(%struct.poly1305_state_internal_t* %state, %struct.uint8ptr_wrapped_ty* %arg.wrapped1)
+  call void @_poly1305_update(%struct.poly1305_state_internal_t* noundef %state, %struct.uint8ptr_wrapped_ty* noundef %m)
+  %4 = load i8*, i8** %out.addr, align 8
+  %arg.unwrapped = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped, i32 0, i32 0
+  %arg.wrapped.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped, i32 0, i32 1
+  store i64 0, i64* %arg.wrapped.field0.length.ptr, align 8
+  store i8* %4, i8** %arg.unwrapped, align 8
+  call void @_poly1305_finish(%struct.poly1305_state_internal_t* %state, %struct.uint8ptr_wrapped_ty* %arg.wrapped)
   %shadow = alloca i64, align 8
   store i64 0, i64* %shadow, align 8
   ret i32 0
@@ -2575,10 +2575,10 @@ entry:
   %input.field0.length = load i64, i64* %input.field0.length.ptr, align 8
   %k.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %k, i32 0, i32 1
   %k.field0.length = load i64, i64* %k.field0.length.ptr, align 8
-  %arraydecay.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %arg.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %h.unwrapped.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %arraydecay3.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %arraydecay.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %arg.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %out. = alloca i1, align 1
   store i1 false, i1* %out., align 1
   store i1 true, i1* %out., align 1
@@ -3378,8 +3378,8 @@ return:                                           ; preds = %for.end
   %28 = load i1, i1* %out.7, align 1
   %29 = load i1, i1* %out.4, align 1
   %phi.fold = select i1 %29, i1 false, i1 %retval.0.rewritten
-  %cond.fold17 = or i1 false, %28
-  %cond.fold18 = or i1 %cond.fold17, %29
+  %cond.fold17 = or i1 false, %29
+  %cond.fold18 = or i1 %cond.fold17, %28
   store i1 %cond.fold18, i1* %out.8, align 1
   ret i1 %phi.fold
 }
@@ -3756,8 +3756,8 @@ return:                                           ; preds = %for.end, %if.then
   %retval.0.rewritten = phi i1 [ false, %if.then ], [ true, %for.end ]
   %29 = load i1, i1* %out.9, align 1
   %30 = load i1, i1* %out.1, align 1
-  %cond.fold24 = or i1 false, %29
-  %cond.fold25 = or i1 %cond.fold24, %30
+  %cond.fold24 = or i1 false, %30
+  %cond.fold25 = or i1 %cond.fold24, %29
   store i1 %cond.fold25, i1* %out.10, align 1
   ret i1 %retval.0.rewritten
 }
@@ -4043,8 +4043,8 @@ return:                                           ; preds = %for.end, %if.then
   %58 = load i1, i1* %out.6, align 1
   %phi.fold = select i1 %58, i1 false, i1 %retval.0.rewritten
   %59 = load i1, i1* %out.1, align 1
-  %cond.fold30 = or i1 false, %58
-  %cond.fold31 = or i1 %cond.fold30, %57
+  %cond.fold30 = or i1 false, %57
+  %cond.fold31 = or i1 %cond.fold30, %58
   %cond.fold32 = or i1 %cond.fold31, %59
   store i1 %cond.fold32, i1* %out.12, align 1
   ret i1 %phi.fold
@@ -4140,18 +4140,6 @@ entry:
   %input.field0.length = load i64, i64* %input.field0.length.ptr, align 8
   %k.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %k, i32 0, i32 1
   %k.field0.length = load i64, i64* %k.field0.length.ptr, align 8
-  %add.ptr22.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %add.ptr20.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %add.ptr18.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %arg.wrapped11 = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %add.ptr15.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %add.ptr13.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %add.ptr11.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %add.ptr9.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %add.ptr7.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %add.ptr5.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %add.ptr.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %arg.wrapped9 = alloca %struct.uint8ptr_wrapped_ty, align 8
   %add.ptr123.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %add.ptr122.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %add.ptr121.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
@@ -4159,6 +4147,18 @@ entry:
   %add.ptr119.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %add.ptr118.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %add.ptr117.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %arg.wrapped11 = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %add.ptr22.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %add.ptr20.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %add.ptr18.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %arg.wrapped9 = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %add.ptr15.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %add.ptr13.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %add.ptr11.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %add.ptr9.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %add.ptr7.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %add.ptr5.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %add.ptr.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %arg.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %out. = alloca i1, align 1
   store i1 false, i1* %out., align 1
@@ -4191,11 +4191,11 @@ entry:
   %k.addr3 = bitcast i8** %k.addr to i8*
   call void @llvm.var.annotation(i8* %k.addr3, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.19, i32 0, i32 0), i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.1.17, i32 0, i32 0), i32 29, i8* null)
   %3 = load i8*, i8** %k.addr, align 8
-  %arg.unwrapped10 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped9, i32 0, i32 0
-  %arg.wrapped9.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped9, i32 0, i32 1
-  store i64 0, i64* %arg.wrapped9.field0.length.ptr, align 8
-  store i8* %3, i8** %arg.unwrapped10, align 8
-  %call = call i32 @load32_le.22(%struct.uint8ptr_wrapped_ty* %arg.wrapped9)
+  %arg.unwrapped = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped, i32 0, i32 0
+  %arg.wrapped.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped, i32 0, i32 1
+  store i64 0, i64* %arg.wrapped.field0.length.ptr, align 8
+  store i8* %3, i8** %arg.unwrapped, align 8
+  %call = call i32 @load32_le.22(%struct.uint8ptr_wrapped_ty* %arg.wrapped)
   %4 = load i8*, i8** %k.addr, align 8
   %add.ptr = getelementptr inbounds i8, i8* %4, i64 4
   %add.ptr.unwrapped = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %add.ptr.wrapped, i32 0, i32 0
@@ -4246,11 +4246,11 @@ entry:
   store i8* %add.ptr15, i8** %add.ptr15.unwrapped, align 8
   %call16 = call i32 @load32_le.22(%struct.uint8ptr_wrapped_ty* %add.ptr15.wrapped)
   %11 = load i8*, i8** %input.addr, align 8
-  %arg.unwrapped12 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped11, i32 0, i32 0
-  %arg.wrapped11.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped11, i32 0, i32 1
-  store i64 0, i64* %arg.wrapped11.field0.length.ptr, align 8
-  store i8* %11, i8** %arg.unwrapped12, align 8
-  %call17 = call i32 @load32_le.22(%struct.uint8ptr_wrapped_ty* %arg.wrapped11)
+  %arg.unwrapped10 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped9, i32 0, i32 0
+  %arg.wrapped9.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped9, i32 0, i32 1
+  store i64 0, i64* %arg.wrapped9.field0.length.ptr, align 8
+  store i8* %11, i8** %arg.unwrapped10, align 8
+  %call17 = call i32 @load32_le.22(%struct.uint8ptr_wrapped_ty* %arg.wrapped9)
   %12 = load i8*, i8** %input.addr, align 8
   %add.ptr18 = getelementptr inbounds i8, i8* %12, i64 4
   %add.ptr18.unwrapped = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %add.ptr18.wrapped, i32 0, i32 0
@@ -4429,11 +4429,11 @@ for.end:                                          ; preds = %for.cond
   %cond.fold8 = or i1 false, %in.7
   store i1 %cond.fold8, i1* %out.4, align 1
   %21 = load i8*, i8** %out.addr, align 8
-  %arg.unwrapped = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped, i32 0, i32 0
-  %arg.wrapped.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped, i32 0, i32 1
-  store i64 0, i64* %arg.wrapped.field0.length.ptr, align 8
-  store i8* %21, i8** %arg.unwrapped, align 8
-  call void @store32_le.23(%struct.uint8ptr_wrapped_ty* %arg.wrapped, i32 %x0.0.lcssa.rewritten)
+  %arg.unwrapped12 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped11, i32 0, i32 0
+  %arg.wrapped11.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped11, i32 0, i32 1
+  store i64 0, i64* %arg.wrapped11.field0.length.ptr, align 8
+  store i8* %21, i8** %arg.unwrapped12, align 8
+  call void @store32_le.23(%struct.uint8ptr_wrapped_ty* %arg.wrapped11, i32 %x0.0.lcssa.rewritten)
   %22 = load i8*, i8** %out.addr, align 8
   %add.ptr117 = getelementptr inbounds i8, i8* %22, i64 4
   %add.ptr117.unwrapped = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %add.ptr117.wrapped, i32 0, i32 0
