@@ -313,9 +313,14 @@ LenMap lif::transform::inferLength(
             )->getZExtValue();
 
             auto GEPPtrOp = GEP->getPointerOperand();
-            LM[GEPPtrOp]->at(FieldIdx) = LM[
-                ValGEP ? ValGEP->getPointerOperand() : ValOp
-            ]->at(FieldIdx);
+            if (ValGEP) {
+                LM[GEPPtrOp]->at(FieldIdx) = LM[ValGEP->getPointerOperand()]->at(FieldIdx);
+            } else if (!llvm::isa<llvm::ConstantPointerNull>(ValOp)) {
+                LM[GEPPtrOp]->at(FieldIdx) = LM[ValOp]->at(FieldIdx);
+            } else {
+                LM[GEPPtrOp]->at(FieldIdx) = Zero64;
+            }
+
             setGEPLength(GEP);
 
             auto PtrTy = GEP->getPointerOperandType();
@@ -914,7 +919,6 @@ void lif::transform::plinearize(
         // If BB is tainted (equivalent as divergent in Moll & Hack's
         // algorithm):
         else if (llvm::succ_size(BB) > 0) {
-            llvm::errs() << FW->F.getName() << "\n";
             llvm::SmallPtrSet<llvm::BasicBlock *, 8> S;
             // S = {s | (b, s) in E(G)}
             S.insert(llvm::succ_begin(BB), llvm::succ_end(BB));
@@ -1051,10 +1055,9 @@ llvm::Function *lif::transform::augmentInterface(
             // The first field corresponds to a pointer to the annotated
             // function (it is bitcast instruction). The last character,
             // which we drop with drop_back(), is \00 (null-terminated string).
-            auto Annotated = llvm::cast<llvm::BitCastInst>(
+            auto Annotated =
                 llvm::cast<llvm::ConstantExpr>(Struct->getOperand(0))
-                    ->getAsInstruction()
-                )->getOperand(0);
+                    ->getOperand(0);
 
             // The second field is the annotation, which in this context
             // should be the string "nowrap=0,1,...,n" (constant GEP).
@@ -1065,8 +1068,9 @@ llvm::Function *lif::transform::augmentInterface(
                 )->getOperand(0))->getAsString().drop_back();
 
             // TODO: handle annotation "noextend:" for structs (how??).
-            if (!(Annotation.startswith("nowrap:") && Annotated == &F))
+            if (!(Annotation.startswith("nowrap:") && Annotated == &F)) {
                 continue;
+            }
 
             llvm::SmallVector<llvm::StringRef, 4> Indices;
             Annotation.drop_front(std::string("nowrap:").size())
@@ -1252,22 +1256,38 @@ void lif::transform::fixCallSites(
     llvm::DenseMap<llvm::Function *, std::unique_ptr<FuncWrapper>> &WrappedFuncs,
     llvm::DenseMap<llvm::Type *, llvm::Type *> &WrappedTypes
 ) {
-    auto &Ctx = NewF->getContext();
+    auto M = NewF->getParent();
+    if (const auto G = M->getGlobalVariable("llvm.global.annotations")) {
+        // llvm.global.annotations is an array of structs.
+        assert(G->getNumOperands() == 1);
+        const auto Array = llvm::cast<llvm::ConstantArray>(G->getOperand(0));
+        for (const auto &Element : Array->operands()) {
+            const auto Struct = llvm::cast<llvm::ConstantStruct>(Element);
 
+            // We could probably just check operand 0, but that's safer:
+            for (size_t Idx = 0; Idx < Struct->getNumOperands(); Idx++) {
+                Struct->getOperand(Idx)->replaceUsesOfWith(OldF, NewF);
+            }
+        }
+    }
+
+    auto &Ctx = NewF->getContext();
     auto Int32Ty = llvm::IntegerType::getInt32Ty(Ctx);
     auto Zero = llvm::ConstantInt::get(Int32Ty, 0);
 
     auto End = OldF->use_end();
     for (auto It = OldF->use_begin(); It != End; ++It) {
         auto U = It->getUser();
+        auto Call = llvm::dyn_cast<llvm::CallInst>(U);
 
-        // If CS is not a call, then it's probably storing F's address so it
-        // can be used as an indirect call somewhere. This is hard to track
-        // and even hard to fix, so we currently does not support.
-        assert(llvm::isa<llvm::CallInst>(U) &&
-               "Warning: cannot handle indirect calls!\n");
+        if (!Call) {
+            // If CS is not a call, then it's probably storing F's address so it
+            // can be used as an indirect call somewhere. This is hard to track
+            // and even hard to fix, so we currently does not support.
+            llvm::errs() << "Warning: cannot handle indirect calls!\n";
+            continue;
+        }
 
-        auto Call = llvm::cast<llvm::CallInst>(U);
         assert(Call->getCalledFunction() == OldF);
 
         auto Caller = Call->getCaller();
