@@ -233,8 +233,8 @@ if.then:                                          ; preds = %lor.lhs.false
   %in.46 = and i1 %33, %pred.load
   %34 = load i1, i1* %out.15, align 1
   %in.47 = and i1 %34, %cmp18
-  %cond.fold48 = or i1 false, %in.47
-  %cond.fold49 = or i1 %cond.fold48, %in.46
+  %cond.fold48 = or i1 false, %in.46
+  %cond.fold49 = or i1 %cond.fold48, %in.47
   store i1 %cond.fold49, i1* %out.17, align 1
   %35 = load i1, i1* %out.17, align 1
   %36 = bitcast i64* %shadow to i32*
@@ -396,9 +396,9 @@ if.end57:                                         ; preds = %if.then47
   %in.70 = and i1 %78, %79
   %80 = load i1, i1* %out.22, align 1
   %in.71 = and i1 %80, %tobool35
-  %cond.fold72 = or i1 false, %in.71
-  %cond.fold73 = or i1 %cond.fold72, %in.70
-  %cond.fold74 = or i1 %cond.fold73, %77
+  %cond.fold72 = or i1 false, %in.70
+  %cond.fold73 = or i1 %cond.fold72, %77
+  %cond.fold74 = or i1 %cond.fold73, %in.71
   store i1 %cond.fold74, i1* %out.25, align 1
   br label %for.inc58
 
