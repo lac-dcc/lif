@@ -159,7 +159,7 @@ while.body.us:                                    ; preds = %while.cond.preheade
 
 while.cond.if.then_crit_edge.us:                  ; preds = %while.body.us
   %in.42.us = and i1 %or.frozen.us, %20
-  %cond.fold49.us = or i1 %in.44.us, %in.42.us
+  %cond.fold49.us = or i1 %in.42.us, %in.44.us
   %phi.fold100.us = select i1 %in.42.us, i32 %found.0.rewritten60.us, i32 1
   %inc17.us = add nuw i32 %j.0.rewritten61.us, 1
   %exitcond89.not = icmp eq i32 %inc17.us, %add
@@ -231,8 +231,8 @@ for.body24:                                       ; preds = %for.body24.lr.ph, %
   %in.70 = and i1 %in.66, %36
   %37 = xor i1 %cmp30, true
   %in.71 = and i1 %cond.fold6377, %37
-  %cond.fold73 = or i1 %in.71, %in.68
-  %cond.fold74 = or i1 %cond.fold73, %in.70
+  %cond.fold73 = or i1 %in.68, %in.70
+  %cond.fold74 = or i1 %in.71, %cond.fold73
   %indvars.iv.next92 = add nuw nsw i64 %indvars.iv91, 1
   %exitcond94.not = icmp eq i64 %indvars.iv.next92, %wide.trip.count93
   br i1 %exitcond94.not, label %for.end47, label %for.body24, !llvm.loop !14

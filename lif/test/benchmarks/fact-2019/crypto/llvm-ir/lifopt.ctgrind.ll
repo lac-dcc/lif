@@ -1277,10 +1277,10 @@ define dso_local zeroext i1 @_crypto_onetimeauth_poly1305_verify(%struct.uint8pt
 entry:
   %h.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %h, i64 0, i32 1
   %h.field0.length = load i64, i64* %h.field0.length.ptr, align 8
-  %h.unwrapped.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %arraydecay3.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %arraydecay.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %arg.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %h.unwrapped.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %arraydecay3.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %0 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %h, i64 0, i32 0
   %h.unwrapped = load i8*, i8** %0, align 8
   %1 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %k, i64 0, i32 0
@@ -1713,11 +1713,11 @@ define dso_local i32 @__crypto_stream_xsalsa20(%struct.uint8ptr_wrapped_ty* noca
 entry:
   %n.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %n, i64 0, i32 1
   %n.field0.length = load i64, i64* %n.field0.length.ptr, align 8
+  %add.ptr.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %arraydecay2.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %arraydecay.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %n.unwrapped.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %arg.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %add.ptr.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %arraydecay2.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %0 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %n, i64 0, i32 0
   %n.unwrapped = load i8*, i8** %0, align 8
   %1 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %k, i64 0, i32 0
@@ -1838,10 +1838,10 @@ entry:
   %m.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %m, i64 0, i32 1
   %n.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %n, i64 0, i32 1
   %n.field0.length = load i64, i64* %n.field0.length.ptr, align 8
-  %n.unwrapped.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %arg.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %arraydecay21.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %arraydecay22.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %n.unwrapped.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %arg.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %0 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %n, i64 0, i32 0
   %n.unwrapped = load i8*, i8** %0, align 8
   %1 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %k, i64 0, i32 0
@@ -1935,12 +1935,12 @@ entry:
   %c.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %c, i64 0, i32 1
   %n.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %n, i64 0, i32 1
   %n.field0.length = load i64, i64* %n.field0.length.ptr, align 8
-  %arraydecay24.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %arraydecay25.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %n.unwrapped.wrapped33 = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %arg.wrapped35 = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %n.unwrapped.wrapped34 = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %arg.wrapped36 = alloca %struct.uint8ptr_wrapped_ty, align 8
   %n.unwrapped.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %arg.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %arraydecay24.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %arraydecay25.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %0 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %n, i64 0, i32 0
   %n.unwrapped = load i8*, i8** %0, align 8
   %1 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %k, i64 0, i32 0
@@ -1975,15 +1975,15 @@ if.then6:                                         ; preds = %if.end
   %buf10 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %w_subkey, i64 0, i32 0
   store i64 32, i64* %len8, align 8
   store i8* %call, i8** %buf10, align 8
-  %n.unwrapped.unwrapped = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %n.unwrapped.wrapped, i64 0, i32 0
-  %n.unwrapped.wrapped.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %n.unwrapped.wrapped, i64 0, i32 1
-  store i64 %n.field0.length, i64* %n.unwrapped.wrapped.field0.length.ptr, align 8
-  store i8* %n.unwrapped, i8** %n.unwrapped.unwrapped, align 8
-  %arg.unwrapped = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped, i64 0, i32 0
-  %arg.wrapped.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped, i64 0, i32 1
-  store i64 0, i64* %arg.wrapped.field0.length.ptr, align 8
-  store i8* %k.unwrapped, i8** %arg.unwrapped, align 8
-  %call11 = call i32 @__crypto_stream_xsalsa20(%struct.uint8ptr_wrapped_ty* nonnull %w_subkey, %struct.uint8ptr_wrapped_ty* nonnull %n.unwrapped.wrapped, %struct.uint8ptr_wrapped_ty* nonnull %arg.wrapped)
+  %n.unwrapped.unwrapped35 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %n.unwrapped.wrapped34, i64 0, i32 0
+  %n.unwrapped.wrapped34.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %n.unwrapped.wrapped34, i64 0, i32 1
+  store i64 %n.field0.length, i64* %n.unwrapped.wrapped34.field0.length.ptr, align 8
+  store i8* %n.unwrapped, i8** %n.unwrapped.unwrapped35, align 8
+  %arg.unwrapped37 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped36, i64 0, i32 0
+  %arg.wrapped36.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped36, i64 0, i32 1
+  store i64 0, i64* %arg.wrapped36.field0.length.ptr, align 8
+  store i8* %k.unwrapped, i8** %arg.unwrapped37, align 8
+  %call11 = call i32 @__crypto_stream_xsalsa20(%struct.uint8ptr_wrapped_ty* nonnull %w_subkey, %struct.uint8ptr_wrapped_ty* nonnull %n.unwrapped.wrapped34, %struct.uint8ptr_wrapped_ty* nonnull %arg.wrapped36)
   %subkey12 = getelementptr inbounds [32 x i8], [32 x i8]* %subkey, i64 0, i64 0
   call void @llvm.var.annotation(i8* nonnull %subkey12, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.19, i64 0, i64 0), i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.1.17, i64 0, i64 0), i32 205, i8* null)
   call void @llvm.memcpy.p0i8.p0i8.i64(i8* noundef nonnull align 16 dereferenceable(32) %subkey12, i8* noundef nonnull align 1 dereferenceable(32) %call, i64 32, i1 false)
@@ -2011,18 +2011,18 @@ if.then6:                                         ; preds = %if.end
   store i8* %subkey12, i8** %arraydecay25.unwrapped, align 8
   %call26 = call i1 @_crypto_onetimeauth_poly1305_verify(%struct.uint8ptr_wrapped_ty* nonnull %arraydecay24.wrapped, %struct.uint8ptr_wrapped_ty* nonnull %w_cview, %struct.uint8ptr_wrapped_ty* nonnull %arraydecay25.wrapped)
   %k.addr.val = load i8*, i8** %k.addr, align 8
-  %n.unwrapped.unwrapped34 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %n.unwrapped.wrapped33, i64 0, i32 0
-  %n.unwrapped.wrapped33.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %n.unwrapped.wrapped33, i64 0, i32 1
+  %n.unwrapped.unwrapped = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %n.unwrapped.wrapped, i64 0, i32 0
+  %n.unwrapped.wrapped.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %n.unwrapped.wrapped, i64 0, i32 1
   %select.val. = select i1 %call26, i64 %n.field0.length, i64 undef
-  store i64 %select.val., i64* %n.unwrapped.wrapped33.field0.length.ptr, align 8
+  store i64 %select.val., i64* %n.unwrapped.wrapped.field0.length.ptr, align 8
   %select.val.40 = select i1 %call26, i8* %n.unwrapped, i8* undef
-  store i8* %select.val.40, i8** %n.unwrapped.unwrapped34, align 8
-  %arg.unwrapped36 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped35, i64 0, i32 0
-  %arg.wrapped35.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped35, i64 0, i32 1
-  store i64 0, i64* %arg.wrapped35.field0.length.ptr, align 8
+  store i8* %select.val.40, i8** %n.unwrapped.unwrapped, align 8
+  %arg.unwrapped = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped, i64 0, i32 0
+  %arg.wrapped.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arg.wrapped, i64 0, i32 1
+  store i64 0, i64* %arg.wrapped.field0.length.ptr, align 8
   %select.val.44 = select i1 %call26, i8* %k.addr.val, i8* undef
-  store i8* %select.val.44, i8** %arg.unwrapped36, align 8
-  %call29 = call i32 @__crypto_stream_xsalsa20_xor(%struct.uint8ptr_wrapped_ty* nonnull %m, %struct.uint8ptr_wrapped_ty* nonnull %c, %struct.uint8ptr_wrapped_ty* nonnull %n.unwrapped.wrapped33, %struct.uint8ptr_wrapped_ty* nonnull %arg.wrapped35, i1 undef)
+  store i8* %select.val.44, i8** %arg.unwrapped, align 8
+  %call29 = call i32 @__crypto_stream_xsalsa20_xor(%struct.uint8ptr_wrapped_ty* nonnull %m, %struct.uint8ptr_wrapped_ty* nonnull %c, %struct.uint8ptr_wrapped_ty* nonnull %n.unwrapped.wrapped, %struct.uint8ptr_wrapped_ty* nonnull %arg.wrapped, i1 undef)
   %buf31 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %m, i64 0, i32 0
   br label %for.body
 
@@ -2343,10 +2343,10 @@ entry:
 ; Function Attrs: noinline nounwind sspstrong uwtable
 define dso_local i32 @main() local_unnamed_addr #0 {
 entry:
-  %arraydecay51.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %arraydecay52.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %arraydecay48.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %arraydecay49.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %arraydecay51.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %arraydecay52.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %c = alloca %struct.uint8ptr_wrapped_ty, align 8
   %m = alloca %struct.uint8ptr_wrapped_ty, align 8
   %nonce = alloca [24 x i8], align 16

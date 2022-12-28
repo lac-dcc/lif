@@ -77,7 +77,7 @@ while.body.us:                                    ; preds = %while.cond.preheade
 
 while.cond.if.then_crit_edge.us:                  ; preds = %while.body.us
   %in.25.us = and i1 %or.frozen.us, %8
-  %cond.fold33.us = or i1 %in.27.us, %in.25.us
+  %cond.fold33.us = or i1 %in.25.us, %in.27.us
   %or.frozen35.us = or i1 %out.frozen14.036.us, %cond.fold33.us
   %cmp7.us = xor i1 %in.25.us, true
   %10 = or i1 %exitpred.frozen1.rewritten39.us, %cmp7.us

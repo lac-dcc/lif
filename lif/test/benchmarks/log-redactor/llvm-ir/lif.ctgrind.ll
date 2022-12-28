@@ -233,8 +233,8 @@ if.end16:                                         ; preds = %if.then15
   %37 = xor i1 %cmp13, true
   %in.52 = and i1 %36, %37
   %phi.fold100 = select i1 %in.52, i32 %found.0.rewritten, i32 %found.1.rewritten
-  %cond.fold53 = or i1 false, %in.52
-  %cond.fold54 = or i1 %cond.fold53, %35
+  %cond.fold53 = or i1 false, %35
+  %cond.fold54 = or i1 %cond.fold53, %in.52
   store i1 %cond.fold54, i1* %out.19, align 1
   br label %for.inc
 
@@ -372,8 +372,8 @@ if.end44:                                         ; preds = %if.then39
   %79 = xor i1 %cmp30, true
   %in.71 = and i1 %78, %79
   %cond.fold72 = or i1 false, %in.71
-  %cond.fold73 = or i1 %cond.fold72, %75
-  %cond.fold74 = or i1 %cond.fold73, %in.70
+  %cond.fold73 = or i1 %cond.fold72, %in.70
+  %cond.fold74 = or i1 %cond.fold73, %75
   store i1 %cond.fold74, i1* %out.28, align 1
   %80 = load i1, i1* %out.28, align 1
   br label %for.inc45

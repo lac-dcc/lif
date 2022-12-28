@@ -78,10 +78,13 @@
                      %1 %2
                      "-fno-discard-value-names"
                      "-DENABLE_CTGRIND")
-                   srcs (map with-ctgrind srcs-llvm)))
+                   (concat libs srcs)
+                   (map with-ctgrind (concat libs-llvm srcs-llvm))))
+
       ;; Link the llvm files into a single file:
       (llvm-link (concat libs-llvm srcs-llvm) base-llvm)
-      (llvm-link (concat libs-llvm (map with-ctgrind srcs-llvm))
+      (llvm-link (concat (map with-ctgrind libs-llvm)
+                         (map with-ctgrind srcs-llvm))
                  (with-ctgrind base-llvm))
       ;; Apply lif onto the linked file:
       (println "Repairing" benchmark "...")

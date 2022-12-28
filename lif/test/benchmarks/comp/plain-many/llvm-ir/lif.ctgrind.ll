@@ -173,8 +173,8 @@ while.end:                                        ; preds = %while.end.loopexit
   %32 = load i1, i1* %out.12, align 1
   %33 = load i1, i1* %out.9, align 1
   %phi.fold = select i1 %33, i32 %j.0.lcssa1.rewritten, i32 %j.02.rewritten
-  %cond.fold32 = or i1 false, %32
-  %cond.fold33 = or i1 %cond.fold32, %33
+  %cond.fold32 = or i1 false, %33
+  %cond.fold33 = or i1 %cond.fold32, %32
   store i1 %cond.fold33, i1* %out.13, align 1
   %34 = load i1, i1* %out.13, align 1
   %load.frozen34 = load i1, i1* %out.frozen14, align 1

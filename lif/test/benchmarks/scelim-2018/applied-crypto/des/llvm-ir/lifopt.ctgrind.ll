@@ -737,14 +737,14 @@ for.end:                                          ; preds = %for.body
 ; Function Attrs: noinline nounwind sspstrong uwtable
 define dso_local i32 @main() local_unnamed_addr #2 {
 entry:
-  %arraydecay28.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay29.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay25.wrapped = alloca %i8ptr.wrapped.ty, align 8
-  %arraydecay26.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay30.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay31.wrapped = alloca %i8ptr.wrapped.ty, align 8
   %arraydecay23.wrapped = alloca %i8ptr.wrapped.ty, align 8
   %arraydecay24.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay25.wrapped = alloca %i8ptr.wrapped.ty, align 8
+  %arraydecay26.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay28.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay29.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %in_key = alloca [32 x i8], align 16
   %in = alloca [8 x i8], align 1
   %_zzq_args = alloca [6 x i64], align 16

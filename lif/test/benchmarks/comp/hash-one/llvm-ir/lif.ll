@@ -188,8 +188,8 @@ if.end18:                                         ; preds = %if.then11
   %27 = load i1, i1* %out.13, align 1
   %phi.fold = select i1 %27, i32 %inc17, i32 %hb.1.rewritten
   %28 = load i1, i1* %out.12, align 1
-  %cond.fold38 = or i1 false, %27
-  %cond.fold39 = or i1 %cond.fold38, %28
+  %cond.fold38 = or i1 false, %28
+  %cond.fold39 = or i1 %cond.fold38, %27
   store i1 %cond.fold39, i1* %out.14, align 1
   br label %for.inc19
 
@@ -232,8 +232,8 @@ return:                                           ; preds = %if.then23
   %37 = load i1, i1* %out.18, align 1
   %phi.fold49 = select i1 %37, i32 0, i32 %retval.0.rewritten
   %38 = load i1, i1* %out.17, align 1
-  %cond.fold47 = or i1 false, %38
-  %cond.fold48 = or i1 %cond.fold47, %37
+  %cond.fold47 = or i1 false, %37
+  %cond.fold48 = or i1 %cond.fold47, %38
   store i1 %cond.fold48, i1* %out.19, align 1
   ret i32 %phi.fold49
 }

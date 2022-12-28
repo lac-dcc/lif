@@ -212,8 +212,8 @@ while.end:                                        ; preds = %while.end.loopexit
   %31 = load i1, i1* %out.16, align 1
   %32 = load i1, i1* %out.14, align 1
   %phi.fold = select i1 %32, i32 %k.0.lcssa1.rewritten, i32 %k.02.rewritten
-  %cond.fold48 = or i1 false, %31
-  %cond.fold49 = or i1 %cond.fold48, %32
+  %cond.fold48 = or i1 false, %32
+  %cond.fold49 = or i1 %cond.fold48, %31
   store i1 %cond.fold49, i1* %out.17, align 1
   %cmp13 = icmp eq i32 %phi.fold, %P
   br label %if.then15
@@ -371,9 +371,9 @@ if.end44:                                         ; preds = %if.then39
   %78 = load i1, i1* %out.25, align 1
   %79 = xor i1 %cmp30, true
   %in.71 = and i1 %78, %79
-  %cond.fold72 = or i1 false, %75
-  %cond.fold73 = or i1 %cond.fold72, %in.71
-  %cond.fold74 = or i1 %cond.fold73, %in.70
+  %cond.fold72 = or i1 false, %in.70
+  %cond.fold73 = or i1 %cond.fold72, %75
+  %cond.fold74 = or i1 %cond.fold73, %in.71
   store i1 %cond.fold74, i1* %out.28, align 1
   %80 = load i1, i1* %out.28, align 1
   br label %for.inc45

@@ -87,7 +87,7 @@ for.body14:                                       ; preds = %for.cond11.preheade
   %7 = trunc i64 %indvars.iv60 to i32
   %m.0.rewritten.in = select i1 %cmp16, i32 %sub, i32 %7
   %m.0.rewritten = shl nuw nsw i32 %m.0.rewritten.in, 1
-  %cond.fold55 = or i1 %out.15.1, %out.16.1
+  %cond.fold55 = or i1 %out.16.1, %out.15.1
   %add = or i32 %m.0.rewritten, 1
   %idxprom19 = sext i32 %add to i64
   %arrayidx20 = getelementptr inbounds [32 x i64], [32 x i64]* %kn, i64 0, i64 %idxprom19
@@ -737,14 +737,14 @@ for.end:                                          ; preds = %for.body
 ; Function Attrs: nofree noinline nounwind sspstrong uwtable
 define dso_local i32 @main() local_unnamed_addr #2 {
 entry:
+  %arraydecay7.wrapped = alloca %i8ptr.wrapped.ty, align 8
+  %arraydecay8.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay6.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay12.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay13.wrapped = alloca %i8ptr.wrapped.ty, align 8
   %arraydecay5.wrapped = alloca %i8ptr.wrapped.ty, align 8
   %arraydecay10.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay11.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay7.wrapped = alloca %i8ptr.wrapped.ty, align 8
-  %arraydecay8.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay6.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %in_key = alloca [32 x i8], align 16
   %in = alloca [8 x i8], align 1
   %out = alloca i64, align 8

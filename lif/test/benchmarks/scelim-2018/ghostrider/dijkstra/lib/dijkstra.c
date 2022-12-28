@@ -12,6 +12,10 @@ int dijkstra(int n, int s, int t, int e[][INPUT_SIZE]) {
     int bestj = -1;
     vis[s] = 1;
 
+    // Mark arrays as secret for ct_grind check:
+    ct_secret(vis, INPUT_SIZE * sizeof(int));
+    ct_secret(dis, INPUT_SIZE * sizeof(int));
+
 #ifdef ENABLE_UNROLL
     for (int i = 0; i < INPUT_SIZE; ++i) dis[i] = e[s][i];
     for (int i = 0; i < INPUT_SIZE; ++i) {

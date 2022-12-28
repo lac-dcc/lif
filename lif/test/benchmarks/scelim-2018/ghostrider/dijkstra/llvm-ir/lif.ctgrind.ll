@@ -80,6 +80,10 @@ entry:
   %e.unwrapped = load [16 x i32]*, [16 x i32]** %0, align 8
   %vis = alloca [16 x i32], align 16
   %dis = alloca [16 x i32], align 16
+  %_zzq_args = alloca [6 x i64], align 16
+  %_zzq_result = alloca i64, align 8
+  %_zzq_args10 = alloca [6 x i64], align 16
+  %_zzq_result11 = alloca i64, align 8
   %vis1 = bitcast [16 x i32]* %vis to i8*
   call void @llvm.var.annotation(i8* %vis1, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([15 x i8], [15 x i8]* @.str.1, i32 0, i32 0), i32 10, i8* null)
   %1 = bitcast [16 x i32]* %vis to i8*
@@ -91,6 +95,42 @@ entry:
   %idxprom = sext i32 %s to i64
   %arrayidx = getelementptr inbounds [16 x i32], [16 x i32]* %vis, i64 0, i64 %idxprom
   store i32 1, i32* %arrayidx, align 4
+  %arrayidx3 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 0
+  store volatile i64 1296236545, i64* %arrayidx3, align 16
+  %arraydecay = getelementptr inbounds [16 x i32], [16 x i32]* %vis, i64 0, i64 0
+  %3 = ptrtoint i32* %arraydecay to i64
+  %arrayidx4 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 1
+  store volatile i64 %3, i64* %arrayidx4, align 8
+  %arrayidx5 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 2
+  store volatile i64 64, i64* %arrayidx5, align 16
+  %arrayidx6 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 3
+  store volatile i64 0, i64* %arrayidx6, align 8
+  %arrayidx7 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 4
+  store volatile i64 0, i64* %arrayidx7, align 16
+  %arrayidx8 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 5
+  store volatile i64 0, i64* %arrayidx8, align 8
+  %arrayidx9 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 0
+  %4 = call i64 asm sideeffect "rolq $$3,  %rdi ; rolq $$13, %rdi\0A\09rolq $$61, %rdi ; rolq $$51, %rdi\0A\09xchgq %rbx,%rbx", "={dx},{ax},0,~{cc},~{memory},~{dirflag},~{fpsr},~{flags}"(i64* %arrayidx9, i64 0) #4, !srcloc !6
+  store volatile i64 %4, i64* %_zzq_result, align 8
+  %5 = load volatile i64, i64* %_zzq_result, align 8
+  %arrayidx12 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args10, i64 0, i64 0
+  store volatile i64 1296236545, i64* %arrayidx12, align 16
+  %arraydecay13 = getelementptr inbounds [16 x i32], [16 x i32]* %dis, i64 0, i64 0
+  %6 = ptrtoint i32* %arraydecay13 to i64
+  %arrayidx14 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args10, i64 0, i64 1
+  store volatile i64 %6, i64* %arrayidx14, align 8
+  %arrayidx15 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args10, i64 0, i64 2
+  store volatile i64 64, i64* %arrayidx15, align 16
+  %arrayidx16 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args10, i64 0, i64 3
+  store volatile i64 0, i64* %arrayidx16, align 8
+  %arrayidx17 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args10, i64 0, i64 4
+  store volatile i64 0, i64* %arrayidx17, align 16
+  %arrayidx18 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args10, i64 0, i64 5
+  store volatile i64 0, i64* %arrayidx18, align 8
+  %arrayidx19 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args10, i64 0, i64 0
+  %7 = call i64 asm sideeffect "rolq $$3,  %rdi ; rolq $$13, %rdi\0A\09rolq $$61, %rdi ; rolq $$51, %rdi\0A\09xchgq %rbx,%rbx", "={dx},{ax},0,~{cc},~{memory},~{dirflag},~{fpsr},~{flags}"(i64* %arrayidx19, i64 0) #4, !srcloc !7
+  store volatile i64 %7, i64* %_zzq_result11, align 8
+  %8 = load volatile i64, i64* %_zzq_result11, align 8
   %shadow = alloca i64, align 8
   store i64 0, i64* %shadow, align 8
   br label %for.cond
@@ -99,341 +139,341 @@ for.cond:                                         ; preds = %for.inc, %entry
   %i.0.rewritten = phi i32 [ 0, %entry ], [ %inc, %for.inc ]
   %fwedge.taken.rewritten = phi i1 [ true, %entry ], [ false, %for.inc ]
   %exitpred.frozen.rewritten = phi i1 [ %cmp, %for.inc ], [ false, %entry ]
-  %3 = load i1, i1* %out.9, align 1
-  %4 = load i1, i1* %out., align 1
-  %fwcond.and.fwtaken = and i1 %fwedge.taken.rewritten, %4
-  %cond.fold = or i1 %fwcond.and.fwtaken, %3
+  %9 = load i1, i1* %out.9, align 1
+  %10 = load i1, i1* %out., align 1
+  %fwcond.and.fwtaken = and i1 %fwedge.taken.rewritten, %10
+  %cond.fold = or i1 %fwcond.and.fwtaken, %9
   store i1 %cond.fold, i1* %out.7, align 1
   %cmp = icmp slt i32 %i.0.rewritten, %n
   br i1 %cmp, label %for.body, label %for.end
 
 for.body:                                         ; preds = %for.cond
-  %5 = load i1, i1* %out.7, align 1
-  %in. = and i1 %5, %cmp
+  %11 = load i1, i1* %out.7, align 1
+  %in. = and i1 %11, %cmp
   %cond.fold30 = or i1 false, %in.
   store i1 %cond.fold30, i1* %out.8, align 1
-  %idxprom3 = sext i32 %s to i64
-  %arrayidx4 = getelementptr inbounds [16 x i32], [16 x i32]* %e.unwrapped, i64 %idxprom3
-  %idxprom5 = sext i32 %i.0.rewritten to i64
-  %arrayidx6 = getelementptr inbounds [16 x i32], [16 x i32]* %arrayidx4, i64 0, i64 %idxprom5
-  %6 = load i32, i32* %arrayidx6, align 4
-  %idxprom7 = sext i32 %i.0.rewritten to i64
-  %arrayidx8 = getelementptr inbounds [16 x i32], [16 x i32]* %dis, i64 0, i64 %idxprom7
-  store i32 %6, i32* %arrayidx8, align 4
+  %idxprom21 = sext i32 %s to i64
+  %arrayidx22 = getelementptr inbounds [16 x i32], [16 x i32]* %e.unwrapped, i64 %idxprom21
+  %idxprom23 = sext i32 %i.0.rewritten to i64
+  %arrayidx24 = getelementptr inbounds [16 x i32], [16 x i32]* %arrayidx22, i64 0, i64 %idxprom23
+  %12 = load i32, i32* %arrayidx24, align 4
+  %idxprom25 = sext i32 %i.0.rewritten to i64
+  %arrayidx26 = getelementptr inbounds [16 x i32], [16 x i32]* %dis, i64 0, i64 %idxprom25
+  store i32 %12, i32* %arrayidx26, align 4
   br label %for.inc
 
 for.inc:                                          ; preds = %for.body
-  %7 = load i1, i1* %out.8, align 1
-  %cond.fold31 = or i1 false, %7
+  %13 = load i1, i1* %out.8, align 1
+  %cond.fold31 = or i1 false, %13
   store i1 %cond.fold31, i1* %out.9, align 1
   %inc = add nsw i32 %i.0.rewritten, 1
-  br label %for.cond, !llvm.loop !6
+  br label %for.cond, !llvm.loop !8
 
 for.end:                                          ; preds = %for.cond
-  %8 = load i1, i1* %out.7, align 1
-  %9 = xor i1 %cmp, true
-  %in.32 = and i1 %8, %9
+  %14 = load i1, i1* %out.7, align 1
+  %15 = xor i1 %cmp, true
+  %in.32 = and i1 %14, %15
   %cond.fold33 = or i1 false, %in.32
   store i1 %cond.fold33, i1* %out.10, align 1
-  br label %for.cond10
+  br label %for.cond28
 
-for.cond10:                                       ; preds = %for.inc61, %for.end
-  %bestj.0.rewritten = phi i32 [ -1, %for.end ], [ %bestj.1.lcssa.rewritten, %for.inc61 ]
-  %i9.0.rewritten = phi i32 [ 0, %for.end ], [ %inc62, %for.inc61 ]
-  %fwedge.taken1.rewritten = phi i1 [ true, %for.end ], [ false, %for.inc61 ]
-  %exitpred.frozen2.rewritten = phi i1 [ %cmp11, %for.inc61 ], [ false, %for.end ]
-  %10 = load i1, i1* %out.28, align 1
-  %11 = load i1, i1* %out.10, align 1
-  %fwcond.and.fwtaken34 = and i1 %fwedge.taken1.rewritten, %11
-  %cond.fold35 = or i1 %fwcond.and.fwtaken34, %10
+for.cond28:                                       ; preds = %for.inc79, %for.end
+  %bestj.0.rewritten = phi i32 [ -1, %for.end ], [ %bestj.1.lcssa.rewritten, %for.inc79 ]
+  %i27.0.rewritten = phi i32 [ 0, %for.end ], [ %inc80, %for.inc79 ]
+  %fwedge.taken1.rewritten = phi i1 [ true, %for.end ], [ false, %for.inc79 ]
+  %exitpred.frozen2.rewritten = phi i1 [ %cmp29, %for.inc79 ], [ false, %for.end ]
+  %16 = load i1, i1* %out.28, align 1
+  %17 = load i1, i1* %out.10, align 1
+  %fwcond.and.fwtaken34 = and i1 %fwedge.taken1.rewritten, %17
+  %cond.fold35 = or i1 %fwcond.and.fwtaken34, %16
   store i1 %cond.fold35, i1* %out.11, align 1
-  %cmp11 = icmp slt i32 %i9.0.rewritten, %n
-  br i1 %cmp11, label %for.body12, label %for.end63
+  %cmp29 = icmp slt i32 %i27.0.rewritten, %n
+  br i1 %cmp29, label %for.body30, label %for.end81
 
-for.body12:                                       ; preds = %for.cond10
-  %12 = load i1, i1* %out.11, align 1
-  %in.36 = and i1 %12, %cmp11
+for.body30:                                       ; preds = %for.cond28
+  %18 = load i1, i1* %out.11, align 1
+  %in.36 = and i1 %18, %cmp29
   %cond.fold37 = or i1 false, %in.36
   store i1 %cond.fold37, i1* %out.12, align 1
-  br label %for.cond13
+  br label %for.cond31
 
-for.cond13:                                       ; preds = %for.inc26, %for.body12
-  %bestj.1.rewritten = phi i32 [ %bestj.0.rewritten, %for.body12 ], [ %phi.fold113, %for.inc26 ]
-  %j.0.rewritten = phi i32 [ 0, %for.body12 ], [ %inc27, %for.inc26 ]
-  %fwedge.taken3.rewritten = phi i1 [ true, %for.body12 ], [ false, %for.inc26 ]
-  %exitpred.frozen4.rewritten = phi i1 [ %cmp14, %for.inc26 ], [ false, %for.body12 ]
-  %13 = load i1, i1* %out.19, align 1
-  %14 = load i1, i1* %out.12, align 1
-  %fwcond.and.fwtaken38 = and i1 %fwedge.taken3.rewritten, %14
-  %cond.fold39 = or i1 %fwcond.and.fwtaken38, %13
+for.cond31:                                       ; preds = %for.inc44, %for.body30
+  %bestj.1.rewritten = phi i32 [ %bestj.0.rewritten, %for.body30 ], [ %phi.fold113, %for.inc44 ]
+  %j.0.rewritten = phi i32 [ 0, %for.body30 ], [ %inc45, %for.inc44 ]
+  %fwedge.taken3.rewritten = phi i1 [ true, %for.body30 ], [ false, %for.inc44 ]
+  %exitpred.frozen4.rewritten = phi i1 [ %cmp32, %for.inc44 ], [ false, %for.body30 ]
+  %19 = load i1, i1* %out.19, align 1
+  %20 = load i1, i1* %out.12, align 1
+  %fwcond.and.fwtaken38 = and i1 %fwedge.taken3.rewritten, %20
+  %cond.fold39 = or i1 %fwcond.and.fwtaken38, %19
   store i1 %cond.fold39, i1* %out.13, align 1
-  %cmp14 = icmp slt i32 %j.0.rewritten, %n
-  br i1 %cmp14, label %for.body15, label %for.end28
+  %cmp32 = icmp slt i32 %j.0.rewritten, %n
+  br i1 %cmp32, label %for.body33, label %for.end46
 
-for.body15:                                       ; preds = %for.cond13
-  %15 = load i1, i1* %out.13, align 1
-  %in.40 = and i1 %15, %cmp14
+for.body33:                                       ; preds = %for.cond31
+  %21 = load i1, i1* %out.13, align 1
+  %in.40 = and i1 %21, %cmp32
   %cond.fold41 = or i1 false, %in.40
   store i1 %cond.fold41, i1* %out.14, align 1
-  %idxprom16 = sext i32 %j.0.rewritten to i64
-  %arrayidx17 = getelementptr inbounds [16 x i32], [16 x i32]* %vis, i64 0, i64 %idxprom16
-  %16 = load i32, i32* %arrayidx17, align 4
-  %tobool = icmp ne i32 %16, 0
+  %idxprom34 = sext i32 %j.0.rewritten to i64
+  %arrayidx35 = getelementptr inbounds [16 x i32], [16 x i32]* %vis, i64 0, i64 %idxprom34
+  %22 = load i32, i32* %arrayidx35, align 4
+  %tobool = icmp ne i32 %22, 0
   br label %land.lhs.true
 
-land.lhs.true:                                    ; preds = %for.body15
-  %17 = load i1, i1* %out.14, align 1
-  %18 = xor i1 %tobool, true
-  %in.42 = and i1 %17, %18
+land.lhs.true:                                    ; preds = %for.body33
+  %23 = load i1, i1* %out.14, align 1
+  %24 = xor i1 %tobool, true
+  %in.42 = and i1 %23, %24
   %cond.fold43 = or i1 false, %in.42
   store i1 %cond.fold43, i1* %out.15, align 1
-  %19 = load i1, i1* %out.15, align 1
-  %cmp18 = icmp slt i32 %bestj.1.rewritten, 0
+  %25 = load i1, i1* %out.15, align 1
+  %cmp36 = icmp slt i32 %bestj.1.rewritten, 0
   br label %lor.lhs.false
 
 lor.lhs.false:                                    ; preds = %land.lhs.true
-  %20 = load i1, i1* %out.15, align 1
-  %21 = xor i1 %cmp18, true
-  %in.44 = and i1 %20, %21
+  %26 = load i1, i1* %out.15, align 1
+  %27 = xor i1 %cmp36, true
+  %in.44 = and i1 %26, %27
   %cond.fold45 = or i1 false, %in.44
   store i1 %cond.fold45, i1* %out.16, align 1
-  %22 = load i1, i1* %out.16, align 1
-  %idxprom19 = sext i32 %j.0.rewritten to i64
-  %arrayidx20 = getelementptr inbounds [16 x i32], [16 x i32]* %dis, i64 0, i64 %idxprom19
-  %idx1.safe82 = icmp slt i64 %idxprom19, 16
+  %28 = load i1, i1* %out.16, align 1
+  %idxprom37 = sext i32 %j.0.rewritten to i64
+  %arrayidx38 = getelementptr inbounds [16 x i32], [16 x i32]* %dis, i64 0, i64 %idxprom37
+  %idx1.safe82 = icmp slt i64 %idxprom37, 16
   %access.safe83 = and i1 true, %idx1.safe82
-  %23 = or i1 %22, %access.safe83
-  %24 = bitcast i64* %shadow to i32*
-  %ctsel84 = select i1 %23, i32* %arrayidx20, i32* %24
-  %25 = load i32, i32* %ctsel84, align 4
-  %idxprom21 = sext i32 %bestj.1.rewritten to i64
-  %arrayidx22 = getelementptr inbounds [16 x i32], [16 x i32]* %dis, i64 0, i64 %idxprom21
-  %idx1.safe85 = icmp slt i64 %idxprom21, 16
+  %29 = or i1 %28, %access.safe83
+  %30 = bitcast i64* %shadow to i32*
+  %ctsel84 = select i1 %29, i32* %arrayidx38, i32* %30
+  %31 = load i32, i32* %ctsel84, align 4
+  %idxprom39 = sext i32 %bestj.1.rewritten to i64
+  %arrayidx40 = getelementptr inbounds [16 x i32], [16 x i32]* %dis, i64 0, i64 %idxprom39
+  %idx1.safe85 = icmp slt i64 %idxprom39, 16
   %access.safe86 = and i1 true, %idx1.safe85
-  %26 = or i1 %22, %access.safe86
-  %27 = bitcast i64* %shadow to i32*
-  %ctsel87 = select i1 %26, i32* %arrayidx22, i32* %27
-  %28 = load i32, i32* %ctsel87, align 4
-  %cmp23 = icmp slt i32 %25, %28
-  %29 = bitcast i64* %shadow to i1*
-  %ctsel88 = select i1 %22, i1* %pred.alloca, i1* %29
-  %30 = load i1, i1* %ctsel88, align 1
-  %select.val.89 = select i1 %22, i1 %cmp23, i1 %30
+  %32 = or i1 %28, %access.safe86
+  %33 = bitcast i64* %shadow to i32*
+  %ctsel87 = select i1 %32, i32* %arrayidx40, i32* %33
+  %34 = load i32, i32* %ctsel87, align 4
+  %cmp41 = icmp slt i32 %31, %34
+  %35 = bitcast i64* %shadow to i1*
+  %ctsel88 = select i1 %28, i1* %pred.alloca, i1* %35
+  %36 = load i1, i1* %ctsel88, align 1
+  %select.val.89 = select i1 %28, i1 %cmp41, i1 %36
   store i1 %select.val.89, i1* %ctsel88, align 1
-  %31 = bitcast i64* %shadow to i1*
-  %ctsel90 = select i1 %22, i1* %pred.alloca50, i1* %31
-  %32 = load i1, i1* %ctsel90, align 1
-  %select.val.91 = select i1 %22, i1 %cmp23, i1 %32
+  %37 = bitcast i64* %shadow to i1*
+  %ctsel90 = select i1 %28, i1* %pred.alloca50, i1* %37
+  %38 = load i1, i1* %ctsel90, align 1
+  %select.val.91 = select i1 %28, i1 %cmp41, i1 %38
   store i1 %select.val.91, i1* %ctsel90, align 1
   br label %if.then
 
 if.then:                                          ; preds = %lor.lhs.false
   %pred.load = load i1, i1* %pred.alloca, align 1
-  %33 = load i1, i1* %out.16, align 1
-  %in.46 = and i1 %33, %pred.load
-  %34 = load i1, i1* %out.15, align 1
-  %in.47 = and i1 %34, %cmp18
-  %cond.fold48 = or i1 false, %in.46
-  %cond.fold49 = or i1 %cond.fold48, %in.47
+  %39 = load i1, i1* %out.16, align 1
+  %in.46 = and i1 %39, %pred.load
+  %40 = load i1, i1* %out.15, align 1
+  %in.47 = and i1 %40, %cmp36
+  %cond.fold48 = or i1 false, %in.47
+  %cond.fold49 = or i1 %cond.fold48, %in.46
   store i1 %cond.fold49, i1* %out.17, align 1
-  %35 = load i1, i1* %out.17, align 1
-  %36 = bitcast i64* %shadow to i32*
-  %ctsel = select i1 %35, i32* @x, i32* %36
-  %37 = load i32, i32* %ctsel, align 4
-  %add = add nsw i32 %j.0.rewritten, %37
-  %idxprom24 = sext i32 %add to i64
-  %arrayidx25 = getelementptr inbounds [16 x i32], [16 x i32]* %vis, i64 0, i64 %idxprom24
-  %idx1.safe = icmp slt i64 %idxprom24, 16
+  %41 = load i1, i1* %out.17, align 1
+  %42 = bitcast i64* %shadow to i32*
+  %ctsel = select i1 %41, i32* @x, i32* %42
+  %43 = load i32, i32* %ctsel, align 4
+  %add = add nsw i32 %j.0.rewritten, %43
+  %idxprom42 = sext i32 %add to i64
+  %arrayidx43 = getelementptr inbounds [16 x i32], [16 x i32]* %vis, i64 0, i64 %idxprom42
+  %idx1.safe = icmp slt i64 %idxprom42, 16
   %access.safe = and i1 true, %idx1.safe
-  %38 = or i1 %35, %access.safe
-  %39 = bitcast i64* %shadow to i32*
-  %ctsel81 = select i1 %38, i32* %arrayidx25, i32* %39
-  %40 = load i32, i32* %ctsel81, align 4
-  %select.val. = select i1 %35, i32 1, i32 %40
+  %44 = or i1 %41, %access.safe
+  %45 = bitcast i64* %shadow to i32*
+  %ctsel81 = select i1 %44, i32* %arrayidx43, i32* %45
+  %46 = load i32, i32* %ctsel81, align 4
+  %select.val. = select i1 %41, i32 1, i32 %46
   store i32 %select.val., i32* %ctsel81, align 4
   br label %if.end
 
 if.end:                                           ; preds = %if.then
   %bestj.2.rewritten = phi i32 [ %add, %if.then ]
   %pred.load51 = load i1, i1* %pred.alloca50, align 1
-  %41 = load i1, i1* %out.17, align 1
-  %42 = load i1, i1* %out.16, align 1
-  %43 = xor i1 %pred.load51, true
-  %in.52 = and i1 %42, %43
-  %44 = load i1, i1* %out.14, align 1
-  %in.53 = and i1 %44, %tobool
+  %47 = load i1, i1* %out.17, align 1
+  %48 = load i1, i1* %out.16, align 1
+  %49 = xor i1 %pred.load51, true
+  %in.52 = and i1 %48, %49
+  %50 = load i1, i1* %out.14, align 1
+  %in.53 = and i1 %50, %tobool
   %phi.fold = select i1 %in.53, i32 %bestj.1.rewritten, i32 %bestj.2.rewritten
   %phi.fold113 = select i1 %in.52, i32 %bestj.1.rewritten, i32 %phi.fold
-  %cond.fold54 = or i1 false, %41
-  %cond.fold55 = or i1 %cond.fold54, %in.52
-  %cond.fold56 = or i1 %cond.fold55, %in.53
+  %cond.fold54 = or i1 false, %in.52
+  %cond.fold55 = or i1 %cond.fold54, %in.53
+  %cond.fold56 = or i1 %cond.fold55, %47
   store i1 %cond.fold56, i1* %out.18, align 1
-  br label %for.inc26
+  br label %for.inc44
 
-for.inc26:                                        ; preds = %if.end
-  %45 = load i1, i1* %out.18, align 1
-  %cond.fold57 = or i1 false, %45
+for.inc44:                                        ; preds = %if.end
+  %51 = load i1, i1* %out.18, align 1
+  %cond.fold57 = or i1 false, %51
   store i1 %cond.fold57, i1* %out.19, align 1
-  %inc27 = add nsw i32 %j.0.rewritten, 1
-  br label %for.cond13, !llvm.loop !8
+  %inc45 = add nsw i32 %j.0.rewritten, 1
+  br label %for.cond31, !llvm.loop !10
 
-for.end28:                                        ; preds = %for.cond13
-  %bestj.1.lcssa.rewritten = phi i32 [ %bestj.1.rewritten, %for.cond13 ]
-  %46 = load i1, i1* %out.13, align 1
-  %47 = xor i1 %cmp14, true
-  %in.58 = and i1 %46, %47
+for.end46:                                        ; preds = %for.cond31
+  %bestj.1.lcssa.rewritten = phi i32 [ %bestj.1.rewritten, %for.cond31 ]
+  %52 = load i1, i1* %out.13, align 1
+  %53 = xor i1 %cmp32, true
+  %in.58 = and i1 %52, %53
   %cond.fold59 = or i1 false, %in.58
   store i1 %cond.fold59, i1* %out.20, align 1
-  br label %for.cond30
+  br label %for.cond48
 
-for.cond30:                                       ; preds = %for.inc58, %for.end28
-  %j29.0.rewritten = phi i32 [ 0, %for.end28 ], [ %inc59, %for.inc58 ]
-  %fwedge.taken5.rewritten = phi i1 [ true, %for.end28 ], [ false, %for.inc58 ]
-  %exitpred.frozen6.rewritten = phi i1 [ %cmp31, %for.inc58 ], [ false, %for.end28 ]
-  %48 = load i1, i1* %out.26, align 1
-  %49 = load i1, i1* %out.20, align 1
-  %fwcond.and.fwtaken60 = and i1 %fwedge.taken5.rewritten, %49
-  %cond.fold61 = or i1 %fwcond.and.fwtaken60, %48
+for.cond48:                                       ; preds = %for.inc76, %for.end46
+  %j47.0.rewritten = phi i32 [ 0, %for.end46 ], [ %inc77, %for.inc76 ]
+  %fwedge.taken5.rewritten = phi i1 [ true, %for.end46 ], [ false, %for.inc76 ]
+  %exitpred.frozen6.rewritten = phi i1 [ %cmp49, %for.inc76 ], [ false, %for.end46 ]
+  %54 = load i1, i1* %out.26, align 1
+  %55 = load i1, i1* %out.20, align 1
+  %fwcond.and.fwtaken60 = and i1 %fwedge.taken5.rewritten, %55
+  %cond.fold61 = or i1 %fwcond.and.fwtaken60, %54
   store i1 %cond.fold61, i1* %out.21, align 1
-  %cmp31 = icmp slt i32 %j29.0.rewritten, %n
-  br i1 %cmp31, label %for.body32, label %for.end60
+  %cmp49 = icmp slt i32 %j47.0.rewritten, %n
+  br i1 %cmp49, label %for.body50, label %for.end78
 
-for.body32:                                       ; preds = %for.cond30
-  %50 = load i1, i1* %out.21, align 1
-  %in.62 = and i1 %50, %cmp31
+for.body50:                                       ; preds = %for.cond48
+  %56 = load i1, i1* %out.21, align 1
+  %in.62 = and i1 %56, %cmp49
   %cond.fold63 = or i1 false, %in.62
   store i1 %cond.fold63, i1* %out.22, align 1
-  %idxprom33 = sext i32 %j29.0.rewritten to i64
-  %arrayidx34 = getelementptr inbounds [16 x i32], [16 x i32]* %vis, i64 0, i64 %idxprom33
-  %51 = load i32, i32* %arrayidx34, align 4
-  %tobool35 = icmp ne i32 %51, 0
-  br label %land.lhs.true36
+  %idxprom51 = sext i32 %j47.0.rewritten to i64
+  %arrayidx52 = getelementptr inbounds [16 x i32], [16 x i32]* %vis, i64 0, i64 %idxprom51
+  %57 = load i32, i32* %arrayidx52, align 4
+  %tobool53 = icmp ne i32 %57, 0
+  br label %land.lhs.true54
 
-land.lhs.true36:                                  ; preds = %for.body32
-  %52 = load i1, i1* %out.22, align 1
-  %53 = xor i1 %tobool35, true
-  %in.64 = and i1 %52, %53
+land.lhs.true54:                                  ; preds = %for.body50
+  %58 = load i1, i1* %out.22, align 1
+  %59 = xor i1 %tobool53, true
+  %in.64 = and i1 %58, %59
   %cond.fold65 = or i1 false, %in.64
   store i1 %cond.fold65, i1* %out.23, align 1
-  %54 = load i1, i1* %out.23, align 1
-  %idxprom37 = sext i32 %bestj.1.lcssa.rewritten to i64
-  %arrayidx38 = getelementptr inbounds [16 x i32], [16 x i32]* %dis, i64 0, i64 %idxprom37
-  %idx1.safe92 = icmp slt i64 %idxprom37, 16
+  %60 = load i1, i1* %out.23, align 1
+  %idxprom55 = sext i32 %bestj.1.lcssa.rewritten to i64
+  %arrayidx56 = getelementptr inbounds [16 x i32], [16 x i32]* %dis, i64 0, i64 %idxprom55
+  %idx1.safe92 = icmp slt i64 %idxprom55, 16
   %access.safe93 = and i1 true, %idx1.safe92
-  %55 = or i1 %54, %access.safe93
-  %56 = bitcast i64* %shadow to i32*
-  %ctsel94 = select i1 %55, i32* %arrayidx38, i32* %56
-  %57 = load i32, i32* %ctsel94, align 4
-  %idxprom39 = sext i32 %bestj.1.lcssa.rewritten to i64
-  %arrayidx40 = getelementptr inbounds [16 x i32], [16 x i32]* %e.unwrapped, i64 %idxprom39
-  %idxprom41 = sext i32 %j29.0.rewritten to i64
-  %arrayidx42 = getelementptr inbounds [16 x i32], [16 x i32]* %arrayidx40, i64 0, i64 %idxprom41
-  %idx1.safe95 = icmp slt i64 %idxprom41, 16
-  %access.safe96 = and i1 true, %idx1.safe95
-  %58 = or i1 %54, %access.safe96
-  %59 = bitcast i64* %shadow to i32*
-  %ctsel97 = select i1 %58, i32* %arrayidx42, i32* %59
-  %60 = load i32, i32* %ctsel97, align 4
-  %add43 = add nsw i32 %57, %60
-  %idxprom44 = sext i32 %j29.0.rewritten to i64
-  %arrayidx45 = getelementptr inbounds [16 x i32], [16 x i32]* %dis, i64 0, i64 %idxprom44
-  %idx1.safe98 = icmp slt i64 %idxprom44, 16
-  %access.safe99 = and i1 true, %idx1.safe98
-  %61 = or i1 %54, %access.safe99
+  %61 = or i1 %60, %access.safe93
   %62 = bitcast i64* %shadow to i32*
-  %ctsel100 = select i1 %61, i32* %arrayidx45, i32* %62
-  %63 = load i32, i32* %ctsel100, align 4
-  %cmp46 = icmp slt i32 %add43, %63
-  %64 = bitcast i64* %shadow to i1*
-  %ctsel101 = select i1 %54, i1* %pred.alloca68, i1* %64
-  %65 = load i1, i1* %ctsel101, align 1
-  %select.val.102 = select i1 %54, i1 %cmp46, i1 %65
+  %ctsel94 = select i1 %61, i32* %arrayidx56, i32* %62
+  %63 = load i32, i32* %ctsel94, align 4
+  %idxprom57 = sext i32 %bestj.1.lcssa.rewritten to i64
+  %arrayidx58 = getelementptr inbounds [16 x i32], [16 x i32]* %e.unwrapped, i64 %idxprom57
+  %idxprom59 = sext i32 %j47.0.rewritten to i64
+  %arrayidx60 = getelementptr inbounds [16 x i32], [16 x i32]* %arrayidx58, i64 0, i64 %idxprom59
+  %idx1.safe95 = icmp slt i64 %idxprom59, 16
+  %access.safe96 = and i1 true, %idx1.safe95
+  %64 = or i1 %60, %access.safe96
+  %65 = bitcast i64* %shadow to i32*
+  %ctsel97 = select i1 %64, i32* %arrayidx60, i32* %65
+  %66 = load i32, i32* %ctsel97, align 4
+  %add61 = add nsw i32 %63, %66
+  %idxprom62 = sext i32 %j47.0.rewritten to i64
+  %arrayidx63 = getelementptr inbounds [16 x i32], [16 x i32]* %dis, i64 0, i64 %idxprom62
+  %idx1.safe98 = icmp slt i64 %idxprom62, 16
+  %access.safe99 = and i1 true, %idx1.safe98
+  %67 = or i1 %60, %access.safe99
+  %68 = bitcast i64* %shadow to i32*
+  %ctsel100 = select i1 %67, i32* %arrayidx63, i32* %68
+  %69 = load i32, i32* %ctsel100, align 4
+  %cmp64 = icmp slt i32 %add61, %69
+  %70 = bitcast i64* %shadow to i1*
+  %ctsel101 = select i1 %60, i1* %pred.alloca68, i1* %70
+  %71 = load i1, i1* %ctsel101, align 1
+  %select.val.102 = select i1 %60, i1 %cmp64, i1 %71
   store i1 %select.val.102, i1* %ctsel101, align 1
-  br label %if.then47
+  br label %if.then65
 
-if.then47:                                        ; preds = %land.lhs.true36
-  %66 = load i1, i1* %out.23, align 1
-  %in.66 = and i1 %66, %cmp46
+if.then65:                                        ; preds = %land.lhs.true54
+  %72 = load i1, i1* %out.23, align 1
+  %in.66 = and i1 %72, %cmp64
   %cond.fold67 = or i1 false, %in.66
   store i1 %cond.fold67, i1* %out.24, align 1
-  %67 = load i1, i1* %out.24, align 1
-  %idxprom48 = sext i32 %bestj.1.lcssa.rewritten to i64
-  %arrayidx49 = getelementptr inbounds [16 x i32], [16 x i32]* %dis, i64 0, i64 %idxprom48
-  %idx1.safe103 = icmp slt i64 %idxprom48, 16
+  %73 = load i1, i1* %out.24, align 1
+  %idxprom66 = sext i32 %bestj.1.lcssa.rewritten to i64
+  %arrayidx67 = getelementptr inbounds [16 x i32], [16 x i32]* %dis, i64 0, i64 %idxprom66
+  %idx1.safe103 = icmp slt i64 %idxprom66, 16
   %access.safe104 = and i1 true, %idx1.safe103
-  %68 = or i1 %67, %access.safe104
-  %69 = bitcast i64* %shadow to i32*
-  %ctsel105 = select i1 %68, i32* %arrayidx49, i32* %69
-  %70 = load i32, i32* %ctsel105, align 4
-  %idxprom50 = sext i32 %bestj.1.lcssa.rewritten to i64
-  %arrayidx51 = getelementptr inbounds [16 x i32], [16 x i32]* %e.unwrapped, i64 %idxprom50
-  %idxprom52 = sext i32 %j29.0.rewritten to i64
-  %arrayidx53 = getelementptr inbounds [16 x i32], [16 x i32]* %arrayidx51, i64 0, i64 %idxprom52
-  %idx1.safe106 = icmp slt i64 %idxprom52, 16
-  %access.safe107 = and i1 true, %idx1.safe106
-  %71 = or i1 %67, %access.safe107
-  %72 = bitcast i64* %shadow to i32*
-  %ctsel108 = select i1 %71, i32* %arrayidx53, i32* %72
-  %73 = load i32, i32* %ctsel108, align 4
-  %add54 = add nsw i32 %70, %73
-  %idxprom55 = sext i32 %j29.0.rewritten to i64
-  %arrayidx56 = getelementptr inbounds [16 x i32], [16 x i32]* %dis, i64 0, i64 %idxprom55
-  %idx1.safe109 = icmp slt i64 %idxprom55, 16
-  %access.safe110 = and i1 true, %idx1.safe109
-  %74 = or i1 %67, %access.safe110
+  %74 = or i1 %73, %access.safe104
   %75 = bitcast i64* %shadow to i32*
-  %ctsel111 = select i1 %74, i32* %arrayidx56, i32* %75
-  %76 = load i32, i32* %ctsel111, align 4
-  %select.val.112 = select i1 %67, i32 %add54, i32 %76
+  %ctsel105 = select i1 %74, i32* %arrayidx67, i32* %75
+  %76 = load i32, i32* %ctsel105, align 4
+  %idxprom68 = sext i32 %bestj.1.lcssa.rewritten to i64
+  %arrayidx69 = getelementptr inbounds [16 x i32], [16 x i32]* %e.unwrapped, i64 %idxprom68
+  %idxprom70 = sext i32 %j47.0.rewritten to i64
+  %arrayidx71 = getelementptr inbounds [16 x i32], [16 x i32]* %arrayidx69, i64 0, i64 %idxprom70
+  %idx1.safe106 = icmp slt i64 %idxprom70, 16
+  %access.safe107 = and i1 true, %idx1.safe106
+  %77 = or i1 %73, %access.safe107
+  %78 = bitcast i64* %shadow to i32*
+  %ctsel108 = select i1 %77, i32* %arrayidx71, i32* %78
+  %79 = load i32, i32* %ctsel108, align 4
+  %add72 = add nsw i32 %76, %79
+  %idxprom73 = sext i32 %j47.0.rewritten to i64
+  %arrayidx74 = getelementptr inbounds [16 x i32], [16 x i32]* %dis, i64 0, i64 %idxprom73
+  %idx1.safe109 = icmp slt i64 %idxprom73, 16
+  %access.safe110 = and i1 true, %idx1.safe109
+  %80 = or i1 %73, %access.safe110
+  %81 = bitcast i64* %shadow to i32*
+  %ctsel111 = select i1 %80, i32* %arrayidx74, i32* %81
+  %82 = load i32, i32* %ctsel111, align 4
+  %select.val.112 = select i1 %73, i32 %add72, i32 %82
   store i32 %select.val.112, i32* %ctsel111, align 4
-  br label %if.end57
+  br label %if.end75
 
-if.end57:                                         ; preds = %if.then47
+if.end75:                                         ; preds = %if.then65
   %pred.load69 = load i1, i1* %pred.alloca68, align 1
-  %77 = load i1, i1* %out.24, align 1
-  %78 = load i1, i1* %out.23, align 1
-  %79 = xor i1 %pred.load69, true
-  %in.70 = and i1 %78, %79
-  %80 = load i1, i1* %out.22, align 1
-  %in.71 = and i1 %80, %tobool35
-  %cond.fold72 = or i1 false, %in.70
-  %cond.fold73 = or i1 %cond.fold72, %77
-  %cond.fold74 = or i1 %cond.fold73, %in.71
+  %83 = load i1, i1* %out.24, align 1
+  %84 = load i1, i1* %out.23, align 1
+  %85 = xor i1 %pred.load69, true
+  %in.70 = and i1 %84, %85
+  %86 = load i1, i1* %out.22, align 1
+  %in.71 = and i1 %86, %tobool53
+  %cond.fold72 = or i1 false, %83
+  %cond.fold73 = or i1 %cond.fold72, %in.71
+  %cond.fold74 = or i1 %cond.fold73, %in.70
   store i1 %cond.fold74, i1* %out.25, align 1
-  br label %for.inc58
+  br label %for.inc76
 
-for.inc58:                                        ; preds = %if.end57
-  %81 = load i1, i1* %out.25, align 1
-  %cond.fold75 = or i1 false, %81
+for.inc76:                                        ; preds = %if.end75
+  %87 = load i1, i1* %out.25, align 1
+  %cond.fold75 = or i1 false, %87
   store i1 %cond.fold75, i1* %out.26, align 1
-  %inc59 = add nsw i32 %j29.0.rewritten, 1
-  br label %for.cond30, !llvm.loop !9
+  %inc77 = add nsw i32 %j47.0.rewritten, 1
+  br label %for.cond48, !llvm.loop !11
 
-for.end60:                                        ; preds = %for.cond30
-  %82 = load i1, i1* %out.21, align 1
-  %83 = xor i1 %cmp31, true
-  %in.76 = and i1 %82, %83
+for.end78:                                        ; preds = %for.cond48
+  %88 = load i1, i1* %out.21, align 1
+  %89 = xor i1 %cmp49, true
+  %in.76 = and i1 %88, %89
   %cond.fold77 = or i1 false, %in.76
   store i1 %cond.fold77, i1* %out.27, align 1
-  br label %for.inc61
+  br label %for.inc79
 
-for.inc61:                                        ; preds = %for.end60
-  %84 = load i1, i1* %out.27, align 1
-  %cond.fold78 = or i1 false, %84
+for.inc79:                                        ; preds = %for.end78
+  %90 = load i1, i1* %out.27, align 1
+  %cond.fold78 = or i1 false, %90
   store i1 %cond.fold78, i1* %out.28, align 1
-  %inc62 = add nsw i32 %i9.0.rewritten, 1
-  br label %for.cond10, !llvm.loop !10
+  %inc80 = add nsw i32 %i27.0.rewritten, 1
+  br label %for.cond28, !llvm.loop !12
 
-for.end63:                                        ; preds = %for.cond10
-  %85 = load i1, i1* %out.11, align 1
-  %86 = xor i1 %cmp11, true
-  %in.79 = and i1 %85, %86
+for.end81:                                        ; preds = %for.cond28
+  %91 = load i1, i1* %out.11, align 1
+  %92 = xor i1 %cmp29, true
+  %in.79 = and i1 %91, %92
   %cond.fold80 = or i1 false, %in.79
   store i1 %cond.fold80, i1* %out.29, align 1
-  %idxprom64 = sext i32 %t to i64
-  %arrayidx65 = getelementptr inbounds [16 x i32], [16 x i32]* %dis, i64 0, i64 %idxprom64
-  %87 = load i32, i32* %arrayidx65, align 4
-  ret i32 %87
+  %idxprom82 = sext i32 %t to i64
+  %arrayidx83 = getelementptr inbounds [16 x i32], [16 x i32]* %dis, i64 0, i64 %idxprom82
+  %93 = load i32, i32* %arrayidx83, align 4
+  ret i32 %93
 }
 
 ; Function Attrs: inaccessiblememonly nofree nosync nounwind willreturn
@@ -497,7 +537,7 @@ entry:
   %arrayidx7 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 5
   store volatile i64 0, i64* %arrayidx7, align 8
   %arrayidx8 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args, i64 0, i64 0
-  %3 = call i64 asm sideeffect "rolq $$3,  %rdi ; rolq $$13, %rdi\0A\09rolq $$61, %rdi ; rolq $$51, %rdi\0A\09xchgq %rbx,%rbx", "={dx},{ax},0,~{cc},~{memory},~{dirflag},~{fpsr},~{flags}"(i64* %arrayidx8, i64 0) #4, !srcloc !11
+  %3 = call i64 asm sideeffect "rolq $$3,  %rdi ; rolq $$13, %rdi\0A\09rolq $$61, %rdi ; rolq $$51, %rdi\0A\09xchgq %rbx,%rbx", "={dx},{ax},0,~{cc},~{memory},~{dirflag},~{fpsr},~{flags}"(i64* %arrayidx8, i64 0) #4, !srcloc !13
   store volatile i64 %3, i64* %_zzq_result, align 8
   %4 = load volatile i64, i64* %_zzq_result, align 8
   %in9 = bitcast [16 x [16 x i32]]* %in to i8*
@@ -555,7 +595,7 @@ for.inc:                                          ; preds = %for.body14
   %cond.fold16 = or i1 false, %12
   store i1 %cond.fold16, i1* %out.7, align 1
   %inc = add nsw i32 %j.0.rewritten, 1
-  br label %for.cond11, !llvm.loop !12
+  br label %for.cond11, !llvm.loop !14
 
 for.end:                                          ; preds = %for.cond11
   %13 = load i1, i1* %out.5, align 1
@@ -570,7 +610,7 @@ for.inc19:                                        ; preds = %for.end
   %cond.fold19 = or i1 false, %15
   store i1 %cond.fold19, i1* %out.9, align 1
   %inc20 = add nsw i32 %i.0.rewritten, 1
-  br label %for.cond, !llvm.loop !13
+  br label %for.cond, !llvm.loop !15
 
 for.end21:                                        ; preds = %for.cond
   %16 = load i1, i1* %out.3, align 1
@@ -591,7 +631,7 @@ for.end21:                                        ; preds = %for.cond
   %arrayidx29 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args22, i64 0, i64 5
   store volatile i64 0, i64* %arrayidx29, align 8
   %arrayidx30 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args22, i64 0, i64 0
-  %18 = call i64 asm sideeffect "rolq $$3,  %rdi ; rolq $$13, %rdi\0A\09rolq $$61, %rdi ; rolq $$51, %rdi\0A\09xchgq %rbx,%rbx", "={dx},{ax},0,~{cc},~{memory},~{dirflag},~{fpsr},~{flags}"(i64* %arrayidx30, i64 0) #4, !srcloc !14
+  %18 = call i64 asm sideeffect "rolq $$3,  %rdi ; rolq $$13, %rdi\0A\09rolq $$61, %rdi ; rolq $$51, %rdi\0A\09xchgq %rbx,%rbx", "={dx},{ax},0,~{cc},~{memory},~{dirflag},~{fpsr},~{flags}"(i64* %arrayidx30, i64 0) #4, !srcloc !16
   store volatile i64 %18, i64* %_zzq_result23, align 8
   %19 = load volatile i64, i64* %_zzq_result23, align 8
   %arrayidx34 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args32, i64 0, i64 0
@@ -609,7 +649,7 @@ for.end21:                                        ; preds = %for.cond
   %arrayidx39 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args32, i64 0, i64 5
   store volatile i64 0, i64* %arrayidx39, align 8
   %arrayidx40 = getelementptr inbounds [6 x i64], [6 x i64]* %_zzq_args32, i64 0, i64 0
-  %21 = call i64 asm sideeffect "rolq $$3,  %rdi ; rolq $$13, %rdi\0A\09rolq $$61, %rdi ; rolq $$51, %rdi\0A\09xchgq %rbx,%rbx", "={dx},{ax},0,~{cc},~{memory},~{dirflag},~{fpsr},~{flags}"(i64* %arrayidx40, i64 0) #4, !srcloc !15
+  %21 = call i64 asm sideeffect "rolq $$3,  %rdi ; rolq $$13, %rdi\0A\09rolq $$61, %rdi ; rolq $$51, %rdi\0A\09xchgq %rbx,%rbx", "={dx},{ax},0,~{cc},~{memory},~{dirflag},~{fpsr},~{flags}"(i64* %arrayidx40, i64 0) #4, !srcloc !17
   store volatile i64 %21, i64* %_zzq_result33, align 8
   %22 = load volatile i64, i64* %_zzq_result33, align 8
   %arraydecay42 = getelementptr inbounds [16 x [16 x i32]], [16 x [16 x i32]]* %in, i64 0, i64 0
@@ -643,13 +683,15 @@ attributes #4 = { nounwind }
 !3 = !{i32 7, !"PIE Level", i32 2}
 !4 = !{i32 7, !"uwtable", i32 1}
 !5 = !{i32 7, !"frame-pointer", i32 2}
-!6 = distinct !{!6, !7}
-!7 = !{!"llvm.loop.mustprogress"}
-!8 = distinct !{!8, !7}
-!9 = distinct !{!9, !7}
-!10 = distinct !{!10, !7}
-!11 = !{i64 2148115033, i64 2148115069, i64 2148115137}
-!12 = distinct !{!12, !7}
-!13 = distinct !{!13, !7}
-!14 = !{i64 2148116671, i64 2148116707, i64 2148116775}
-!15 = !{i64 2148118297, i64 2148118333, i64 2148118401}
+!6 = !{i64 2147941460, i64 2147941496, i64 2147941564}
+!7 = !{i64 2147943071, i64 2147943107, i64 2147943175}
+!8 = distinct !{!8, !9}
+!9 = !{!"llvm.loop.mustprogress"}
+!10 = distinct !{!10, !9}
+!11 = distinct !{!11, !9}
+!12 = distinct !{!12, !9}
+!13 = !{i64 2148115033, i64 2148115069, i64 2148115137}
+!14 = distinct !{!14, !9}
+!15 = distinct !{!15, !9}
+!16 = !{i64 2148116671, i64 2148116707, i64 2148116775}
+!17 = !{i64 2148118297, i64 2148118333, i64 2148118401}

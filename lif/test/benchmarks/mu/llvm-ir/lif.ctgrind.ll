@@ -114,8 +114,8 @@ if.end:                                           ; preds = %if.then
   %17 = load i1, i1* %out.2, align 1
   %18 = xor i1 %tobool, true
   %in.14 = and i1 %17, %18
-  %cond.fold15 = or i1 false, %in.14
-  %cond.fold16 = or i1 %cond.fold15, %16
+  %cond.fold15 = or i1 false, %16
+  %cond.fold16 = or i1 %cond.fold15, %in.14
   store i1 %cond.fold16, i1* %out.4, align 1
   %arrayidx10 = getelementptr inbounds i32, i32* %a.unwrapped, i64 1
   %19 = load i32, i32* %arrayidx10, align 4
@@ -152,8 +152,8 @@ if.end16:                                         ; preds = %if.then13
   %29 = load i1, i1* %out.4, align 1
   %30 = xor i1 %tobool12, true
   %in.19 = and i1 %29, %30
-  %cond.fold20 = or i1 false, %in.19
-  %cond.fold21 = or i1 %cond.fold20, %28
+  %cond.fold20 = or i1 false, %28
+  %cond.fold21 = or i1 %cond.fold20, %in.19
   store i1 %cond.fold21, i1* %out.6, align 1
   %arrayidx17 = getelementptr inbounds i32, i32* %a.unwrapped, i64 2
   %31 = load i32, i32* %arrayidx17, align 4
@@ -190,8 +190,8 @@ if.end23:                                         ; preds = %if.then20
   %41 = load i1, i1* %out.6, align 1
   %42 = xor i1 %tobool19, true
   %in.24 = and i1 %41, %42
-  %cond.fold25 = or i1 false, %in.24
-  %cond.fold26 = or i1 %cond.fold25, %40
+  %cond.fold25 = or i1 false, %40
+  %cond.fold26 = or i1 %cond.fold25, %in.24
   store i1 %cond.fold26, i1* %out.8, align 1
   %arrayidx24 = getelementptr inbounds i32, i32* %a.unwrapped, i64 0
   %43 = load i32, i32* %arrayidx24, align 4

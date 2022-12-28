@@ -175,8 +175,8 @@ for.body15:                                       ; preds = %for.body15.preheade
   %in.53 = and i1 %cond.fold3929, %tobool
   %26 = select i1 %in.52, i1 true, i1 %in.53
   %phi.fold113 = select i1 %26, i32 %bestj.1.rewritten27, i32 %add
-  %cond.fold55 = or i1 %in.53, %in.52
-  %cond.fold56 = or i1 %cond.fold49, %cond.fold55
+  %cond.fold55 = or i1 %cond.fold49, %in.52
+  %cond.fold56 = or i1 %in.53, %cond.fold55
   %indvars.iv.next49 = add nuw nsw i64 %indvars.iv48, 1
   %exitcond51.not = icmp eq i64 %indvars.iv.next49, %wide.trip.count50
   br i1 %exitcond51.not, label %for.body32.lr.ph, label %for.body15, !llvm.loop !15
@@ -222,8 +222,8 @@ for.body32:                                       ; preds = %for.body32.lr.ph, %
   %40 = xor i1 %pred.alloca68.0.pred.alloca68.0.pred.alloca68.0.pred.load69, true
   %in.70 = and i1 %in.64, %40
   %in.71 = and i1 %cond.fold6136, %tobool35
-  %cond.fold73 = or i1 %in.71, %in.70
-  %cond.fold74 = or i1 %in.66, %cond.fold73
+  %cond.fold73 = or i1 %in.71, %in.66
+  %cond.fold74 = or i1 %cond.fold73, %in.70
   %indvars.iv.next53 = add nuw nsw i64 %indvars.iv52, 1
   %exitcond55.not = icmp eq i64 %indvars.iv.next53, %wide.trip.count54
   br i1 %exitcond55.not, label %for.end60, label %for.body32, !llvm.loop !16
