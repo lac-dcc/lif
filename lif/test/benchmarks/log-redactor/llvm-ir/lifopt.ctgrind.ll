@@ -231,8 +231,8 @@ for.body24:                                       ; preds = %for.body24.lr.ph, %
   %in.70 = and i1 %in.66, %36
   %37 = xor i1 %cmp30, true
   %in.71 = and i1 %cond.fold6377, %37
-  %cond.fold73 = or i1 %in.71, %in.68
-  %cond.fold74 = or i1 %cond.fold73, %in.70
+  %cond.fold73 = or i1 %in.71, %in.70
+  %cond.fold74 = or i1 %in.68, %cond.fold73
   %indvars.iv.next92 = add nuw nsw i64 %indvars.iv91, 1
   %exitcond94.not = icmp eq i64 %indvars.iv.next92, %wide.trip.count93
   br i1 %exitcond94.not, label %for.end47, label %for.body24, !llvm.loop !14

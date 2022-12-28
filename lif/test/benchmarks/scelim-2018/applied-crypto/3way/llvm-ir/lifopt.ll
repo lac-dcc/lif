@@ -319,10 +319,10 @@ for.end:                                          ; preds = %for.body
 ; Function Attrs: nofree noinline norecurse nosync nounwind sspstrong uwtable
 define dso_local void @twy_key(%i32ptr.wrapped.ty* nocapture noundef readonly %key, %struct.twy_ctx* noundef %c) local_unnamed_addr #0 {
 entry:
+  %arraydecay.wrapped = alloca %i32ptr.wrapped.ty, align 8
   %arraydecay16.wrapped = alloca %i32ptr.wrapped.ty, align 8
   %arraydecay17.wrapped = alloca %i32ptr.wrapped.ty, align 8
   %arraydecay15.wrapped = alloca %i32ptr.wrapped.ty, align 8
-  %arraydecay.wrapped = alloca %i32ptr.wrapped.ty, align 8
   %0 = getelementptr inbounds %i32ptr.wrapped.ty, %i32ptr.wrapped.ty* %key, i64 0, i32 0
   %key.unwrapped = load i32*, i32** %0, align 8
   %1 = load i32, i32* %key.unwrapped, align 4

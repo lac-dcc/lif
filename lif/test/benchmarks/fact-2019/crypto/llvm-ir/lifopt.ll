@@ -5,6 +5,7 @@ target triple = "x86_64-pc-linux-gnu"
 
 %struct.uint8ptr_wrapped_ty = type { i8*, i64 }
 %struct.poly1305_state_internal_t = type { [3 x i64], [3 x i64], [2 x i64], i64, [16 x i8], i8 }
+%struct.timespec = type { i64, i64 }
 
 @llvm.global.annotations = appending global [13 x { i8*, i8*, i8*, i32, i8* }] [{ i8*, i8*, i8*, i32, i8* } { i8* bitcast (i32 (%struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*)* @_crypto_stream_salsa20 to i8*), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.2, i32 0, i32 0), i8* getelementptr inbounds ([14 x i8], [14 x i8]* @.str.1, i32 0, i32 0), i32 111, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (i32 (%struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, i64, %struct.uint8ptr_wrapped_ty*)* @_crypto_stream_salsa20_xor_ic to i8*), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.5, i32 0, i32 0), i8* getelementptr inbounds ([14 x i8], [14 x i8]* @.str.1, i32 0, i32 0), i32 154, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (void (%struct.poly1305_state_internal_t*, %struct.uint8ptr_wrapped_ty*)* @_poly1305_blocks to i8*), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.3.2, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.1.3, i32 0, i32 0), i32 8, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (void (%struct.poly1305_state_internal_t*, %struct.uint8ptr_wrapped_ty*)* @_poly1305_update to i8*), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.3.2, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.1.3, i32 0, i32 0), i32 102, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (i32 (%struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*)* @_crypto_onetimeauth_poly1305 to i8*), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.3.2, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.1.3, i32 0, i32 0), i32 287, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (i1 (%struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*)* @_crypto_onetimeauth_poly1305_verify to i8*), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.3.2, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.1.3, i32 0, i32 0), i32 309, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (i32 (%struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*)* @__crypto_stream_xsalsa20 to i8*), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.2.16, i32 0, i32 0), i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.1.17, i32 0, i32 0), i32 95, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (i32 (%struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, i64, %struct.uint8ptr_wrapped_ty*)* @__crypto_stream_xsalsa20_xor_ic to i8*), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.3.18, i32 0, i32 0), i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.1.17, i32 0, i32 0), i32 113, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (i32 (%struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, i1)* @__crypto_stream_xsalsa20_xor to i8*), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.3.18, i32 0, i32 0), i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.1.17, i32 0, i32 0), i32 134, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (i1 (%struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*)* @__crypto_secretbox_xsalsa20poly1305 to i8*), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.3.18, i32 0, i32 0), i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.1.17, i32 0, i32 0), i32 144, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (i1 (%struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*)* @__crypto_secretbox_xsalsa20poly1305_open to i8*), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.3.18, i32 0, i32 0), i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.1.17, i32 0, i32 0), i32 186, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (i1 (%struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*)* @__crypto_secretbox to i8*), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.3.18, i32 0, i32 0), i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.1.17, i32 0, i32 0), i32 236, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (i1 (%struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*)* @__crypto_secretbox_open to i8*), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.3.18, i32 0, i32 0), i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.1.17, i32 0, i32 0), i32 246, i8* null }], section "llvm.metadata"
 @.str = private unnamed_addr constant [7 x i8] c"secret\00", section "llvm.metadata"
@@ -38,6 +39,7 @@ target triple = "x86_64-pc-linux-gnu"
 @.str.5.21 = private unnamed_addr constant [23 x i8] c"lib/crypto_secretbox.c\00", align 1
 @__PRETTY_FUNCTION__.__crypto_secretbox_xsalsa20poly1305 = private unnamed_addr constant [110 x i8] c"_Bool __crypto_secretbox_xsalsa20poly1305(uint8ptr_wrapped_ty *, uint8ptr_wrapped_ty *, uint8_t *, uint8_t *)\00", align 1
 @__PRETTY_FUNCTION__.__crypto_secretbox_xsalsa20poly1305_open = private unnamed_addr constant [115 x i8] c"_Bool __crypto_secretbox_xsalsa20poly1305_open(uint8ptr_wrapped_ty *, uint8ptr_wrapped_ty *, uint8_t *, uint8_t *)\00", align 1
+@.str.24 = private unnamed_addr constant [12 x i8] c"\0ATime: %ld\0A\00", align 1
 
 ; Function Attrs: noinline nounwind sspstrong uwtable
 define dso_local i32 @_crypto_stream_salsa20(%struct.uint8ptr_wrapped_ty* nocapture noundef readonly %c, %struct.uint8ptr_wrapped_ty* nocapture noundef readonly %n, %struct.uint8ptr_wrapped_ty* nocapture noundef readonly %k) #0 {
@@ -191,8 +193,8 @@ for.body49:                                       ; preds = %for.body49.preheade
   br i1 %cmp47, label %for.body49, label %if.end, !llvm.loop !10
 
 if.end:                                           ; preds = %for.body49, %if.then, %for.end31
-  call void @sodium_memzero(i8* noundef nonnull %block32, i64 noundef 64) #14
-  call void @sodium_memzero(i8* noundef nonnull %kcopy3, i64 noundef 32) #14
+  call void @sodium_memzero(i8* noundef nonnull %block32, i64 noundef 64) #16
+  call void @sodium_memzero(i8* noundef nonnull %kcopy3, i64 noundef 32) #16
   ret i32 0
 }
 
@@ -250,7 +252,7 @@ if.then:                                          ; preds = %entry
   br label %for.body
 
 if.else:                                          ; preds = %entry
-  call void @__assert_fail(i8* noundef getelementptr inbounds ([17 x i8], [17 x i8]* @.str.3, i64 0, i64 0), i8* noundef getelementptr inbounds ([14 x i8], [14 x i8]* @.str.4, i64 0, i64 0), i32 noundef 166, i8* noundef getelementptr inbounds ([116 x i8], [116 x i8]* @__PRETTY_FUNCTION__._crypto_stream_salsa20_xor_ic, i64 0, i64 0)) #15
+  call void @__assert_fail(i8* noundef getelementptr inbounds ([17 x i8], [17 x i8]* @.str.3, i64 0, i64 0), i8* noundef getelementptr inbounds ([14 x i8], [14 x i8]* @.str.4, i64 0, i64 0), i32 noundef 166, i8* noundef getelementptr inbounds ([116 x i8], [116 x i8]* @__PRETTY_FUNCTION__._crypto_stream_salsa20_xor_ic, i64 0, i64 0)) #17
   unreachable
 
 for.body:                                         ; preds = %if.then, %for.body
@@ -386,8 +388,8 @@ for.body79:                                       ; preds = %if.then69, %for.bod
   br i1 %exitcond46.not, label %if.end90, label %for.body79, !llvm.loop !16
 
 if.end90:                                         ; preds = %for.body79, %if.then69, %for.end65
-  call void @sodium_memzero(i8* noundef nonnull %block22, i64 noundef 64) #14
-  call void @sodium_memzero(i8* noundef nonnull %kcopy7, i64 noundef 32) #14
+  call void @sodium_memzero(i8* noundef nonnull %block22, i64 noundef 64) #16
+  call void @sodium_memzero(i8* noundef nonnull %kcopy7, i64 noundef 32) #16
   %17 = load i8*, i8** %buf, align 8
   %18 = load i8*, i8** %c_buf, align 8
   %19 = load i64, i64* %c.field0.length.ptr, align 8
@@ -1106,7 +1108,7 @@ if.then9:                                         ; preds = %for.body
   br i1 %cmp12, label %if.then13, label %if.else14
 
 if.else:                                          ; preds = %for.body
-  call void @__assert_fail(i8* noundef getelementptr inbounds ([25 x i8], [25 x i8]* @.str.4.9, i64 0, i64 0), i8* noundef getelementptr inbounds ([22 x i8], [22 x i8]* @.str.5.7, i64 0, i64 0), i32 noundef 123, i8* noundef getelementptr inbounds ([74 x i8], [74 x i8]* @__PRETTY_FUNCTION__._poly1305_update, i64 0, i64 0)) #15
+  call void @__assert_fail(i8* noundef getelementptr inbounds ([25 x i8], [25 x i8]* @.str.4.9, i64 0, i64 0), i8* noundef getelementptr inbounds ([22 x i8], [22 x i8]* @.str.5.7, i64 0, i64 0), i32 noundef 123, i8* noundef getelementptr inbounds ([74 x i8], [74 x i8]* @__PRETTY_FUNCTION__._poly1305_update, i64 0, i64 0)) #17
   unreachable
 
 if.then13:                                        ; preds = %if.then9
@@ -1122,7 +1124,7 @@ if.then13:                                        ; preds = %if.then9
   br i1 %exitcond.not, label %for.end, label %for.body, !llvm.loop !19
 
 if.else14:                                        ; preds = %if.then9
-  call void @__assert_fail(i8* noundef getelementptr inbounds ([11 x i8], [11 x i8]* @.str.6.10, i64 0, i64 0), i8* noundef getelementptr inbounds ([22 x i8], [22 x i8]* @.str.5.7, i64 0, i64 0), i32 noundef 124, i8* noundef getelementptr inbounds ([74 x i8], [74 x i8]* @__PRETTY_FUNCTION__._poly1305_update, i64 0, i64 0)) #15
+  call void @__assert_fail(i8* noundef getelementptr inbounds ([11 x i8], [11 x i8]* @.str.6.10, i64 0, i64 0), i8* noundef getelementptr inbounds ([22 x i8], [22 x i8]* @.str.5.7, i64 0, i64 0), i32 noundef 124, i8* noundef getelementptr inbounds ([74 x i8], [74 x i8]* @__PRETTY_FUNCTION__._poly1305_update, i64 0, i64 0)) #17
   unreachable
 
 for.end:                                          ; preds = %if.then13, %if.then
@@ -1134,7 +1136,7 @@ for.end:                                          ; preds = %if.then13, %if.then
 
 if.end23:                                         ; preds = %for.end
   %len24 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %w_state_buffer, i64 0, i32 1
-  %call = call noalias dereferenceable_or_null(16) i8* @malloc(i64 noundef 16) #14
+  %call = call noalias dereferenceable_or_null(16) i8* @malloc(i64 noundef 16) #16
   %buf26 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %w_state_buffer, i64 0, i32 0
   store i64 16, i64* %len24, align 8
   store i8* %call, i8** %buf26, align 8
@@ -1160,12 +1162,12 @@ if.then38:                                        ; preds = %if.then32
   br i1 %cmp43.not, label %if.else45, label %if.then44
 
 if.else39:                                        ; preds = %if.then32
-  call void @__assert_fail(i8* noundef getelementptr inbounds ([25 x i8], [25 x i8]* @.str.7, i64 0, i64 0), i8* noundef getelementptr inbounds ([22 x i8], [22 x i8]* @.str.5.7, i64 0, i64 0), i32 noundef 154, i8* noundef getelementptr inbounds ([74 x i8], [74 x i8]* @__PRETTY_FUNCTION__._poly1305_update, i64 0, i64 0)) #15
+  call void @__assert_fail(i8* noundef getelementptr inbounds ([25 x i8], [25 x i8]* @.str.7, i64 0, i64 0), i8* noundef getelementptr inbounds ([22 x i8], [22 x i8]* @.str.5.7, i64 0, i64 0), i32 noundef 154, i8* noundef getelementptr inbounds ([74 x i8], [74 x i8]* @__PRETTY_FUNCTION__._poly1305_update, i64 0, i64 0)) #17
   unreachable
 
 if.then44:                                        ; preds = %if.then38
   %len47 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %w_view_m, i64 0, i32 1
-  %call50 = call noalias i8* @malloc(i64 noundef %and) #14
+  %call50 = call noalias i8* @malloc(i64 noundef %and) #16
   %buf51 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %w_view_m, i64 0, i32 0
   store i64 %and, i64* %len47, align 8
   store i8* %call50, i8** %buf51, align 8
@@ -1177,7 +1179,7 @@ if.then44:                                        ; preds = %if.then38
   br label %if.end54
 
 if.else45:                                        ; preds = %if.then38
-  call void @__assert_fail(i8* noundef getelementptr inbounds ([25 x i8], [25 x i8]* @.str.8, i64 0, i64 0), i8* noundef getelementptr inbounds ([22 x i8], [22 x i8]* @.str.5.7, i64 0, i64 0), i32 noundef 155, i8* noundef getelementptr inbounds ([74 x i8], [74 x i8]* @__PRETTY_FUNCTION__._poly1305_update, i64 0, i64 0)) #15
+  call void @__assert_fail(i8* noundef getelementptr inbounds ([25 x i8], [25 x i8]* @.str.8, i64 0, i64 0), i8* noundef getelementptr inbounds ([22 x i8], [22 x i8]* @.str.5.7, i64 0, i64 0), i32 noundef 155, i8* noundef getelementptr inbounds ([74 x i8], [74 x i8]* @__PRETTY_FUNCTION__._poly1305_update, i64 0, i64 0)) #17
   unreachable
 
 if.end54:                                         ; preds = %if.then44, %if.end28
@@ -1209,7 +1211,7 @@ if.then68:                                        ; preds = %for.body63
   br i1 %cmp73, label %if.then74, label %if.else75
 
 if.else69:                                        ; preds = %for.body63
-  call void @__assert_fail(i8* noundef getelementptr inbounds ([33 x i8], [33 x i8]* @.str.9, i64 0, i64 0), i8* noundef getelementptr inbounds ([22 x i8], [22 x i8]* @.str.5.7, i64 0, i64 0), i32 noundef 178, i8* noundef getelementptr inbounds ([74 x i8], [74 x i8]* @__PRETTY_FUNCTION__._poly1305_update, i64 0, i64 0)) #15
+  call void @__assert_fail(i8* noundef getelementptr inbounds ([33 x i8], [33 x i8]* @.str.9, i64 0, i64 0), i8* noundef getelementptr inbounds ([22 x i8], [22 x i8]* @.str.5.7, i64 0, i64 0), i32 noundef 178, i8* noundef getelementptr inbounds ([74 x i8], [74 x i8]* @__PRETTY_FUNCTION__._poly1305_update, i64 0, i64 0)) #17
   unreachable
 
 if.then74:                                        ; preds = %if.then68
@@ -1224,7 +1226,7 @@ if.then74:                                        ; preds = %if.then68
   br i1 %exitcond20.not, label %for.end84, label %for.body63, !llvm.loop !20
 
 if.else75:                                        ; preds = %if.then68
-  call void @__assert_fail(i8* noundef getelementptr inbounds ([21 x i8], [21 x i8]* @.str.10, i64 0, i64 0), i8* noundef getelementptr inbounds ([22 x i8], [22 x i8]* @.str.5.7, i64 0, i64 0), i32 noundef 179, i8* noundef getelementptr inbounds ([74 x i8], [74 x i8]* @__PRETTY_FUNCTION__._poly1305_update, i64 0, i64 0)) #15
+  call void @__assert_fail(i8* noundef getelementptr inbounds ([21 x i8], [21 x i8]* @.str.10, i64 0, i64 0), i8* noundef getelementptr inbounds ([22 x i8], [22 x i8]* @.str.5.7, i64 0, i64 0), i32 noundef 179, i8* noundef getelementptr inbounds ([74 x i8], [74 x i8]* @__PRETTY_FUNCTION__._poly1305_update, i64 0, i64 0)) #17
   unreachable
 
 for.end84:                                        ; preds = %if.then74, %if.then57
@@ -1430,7 +1432,7 @@ for.body.preheader:                               ; preds = %if.then4
   br label %for.body
 
 if.else:                                          ; preds = %if.then
-  call void @__assert_fail(i8* noundef getelementptr inbounds ([25 x i8], [25 x i8]* @.str.11, i64 0, i64 0), i8* noundef getelementptr inbounds ([22 x i8], [22 x i8]* @.str.5.7, i64 0, i64 0), i32 noundef 198, i8* noundef getelementptr inbounds ([62 x i8], [62 x i8]* @__PRETTY_FUNCTION__._poly1305_finish, i64 0, i64 0)) #15
+  call void @__assert_fail(i8* noundef getelementptr inbounds ([25 x i8], [25 x i8]* @.str.11, i64 0, i64 0), i8* noundef getelementptr inbounds ([22 x i8], [22 x i8]* @.str.5.7, i64 0, i64 0), i32 noundef 198, i8* noundef getelementptr inbounds ([62 x i8], [62 x i8]* @__PRETTY_FUNCTION__._poly1305_finish, i64 0, i64 0)) #17
   unreachable
 
 for.body:                                         ; preds = %for.body.preheader, %for.body
@@ -1447,7 +1449,7 @@ for.end:                                          ; preds = %for.body, %if.then4
   %5 = call i8* @llvm.ptr.annotation.p0i8(i8* nonnull %final, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.6, i64 0, i64 0), i8* getelementptr inbounds ([33 x i8], [33 x i8]* @.str.2.8, i64 0, i64 0), i32 18, i8* null)
   store i8 1, i8* %5, align 8
   %len = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %w_state_buffer, i64 0, i32 1
-  %call = call noalias dereferenceable_or_null(16) i8* @malloc(i64 noundef 16) #14
+  %call = call noalias dereferenceable_or_null(16) i8* @malloc(i64 noundef 16) #16
   %buf = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %w_state_buffer, i64 0, i32 0
   store i64 16, i64* %len, align 8
   store i8* %call, i8** %buf, align 8
@@ -1574,7 +1576,7 @@ if.end9:                                          ; preds = %for.end, %entry
   %23 = load i64, i64* %h1, align 8
   call fastcc void @store64_le(i8* nonnull %add.ptr, i64 %23)
   %24 = bitcast %struct.poly1305_state_internal_t* %state to i8*
-  call void @sodium_memzero(i8* noundef %24, i64 noundef 96) #14
+  call void @sodium_memzero(i8* noundef %24, i64 noundef 96) #16
   ret void
 }
 
@@ -1713,11 +1715,11 @@ define dso_local i32 @__crypto_stream_xsalsa20(%struct.uint8ptr_wrapped_ty* noca
 entry:
   %n.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %n, i64 0, i32 1
   %n.field0.length = load i64, i64* %n.field0.length.ptr, align 8
+  %add.ptr.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %arraydecay2.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %arraydecay.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %n.unwrapped.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %arg.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %add.ptr.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %arraydecay2.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %0 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %n, i64 0, i32 0
   %n.unwrapped = load i8*, i8** %0, align 8
   %1 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %k, i64 0, i32 0
@@ -1752,7 +1754,7 @@ entry:
   store i64 32, i64* %arraydecay2.wrapped.field0.length.ptr, align 8
   store i8* %2, i8** %arraydecay2.unwrapped, align 8
   %call = call i32 @_crypto_stream_salsa20(%struct.uint8ptr_wrapped_ty* %c, %struct.uint8ptr_wrapped_ty* nonnull %add.ptr.wrapped, %struct.uint8ptr_wrapped_ty* nonnull %arraydecay2.wrapped)
-  call void @sodium_memzero(i8* noundef nonnull %2, i64 noundef 32) #14
+  call void @sodium_memzero(i8* noundef nonnull %2, i64 noundef 32) #16
   ret i32 0
 }
 
@@ -1761,11 +1763,11 @@ define dso_local i32 @__crypto_stream_xsalsa20_xor_ic(%struct.uint8ptr_wrapped_t
 entry:
   %n.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %n, i64 0, i32 1
   %n.field0.length = load i64, i64* %n.field0.length.ptr, align 8
+  %add.ptr.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %arraydecay2.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %arraydecay.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %n.unwrapped.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %arg.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %add.ptr.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %arraydecay2.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %0 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %n, i64 0, i32 0
   %n.unwrapped = load i8*, i8** %0, align 8
   %1 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %k, i64 0, i32 0
@@ -1800,7 +1802,7 @@ entry:
   store i64 32, i64* %arraydecay2.wrapped.field0.length.ptr, align 8
   store i8* %2, i8** %arraydecay2.unwrapped, align 8
   %call = call i32 @_crypto_stream_salsa20_xor_ic(%struct.uint8ptr_wrapped_ty* %c, %struct.uint8ptr_wrapped_ty* %m, %struct.uint8ptr_wrapped_ty* nonnull %add.ptr.wrapped, i64 %ic, %struct.uint8ptr_wrapped_ty* nonnull %arraydecay2.wrapped)
-  call void @sodium_memzero(i8* noundef nonnull %2, i64 noundef 32) #14
+  call void @sodium_memzero(i8* noundef nonnull %2, i64 noundef 32) #16
   ret i32 0
 }
 
@@ -1886,7 +1888,7 @@ if.then6:                                         ; preds = %if.end
   %6 = load i64, i64* %c.field0.length.ptr, align 8
   %sub = add i64 %6, -32
   %len10 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %w_mview, i64 0, i32 1
-  %call12 = call noalias i8* @malloc(i64 noundef %sub) #14
+  %call12 = call noalias i8* @malloc(i64 noundef %sub) #16
   %buf13 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %w_mview, i64 0, i32 0
   store i64 %sub, i64* %len10, align 8
   store i8* %call12, i8** %buf13, align 8
@@ -1910,7 +1912,7 @@ if.then6:                                         ; preds = %if.end
   br label %for.body
 
 if.else:                                          ; preds = %if.end
-  call void @__assert_fail(i8* noundef getelementptr inbounds ([17 x i8], [17 x i8]* @.str.4.20, i64 0, i64 0), i8* noundef getelementptr inbounds ([23 x i8], [23 x i8]* @.str.5.21, i64 0, i64 0), i32 noundef 156, i8* noundef getelementptr inbounds ([110 x i8], [110 x i8]* @__PRETTY_FUNCTION__.__crypto_secretbox_xsalsa20poly1305, i64 0, i64 0)) #15
+  call void @__assert_fail(i8* noundef getelementptr inbounds ([17 x i8], [17 x i8]* @.str.4.20, i64 0, i64 0), i8* noundef getelementptr inbounds ([23 x i8], [23 x i8]* @.str.5.21, i64 0, i64 0), i32 noundef 156, i8* noundef getelementptr inbounds ([110 x i8], [110 x i8]* @__PRETTY_FUNCTION__.__crypto_secretbox_xsalsa20poly1305, i64 0, i64 0)) #17
   unreachable
 
 for.body:                                         ; preds = %if.then6, %for.body
@@ -1935,10 +1937,10 @@ entry:
   %c.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %c, i64 0, i32 1
   %n.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %n, i64 0, i32 1
   %n.field0.length = load i64, i64* %n.field0.length.ptr, align 8
-  %n.unwrapped.wrapped33 = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %arg.wrapped35 = alloca %struct.uint8ptr_wrapped_ty, align 8
   %arraydecay24.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %arraydecay25.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %n.unwrapped.wrapped33 = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %arg.wrapped35 = alloca %struct.uint8ptr_wrapped_ty, align 8
   %n.unwrapped.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %arg.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %0 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %n, i64 0, i32 0
@@ -1971,7 +1973,7 @@ if.end:                                           ; preds = %entry
 
 if.then6:                                         ; preds = %if.end
   %len8 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %w_subkey, i64 0, i32 1
-  %call = call noalias dereferenceable_or_null(32) i8* @calloc(i64 noundef 32, i64 noundef 1) #14
+  %call = call noalias dereferenceable_or_null(32) i8* @calloc(i64 noundef 32, i64 noundef 1) #16
   %buf10 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %w_subkey, i64 0, i32 0
   store i64 32, i64* %len8, align 8
   store i8* %call, i8** %buf10, align 8
@@ -1994,7 +1996,7 @@ if.then6:                                         ; preds = %if.end
   %5 = load i64, i64* %c.field0.length.ptr, align 8
   %sub = add i64 %5, -32
   %len16 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %w_cview, i64 0, i32 1
-  %call18 = call noalias i8* @malloc(i64 noundef %sub) #14
+  %call18 = call noalias i8* @malloc(i64 noundef %sub) #16
   %buf19 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %w_cview, i64 0, i32 0
   store i64 %sub, i64* %len16, align 8
   store i8* %call18, i8** %buf19, align 8
@@ -2027,7 +2029,7 @@ if.then6:                                         ; preds = %if.end
   br label %for.body
 
 if.else:                                          ; preds = %if.end
-  call void @__assert_fail(i8* noundef getelementptr inbounds ([17 x i8], [17 x i8]* @.str.4.20, i64 0, i64 0), i8* noundef getelementptr inbounds ([23 x i8], [23 x i8]* @.str.5.21, i64 0, i64 0), i32 noundef 198, i8* noundef getelementptr inbounds ([115 x i8], [115 x i8]* @__PRETTY_FUNCTION__.__crypto_secretbox_xsalsa20poly1305_open, i64 0, i64 0)) #15
+  call void @__assert_fail(i8* noundef getelementptr inbounds ([17 x i8], [17 x i8]* @.str.4.20, i64 0, i64 0), i8* noundef getelementptr inbounds ([23 x i8], [23 x i8]* @.str.5.21, i64 0, i64 0), i32 noundef 198, i8* noundef getelementptr inbounds ([115 x i8], [115 x i8]* @__PRETTY_FUNCTION__.__crypto_secretbox_xsalsa20poly1305_open, i64 0, i64 0)) #17
   unreachable
 
 for.body:                                         ; preds = %if.then6, %for.body
@@ -2343,68 +2345,91 @@ entry:
 ; Function Attrs: noinline nounwind sspstrong uwtable
 define dso_local i32 @main() local_unnamed_addr #0 {
 entry:
-  %arraydecay18.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %arraydecay19.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
-  %arraydecay15.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %arraydecay16.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %arraydecay17.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %arraydecay19.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
+  %arraydecay20.wrapped = alloca %struct.uint8ptr_wrapped_ty, align 8
   %c = alloca %struct.uint8ptr_wrapped_ty, align 8
   %m = alloca %struct.uint8ptr_wrapped_ty, align 8
   %nonce = alloca [24 x i8], align 16
   %data = alloca [32 x i8], align 16
+  %start = alloca %struct.timespec, align 8
+  %end = alloca %struct.timespec, align 8
   %r1 = alloca i8, align 1
   %r2 = alloca i8, align 1
   %len = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %c, i64 0, i32 1
-  %call = tail call noalias dereferenceable_or_null(163) i8* @malloc(i64 noundef 163) #14
+  %call = tail call noalias dereferenceable_or_null(163) i8* @malloc(i64 noundef 163) #16
   %buf = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %c, i64 0, i32 0
   store i64 163, i64* %len, align 8
   store i8* %call, i8** %buf, align 8
   %len2 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %m, i64 0, i32 1
-  %call5 = tail call noalias dereferenceable_or_null(163) i8* @malloc(i64 noundef 163) #14
+  %call5 = tail call noalias dereferenceable_or_null(163) i8* @malloc(i64 noundef 163) #16
   %buf6 = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %m, i64 0, i32 0
   store i64 163, i64* %len2, align 8
   store i8* %call5, i8** %buf6, align 8
   tail call void @llvm.memset.p0i8.i64(i8* noundef nonnull align 1 dereferenceable(32) %call5, i8 0, i64 32, i1 false)
   %add.ptr = getelementptr inbounds i8, i8* %call5, i64 32
-  %call11 = tail call i64 @read(i32 noundef 0, i8* noundef nonnull %add.ptr, i64 noundef 131) #14
+  %call11 = tail call i64 @read(i32 noundef 0, i8* noundef nonnull %add.ptr, i64 noundef 131) #16
   %arraydecay = getelementptr inbounds [24 x i8], [24 x i8]* %nonce, i64 0, i64 0
-  %call12 = call i64 @read(i32 noundef 0, i8* noundef nonnull %arraydecay, i64 noundef 24) #14
+  %call12 = call i64 @read(i32 noundef 0, i8* noundef nonnull %arraydecay, i64 noundef 24) #16
   %arraydecay13 = getelementptr inbounds [32 x i8], [32 x i8]* %data, i64 0, i64 0
-  %call14 = call i64 @read(i32 noundef 0, i8* noundef nonnull %arraydecay13, i64 noundef 32) #14
-  %arraydecay15.unwrapped = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arraydecay15.wrapped, i64 0, i32 0
-  %arraydecay15.wrapped.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arraydecay15.wrapped, i64 0, i32 1
-  store i64 24, i64* %arraydecay15.wrapped.field0.length.ptr, align 8
-  store i8* %arraydecay, i8** %arraydecay15.unwrapped, align 8
+  %call14 = call i64 @read(i32 noundef 0, i8* noundef nonnull %arraydecay13, i64 noundef 32) #16
+  %call15 = call i32 @clock_gettime(i32 noundef 2, %struct.timespec* noundef nonnull %start) #16
   %arraydecay16.unwrapped = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arraydecay16.wrapped, i64 0, i32 0
   %arraydecay16.wrapped.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arraydecay16.wrapped, i64 0, i32 1
-  store i64 32, i64* %arraydecay16.wrapped.field0.length.ptr, align 8
-  store i8* %arraydecay13, i8** %arraydecay16.unwrapped, align 8
-  %call17 = call i1 @__crypto_secretbox(%struct.uint8ptr_wrapped_ty* nonnull %c, %struct.uint8ptr_wrapped_ty* nonnull %m, %struct.uint8ptr_wrapped_ty* nonnull %arraydecay15.wrapped, %struct.uint8ptr_wrapped_ty* nonnull %arraydecay16.wrapped)
-  %frombool = zext i1 %call17 to i8
+  store i64 24, i64* %arraydecay16.wrapped.field0.length.ptr, align 8
+  store i8* %arraydecay, i8** %arraydecay16.unwrapped, align 8
+  %arraydecay17.unwrapped = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arraydecay17.wrapped, i64 0, i32 0
+  %arraydecay17.wrapped.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arraydecay17.wrapped, i64 0, i32 1
+  store i64 32, i64* %arraydecay17.wrapped.field0.length.ptr, align 8
+  store i8* %arraydecay13, i8** %arraydecay17.unwrapped, align 8
+  %call18 = call i1 @__crypto_secretbox(%struct.uint8ptr_wrapped_ty* nonnull %c, %struct.uint8ptr_wrapped_ty* nonnull %m, %struct.uint8ptr_wrapped_ty* nonnull %arraydecay16.wrapped, %struct.uint8ptr_wrapped_ty* nonnull %arraydecay17.wrapped)
+  %frombool = zext i1 %call18 to i8
   store i8 %frombool, i8* %r1, align 1
-  %arraydecay18.unwrapped = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arraydecay18.wrapped, i64 0, i32 0
-  %arraydecay18.wrapped.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arraydecay18.wrapped, i64 0, i32 1
-  store i64 24, i64* %arraydecay18.wrapped.field0.length.ptr, align 8
-  store i8* %arraydecay, i8** %arraydecay18.unwrapped, align 8
   %arraydecay19.unwrapped = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arraydecay19.wrapped, i64 0, i32 0
   %arraydecay19.wrapped.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arraydecay19.wrapped, i64 0, i32 1
-  store i64 32, i64* %arraydecay19.wrapped.field0.length.ptr, align 8
-  store i8* %arraydecay13, i8** %arraydecay19.unwrapped, align 8
-  %call20 = call i1 @__crypto_secretbox_open(%struct.uint8ptr_wrapped_ty* nonnull %m, %struct.uint8ptr_wrapped_ty* nonnull %c, %struct.uint8ptr_wrapped_ty* nonnull %arraydecay18.wrapped, %struct.uint8ptr_wrapped_ty* nonnull %arraydecay19.wrapped)
-  %frombool21 = zext i1 %call20 to i8
-  store i8 %frombool21, i8* %r2, align 1
-  %call22 = call i64 @write(i32 noundef 1, i8* noundef nonnull %r1, i64 noundef 1) #14
-  %call23 = call i64 @write(i32 noundef 1, i8* noundef nonnull %r2, i64 noundef 1) #14
+  store i64 24, i64* %arraydecay19.wrapped.field0.length.ptr, align 8
+  store i8* %arraydecay, i8** %arraydecay19.unwrapped, align 8
+  %arraydecay20.unwrapped = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arraydecay20.wrapped, i64 0, i32 0
+  %arraydecay20.wrapped.field0.length.ptr = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %arraydecay20.wrapped, i64 0, i32 1
+  store i64 32, i64* %arraydecay20.wrapped.field0.length.ptr, align 8
+  store i8* %arraydecay13, i8** %arraydecay20.unwrapped, align 8
+  %call21 = call i1 @__crypto_secretbox_open(%struct.uint8ptr_wrapped_ty* nonnull %m, %struct.uint8ptr_wrapped_ty* nonnull %c, %struct.uint8ptr_wrapped_ty* nonnull %arraydecay19.wrapped, %struct.uint8ptr_wrapped_ty* nonnull %arraydecay20.wrapped)
+  %frombool22 = zext i1 %call21 to i8
+  store i8 %frombool22, i8* %r2, align 1
+  %call23 = call i32 @clock_gettime(i32 noundef 2, %struct.timespec* noundef nonnull %end) #16
+  %0 = getelementptr inbounds %struct.timespec, %struct.timespec* %end, i64 0, i32 0
+  %1 = load i64, i64* %0, align 8
+  %2 = getelementptr inbounds %struct.timespec, %struct.timespec* %end, i64 0, i32 1
+  %3 = load i64, i64* %2, align 8
+  %4 = getelementptr inbounds %struct.timespec, %struct.timespec* %start, i64 0, i32 0
+  %5 = load i64, i64* %4, align 8
+  %6 = getelementptr inbounds %struct.timespec, %struct.timespec* %start, i64 0, i32 1
+  %7 = load i64, i64* %6, align 8
+  %reass.add = sub i64 %1, %5
+  %reass.mul = mul i64 %reass.add, 1000000000
+  %add.i34 = sub i64 %3, %7
+  %sub26 = add i64 %add.i34, %reass.mul
+  %call27 = call i32 (i8*, ...) @printf(i8* noundef nonnull dereferenceable(1) getelementptr inbounds ([12 x i8], [12 x i8]* @.str.24, i64 0, i64 0), i64 noundef %sub26)
+  %call28 = call i64 @write(i32 noundef 1, i8* noundef nonnull %r1, i64 noundef 1) #16
+  %call29 = call i64 @write(i32 noundef 1, i8* noundef nonnull %r2, i64 noundef 1) #16
   ret i32 0
 }
 
 ; Function Attrs: nofree
 declare noundef i64 @read(i32 noundef, i8* nocapture noundef, i64 noundef) local_unnamed_addr #12
 
+; Function Attrs: nounwind
+declare i32 @clock_gettime(i32 noundef, %struct.timespec* noundef) local_unnamed_addr #13
+
+; Function Attrs: nofree nounwind
+declare noundef i32 @printf(i8* nocapture noundef readonly, ...) local_unnamed_addr #14
+
 ; Function Attrs: nofree
 declare noundef i64 @write(i32 noundef, i8* nocapture noundef readonly, i64 noundef) local_unnamed_addr #12
 
 ; Function Attrs: nofree nosync nounwind readnone speculatable willreturn
-declare i64 @llvm.fshl.i64(i64, i64, i64) #13
+declare i64 @llvm.fshl.i64(i64, i64, i64) #15
 
 attributes #0 = { noinline nounwind sspstrong uwtable "frame-pointer"="all" "min-legal-vector-width"="0" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "tune-cpu"="generic" }
 attributes #1 = { inaccessiblememonly mustprogress nofree nosync nounwind willreturn }
@@ -2419,9 +2444,11 @@ attributes #9 = { mustprogress nofree noinline norecurse nosync nounwind sspstro
 attributes #10 = { mustprogress nofree noinline nosync nounwind sspstrong uwtable willreturn "frame-pointer"="all" "min-legal-vector-width"="0" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "tune-cpu"="generic" }
 attributes #11 = { inaccessiblememonly mustprogress nofree nounwind willreturn "frame-pointer"="all" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "tune-cpu"="generic" }
 attributes #12 = { nofree "frame-pointer"="all" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "tune-cpu"="generic" }
-attributes #13 = { nofree nosync nounwind readnone speculatable willreturn }
-attributes #14 = { nounwind }
-attributes #15 = { noreturn nounwind }
+attributes #13 = { nounwind "frame-pointer"="all" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "tune-cpu"="generic" }
+attributes #14 = { nofree nounwind "frame-pointer"="all" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "tune-cpu"="generic" }
+attributes #15 = { nofree nosync nounwind readnone speculatable willreturn }
+attributes #16 = { nounwind }
+attributes #17 = { noreturn nounwind }
 
 !llvm.ident = !{!0, !0, !0, !0, !0}
 !llvm.module.flags = !{!1, !2, !3, !4, !5}

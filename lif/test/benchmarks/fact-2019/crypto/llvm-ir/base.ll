@@ -5,6 +5,7 @@ target triple = "x86_64-pc-linux-gnu"
 
 %struct.uint8ptr_wrapped_ty = type { i8*, i64 }
 %struct.poly1305_state_internal_t = type { [3 x i64], [3 x i64], [2 x i64], i64, [16 x i8], i8 }
+%struct.timespec = type { i64, i64 }
 
 @llvm.global.annotations = appending global [13 x { i8*, i8*, i8*, i32, i8* }] [{ i8*, i8*, i8*, i32, i8* } { i8* bitcast (i32 (%struct.uint8ptr_wrapped_ty*, i8*, i8*)* @_crypto_stream_salsa20 to i8*), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.2, i32 0, i32 0), i8* getelementptr inbounds ([14 x i8], [14 x i8]* @.str.1, i32 0, i32 0), i32 111, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (i32 (%struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, i8*, i64, i8*)* @_crypto_stream_salsa20_xor_ic to i8*), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.5, i32 0, i32 0), i8* getelementptr inbounds ([14 x i8], [14 x i8]* @.str.1, i32 0, i32 0), i32 154, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (void (%struct.poly1305_state_internal_t*, %struct.uint8ptr_wrapped_ty*)* @_poly1305_blocks to i8*), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.3.2, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.1.3, i32 0, i32 0), i32 8, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (void (%struct.poly1305_state_internal_t*, %struct.uint8ptr_wrapped_ty*)* @_poly1305_update to i8*), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.3.2, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.1.3, i32 0, i32 0), i32 102, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (i32 (i8*, %struct.uint8ptr_wrapped_ty*, i8*)* @_crypto_onetimeauth_poly1305 to i8*), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.3.2, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.1.3, i32 0, i32 0), i32 287, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (i1 (i8*, %struct.uint8ptr_wrapped_ty*, i8*)* @_crypto_onetimeauth_poly1305_verify to i8*), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.3.2, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.1.3, i32 0, i32 0), i32 309, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (i32 (%struct.uint8ptr_wrapped_ty*, i8*, i8*)* @__crypto_stream_xsalsa20 to i8*), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.2.16, i32 0, i32 0), i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.1.17, i32 0, i32 0), i32 95, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (i32 (%struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, i8*, i64, i8*)* @__crypto_stream_xsalsa20_xor_ic to i8*), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.3.18, i32 0, i32 0), i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.1.17, i32 0, i32 0), i32 113, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (i32 (%struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, i8*, i8*)* @__crypto_stream_xsalsa20_xor to i8*), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.3.18, i32 0, i32 0), i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.1.17, i32 0, i32 0), i32 134, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (i1 (%struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, i8*, i8*)* @__crypto_secretbox_xsalsa20poly1305 to i8*), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.3.18, i32 0, i32 0), i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.1.17, i32 0, i32 0), i32 144, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (i1 (%struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, i8*, i8*)* @__crypto_secretbox_xsalsa20poly1305_open to i8*), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.3.18, i32 0, i32 0), i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.1.17, i32 0, i32 0), i32 186, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (i1 (%struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, i8*, i8*)* @__crypto_secretbox to i8*), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.3.18, i32 0, i32 0), i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.1.17, i32 0, i32 0), i32 236, i8* null }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (i1 (%struct.uint8ptr_wrapped_ty*, %struct.uint8ptr_wrapped_ty*, i8*, i8*)* @__crypto_secretbox_open to i8*), i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.3.18, i32 0, i32 0), i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.1.17, i32 0, i32 0), i32 246, i8* null }], section "llvm.metadata"
 @.str = private unnamed_addr constant [7 x i8] c"secret\00", section "llvm.metadata"
@@ -38,6 +39,7 @@ target triple = "x86_64-pc-linux-gnu"
 @.str.5.21 = private unnamed_addr constant [23 x i8] c"lib/crypto_secretbox.c\00", align 1
 @__PRETTY_FUNCTION__.__crypto_secretbox_xsalsa20poly1305 = private unnamed_addr constant [110 x i8] c"_Bool __crypto_secretbox_xsalsa20poly1305(uint8ptr_wrapped_ty *, uint8ptr_wrapped_ty *, uint8_t *, uint8_t *)\00", align 1
 @__PRETTY_FUNCTION__.__crypto_secretbox_xsalsa20poly1305_open = private unnamed_addr constant [115 x i8] c"_Bool __crypto_secretbox_xsalsa20poly1305_open(uint8ptr_wrapped_ty *, uint8ptr_wrapped_ty *, uint8_t *, uint8_t *)\00", align 1
+@.str.24 = private unnamed_addr constant [12 x i8] c"\0ATime: %ld\0A\00", align 1
 
 ; Function Attrs: noinline nounwind sspstrong uwtable
 define dso_local i32 @_crypto_stream_salsa20(%struct.uint8ptr_wrapped_ty* noundef %c, i8* noundef %n, i8* noundef %k) #0 {
@@ -2714,10 +2716,14 @@ entry:
 ; Function Attrs: noinline nounwind sspstrong uwtable
 define dso_local i32 @main() #0 {
 entry:
+  %t.i30 = alloca %struct.timespec, align 8
+  %t.i = alloca %struct.timespec, align 8
   %c = alloca %struct.uint8ptr_wrapped_ty, align 8
   %m = alloca %struct.uint8ptr_wrapped_ty, align 8
   %nonce = alloca [24 x i8], align 16
   %data = alloca [32 x i8], align 16
+  %start = alloca %struct.timespec, align 8
+  %end = alloca %struct.timespec, align 8
   %r1 = alloca i8, align 1
   %r2 = alloca i8, align 1
   %len = getelementptr inbounds %struct.uint8ptr_wrapped_ty, %struct.uint8ptr_wrapped_ty* %c, i32 0, i32 1
@@ -2751,22 +2757,63 @@ entry:
   %call12 = call i64 @read(i32 noundef 0, i8* noundef %arraydecay, i64 noundef 24)
   %arraydecay13 = getelementptr inbounds [32 x i8], [32 x i8]* %data, i64 0, i64 0
   %call14 = call i64 @read(i32 noundef 0, i8* noundef %arraydecay13, i64 noundef 32)
-  %arraydecay15 = getelementptr inbounds [24 x i8], [24 x i8]* %nonce, i64 0, i64 0
-  %arraydecay16 = getelementptr inbounds [32 x i8], [32 x i8]* %data, i64 0, i64 0
-  %call17 = call zeroext i1 @__crypto_secretbox(%struct.uint8ptr_wrapped_ty* noundef %c, %struct.uint8ptr_wrapped_ty* noundef %m, i8* noundef %arraydecay15, i8* noundef %arraydecay16)
-  %frombool = zext i1 %call17 to i8
+  %call15 = call i32 @clock_gettime(i32 noundef 2, %struct.timespec* noundef %start) #8
+  %arraydecay16 = getelementptr inbounds [24 x i8], [24 x i8]* %nonce, i64 0, i64 0
+  %arraydecay17 = getelementptr inbounds [32 x i8], [32 x i8]* %data, i64 0, i64 0
+  %call18 = call zeroext i1 @__crypto_secretbox(%struct.uint8ptr_wrapped_ty* noundef %c, %struct.uint8ptr_wrapped_ty* noundef %m, i8* noundef %arraydecay16, i8* noundef %arraydecay17)
+  %frombool = zext i1 %call18 to i8
   store i8 %frombool, i8* %r1, align 1
-  %arraydecay18 = getelementptr inbounds [24 x i8], [24 x i8]* %nonce, i64 0, i64 0
-  %arraydecay19 = getelementptr inbounds [32 x i8], [32 x i8]* %data, i64 0, i64 0
-  %call20 = call zeroext i1 @__crypto_secretbox_open(%struct.uint8ptr_wrapped_ty* noundef %m, %struct.uint8ptr_wrapped_ty* noundef %c, i8* noundef %arraydecay18, i8* noundef %arraydecay19)
-  %frombool21 = zext i1 %call20 to i8
-  store i8 %frombool21, i8* %r2, align 1
-  %call22 = call i64 @write(i32 noundef 1, i8* noundef %r1, i64 noundef 1)
-  %call23 = call i64 @write(i32 noundef 1, i8* noundef %r2, i64 noundef 1)
+  %arraydecay19 = getelementptr inbounds [24 x i8], [24 x i8]* %nonce, i64 0, i64 0
+  %arraydecay20 = getelementptr inbounds [32 x i8], [32 x i8]* %data, i64 0, i64 0
+  %call21 = call zeroext i1 @__crypto_secretbox_open(%struct.uint8ptr_wrapped_ty* noundef %m, %struct.uint8ptr_wrapped_ty* noundef %c, i8* noundef %arraydecay19, i8* noundef %arraydecay20)
+  %frombool22 = zext i1 %call21 to i8
+  store i8 %frombool22, i8* %r2, align 1
+  %call23 = call i32 @clock_gettime(i32 noundef 2, %struct.timespec* noundef %end) #8
+  %5 = bitcast %struct.timespec* %end to { i64, i64 }*
+  %6 = getelementptr inbounds { i64, i64 }, { i64, i64 }* %5, i32 0, i32 0
+  %7 = load i64, i64* %6, align 8
+  %8 = getelementptr inbounds { i64, i64 }, { i64, i64 }* %5, i32 0, i32 1
+  %9 = load i64, i64* %8, align 8
+  %10 = bitcast %struct.timespec* %t.i30 to { i64, i64 }*
+  %11 = getelementptr inbounds { i64, i64 }, { i64, i64 }* %10, i32 0, i32 0
+  store i64 %7, i64* %11, align 8
+  %12 = getelementptr inbounds { i64, i64 }, { i64, i64 }* %10, i32 0, i32 1
+  store i64 %9, i64* %12, align 8
+  %tv_sec.i31 = getelementptr inbounds %struct.timespec, %struct.timespec* %t.i30, i32 0, i32 0
+  %13 = load i64, i64* %tv_sec.i31, align 8
+  %mul.i32 = mul nsw i64 %13, 1000000000
+  %tv_nsec.i33 = getelementptr inbounds %struct.timespec, %struct.timespec* %t.i30, i32 0, i32 1
+  %14 = load i64, i64* %tv_nsec.i33, align 8
+  %add.i34 = add nsw i64 %mul.i32, %14
+  %15 = bitcast %struct.timespec* %start to { i64, i64 }*
+  %16 = getelementptr inbounds { i64, i64 }, { i64, i64 }* %15, i32 0, i32 0
+  %17 = load i64, i64* %16, align 8
+  %18 = getelementptr inbounds { i64, i64 }, { i64, i64 }* %15, i32 0, i32 1
+  %19 = load i64, i64* %18, align 8
+  %20 = bitcast %struct.timespec* %t.i to { i64, i64 }*
+  %21 = getelementptr inbounds { i64, i64 }, { i64, i64 }* %20, i32 0, i32 0
+  store i64 %17, i64* %21, align 8
+  %22 = getelementptr inbounds { i64, i64 }, { i64, i64 }* %20, i32 0, i32 1
+  store i64 %19, i64* %22, align 8
+  %tv_sec.i = getelementptr inbounds %struct.timespec, %struct.timespec* %t.i, i32 0, i32 0
+  %23 = load i64, i64* %tv_sec.i, align 8
+  %mul.i = mul nsw i64 %23, 1000000000
+  %tv_nsec.i = getelementptr inbounds %struct.timespec, %struct.timespec* %t.i, i32 0, i32 1
+  %24 = load i64, i64* %tv_nsec.i, align 8
+  %add.i = add nsw i64 %mul.i, %24
+  %sub26 = sub i64 %add.i34, %add.i
+  %call27 = call i32 (i8*, ...) @printf(i8* noundef getelementptr inbounds ([12 x i8], [12 x i8]* @.str.24, i64 0, i64 0), i64 noundef %sub26)
+  %call28 = call i64 @write(i32 noundef 1, i8* noundef %r1, i64 noundef 1)
+  %call29 = call i64 @write(i32 noundef 1, i8* noundef %r2, i64 noundef 1)
   ret i32 0
 }
 
 declare i64 @read(i32 noundef, i8* noundef, i64 noundef) #5
+
+; Function Attrs: nounwind
+declare i32 @clock_gettime(i32 noundef, %struct.timespec* noundef) #6
+
+declare i32 @printf(i8* noundef, ...) #5
 
 declare i64 @write(i32 noundef, i8* noundef, i64 noundef) #5
 

@@ -215,8 +215,8 @@ if.end:                                           ; preds = %if.else, %if.then
   %m.0.rewritten = phi i32 [ %shl, %if.then ], [ %shl18, %if.else ]
   %17 = load i1, i1* %out.16, align 1
   %18 = load i1, i1* %out.15, align 1
-  %cond.fold54 = or i1 false, %18
-  %cond.fold55 = or i1 %cond.fold54, %17
+  %cond.fold54 = or i1 false, %17
+  %cond.fold55 = or i1 %cond.fold54, %18
   store i1 %cond.fold55, i1* %out.17, align 1
   %add = add nsw i32 %m.0.rewritten, 1
   %idxprom19 = sext i32 %add to i64
@@ -494,8 +494,8 @@ if.end100:                                        ; preds = %if.then94
   %80 = load i1, i1* %out.35, align 1
   %81 = xor i1 %tobool93, true
   %in.93 = and i1 %80, %81
-  %cond.fold94 = or i1 false, %79
-  %cond.fold95 = or i1 %cond.fold94, %in.93
+  %cond.fold94 = or i1 false, %in.93
+  %cond.fold95 = or i1 %cond.fold94, %79
   store i1 %cond.fold95, i1* %out.37, align 1
   br label %for.inc101
 
@@ -1145,14 +1145,14 @@ for.end:                                          ; preds = %for.cond
 ; Function Attrs: noinline nounwind sspstrong uwtable
 define dso_local i32 @main() #0 {
 entry:
+  %arraydecay7.wrapped = alloca %i8ptr.wrapped.ty, align 8
+  %arraydecay8.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay6.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay12.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay13.wrapped = alloca %i8ptr.wrapped.ty, align 8
   %arraydecay5.wrapped = alloca %i8ptr.wrapped.ty, align 8
   %arraydecay10.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay11.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay7.wrapped = alloca %i8ptr.wrapped.ty, align 8
-  %arraydecay8.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay6.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %out. = alloca i1, align 1
   store i1 false, i1* %out., align 1
   %in_key = alloca [32 x i8], align 16

@@ -467,12 +467,22 @@ entry:
   %zprime.field0.length = load i64, i64* %zprime.field0.length.ptr, align 8
   %qmqp.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %qmqp, i64 0, i32 1
   %qmqp.field0.length = load i64, i64* %qmqp.field0.length.ptr, align 8
+  %x3.unwrapped.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay12.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay13.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay14.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay16.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %x.unwrapped.wrapped23 = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay17.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %z.unwrapped.wrapped21 = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay22.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay23.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay4.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %xprime.unwrapped.wrapped21 = alloca %i64ptr.wrapped.ty, align 8
-  %z.unwrapped.wrapped23 = alloca %i64ptr.wrapped.ty, align 8
+  %xprime.unwrapped.wrapped17 = alloca %i64ptr.wrapped.ty, align 8
+  %z.unwrapped.wrapped19 = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay5.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %x.unwrapped.wrapped17 = alloca %i64ptr.wrapped.ty, align 8
-  %zprime.unwrapped.wrapped19 = alloca %i64ptr.wrapped.ty, align 8
+  %x.unwrapped.wrapped13 = alloca %i64ptr.wrapped.ty, align 8
+  %zprime.unwrapped.wrapped15 = alloca %i64ptr.wrapped.ty, align 8
   %z3.unwrapped.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay15.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %qmqp.unwrapped.wrapped = alloca %i64ptr.wrapped.ty, align 8
@@ -482,24 +492,14 @@ entry:
   %z2.unwrapped.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay26.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay27.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %x.unwrapped.wrapped13 = alloca %i64ptr.wrapped.ty, align 8
-  %z.unwrapped.wrapped15 = alloca %i64ptr.wrapped.ty, align 8
+  %x.unwrapped.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %z.unwrapped.wrapped11 = alloca %i64ptr.wrapped.ty, align 8
   %xprime.unwrapped.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %zprime.unwrapped.wrapped11 = alloca %i64ptr.wrapped.ty, align 8
+  %zprime.unwrapped.wrapped9 = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay8.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay9.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay24.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay25.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %x3.unwrapped.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay12.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay13.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay14.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay16.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %x.unwrapped.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay17.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %z.unwrapped.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay22.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay23.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %0 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %x2, i64 0, i32 0
   %x2.unwrapped = load i64*, i64** %0, align 8
   %1 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z2, i64 0, i32 0
@@ -536,52 +536,52 @@ entry:
   call void @llvm.memset.p0i8.i64(i8* noundef nonnull align 16 dereferenceable(40) %13, i8 0, i64 40, i1 false)
   %14 = bitcast [5 x i64]* %zzzprime to i8*
   call void @llvm.memset.p0i8.i64(i8* noundef nonnull align 16 dereferenceable(40) %14, i8 0, i64 40, i1 false)
-  %x.unwrapped.unwrapped14 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %x.unwrapped.wrapped13, i64 0, i32 0
-  %x.unwrapped.wrapped13.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %x.unwrapped.wrapped13, i64 0, i32 1
-  store i64 %x.field0.length, i64* %x.unwrapped.wrapped13.field0.length.ptr, align 8
-  store i64* %x.unwrapped, i64** %x.unwrapped.unwrapped14, align 8
-  %z.unwrapped.unwrapped16 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z.unwrapped.wrapped15, i64 0, i32 0
-  %z.unwrapped.wrapped15.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z.unwrapped.wrapped15, i64 0, i32 1
-  store i64 %z.field0.length, i64* %z.unwrapped.wrapped15.field0.length.ptr, align 8
-  store i64* %z.unwrapped, i64** %z.unwrapped.unwrapped16, align 8
-  call void @fsum(%i64ptr.wrapped.ty* nonnull %x.unwrapped.wrapped13, %i64ptr.wrapped.ty* nonnull %z.unwrapped.wrapped15)
+  %x.unwrapped.unwrapped = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %x.unwrapped.wrapped, i64 0, i32 0
+  %x.unwrapped.wrapped.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %x.unwrapped.wrapped, i64 0, i32 1
+  store i64 %x.field0.length, i64* %x.unwrapped.wrapped.field0.length.ptr, align 8
+  store i64* %x.unwrapped, i64** %x.unwrapped.unwrapped, align 8
+  %z.unwrapped.unwrapped12 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z.unwrapped.wrapped11, i64 0, i32 0
+  %z.unwrapped.wrapped11.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z.unwrapped.wrapped11, i64 0, i32 1
+  store i64 %z.field0.length, i64* %z.unwrapped.wrapped11.field0.length.ptr, align 8
+  store i64* %z.unwrapped, i64** %z.unwrapped.unwrapped12, align 8
+  call void @fsum(%i64ptr.wrapped.ty* nonnull %x.unwrapped.wrapped, %i64ptr.wrapped.ty* nonnull %z.unwrapped.wrapped11)
   %xprime.unwrapped.unwrapped = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %xprime.unwrapped.wrapped, i64 0, i32 0
   %xprime.unwrapped.wrapped.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %xprime.unwrapped.wrapped, i64 0, i32 1
   store i64 %xprime.field0.length, i64* %xprime.unwrapped.wrapped.field0.length.ptr, align 8
   store i64* %xprime.unwrapped, i64** %xprime.unwrapped.unwrapped, align 8
-  %zprime.unwrapped.unwrapped12 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %zprime.unwrapped.wrapped11, i64 0, i32 0
-  %zprime.unwrapped.wrapped11.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %zprime.unwrapped.wrapped11, i64 0, i32 1
-  store i64 %zprime.field0.length, i64* %zprime.unwrapped.wrapped11.field0.length.ptr, align 8
-  store i64* %zprime.unwrapped, i64** %zprime.unwrapped.unwrapped12, align 8
-  call void @fsum(%i64ptr.wrapped.ty* nonnull %xprime.unwrapped.wrapped, %i64ptr.wrapped.ty* nonnull %zprime.unwrapped.wrapped11)
+  %zprime.unwrapped.unwrapped10 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %zprime.unwrapped.wrapped9, i64 0, i32 0
+  %zprime.unwrapped.wrapped9.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %zprime.unwrapped.wrapped9, i64 0, i32 1
+  store i64 %zprime.field0.length, i64* %zprime.unwrapped.wrapped9.field0.length.ptr, align 8
+  store i64* %zprime.unwrapped, i64** %zprime.unwrapped.unwrapped10, align 8
+  call void @fsum(%i64ptr.wrapped.ty* nonnull %xprime.unwrapped.wrapped, %i64ptr.wrapped.ty* nonnull %zprime.unwrapped.wrapped9)
   %arraydecay4 = getelementptr inbounds [5 x i64], [5 x i64]* %xxprime, i64 0, i64 0
   %arraydecay4.unwrapped = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %arraydecay4.wrapped, i64 0, i32 0
   %arraydecay4.wrapped.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %arraydecay4.wrapped, i64 0, i32 1
   store i64 5, i64* %arraydecay4.wrapped.field0.length.ptr, align 8
   store i64* %arraydecay4, i64** %arraydecay4.unwrapped, align 8
-  %xprime.unwrapped.unwrapped22 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %xprime.unwrapped.wrapped21, i64 0, i32 0
-  %xprime.unwrapped.wrapped21.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %xprime.unwrapped.wrapped21, i64 0, i32 1
-  store i64 %xprime.field0.length, i64* %xprime.unwrapped.wrapped21.field0.length.ptr, align 8
-  store i64* %xprime.unwrapped, i64** %xprime.unwrapped.unwrapped22, align 8
-  %z.unwrapped.unwrapped24 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z.unwrapped.wrapped23, i64 0, i32 0
-  %z.unwrapped.wrapped23.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z.unwrapped.wrapped23, i64 0, i32 1
-  store i64 %z.field0.length, i64* %z.unwrapped.wrapped23.field0.length.ptr, align 8
-  store i64* %z.unwrapped, i64** %z.unwrapped.unwrapped24, align 8
-  call void @fmul(%i64ptr.wrapped.ty* nonnull %arraydecay4.wrapped, %i64ptr.wrapped.ty* nonnull %xprime.unwrapped.wrapped21, %i64ptr.wrapped.ty* nonnull %z.unwrapped.wrapped23)
+  %xprime.unwrapped.unwrapped18 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %xprime.unwrapped.wrapped17, i64 0, i32 0
+  %xprime.unwrapped.wrapped17.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %xprime.unwrapped.wrapped17, i64 0, i32 1
+  store i64 %xprime.field0.length, i64* %xprime.unwrapped.wrapped17.field0.length.ptr, align 8
+  store i64* %xprime.unwrapped, i64** %xprime.unwrapped.unwrapped18, align 8
+  %z.unwrapped.unwrapped20 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z.unwrapped.wrapped19, i64 0, i32 0
+  %z.unwrapped.wrapped19.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z.unwrapped.wrapped19, i64 0, i32 1
+  store i64 %z.field0.length, i64* %z.unwrapped.wrapped19.field0.length.ptr, align 8
+  store i64* %z.unwrapped, i64** %z.unwrapped.unwrapped20, align 8
+  call void @fmul(%i64ptr.wrapped.ty* nonnull %arraydecay4.wrapped, %i64ptr.wrapped.ty* nonnull %xprime.unwrapped.wrapped17, %i64ptr.wrapped.ty* nonnull %z.unwrapped.wrapped19)
   %arraydecay5 = getelementptr inbounds [5 x i64], [5 x i64]* %zzprime, i64 0, i64 0
   %arraydecay5.unwrapped = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %arraydecay5.wrapped, i64 0, i32 0
   %arraydecay5.wrapped.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %arraydecay5.wrapped, i64 0, i32 1
   store i64 5, i64* %arraydecay5.wrapped.field0.length.ptr, align 8
   store i64* %arraydecay5, i64** %arraydecay5.unwrapped, align 8
-  %x.unwrapped.unwrapped18 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %x.unwrapped.wrapped17, i64 0, i32 0
-  %x.unwrapped.wrapped17.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %x.unwrapped.wrapped17, i64 0, i32 1
-  store i64 %x.field0.length, i64* %x.unwrapped.wrapped17.field0.length.ptr, align 8
-  store i64* %x.unwrapped, i64** %x.unwrapped.unwrapped18, align 8
-  %zprime.unwrapped.unwrapped20 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %zprime.unwrapped.wrapped19, i64 0, i32 0
-  %zprime.unwrapped.wrapped19.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %zprime.unwrapped.wrapped19, i64 0, i32 1
-  store i64 %zprime.field0.length, i64* %zprime.unwrapped.wrapped19.field0.length.ptr, align 8
-  store i64* %zprime.unwrapped, i64** %zprime.unwrapped.unwrapped20, align 8
-  call void @fmul(%i64ptr.wrapped.ty* nonnull %arraydecay5.wrapped, %i64ptr.wrapped.ty* nonnull %x.unwrapped.wrapped17, %i64ptr.wrapped.ty* nonnull %zprime.unwrapped.wrapped19)
+  %x.unwrapped.unwrapped14 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %x.unwrapped.wrapped13, i64 0, i32 0
+  %x.unwrapped.wrapped13.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %x.unwrapped.wrapped13, i64 0, i32 1
+  store i64 %x.field0.length, i64* %x.unwrapped.wrapped13.field0.length.ptr, align 8
+  store i64* %x.unwrapped, i64** %x.unwrapped.unwrapped14, align 8
+  %zprime.unwrapped.unwrapped16 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %zprime.unwrapped.wrapped15, i64 0, i32 0
+  %zprime.unwrapped.wrapped15.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %zprime.unwrapped.wrapped15, i64 0, i32 1
+  store i64 %zprime.field0.length, i64* %zprime.unwrapped.wrapped15.field0.length.ptr, align 8
+  store i64* %zprime.unwrapped, i64** %zprime.unwrapped.unwrapped16, align 8
+  call void @fmul(%i64ptr.wrapped.ty* nonnull %arraydecay5.wrapped, %i64ptr.wrapped.ty* nonnull %x.unwrapped.wrapped13, %i64ptr.wrapped.ty* nonnull %zprime.unwrapped.wrapped15)
   %arraydecay8.unwrapped = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %arraydecay8.wrapped, i64 0, i32 0
   %arraydecay8.wrapped.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %arraydecay8.wrapped, i64 0, i32 1
   store i64 5, i64* %arraydecay8.wrapped.field0.length.ptr, align 8
@@ -628,21 +628,21 @@ entry:
   %arraydecay16.wrapped.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %arraydecay16.wrapped, i64 0, i32 1
   store i64 5, i64* %arraydecay16.wrapped.field0.length.ptr, align 8
   store i64* %arraydecay16, i64** %arraydecay16.unwrapped, align 8
-  %x.unwrapped.unwrapped = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %x.unwrapped.wrapped, i64 0, i32 0
-  %x.unwrapped.wrapped.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %x.unwrapped.wrapped, i64 0, i32 1
-  store i64 %x.field0.length, i64* %x.unwrapped.wrapped.field0.length.ptr, align 8
-  store i64* %x.unwrapped, i64** %x.unwrapped.unwrapped, align 8
-  call void @fsquare_times(%i64ptr.wrapped.ty* nonnull %arraydecay16.wrapped, %i64ptr.wrapped.ty* nonnull %x.unwrapped.wrapped, i64 1)
+  %x.unwrapped.unwrapped24 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %x.unwrapped.wrapped23, i64 0, i32 0
+  %x.unwrapped.wrapped23.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %x.unwrapped.wrapped23, i64 0, i32 1
+  store i64 %x.field0.length, i64* %x.unwrapped.wrapped23.field0.length.ptr, align 8
+  store i64* %x.unwrapped, i64** %x.unwrapped.unwrapped24, align 8
+  call void @fsquare_times(%i64ptr.wrapped.ty* nonnull %arraydecay16.wrapped, %i64ptr.wrapped.ty* nonnull %x.unwrapped.wrapped23, i64 1)
   %arraydecay17 = getelementptr inbounds [5 x i64], [5 x i64]* %zz, i64 0, i64 0
   %arraydecay17.unwrapped = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %arraydecay17.wrapped, i64 0, i32 0
   %arraydecay17.wrapped.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %arraydecay17.wrapped, i64 0, i32 1
   store i64 5, i64* %arraydecay17.wrapped.field0.length.ptr, align 8
   store i64* %arraydecay17, i64** %arraydecay17.unwrapped, align 8
-  %z.unwrapped.unwrapped = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z.unwrapped.wrapped, i64 0, i32 0
-  %z.unwrapped.wrapped.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z.unwrapped.wrapped, i64 0, i32 1
-  store i64 %z.field0.length, i64* %z.unwrapped.wrapped.field0.length.ptr, align 8
-  store i64* %z.unwrapped, i64** %z.unwrapped.unwrapped, align 8
-  call void @fsquare_times(%i64ptr.wrapped.ty* nonnull %arraydecay17.wrapped, %i64ptr.wrapped.ty* nonnull %z.unwrapped.wrapped, i64 1)
+  %z.unwrapped.unwrapped22 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z.unwrapped.wrapped21, i64 0, i32 0
+  %z.unwrapped.wrapped21.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z.unwrapped.wrapped21, i64 0, i32 1
+  store i64 %z.field0.length, i64* %z.unwrapped.wrapped21.field0.length.ptr, align 8
+  store i64* %z.unwrapped, i64** %z.unwrapped.unwrapped22, align 8
+  call void @fsquare_times(%i64ptr.wrapped.ty* nonnull %arraydecay17.wrapped, %i64ptr.wrapped.ty* nonnull %z.unwrapped.wrapped21, i64 1)
   %x2.unwrapped.unwrapped = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %x2.unwrapped.wrapped, i64 0, i32 0
   %x2.unwrapped.wrapped.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %x2.unwrapped.wrapped, i64 0, i32 1
   store i64 %x2.field0.length, i64* %x2.unwrapped.wrapped.field0.length.ptr, align 8
@@ -737,22 +737,6 @@ define dso_local void @cmult(%i64ptr.wrapped.ty* nocapture noundef readonly %res
 entry:
   %q.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %q, i64 0, i32 1
   %q.field0.length = load i64, i64* %q.field0.length.ptr, align 8
-  %arraydecay.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay19.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay20.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay21.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay30.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay31.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay32.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay33.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay34.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay35.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay36.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay37.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay46.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay47.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay48.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay49.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay22.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay23.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay24.wrapped = alloca %i64ptr.wrapped.ty, align 8
@@ -771,6 +755,22 @@ entry:
   %arraydecay44.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay45.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %q.unwrapped.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay19.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay20.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay21.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay30.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay31.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay32.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay33.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay34.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay35.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay36.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay37.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay46.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay47.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay48.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay49.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %0 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %resultx, i64 0, i32 0
   %resultx.unwrapped = load i64*, i64** %0, align 8
   %1 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %resultz, i64 0, i32 0
@@ -1034,9 +1034,31 @@ entry:
   %out.field0.length = load i64, i64* %out.field0.length.ptr, align 8
   %z.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z, i64 0, i32 1
   %z.field0.length = load i64, i64* %z.field0.length.ptr, align 8
+  %arraydecay.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %z.unwrapped.wrapped1 = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay1.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay2.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay8.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay9.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay13.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay14.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay18.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay19.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay23.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay24.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay28.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay29.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay33.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay34.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay38.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay39.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay43.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay44.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay48.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay49.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay3.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay4.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %z.unwrapped.wrapped1 = alloca %i64ptr.wrapped.ty, align 8
+  %z.unwrapped.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay5.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay6.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay7.wrapped = alloca %i64ptr.wrapped.ty, align 8
@@ -1067,28 +1089,6 @@ entry:
   %out.unwrapped.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay50.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay51.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %z.unwrapped.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay1.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay2.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay8.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay9.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay13.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay14.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay18.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay19.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay23.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay24.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay28.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay29.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay33.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay34.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay38.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay39.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay43.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay44.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay48.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay49.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %0 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %out, i64 0, i32 0
   %out.unwrapped = load i64*, i64** %0, align 8
   %1 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z, i64 0, i32 0
@@ -1110,11 +1110,11 @@ entry:
   %arraydecay.wrapped.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %arraydecay.wrapped, i64 0, i32 1
   store i64 5, i64* %arraydecay.wrapped.field0.length.ptr, align 8
   store i64* %arraydecay, i64** %arraydecay.unwrapped, align 8
-  %z.unwrapped.unwrapped = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z.unwrapped.wrapped, i64 0, i32 0
-  %z.unwrapped.wrapped.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z.unwrapped.wrapped, i64 0, i32 1
-  store i64 %z.field0.length, i64* %z.unwrapped.wrapped.field0.length.ptr, align 8
-  store i64* %z.unwrapped, i64** %z.unwrapped.unwrapped, align 8
-  call void @fsquare_times(%i64ptr.wrapped.ty* nonnull %arraydecay.wrapped, %i64ptr.wrapped.ty* nonnull %z.unwrapped.wrapped, i64 1)
+  %z.unwrapped.unwrapped2 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z.unwrapped.wrapped1, i64 0, i32 0
+  %z.unwrapped.wrapped1.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z.unwrapped.wrapped1, i64 0, i32 1
+  store i64 %z.field0.length, i64* %z.unwrapped.wrapped1.field0.length.ptr, align 8
+  store i64* %z.unwrapped, i64** %z.unwrapped.unwrapped2, align 8
+  call void @fsquare_times(%i64ptr.wrapped.ty* nonnull %arraydecay.wrapped, %i64ptr.wrapped.ty* nonnull %z.unwrapped.wrapped1, i64 1)
   %arraydecay1 = getelementptr inbounds [5 x i64], [5 x i64]* %t0, i64 0, i64 0
   %arraydecay1.unwrapped = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %arraydecay1.wrapped, i64 0, i32 0
   %arraydecay1.wrapped.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %arraydecay1.wrapped, i64 0, i32 1
@@ -1134,11 +1134,11 @@ entry:
   %arraydecay4.wrapped.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %arraydecay4.wrapped, i64 0, i32 1
   store i64 5, i64* %arraydecay4.wrapped.field0.length.ptr, align 8
   store i64* %arraydecay1, i64** %arraydecay4.unwrapped, align 8
-  %z.unwrapped.unwrapped2 = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z.unwrapped.wrapped1, i64 0, i32 0
-  %z.unwrapped.wrapped1.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z.unwrapped.wrapped1, i64 0, i32 1
-  store i64 %z.field0.length, i64* %z.unwrapped.wrapped1.field0.length.ptr, align 8
-  store i64* %z.unwrapped, i64** %z.unwrapped.unwrapped2, align 8
-  call void @fmul(%i64ptr.wrapped.ty* nonnull %arraydecay3.wrapped, %i64ptr.wrapped.ty* nonnull %arraydecay4.wrapped, %i64ptr.wrapped.ty* nonnull %z.unwrapped.wrapped1)
+  %z.unwrapped.unwrapped = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z.unwrapped.wrapped, i64 0, i32 0
+  %z.unwrapped.wrapped.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %z.unwrapped.wrapped, i64 0, i32 1
+  store i64 %z.field0.length, i64* %z.unwrapped.wrapped.field0.length.ptr, align 8
+  store i64* %z.unwrapped, i64** %z.unwrapped.unwrapped, align 8
+  call void @fmul(%i64ptr.wrapped.ty* nonnull %arraydecay3.wrapped, %i64ptr.wrapped.ty* nonnull %arraydecay4.wrapped, %i64ptr.wrapped.ty* nonnull %z.unwrapped.wrapped)
   %arraydecay5.unwrapped = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %arraydecay5.wrapped, i64 0, i32 0
   %arraydecay5.wrapped.field0.length.ptr = getelementptr inbounds %i64ptr.wrapped.ty, %i64ptr.wrapped.ty* %arraydecay5.wrapped, i64 0, i32 1
   store i64 5, i64* %arraydecay5.wrapped.field0.length.ptr, align 8
@@ -1529,16 +1529,16 @@ entry:
   %arraydecay17.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay18.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay19.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %arraydecay10.wrapped = alloca %i64ptr.wrapped.ty, align 8
-  %basepoint.unwrapped.wrapped = alloca %i8ptr.wrapped.ty, align 8
-  %mypublic.unwrapped.wrapped = alloca %i8ptr.wrapped.ty, align 8
-  %arraydecay20.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay11.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay12.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay13.wrapped = alloca %i8ptr.wrapped.ty, align 8
   %arraydecay14.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay15.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %arraydecay16.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %arraydecay10.wrapped = alloca %i64ptr.wrapped.ty, align 8
+  %basepoint.unwrapped.wrapped = alloca %i8ptr.wrapped.ty, align 8
+  %mypublic.unwrapped.wrapped = alloca %i8ptr.wrapped.ty, align 8
+  %arraydecay20.wrapped = alloca %i64ptr.wrapped.ty, align 8
   %0 = getelementptr inbounds %i8ptr.wrapped.ty, %i8ptr.wrapped.ty* %_secret, i64 0, i32 0
   %_secret.unwrapped = load i8*, i8** %0, align 8
   %1 = getelementptr inbounds %i8ptr.wrapped.ty, %i8ptr.wrapped.ty* %basepoint, i64 0, i32 0

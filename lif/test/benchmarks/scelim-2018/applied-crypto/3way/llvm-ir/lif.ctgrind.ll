@@ -748,11 +748,11 @@ for.body:                                         ; preds = %for.cond
   %11 = load i32, i32* %arrayidx14, align 4
   %xor15 = xor i32 %11, %xor13
   store i32 %xor15, i32* %arrayidx14, align 4
-  %a.unwrapped.unwrapped = getelementptr inbounds %i32ptr.wrapped.ty, %i32ptr.wrapped.ty* %a.unwrapped.wrapped, i32 0, i32 0
-  %a.unwrapped.wrapped.field0.length.ptr = getelementptr inbounds %i32ptr.wrapped.ty, %i32ptr.wrapped.ty* %a.unwrapped.wrapped, i32 0, i32 1
-  store i64 %a.field0.length, i64* %a.unwrapped.wrapped.field0.length.ptr, align 8
-  store i32* %a.unwrapped, i32** %a.unwrapped.unwrapped, align 8
-  call void @rho(%i32ptr.wrapped.ty* %a.unwrapped.wrapped)
+  %a.unwrapped.unwrapped10 = getelementptr inbounds %i32ptr.wrapped.ty, %i32ptr.wrapped.ty* %a.unwrapped.wrapped9, i32 0, i32 0
+  %a.unwrapped.wrapped9.field0.length.ptr = getelementptr inbounds %i32ptr.wrapped.ty, %i32ptr.wrapped.ty* %a.unwrapped.wrapped9, i32 0, i32 1
+  store i64 %a.field0.length, i64* %a.unwrapped.wrapped9.field0.length.ptr, align 8
+  store i32* %a.unwrapped, i32** %a.unwrapped.unwrapped10, align 8
+  call void @rho(%i32ptr.wrapped.ty* %a.unwrapped.wrapped9)
   br label %for.inc
 
 for.inc:                                          ; preds = %for.body
@@ -798,11 +798,11 @@ for.end:                                          ; preds = %for.cond
   %22 = load i32, i32* %arrayidx33, align 4
   %xor34 = xor i32 %22, %xor32
   store i32 %xor34, i32* %arrayidx33, align 4
-  %a.unwrapped.unwrapped10 = getelementptr inbounds %i32ptr.wrapped.ty, %i32ptr.wrapped.ty* %a.unwrapped.wrapped9, i32 0, i32 0
-  %a.unwrapped.wrapped9.field0.length.ptr = getelementptr inbounds %i32ptr.wrapped.ty, %i32ptr.wrapped.ty* %a.unwrapped.wrapped9, i32 0, i32 1
-  store i64 %a.field0.length, i64* %a.unwrapped.wrapped9.field0.length.ptr, align 8
-  store i32* %a.unwrapped, i32** %a.unwrapped.unwrapped10, align 8
-  call void @theta(%i32ptr.wrapped.ty* %a.unwrapped.wrapped9)
+  %a.unwrapped.unwrapped = getelementptr inbounds %i32ptr.wrapped.ty, %i32ptr.wrapped.ty* %a.unwrapped.wrapped, i32 0, i32 0
+  %a.unwrapped.wrapped.field0.length.ptr = getelementptr inbounds %i32ptr.wrapped.ty, %i32ptr.wrapped.ty* %a.unwrapped.wrapped, i32 0, i32 1
+  store i64 %a.field0.length, i64* %a.unwrapped.wrapped.field0.length.ptr, align 8
+  store i32* %a.unwrapped, i32** %a.unwrapped.unwrapped, align 8
+  call void @theta(%i32ptr.wrapped.ty* %a.unwrapped.wrapped)
   ret void
 }
 
@@ -811,10 +811,10 @@ define dso_local void @twy_key(%i32ptr.wrapped.ty* noundef %key, %struct.twy_ctx
 entry:
   %key.field0.length.ptr = getelementptr inbounds %i32ptr.wrapped.ty, %i32ptr.wrapped.ty* %key, i32 0, i32 1
   %key.field0.length = load i64, i64* %key.field0.length.ptr, align 8
-  %arraydecay15.wrapped = alloca %i32ptr.wrapped.ty, align 8
-  %arraydecay.wrapped = alloca %i32ptr.wrapped.ty, align 8
   %arraydecay16.wrapped = alloca %i32ptr.wrapped.ty, align 8
   %arraydecay17.wrapped = alloca %i32ptr.wrapped.ty, align 8
+  %arraydecay.wrapped = alloca %i32ptr.wrapped.ty, align 8
+  %arraydecay15.wrapped = alloca %i32ptr.wrapped.ty, align 8
   %out. = alloca i1, align 1
   store i1 false, i1* %out., align 1
   store i1 true, i1* %out., align 1
@@ -880,8 +880,8 @@ entry:
 ; Function Attrs: noinline nounwind sspstrong uwtable
 define dso_local i32 @main() #0 {
 entry:
-  %arraydecay23.wrapped = alloca %i32ptr.wrapped.ty, align 8
   %arraydecay24.wrapped = alloca %i32ptr.wrapped.ty, align 8
+  %arraydecay23.wrapped = alloca %i32ptr.wrapped.ty, align 8
   %out. = alloca i1, align 1
   store i1 false, i1* %out., align 1
   %gc = alloca %struct.twy_ctx, align 4

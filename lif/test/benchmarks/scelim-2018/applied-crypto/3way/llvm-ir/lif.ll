@@ -115,8 +115,8 @@ if.end:                                           ; preds = %if.then
   %17 = load i1, i1* %out.2, align 1
   %18 = xor i1 %tobool, true
   %in.14 = and i1 %17, %18
-  %cond.fold15 = or i1 false, %16
-  %cond.fold16 = or i1 %cond.fold15, %in.14
+  %cond.fold15 = or i1 false, %in.14
+  %cond.fold16 = or i1 %cond.fold15, %16
   store i1 %cond.fold16, i1* %out.4, align 1
   %arrayidx10 = getelementptr inbounds i32, i32* %a.unwrapped, i64 1
   %19 = load i32, i32* %arrayidx10, align 4
@@ -191,8 +191,8 @@ if.end23:                                         ; preds = %if.then20
   %41 = load i1, i1* %out.6, align 1
   %42 = xor i1 %tobool19, true
   %in.24 = and i1 %41, %42
-  %cond.fold25 = or i1 false, %in.24
-  %cond.fold26 = or i1 %cond.fold25, %40
+  %cond.fold25 = or i1 false, %40
+  %cond.fold26 = or i1 %cond.fold25, %in.24
   store i1 %cond.fold26, i1* %out.8, align 1
   %arrayidx24 = getelementptr inbounds i32, i32* %a.unwrapped, i64 0
   %43 = load i32, i32* %arrayidx24, align 4
@@ -653,8 +653,8 @@ if.end:                                           ; preds = %if.then, %for.body
   %6 = load i1, i1* %out.2, align 1
   %7 = xor i1 %tobool, true
   %in.10 = and i1 %6, %7
-  %cond.fold11 = or i1 false, %5
-  %cond.fold12 = or i1 %cond.fold11, %in.10
+  %cond.fold11 = or i1 false, %in.10
+  %cond.fold12 = or i1 %cond.fold11, %5
   store i1 %cond.fold12, i1* %out.4, align 1
   br label %for.inc
 
@@ -811,10 +811,10 @@ define dso_local void @twy_key(%i32ptr.wrapped.ty* noundef %key, %struct.twy_ctx
 entry:
   %key.field0.length.ptr = getelementptr inbounds %i32ptr.wrapped.ty, %i32ptr.wrapped.ty* %key, i32 0, i32 1
   %key.field0.length = load i64, i64* %key.field0.length.ptr, align 8
+  %arraydecay.wrapped = alloca %i32ptr.wrapped.ty, align 8
   %arraydecay16.wrapped = alloca %i32ptr.wrapped.ty, align 8
   %arraydecay17.wrapped = alloca %i32ptr.wrapped.ty, align 8
   %arraydecay15.wrapped = alloca %i32ptr.wrapped.ty, align 8
-  %arraydecay.wrapped = alloca %i32ptr.wrapped.ty, align 8
   %out. = alloca i1, align 1
   store i1 false, i1* %out., align 1
   store i1 true, i1* %out., align 1

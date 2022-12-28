@@ -505,8 +505,8 @@ return:                                           ; preds = %if.then
   %19 = load i1, i1* %out.7, align 1
   %phi.fold = select i1 %19, i16 %result.0.lcssa.rewritten, i16 %retval.0.rewritten
   %20 = load i1, i1* %out.1, align 1
-  %cond.fold21 = or i1 false, %19
-  %cond.fold22 = or i1 %cond.fold21, %20
+  %cond.fold21 = or i1 false, %20
+  %cond.fold22 = or i1 %cond.fold21, %19
   store i1 %cond.fold22, i1* %out.8, align 1
   ret i16 %phi.fold
 }

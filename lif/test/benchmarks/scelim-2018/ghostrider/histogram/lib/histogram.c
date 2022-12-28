@@ -1,6 +1,6 @@
 #include "../include/histogram.h"
 
-#define CHECK_INST_COUNT 1 // ADDED TO CHECK OP INVARIANCE
+/* #define CHECK_INST_COUNT 1 // ADDED TO CHECK OP INVARIANCE */
 #ifdef CHECK_INST_COUNT // ADDED TO CHECK OP INVARIANCE
 #include <stdio.h>
 

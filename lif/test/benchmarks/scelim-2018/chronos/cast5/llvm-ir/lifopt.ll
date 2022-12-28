@@ -2090,9 +2090,9 @@ for.end26:                                        ; preds = %vector.body
 ; Function Attrs: nofree noinline nounwind sspstrong uwtable
 define dso_local i32 @main() local_unnamed_addr #2 {
 entry:
-  %arraydecay5.wrapped = alloca %i8ptr.wrapped.ty, align 8
   %arraydecay7.wrapped = alloca %i8ptr.wrapped.ty, align 8
   %arraydecay8.wrapped = alloca %i8ptr.wrapped.ty, align 8
+  %arraydecay5.wrapped = alloca %i8ptr.wrapped.ty, align 8
   %in_key = alloca [32 x i8], align 16
   %in = alloca [64 x i8], align 16
   %ctx = alloca %struct.cast5_ctx, align 4

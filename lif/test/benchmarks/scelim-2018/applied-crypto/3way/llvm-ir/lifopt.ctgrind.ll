@@ -258,8 +258,8 @@ entry:
   %arrayidx6 = getelementptr inbounds i32, i32* %a.unwrapped, i64 1
   %arrayidx9 = getelementptr inbounds %struct.twy_ctx, %struct.twy_ctx* %c, i64 0, i32 0, i64 2
   %arrayidx14 = getelementptr inbounds i32, i32* %a.unwrapped, i64 2
-  %a.unwrapped.unwrapped = getelementptr inbounds %i32ptr.wrapped.ty, %i32ptr.wrapped.ty* %a.unwrapped.wrapped, i64 0, i32 0
-  %a.unwrapped.wrapped.field0.length.ptr = getelementptr inbounds %i32ptr.wrapped.ty, %i32ptr.wrapped.ty* %a.unwrapped.wrapped, i64 0, i32 1
+  %a.unwrapped.unwrapped10 = getelementptr inbounds %i32ptr.wrapped.ty, %i32ptr.wrapped.ty* %a.unwrapped.wrapped9, i64 0, i32 0
+  %a.unwrapped.wrapped9.field0.length.ptr = getelementptr inbounds %i32ptr.wrapped.ty, %i32ptr.wrapped.ty* %a.unwrapped.wrapped9, i64 0, i32 1
   br label %for.body
 
 for.body:                                         ; preds = %entry, %for.body
@@ -282,9 +282,9 @@ for.body:                                         ; preds = %entry, %for.body
   %8 = load i32, i32* %arrayidx14, align 4
   %xor15 = xor i32 %xor13, %8
   store i32 %xor15, i32* %arrayidx14, align 4
-  store i64 %a.field0.length, i64* %a.unwrapped.wrapped.field0.length.ptr, align 8
-  store i32* %a.unwrapped, i32** %a.unwrapped.unwrapped, align 8
-  call void @rho(%i32ptr.wrapped.ty* nonnull %a.unwrapped.wrapped)
+  store i64 %a.field0.length, i64* %a.unwrapped.wrapped9.field0.length.ptr, align 8
+  store i32* %a.unwrapped, i32** %a.unwrapped.unwrapped10, align 8
+  call void @rho(%i32ptr.wrapped.ty* nonnull %a.unwrapped.wrapped9)
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %exitcond.not = icmp eq i64 %indvars.iv.next, 11
   br i1 %exitcond.not, label %for.end, label %for.body, !llvm.loop !9
@@ -308,21 +308,21 @@ for.end:                                          ; preds = %for.body
   %16 = load i32, i32* %arrayidx14, align 4
   %xor34 = xor i32 %xor32, %16
   store i32 %xor34, i32* %arrayidx14, align 4
-  %a.unwrapped.unwrapped10 = getelementptr inbounds %i32ptr.wrapped.ty, %i32ptr.wrapped.ty* %a.unwrapped.wrapped9, i64 0, i32 0
-  %a.unwrapped.wrapped9.field0.length.ptr = getelementptr inbounds %i32ptr.wrapped.ty, %i32ptr.wrapped.ty* %a.unwrapped.wrapped9, i64 0, i32 1
-  store i64 %a.field0.length, i64* %a.unwrapped.wrapped9.field0.length.ptr, align 8
-  store i32* %a.unwrapped, i32** %a.unwrapped.unwrapped10, align 8
-  call void @theta(%i32ptr.wrapped.ty* nonnull %a.unwrapped.wrapped9)
+  %a.unwrapped.unwrapped = getelementptr inbounds %i32ptr.wrapped.ty, %i32ptr.wrapped.ty* %a.unwrapped.wrapped, i64 0, i32 0
+  %a.unwrapped.wrapped.field0.length.ptr = getelementptr inbounds %i32ptr.wrapped.ty, %i32ptr.wrapped.ty* %a.unwrapped.wrapped, i64 0, i32 1
+  store i64 %a.field0.length, i64* %a.unwrapped.wrapped.field0.length.ptr, align 8
+  store i32* %a.unwrapped, i32** %a.unwrapped.unwrapped, align 8
+  call void @theta(%i32ptr.wrapped.ty* nonnull %a.unwrapped.wrapped)
   ret void
 }
 
 ; Function Attrs: nofree noinline norecurse nosync nounwind sspstrong uwtable
 define dso_local void @twy_key(%i32ptr.wrapped.ty* nocapture noundef readonly %key, %struct.twy_ctx* noundef %c) local_unnamed_addr #0 {
 entry:
-  %arraydecay15.wrapped = alloca %i32ptr.wrapped.ty, align 8
-  %arraydecay.wrapped = alloca %i32ptr.wrapped.ty, align 8
   %arraydecay16.wrapped = alloca %i32ptr.wrapped.ty, align 8
   %arraydecay17.wrapped = alloca %i32ptr.wrapped.ty, align 8
+  %arraydecay.wrapped = alloca %i32ptr.wrapped.ty, align 8
+  %arraydecay15.wrapped = alloca %i32ptr.wrapped.ty, align 8
   %0 = getelementptr inbounds %i32ptr.wrapped.ty, %i32ptr.wrapped.ty* %key, i64 0, i32 0
   %key.unwrapped = load i32*, i32** %0, align 8
   %1 = load i32, i32* %key.unwrapped, align 4
@@ -370,8 +370,8 @@ entry:
 ; Function Attrs: noinline nounwind sspstrong uwtable
 define dso_local i32 @main() local_unnamed_addr #2 {
 entry:
-  %arraydecay23.wrapped = alloca %i32ptr.wrapped.ty, align 8
   %arraydecay24.wrapped = alloca %i32ptr.wrapped.ty, align 8
+  %arraydecay23.wrapped = alloca %i32ptr.wrapped.ty, align 8
   %gc = alloca %struct.twy_ctx, align 4
   %in_key = alloca [3 x i32], align 4
   %in = alloca [3 x i32], align 4

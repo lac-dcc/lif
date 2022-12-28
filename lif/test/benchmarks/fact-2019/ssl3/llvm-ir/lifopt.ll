@@ -250,8 +250,8 @@ if.end100:                                        ; preds = %if.end99, %if.then8
   %30 = select i1 %in.135, i1 true, i1 %in.134
   %31 = select i1 %30, i1 %in.127, i1 false
   %phi.fold192 = select i1 %31, i8 %conv117, i8 0
-  %cond.fold137 = or i1 %in.135, %in.134
-  %cond.fold138 = or i1 %in.132, %cond.fold137
+  %cond.fold137 = or i1 %in.135, %in.132
+  %cond.fold138 = or i1 %cond.fold137, %in.134
   %cmp127 = icmp ugt i64 %j.0.rewritten58, 55
   br i1 %cmp127, label %if.then129, label %if.end142
 
